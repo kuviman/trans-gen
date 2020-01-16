@@ -1,0 +1,25 @@
+[package]
+name = "trans-gen"
+version = "0.1.0"
+authors = ["kuviman <kuviman@gmail.com>"]
+edition = "2018"
+
+[dev-dependencies]
+tempfile = "3"
+
+[dependencies]
+trans = { path = "trans" }
+trans-schema = { path = "trans-schema" }
+trans-gen-core = { path = "core" }
+trans-gen-python = { path = "gens/python" }
+trans-gen-javascript = { path = "gens/javascript" }
+trans-gen-ruby = { path = "gens/ruby" }
+trans-gen-rust = { path = "gens/rust" }
+trans-gen-java = { path = "gens/java" }
+trans-gen-kotlin = { path = "gens/kotlin" }
+trans-gen-scala = { path = "gens/scala" }
+trans-gen-csharp = { path = "gens/csharp" }
+trans-gen-fsharp = { path = "gens/fsharp" }
+trans-gen-cpp = { path = "gens/cpp" }
+trans-gen-dlang = { path = "gens/dlang" }
+trans-gen-go = { path = "gens/go" }

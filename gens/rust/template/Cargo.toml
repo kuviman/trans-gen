@@ -1,0 +1,7 @@
+[package]
+name = "$name"
+version = "$version"
+edition = "2018"
+
+[dependencies]
+trans = { path = "trans" }
