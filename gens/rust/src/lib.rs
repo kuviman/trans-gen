@@ -41,13 +41,11 @@ impl trans_gen_core::Generator for Generator {
         let mut files = HashMap::new();
         files.insert(
             "Cargo.toml".to_owned(),
-            include_str!("../template/Cargo.toml")
+            include_str!("../template/Cargo.toml.template")
                 .replace("$name", name)
                 .replace("$version", version),
         );
         files.insert("src/lib.rs".to_owned(), String::new());
-        const TRANS_SRC: include_dir::Dir = include_dir!("../../trans");
-        trans_gen_core::add_all(&mut files, &TRANS_SRC, "trans");
         Self { files }
     }
     fn result(self) -> HashMap<String, String> {

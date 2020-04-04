@@ -2,6 +2,9 @@
 name = "trans-derive"
 version = "0.1.0"
 authors = ["kuviman <kuviman@gmail.com>"]
+description = "Serialization protocol for inter-language communication (derive macros)"
+license = "MIT"
+homepage = "https://github.com/kuviman/trans-gen"
 edition = "2018"
 
 [dependencies]

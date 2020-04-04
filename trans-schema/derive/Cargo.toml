@@ -2,6 +2,9 @@
 name = "trans-schema-derive"
 version = "0.1.0"
 authors = ["kuviman <kuviman@gmail.com>"]
+description = "Generating trans code from Rust into other languages (derive macros)"
+license = "MIT"
+homepage = "https://github.com/kuviman/trans-gen"
 edition = "2018"
 
 [dependencies]

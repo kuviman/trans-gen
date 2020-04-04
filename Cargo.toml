@@ -2,24 +2,27 @@
 name = "trans-gen"
 version = "0.1.0"
 authors = ["kuviman <kuviman@gmail.com>"]
+description = "Generating trans code from Rust into other languages"
+license = "MIT"
+homepage = "https://github.com/kuviman/trans-gen"
 edition = "2018"
 
 [dev-dependencies]
 tempfile = "3"
 
 [dependencies]
-trans = { path = "trans" }
-trans-schema = { path = "trans-schema" }
-trans-gen-core = { path = "core" }
-trans-gen-python = { path = "gens/python" }
-trans-gen-javascript = { path = "gens/javascript" }
-trans-gen-ruby = { path = "gens/ruby" }
-trans-gen-rust = { path = "gens/rust" }
-trans-gen-java = { path = "gens/java" }
-trans-gen-kotlin = { path = "gens/kotlin" }
-trans-gen-scala = { path = "gens/scala" }
-trans-gen-csharp = { path = "gens/csharp" }
-trans-gen-fsharp = { path = "gens/fsharp" }
-trans-gen-cpp = { path = "gens/cpp" }
-trans-gen-dlang = { path = "gens/dlang" }
-trans-gen-go = { path = "gens/go" }
+trans = { path = "trans", version = "0.1.0" }
+trans-schema = { path = "trans-schema", version = "0.1.0" }
+trans-gen-core = { path = "core", version = "0.1.0" }
+trans-gen-python = { path = "gens/python", version = "0.1.0" }
+trans-gen-javascript = { path = "gens/javascript", version = "0.1.0" }
+trans-gen-ruby = { path = "gens/ruby", version = "0.1.0" }
+trans-gen-rust = { path = "gens/rust", version = "0.1.0" }
+trans-gen-java = { path = "gens/java", version = "0.1.0" }
+trans-gen-kotlin = { path = "gens/kotlin", version = "0.1.0" }
+trans-gen-scala = { path = "gens/scala", version = "0.1.0" }
+trans-gen-csharp = { path = "gens/csharp", version = "0.1.0" }
+trans-gen-fsharp = { path = "gens/fsharp", version = "0.1.0" }
+trans-gen-cpp = { path = "gens/cpp", version = "0.1.0" }
+trans-gen-dlang = { path = "gens/dlang", version = "0.1.0" }
+trans-gen-go = { path = "gens/go", version = "0.1.0" }

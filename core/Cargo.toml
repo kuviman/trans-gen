@@ -2,9 +2,12 @@
 name = "trans-gen-core"
 version = "0.1.0"
 authors = ["kuviman <kuviman@gmail.com>"]
+description = "Generating trans code (helper library)"
+license = "MIT"
+homepage = "https://github.com/kuviman/trans-gen"
 edition = "2018"
 
 [dependencies]
 include_dir = "0.2"
-trans = { path = "../trans" }
-trans-schema = { path = "../trans-schema" }
+trans = { path = "../trans", version = "0.1.0" }
+trans-schema = { path = "../trans-schema", version = "0.1.0" }
