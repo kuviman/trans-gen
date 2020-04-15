@@ -1,6 +1,3 @@
-#[macro_use]
-extern crate include_dir;
-
 use std::collections::HashMap;
 use std::fmt::Write;
 use trans_gen_core::trans_schema::*;
