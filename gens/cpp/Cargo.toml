@@ -1,6 +1,6 @@
 [package]
 name = "trans-gen-cpp"
-version = "0.1.0"
+version = "0.1.1"
 authors = ["kuviman <kuviman@gmail.com>"]
 description = "Generating C++ trans code"
 license = "MIT"
