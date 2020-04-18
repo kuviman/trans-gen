@@ -53,6 +53,17 @@ fn var_name(name: &str) -> &str {
 }
 
 fn write_includes(writer: &mut Writer, schema: &Schema, current: bool) -> std::fmt::Result {
+    let mut includes = vec!["<string>".to_string(), "\"../Stream.hpp\"".to_string()];
+    collect_includes(&mut includes, schema, current);
+    includes.sort();
+    includes.dedup();
+    for include in includes {
+        writeln!(writer, "#include {}", include)?;
+    }
+    Ok(())
+}
+
+fn collect_includes(result: &mut Vec<String>, schema: &Schema, current: bool) {
     if current {
         match schema {
             Schema::Bool
@@ -62,13 +73,13 @@ fn write_includes(writer: &mut Writer, schema: &Schema, current: bool) -> std::f
             | Schema::Float64
             | Schema::String => {}
             Schema::Option(_) => {
-                writeln!(writer, "#include <memory>")?;
+                result.push("<memory>".to_string());
             }
             Schema::Map(_, _) => {
-                writeln!(writer, "#include <unordered_map>")?;
+                result.push("<unordered_map>".to_string());
             }
             Schema::Vec(_) => {
-                writeln!(writer, "#include <vector>")?;
+                result.push("<vector>".to_string());
             }
             Schema::Struct(Struct { name, .. })
             | Schema::OneOf {
@@ -77,8 +88,8 @@ fn write_includes(writer: &mut Writer, schema: &Schema, current: bool) -> std::f
             | Schema::Enum {
                 base_name: name, ..
             } => {
-                writeln!(writer, "#include <stdexcept>")?;
-                writeln!(writer, "#include \"{}.hpp\"", name.camel_case(conv))?;
+                result.push("<stdexcept>".to_string());
+                result.push(format!("\"{}.hpp\"", name.camel_case(conv)));
             }
         }
     }
@@ -91,29 +102,28 @@ fn write_includes(writer: &mut Writer, schema: &Schema, current: bool) -> std::f
         | Schema::String
         | Schema::Enum { .. } => {}
         Schema::Option(inner) => {
-            write_includes(writer, inner, true)?;
+            collect_includes(result, inner, true);
         }
         Schema::Map(key_type, value_type) => {
-            write_includes(writer, key_type, true)?;
-            write_includes(writer, value_type, true)?;
+            collect_includes(result, key_type, true);
+            collect_includes(result, value_type, true);
         }
         Schema::Vec(inner) => {
-            write_includes(writer, inner, true)?;
+            collect_includes(result, inner, true);
         }
         Schema::Struct(Struct { fields, .. }) => {
             for field in fields {
-                write_includes(writer, &field.schema, true)?;
+                collect_includes(result, &field.schema, true);
             }
         }
         Schema::OneOf { variants, .. } => {
             for variant in variants {
                 for field in &variant.fields {
-                    write_includes(writer, &field.schema, true)?;
+                    collect_includes(result, &field.schema, true);
                 }
             }
         }
     }
-    Ok(())
 }
 
 fn write_struct_def(
@@ -694,8 +704,6 @@ impl trans_gen_core::Generator for Generator {
                 )
                 .unwrap();
                 writeln!(writer).unwrap();
-                writeln!(writer, "#include \"../Stream.hpp\"").unwrap();
-                writeln!(writer, "#include <string>").unwrap();
                 write_includes(&mut writer, schema, false).unwrap();
                 writeln!(writer).unwrap();
                 write_struct_def(&mut writer, schema, struc, None).unwrap();
@@ -729,10 +737,7 @@ impl trans_gen_core::Generator for Generator {
                 )
                 .unwrap();
                 writeln!(writer).unwrap();
-                writeln!(writer, "#include \"../Stream.hpp\"").unwrap();
                 writeln!(writer, "#include <memory>").unwrap();
-                writeln!(writer, "#include <string>").unwrap();
-                writeln!(writer, "#include <stdexcept>").unwrap();
                 write_includes(&mut writer, schema, false).unwrap();
                 writeln!(writer).unwrap();
                 writeln!(writer, "class {} {{", base_name.camel_case(conv)).unwrap();
@@ -773,7 +778,7 @@ impl trans_gen_core::Generator for Generator {
                 let file_name = format!("model/{}.cpp", base_name.camel_case(conv));
                 let mut writer = Writer::new();
                 writeln!(writer, "#include \"{}.hpp\"", base_name.camel_case(conv)).unwrap();
-                writeln!(writer).unwrap();
+                writeln!(writer, "#include <stdexcept>").unwrap();
                 for (discriminant, variant) in variants.iter().enumerate() {
                     writeln!(writer).unwrap();
                     write_struct_impl(
