@@ -111,7 +111,12 @@ pub fn derive_trans(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
                     let field_names: Vec<_> = variant
                         .fields
                         .iter()
-                        .map(|field| field.ident.as_ref().unwrap())
+                        .map(|field| {
+                            field
+                                .ident
+                                .as_ref()
+                                .expect("Only named fields are supported")
+                        })
                         .collect();
                     let field_names = &field_names;
                     let field_names_copy = field_names;
