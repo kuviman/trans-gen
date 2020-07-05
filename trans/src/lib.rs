@@ -7,14 +7,27 @@ pub trait Trans: Sized {
     fn read_from(reader: impl std::io::Read) -> std::io::Result<Self>;
 }
 
-impl Trans for () {
-    fn read_from(_: impl std::io::Read) -> std::io::Result<Self> {
-        Ok(())
-    }
-    fn write_to(&self, _: impl std::io::Write) -> std::io::Result<()> {
-        Ok(())
-    }
+macro_rules! impl_for_tuple {
+    ($($name:ident),*) => {
+        #[allow(non_snake_case, unused_variables, unused_mut)]
+        impl<$($name: Trans),*> Trans for ($($name,)*) {
+            fn read_from(mut reader: impl std::io::Read) -> std::io::Result<Self> {
+                Ok(($(<$name as Trans>::read_from(&mut reader)?,)*))
+            }
+            fn write_to(&self, mut writer: impl std::io::Write) -> std::io::Result<()> {
+                let ($($name,)*) = self;
+                $($name.write_to(&mut writer)?;)*
+                Ok(())
+            }
+        }
+    };
 }
+
+impl_for_tuple!();
+impl_for_tuple!(A);
+impl_for_tuple!(A, B);
+impl_for_tuple!(A, B, C);
+impl_for_tuple!(A, B, C, D);
 
 impl Trans for bool {
     fn read_from(mut reader: impl std::io::Read) -> std::io::Result<Self> {
