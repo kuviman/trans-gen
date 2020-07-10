@@ -38,10 +38,10 @@ pub fn derive_trans(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
         let (magic_write, magic_read) = match magic {
             Some(magic) => (
                 quote! {
-                    trans::Trans::write_to(&#magic, &mut writer)?;
+                    trans::Trans::write_to(&#magic, writer)?;
                 },
                 quote! {
-                    assert_eq!(<i32 as trans::Trans>::read_from(&mut reader)?, #magic);
+                    assert_eq!(<i32 as trans::Trans>::read_from(reader)?, #magic);
                 },
             ),
             None => (quote! {}, quote! {}),
@@ -74,15 +74,15 @@ pub fn derive_trans(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
                 let (impl_generics, ty_generics, where_clause) = generics.split_for_impl();
                 let expanded = quote! {
                     impl #impl_generics trans::Trans for #input_type #ty_generics #where_clause {
-                        fn write_to(&self, mut writer: impl std::io::Write) -> std::io::Result<()> {
+                        fn write_to(&self, writer: &mut dyn std::io::Write) -> std::io::Result<()> {
                             #magic_write
-                            #(trans::Trans::write_to(&self.#field_names, &mut writer)?;)*
+                            #(trans::Trans::write_to(&self.#field_names, writer)?;)*
                             Ok(())
                         }
-                        fn read_from(mut reader: impl std::io::Read) -> std::io::Result<Self> {
+                        fn read_from(reader: &mut dyn std::io::Read) -> std::io::Result<Self> {
                             #magic_read
                             Ok(Self {
-                                #(#field_names: trans::Trans::read_from(&mut reader)?),*
+                                #(#field_names: trans::Trans::read_from(reader)?),*
                             })
                         }
                     }
@@ -122,8 +122,8 @@ pub fn derive_trans(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
                     let field_names_copy = field_names;
                     quote! {
                         #input_type::#variant_name { #(#field_names,)* } => {
-                            trans::Trans::write_to(&#discriminant, &mut writer)?;
-                            #(trans::Trans::write_to(#field_names_copy, &mut writer)?;)*
+                            trans::Trans::write_to(&#discriminant, writer)?;
+                            #(trans::Trans::write_to(#field_names_copy, writer)?;)*
                         }
                     }
                 });
@@ -136,20 +136,20 @@ pub fn derive_trans(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
                         .map(|field| field.ident.as_ref().unwrap());
                     quote! {
                         #discriminant => #input_type::#variant_name {
-                            #(#field_names: trans::Trans::read_from(&mut reader)?,)*
+                            #(#field_names: trans::Trans::read_from(reader)?,)*
                         },
                     }
                 });
                 let expanded = quote! {
                     impl #impl_generics trans::Trans for #input_type #ty_generics #where_clause {
-                        fn write_to(&self, mut writer: impl std::io::Write) -> std::io::Result<()> {
+                        fn write_to(&self, writer: &mut dyn std::io::Write) -> std::io::Result<()> {
                             match self {
                                 #(#variant_writes)*
                             }
                             Ok(())
                         }
-                        fn read_from(mut reader: impl std::io::Read) -> std::io::Result<Self> {
-                            Ok(match <i32 as trans::Trans>::read_from(&mut reader)? {
+                        fn read_from(reader: &mut dyn std::io::Read) -> std::io::Result<Self> {
+                            Ok(match <i32 as trans::Trans>::read_from(reader)? {
                                 #(#variant_reads)*
                                 discriminant => {
                                     return Err(std::io::Error::new(
