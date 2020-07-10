@@ -100,10 +100,10 @@ pub fn derive_trans(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
                 };
                 let extra_where_clauses: syn::WhereClause =
                     syn::parse_str(&extra_where_clauses.to_string()).unwrap();
-                generics
-                    .make_where_clause()
-                    .predicates
-                    .extend(extra_where_clauses.predicates);
+                // generics
+                //     .make_where_clause()
+                //     .predicates
+                //     .extend(extra_where_clauses.predicates);
                 let (impl_generics, ty_generics, where_clause) = generics.split_for_impl();
                 let variant_writes = variants.iter().enumerate().map(|(discriminant, variant)| {
                     let discriminant = discriminant as i32;
