@@ -4,4 +4,4 @@ version = "$version"
 edition = "2018"
 
 [dependencies]
-trans = "0.1.0"
+trans = "0.2.0"

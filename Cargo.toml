@@ -11,7 +11,7 @@ edition = "2018"
 tempfile = "3"
 
 [dependencies]
-trans = { path = "trans", version = "0.1.0" }
+trans = { path = "trans", version = "0.2.0" }
 trans-schema = { path = "trans-schema", version = "0.1.0" }
 trans-gen-core = { path = "core", version = "0.1.0" }
 trans-gen-python = { path = "gens/python", version = "0.1.0" }

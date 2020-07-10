@@ -9,5 +9,5 @@ edition = "2018"
 
 [dependencies]
 include_dir = "0.5"
-trans = { path = "../trans", version = "0.1.0" }
+trans = { path = "../trans", version = "0.2.0" }
 trans-schema = { path = "../trans-schema", version = "0.1.0" }
