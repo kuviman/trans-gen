@@ -1,6 +1,6 @@
 [package]
 name = "trans-gen-core"
-version = "0.1.1"
+version = "0.1.2"
 authors = ["kuviman <kuviman@gmail.com>"]
 description = "Generating trans code (helper library)"
 license = "MIT"
@@ -9,5 +9,4 @@ edition = "2018"
 
 [dependencies]
 include_dir = "0.5"
-trans = { path = "../trans", version = "0.2.0" }
 trans-schema = { path = "../trans-schema", version = "0.1.0" }
