@@ -15,7 +15,7 @@ pub fn derive_trans(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
         for attr in &ast.attrs {
             if let Ok(syn::Meta::List(syn::MetaList {
                 path: ref meta_path,
-                nested: ref nested,
+                ref nested,
                 ..
             })) = attr.parse_meta()
             {
@@ -91,15 +91,15 @@ pub fn derive_trans(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
             }
             syn::Data::Enum(syn::DataEnum { ref variants, .. }) => {
                 let mut generics = ast.generics.clone();
-                let all_field_tys = variants
-                    .iter()
-                    .map(|variant| variant.fields.iter().map(|field| &field.ty))
-                    .flatten();
-                let extra_where_clauses = quote! {
-                    where #(#all_field_tys: trans::Trans + 'static,)*
-                };
-                let extra_where_clauses: syn::WhereClause =
-                    syn::parse_str(&extra_where_clauses.to_string()).unwrap();
+                // let all_field_tys = variants
+                //     .iter()
+                //     .map(|variant| variant.fields.iter().map(|field| &field.ty))
+                //     .flatten();
+                // let extra_where_clauses = quote! {
+                //     where #(#all_field_tys: trans::Trans + 'static,)*
+                // };
+                // let extra_where_clauses: syn::WhereClause =
+                //     syn::parse_str(&extra_where_clauses.to_string()).unwrap();
                 // generics
                 //     .make_where_clause()
                 //     .predicates

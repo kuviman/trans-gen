@@ -17,7 +17,7 @@ pub fn derive_schematic(input: proc_macro::TokenStream) -> proc_macro::TokenStre
         for attr in &ast.attrs {
             if let Ok(syn::Meta::List(syn::MetaList {
                 path: ref meta_path,
-                nested: ref nested,
+                ref nested,
                 ..
             })) = attr.parse_meta()
             {
@@ -123,23 +123,23 @@ pub fn derive_schematic(input: proc_macro::TokenStream) -> proc_macro::TokenStre
             },
             syn::Data::Enum(syn::DataEnum { ref variants, .. }) => {
                 let mut generics = ast.generics.clone();
-                let all_field_tys = variants
-                    .iter()
-                    .map(|variant| variant.fields.iter().map(|field| &field.ty))
-                    .flatten();
+                // let all_field_tys = variants
+                //     .iter()
+                //     .map(|variant| variant.fields.iter().map(|field| &field.ty))
+                //     .flatten();
                 let generic_params: Vec<_> = ast
                     .generics
                     .type_params()
                     .map(|param| &param.ident)
                     .collect();
                 let generic_params = &generic_params;
-                let extra_where_clauses = quote! {
-                    where
-                        #(#all_field_tys: trans_schema::Schematic + 'static,)*
-                        #(#generic_params: trans_schema::Schematic,)*
-                };
-                let extra_where_clauses: syn::WhereClause =
-                    syn::parse_str(&extra_where_clauses.to_string()).unwrap();
+                // let extra_where_clauses = quote! {
+                //     where
+                //         #(#all_field_tys: trans_schema::Schematic + 'static,)*
+                //         #(#generic_params: trans_schema::Schematic,)*
+                // };
+                // let extra_where_clauses: syn::WhereClause =
+                //     syn::parse_str(&extra_where_clauses.to_string()).unwrap();
                 // generics
                 //     .make_where_clause()
                 //     .predicates
