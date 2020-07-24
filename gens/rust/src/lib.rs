@@ -60,7 +60,7 @@ impl trans_gen_core::Generator for Generator {
                 {
                     let content = &mut content;
 
-                    writeln!(content, "use crate::*;").unwrap();
+                    writeln!(content, "use super::*;").unwrap();
 
                     write!(content, "#[derive(Clone, Debug").unwrap();
                     if schema.hashable() {
@@ -99,7 +99,7 @@ impl trans_gen_core::Generator for Generator {
                 {
                     let content = &mut content;
 
-                    writeln!(content, "use crate::*;").unwrap();
+                    writeln!(content, "use super::*;").unwrap();
 
                     writeln!(content, "#[derive(Clone, Debug, trans::Trans)]").unwrap();
                     writeln!(content, "pub enum {} {{", base_name.camel_case(conv)).unwrap();
@@ -135,7 +135,7 @@ impl trans_gen_core::Generator for Generator {
                 {
                     let content = &mut content;
 
-                    writeln!(content, "use crate::*;").unwrap();
+                    writeln!(content, "use super::*;").unwrap();
 
                     writeln!(
                         content,
