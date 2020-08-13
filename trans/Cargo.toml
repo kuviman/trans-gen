@@ -1,6 +1,6 @@
 [package]
 name = "trans"
-version = "0.2.0"
+version = "0.3.0-alpha.0"
 authors = ["kuviman <kuviman@gmail.com>"]
 description = "Serialization protocol for inter-language communication"
 license = "MIT"
@@ -8,5 +8,5 @@ homepage = "https://github.com/kuviman/trans-gen"
 edition = "2018"
 
 [dependencies]
-trans-derive = { path = "derive", version = "0.2.0" }
+trans-derive = { path = "derive", version = "0.3.0-alpha" }
 byteorder = "1"

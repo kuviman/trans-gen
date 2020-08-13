@@ -1,6 +1,6 @@
 [package]
 name = "trans-schema-derive"
-version = "0.1.2"
+version = "0.3.0-alpha.0"
 authors = ["kuviman <kuviman@gmail.com>"]
 description = "Generating trans code from Rust into other languages (derive macros)"
 license = "MIT"

@@ -1,6 +1,6 @@
 [package]
 name = "trans-gen-csharp"
-version = "0.1.0"
+version = "0.3.0-alpha.0"
 authors = ["kuviman <kuviman@gmail.com>"]
 description = "Generating C# trans code"
 license = "MIT"
@@ -8,4 +8,4 @@ homepage = "https://github.com/kuviman/trans-gen"
 edition = "2018"
 
 [dependencies]
-trans-gen-core = { path = "../../core", version = "0.1.0" }
+trans-gen-core = { path = "../../core", version = "0.3.0-alpha" }
