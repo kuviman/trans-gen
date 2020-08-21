@@ -1,5 +1,6 @@
 use std::collections::{HashMap, HashSet};
 
+pub use trans;
 pub use trans_schema;
 use trans_schema::*;
 
