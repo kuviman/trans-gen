@@ -13,7 +13,7 @@ fn conv(name: &str) -> String {
 
 pub struct Generator {
     main_namespace: String,
-    files: HashMap<String, String>,
+    files: Vec<trans_gen_core::File>,
 }
 
 fn type_name(schema: &Schema) -> String {
@@ -274,7 +274,7 @@ impl trans_gen_core::Generator for Generator {
     fn new(name: &str, version: &str) -> Self {
         Self {
             main_namespace: Name::new(name.to_owned()).camel_case(conv),
-            files: HashMap::new(),
+            files: Vec::new(),
         }
     }
     fn result(self) -> trans_gen_core::GenResult {
@@ -296,7 +296,10 @@ impl trans_gen_core::Generator for Generator {
                     writeln!(writer, "| {} = {}", variant.camel_case(conv), discriminant).unwrap();
                 }
                 writer.dec_ident();
-                self.files.insert(file_name, writer.get());
+                self.files.push(trans_gen_core::File {
+                    path: file_name,
+                    content: writer.get(),
+                });
             }
             Schema::Struct(struc) => {
                 let file_name = format!("Model/{}.fs", struc.name.camel_case(conv));
@@ -304,7 +307,10 @@ impl trans_gen_core::Generator for Generator {
                 writeln!(writer, "#nowarn \"0058\"").unwrap();
                 writeln!(writer, "namespace {}.Model", self.main_namespace).unwrap();
                 write_struct(&mut writer, struc, None).unwrap();
-                self.files.insert(file_name, writer.get());
+                self.files.push(trans_gen_core::File {
+                    path: file_name,
+                    content: writer.get(),
+                });
             }
             Schema::OneOf {
                 base_name,
@@ -381,7 +387,10 @@ impl trans_gen_core::Generator for Generator {
                 writer.dec_ident();
 
                 writer.dec_ident();
-                self.files.insert(file_name, writer.get());
+                self.files.push(trans_gen_core::File {
+                    path: file_name,
+                    content: writer.get(),
+                });
             }
             Schema::Bool
             | Schema::Int32

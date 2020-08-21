@@ -17,9 +17,9 @@ pub struct GenResult {
 }
 
 impl GenResult {
-    pub fn write_to<P: AsRef<Path>>(self, target_dir: P) -> std::io::Result<()> {
+    pub fn write_to<P: AsRef<Path>>(&self, target_dir: P) -> std::io::Result<()> {
         let target_dir = target_dir.as_ref();
-        for file in self.files {
+        for file in &self.files {
             if let Some(parent) = Path::new(&file.path).parent() {
                 std::fs::create_dir_all(target_dir.join(parent))?;
             }
@@ -39,6 +39,12 @@ impl From<HashMap<String, String>> for GenResult {
                 .map(|(path, content)| File { path, content })
                 .collect(),
         }
+    }
+}
+
+impl From<Vec<File>> for GenResult {
+    fn from(files: Vec<File>) -> Self {
+        Self { files }
     }
 }
 
