@@ -1,13 +1,51 @@
 use std::collections::{HashMap, HashSet};
 
+use std::path::Path;
 pub use trans;
 pub use trans_schema;
 use trans_schema::*;
 
+#[derive(Debug)]
+pub struct File {
+    pub path: String,
+    pub content: String,
+}
+
+#[derive(Debug)]
+pub struct GenResult {
+    pub files: Vec<File>,
+}
+
+impl GenResult {
+    pub fn write_to<P: AsRef<Path>>(self, target_dir: P) -> std::io::Result<()> {
+        let target_dir = target_dir.as_ref();
+        for file in self.files {
+            if let Some(parent) = Path::new(&file.path).parent() {
+                std::fs::create_dir_all(target_dir.join(parent))?;
+            }
+            use std::io::Write;
+            std::fs::File::create(target_dir.join(&file.path))?
+                .write_all(file.content.as_bytes())?;
+        }
+        Ok(())
+    }
+}
+
+impl From<HashMap<String, String>> for GenResult {
+    fn from(file_map: HashMap<String, String>) -> Self {
+        Self {
+            files: file_map
+                .into_iter()
+                .map(|(path, content)| File { path, content })
+                .collect(),
+        }
+    }
+}
+
 pub trait Generator {
     fn new(name: &str, version: &str) -> Self;
     fn add_only(&mut self, schema: &Schema);
-    fn result(self) -> HashMap<String, String>;
+    fn result(self) -> GenResult;
 }
 
 pub struct GeneratorImpl<T: Generator> {
@@ -66,21 +104,8 @@ impl<T: Generator> GeneratorImpl<T> {
         }
         self.inner.add_only(schema);
     }
-    pub fn result(self) -> HashMap<String, String> {
+    pub fn result(self) -> GenResult {
         self.inner.result()
-    }
-    pub fn write_to<P: AsRef<std::path::Path>>(self, dir: P) -> std::io::Result<()> {
-        use std::path::Path;
-        let dir = dir.as_ref();
-        for (path, content) in self.result() {
-            if let Some(parent) = Path::new(&path).parent() {
-                std::fs::create_dir_all(dir.join(parent))?;
-            }
-            let mut file = std::fs::File::create(dir.join(path))?;
-            use std::io::Write;
-            file.write_all(content.as_bytes())?;
-        }
-        Ok(())
     }
 }
 

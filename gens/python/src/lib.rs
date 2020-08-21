@@ -290,12 +290,12 @@ impl trans_gen_core::Generator for Generator {
             files,
         }
     }
-    fn result(mut self) -> HashMap<String, String> {
+    fn result(mut self) -> trans_gen_core::GenResult {
         if !self.model_init.is_empty() {
             self.files
                 .insert("model/__init__.py".to_owned(), self.model_init);
         }
-        self.files
+        self.files.into()
     }
     fn add_only(&mut self, schema: &Schema) {
         match schema {

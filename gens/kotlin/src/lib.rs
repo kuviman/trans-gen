@@ -390,8 +390,8 @@ impl trans_gen_core::Generator for Generator {
         );
         Self { files }
     }
-    fn result(self) -> HashMap<String, String> {
-        self.files
+    fn result(self) -> trans_gen_core::GenResult {
+        self.files.into()
     }
     fn add_only(&mut self, schema: &Schema) {
         match schema {
