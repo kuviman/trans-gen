@@ -12,6 +12,7 @@ fn conv(name: &str) -> String {
 
 pub struct Generator {
     files: HashMap<String, String>,
+    index_file: String,
 }
 
 fn index_var_name(index_var: &mut usize) -> String {
@@ -40,10 +41,9 @@ fn write_imports(writer: &mut Writer, schema: &Schema) -> std::fmt::Result {
                         if added.insert(file_name(name)) {
                             writeln!(
                                 writer,
-                                "const {} = require('./{}').{};",
+                                "const {} = require('./{}');",
                                 name.camel_case(conv),
                                 file_name(name),
-                                name.camel_case(conv),
                             )?;
                         }
                     }
@@ -352,9 +352,14 @@ impl trans_gen_core::Generator for Generator {
             "stream-wrapper.js".to_owned(),
             include_str!("../template/stream-wrapper.js").to_owned(),
         );
-        Self { files }
+        Self {
+            files,
+            index_file: String::new(),
+        }
     }
     fn result(mut self) -> trans_gen_core::GenResult {
+        self.files
+            .insert("model/index.js".to_owned(), self.index_file);
         self.files.into()
     }
     fn add_only(&mut self, schema: &Schema) {
@@ -363,6 +368,13 @@ impl trans_gen_core::Generator for Generator {
                 base_name,
                 variants,
             } => {
+                writeln!(
+                    self.index_file,
+                    "module.exports.{} = require('./{}');",
+                    base_name.camel_case(conv),
+                    file_name(base_name),
+                )
+                .unwrap();
                 let file_name = format!("model/{}.js", file_name(base_name));
                 let mut writer = Writer::new();
                 writeln!(writer, "module.exports = {{").unwrap();
@@ -382,23 +394,31 @@ impl trans_gen_core::Generator for Generator {
                 self.files.insert(file_name, writer.get());
             }
             Schema::Struct(struc) => {
+                writeln!(
+                    self.index_file,
+                    "module.exports.{} = require('./{}');",
+                    struc.name.camel_case(conv),
+                    file_name(&struc.name),
+                )
+                .unwrap();
                 let file_name = format!("model/{}.js", file_name(&struc.name));
                 let mut writer = Writer::new();
                 write_imports(&mut writer, schema).unwrap();
                 write_struct(&mut writer, struc, None).unwrap();
-                writeln!(
-                    writer,
-                    "module.exports = {{ {}: {} }}",
-                    struc.name.camel_case(conv),
-                    struc.name.camel_case(conv),
-                )
-                .unwrap();
+                writeln!(writer, "module.exports = {}", struc.name.camel_case(conv)).unwrap();
                 self.files.insert(file_name, writer.get());
             }
             Schema::OneOf {
                 base_name,
                 variants,
             } => {
+                writeln!(
+                    self.index_file,
+                    "module.exports.{} = require('./{}');",
+                    base_name.camel_case(conv),
+                    file_name(base_name),
+                )
+                .unwrap();
                 let file_name = format!("model/{}.js", file_name(base_name));
                 let mut writer = Writer::new();
                 write_imports(&mut writer, schema).unwrap();
@@ -437,13 +457,7 @@ impl trans_gen_core::Generator for Generator {
                 for (discriminant, variant) in variants.iter().enumerate() {
                     write_struct(&mut writer, variant, Some((base_name, discriminant))).unwrap();
                 }
-                writeln!(
-                    writer,
-                    "module.exports = {{ {}: {} }}",
-                    base_name.camel_case(conv),
-                    base_name.camel_case(conv),
-                )
-                .unwrap();
+                writeln!(writer, "module.exports = {};", base_name.camel_case(conv)).unwrap();
                 self.files.insert(file_name, writer.get());
             }
             Schema::Bool

@@ -9,13 +9,13 @@ const FLOAT_SIZE = 4;
 const DOUBLE_SIZE = 8;
 
 class StreamWrapper {
-    constructor (socket) {
+    constructor(socket) {
         this.socket = socket;
         this.data = Buffer.alloc(0);
         this.needAmount = null;
         this.resolve = null;
         const _this = this;
-        this.socket.on('data', function(data) { _this.dataHandler(data) });
+        this.socket.on('data', function (data) { _this.dataHandler(data) });
         this.isLittleEndianMachine = (os.endianness() === 'LE');
     }
 
@@ -35,13 +35,13 @@ class StreamWrapper {
         this.update();
     }
 
-    close () {
+    close() {
         this.socket.destroy();
     }
 
     // Reading primitives
 
-    _read (size) {
+    _read(size) {
         const _this = this;
         return new Promise(function (resolve, reject) {
             _this.needAmount = size;
@@ -52,12 +52,12 @@ class StreamWrapper {
         });
     }
 
-    async readBool () {
+    async readBool() {
         const buffer = await this._read(BOOL_SIZE);
         return !!buffer.readInt8();
     }
 
-    async readInt () {
+    async readInt() {
         const buffer = await this._read(INT_SIZE);
         if (this.isLittleEndianMachine) {
             return parseInt(buffer.readInt32LE(0, INT_SIZE));
@@ -65,7 +65,7 @@ class StreamWrapper {
         return parseInt(buffer.readInt32BE(0, INT_SIZE));
     }
 
-    async readLong () {
+    async readLong() {
         const buffer = await this._read(LONG_SIZE);
         if (this.isLittleEndianMachine) {
             return parseInt(buffer.readBigInt64LE());
@@ -73,7 +73,7 @@ class StreamWrapper {
         return parseInt(buffer.readBigInt64BE());
     }
 
-    async readFloat () {
+    async readFloat() {
         const buffer = await this._read(FLOAT_SIZE);
         if (this.isLittleEndianMachine) {
             return buffer.readFloatLE();
@@ -81,7 +81,7 @@ class StreamWrapper {
         return buffer.readFloatBE();
     }
 
-    async readDouble () {
+    async readDouble() {
         const buffer = await this._read(DOUBLE_SIZE);
         if (this.isLittleEndianMachine) {
             return buffer.readDoubleLE();
@@ -89,7 +89,7 @@ class StreamWrapper {
         return buffer.readDoubleBE();
     }
 
-    async readString () {
+    async readString() {
         const length = this.readInt();
         const buffer = await this._read(length);
         const result = buffer.toString();
@@ -101,7 +101,7 @@ class StreamWrapper {
 
     // Writing primitives
 
-    _write (data) {
+    _write(data) {
         const socket = this.socket;
         return new Promise(function (resolve, reject) {
             socket.write(data, 'utf8', function (error) {
@@ -115,13 +115,13 @@ class StreamWrapper {
         });
     }
 
-    async writeBool (value) {
+    async writeBool(value) {
         const buffer = Buffer.alloc(BOOL_SIZE);
         buffer.writeInt8(value);
         return await this._write(buffer);
     }
 
-    async writeInt (value) {
+    async writeInt(value) {
         const buffer = Buffer.alloc(INT_SIZE);
         if (this.isLittleEndianMachine) {
             buffer.writeInt32LE(value);
@@ -131,7 +131,7 @@ class StreamWrapper {
         return await this._write(buffer);
     }
 
-    async writeLong (value) {
+    async writeLong(value) {
         const buffer = Buffer.alloc(LONG_SIZE);
         if (this.isLittleEndianMachine) {
             buffer.writeBigInt64LE(value);
@@ -141,7 +141,7 @@ class StreamWrapper {
         return await this._write(buffer);
     }
 
-    async writeFloat (value) {
+    async writeFloat(value) {
         const buffer = Buffer.alloc(FLOAT_SIZE);
         if (this.isLittleEndianMachine) {
             buffer.writeFloatLE(value);
@@ -151,7 +151,7 @@ class StreamWrapper {
         return await this._write(buffer);
     }
 
-    async writeDouble (value) {
+    async writeDouble(value) {
         const buffer = Buffer.alloc(DOUBLE_SIZE);
         if (this.isLittleEndianMachine) {
             buffer.writeDoubleLE(value);
@@ -161,10 +161,10 @@ class StreamWrapper {
         return await this._write(buffer);
     }
 
-    async writeString (value) {
+    async writeString(value) {
         this.writeInt(value.length);
         return await this._write(value, 'utf8');
     }
 }
 
-module.exports.StreamWrapper = StreamWrapper;
+module.exports = StreamWrapper;
