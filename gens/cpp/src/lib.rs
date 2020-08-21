@@ -12,6 +12,7 @@ fn conv(name: &str) -> String {
 
 pub struct Generator {
     files: HashMap<String, String>,
+    model_include: String,
 }
 
 fn type_name(schema: &Schema) -> String {
@@ -642,10 +643,19 @@ impl trans_gen_core::Generator for Generator {
             "Stream.cpp".to_owned(),
             include_str!("../template/Stream.cpp").to_owned(),
         );
-        Self { files }
+        Self {
+            files,
+            model_include: "#ifndef _MODEL_HPP_\n#define _MODEL_HPP_\n\n".to_owned(),
+        }
     }
     fn result(self) -> trans_gen_core::GenResult {
-        self.files.into()
+        let Self {
+            mut files,
+            mut model_include,
+        } = self;
+        model_include.push_str("\n#endif\n");
+        files.insert("model/Model.hpp".to_owned(), model_include.to_owned());
+        files.into()
     }
     fn add_only(&mut self, schema: &Schema) {
         match schema {
@@ -654,6 +664,10 @@ impl trans_gen_core::Generator for Generator {
                 variants,
             } => {
                 let file_name = format!("model/{}.hpp", base_name.camel_case(conv));
+                self.model_include.push_str(&format!(
+                    "#include \"{}.hpp\"\n",
+                    base_name.camel_case(conv)
+                ));
                 let mut writer = Writer::new();
                 writeln!(
                     writer,
@@ -690,6 +704,10 @@ impl trans_gen_core::Generator for Generator {
             }
             Schema::Struct(struc) => {
                 let file_name = format!("model/{}.hpp", struc.name.camel_case(conv));
+                self.model_include.push_str(&format!(
+                    "#include \"{}.hpp\"\n",
+                    struc.name.camel_case(conv)
+                ));
                 let mut writer = Writer::new();
                 writeln!(
                     writer,
@@ -723,6 +741,10 @@ impl trans_gen_core::Generator for Generator {
                 variants,
             } => {
                 let file_name = format!("model/{}.hpp", base_name.camel_case(conv));
+                self.model_include.push_str(&format!(
+                    "#include \"{}.hpp\"\n",
+                    base_name.camel_case(conv)
+                ));
                 let mut writer = Writer::new();
                 writeln!(
                     writer,
