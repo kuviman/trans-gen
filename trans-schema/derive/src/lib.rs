@@ -5,6 +5,40 @@ use quote::quote;
 
 use proc_macro2::TokenStream;
 
+fn field_names<'a>(
+    fields: impl Iterator<Item = &'a syn::Field> + 'a,
+) -> impl Iterator<Item = syn::Ident> + 'a {
+    fields.map(|field| {
+        let mut name = field.ident.clone().unwrap();
+        for attr in &field.attrs {
+            if let Ok(syn::Meta::List(syn::MetaList {
+                path: ref meta_path,
+                ref nested,
+                ..
+            })) = attr.parse_meta()
+            {
+                if meta_path.is_ident("schematic") {
+                    for inner in nested {
+                        match *inner {
+                            syn::NestedMeta::Meta(syn::Meta::NameValue(syn::MetaNameValue {
+                                path: ref meta_path,
+                                lit: syn::Lit::Str(ref lit),
+                                ..
+                            })) => {
+                                if meta_path.is_ident("rename") {
+                                    name = syn::Ident::new(&lit.value(), lit.span());
+                                }
+                            }
+                            _ => panic!("Unexpected meta"),
+                        }
+                    }
+                }
+            }
+        }
+        name
+    })
+}
+
 #[proc_macro_derive(Schematic, attributes(schematic))]
 pub fn derive_schematic(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
     let input: TokenStream = input.into();
@@ -71,10 +105,7 @@ pub fn derive_schematic(input: proc_macro::TokenStream) -> proc_macro::TokenStre
                 syn::Fields::Named(_) => {
                     let field_tys: Vec<_> = fields.iter().map(|field| &field.ty).collect();
                     let field_tys = &field_tys;
-                    let field_names: Vec<_> = fields
-                        .iter()
-                        .map(|field| field.ident.as_ref().unwrap())
-                        .collect();
+                    let field_names: Vec<_> = field_names(fields.iter()).collect();
                     let field_names = &field_names;
                     let mut generics = ast.generics.clone();
                     let extra_where_clauses = quote! {
@@ -176,10 +207,7 @@ pub fn derive_schematic(input: proc_macro::TokenStream) -> proc_macro::TokenStre
                 } else {
                     let variants = variants.iter().map(|variant| {
                         let variant_name = &variant.ident;
-                        let field_names = variant
-                            .fields
-                            .iter()
-                            .map(|field| field.ident.as_ref().unwrap());
+                        let field_names = field_names(variant.fields.iter());
                         let field_tys = variant.fields.iter().map(|field| &field.ty);
                         quote! {
                             trans_schema::Struct {
