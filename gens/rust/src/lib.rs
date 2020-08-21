@@ -40,7 +40,8 @@ impl trans_gen_core::Generator for Generator {
             "Cargo.toml".to_owned(),
             include_str!("../template/Cargo.toml.template")
                 .replace("$name", name)
-                .replace("$version", version),
+                .replace("$version", version)
+                .replace("$trans-version", trans_gen_core::trans::VERSION),
         );
         files.insert("src/lib.rs".to_owned(), String::new());
         Self { files }
