@@ -11,9 +11,16 @@ pub fn derive_schematic(input: proc_macro::TokenStream) -> proc_macro::TokenStre
     let result: TokenStream = {
         let ast: syn::DeriveInput = syn::parse_str(&input.to_string()).unwrap();
         let input_type = &ast.ident;
+        let generic_params: Vec<_> = ast
+            .generics
+            .type_params()
+            .map(|param| &param.ident)
+            .collect();
+        let generic_params = &generic_params;
         let mut base_name =
             syn::LitStr::new(&ast.ident.to_string(), proc_macro2::Span::call_site());
         let mut magic: Option<syn::Expr> = None;
+        let mut generics_in_name = true;
         for attr in &ast.attrs {
             if let Ok(syn::Meta::List(syn::MetaList {
                 path: ref meta_path,
@@ -23,17 +30,24 @@ pub fn derive_schematic(input: proc_macro::TokenStream) -> proc_macro::TokenStre
             {
                 if meta_path.is_ident("schematic") {
                     for inner in nested {
-                        if let syn::NestedMeta::Meta(syn::Meta::NameValue(syn::MetaNameValue {
-                            path: ref meta_path,
-                            lit: syn::Lit::Str(ref lit),
-                            ..
-                        })) = *inner
-                        {
-                            if meta_path.is_ident("rename") {
-                                base_name = lit.clone();
-                            } else if meta_path.is_ident("magic") {
-                                magic = Some(syn::parse_str(&lit.value()).unwrap());
+                        match *inner {
+                            syn::NestedMeta::Meta(syn::Meta::NameValue(syn::MetaNameValue {
+                                path: ref meta_path,
+                                lit: syn::Lit::Str(ref lit),
+                                ..
+                            })) => {
+                                if meta_path.is_ident("rename") {
+                                    base_name = lit.clone();
+                                } else if meta_path.is_ident("magic") {
+                                    magic = Some(syn::parse_str(&lit.value()).unwrap());
+                                }
                             }
+                            syn::NestedMeta::Meta(syn::Meta::Path(ref meta_path)) => {
+                                if meta_path.is_ident("no_generics_in_name") {
+                                    generics_in_name = false;
+                                }
+                            }
+                            _ => panic!("Unexpected meta"),
                         }
                     }
                 }
@@ -43,6 +57,15 @@ pub fn derive_schematic(input: proc_macro::TokenStream) -> proc_macro::TokenStre
             Some(expr) => quote! { Some(#expr) },
             None => quote! { None },
         };
+        let final_name = quote! {{
+            let mut name = #base_name.to_owned();
+            if #generics_in_name {
+                #(
+                    name += &trans_schema::schema::<#generic_params>().full_name().raw();
+                )*
+            }
+            name
+        }};
         match ast.data {
             syn::Data::Struct(syn::DataStruct { ref fields, .. }) => match fields {
                 syn::Fields::Named(_) => {
@@ -54,12 +77,6 @@ pub fn derive_schematic(input: proc_macro::TokenStream) -> proc_macro::TokenStre
                         .collect();
                     let field_names = &field_names;
                     let mut generics = ast.generics.clone();
-                    let generic_params: Vec<_> = ast
-                        .generics
-                        .type_params()
-                        .map(|param| &param.ident)
-                        .collect();
-                    let generic_params = &generic_params;
                     let extra_where_clauses = quote! {
                         where
                             #(#field_tys: trans_schema::Schematic + 'static,)*
@@ -75,10 +92,7 @@ pub fn derive_schematic(input: proc_macro::TokenStream) -> proc_macro::TokenStre
                     let expanded = quote! {
                         impl #impl_generics trans_schema::Schematic for #input_type #ty_generics #where_clause {
                             fn create_schema() -> trans_schema::Schema {
-                                let mut name = #base_name.to_owned();
-                                #(
-                                    name += &trans_schema::schema::<#generic_params>().full_name().raw();
-                                )*
+                                let name = #final_name;
                                 trans_schema::Schema::Struct(trans_schema::Struct {
                                     name: trans_schema::Name::new(name),
                                     magic: #magic,
@@ -127,12 +141,6 @@ pub fn derive_schematic(input: proc_macro::TokenStream) -> proc_macro::TokenStre
                 //     .iter()
                 //     .map(|variant| variant.fields.iter().map(|field| &field.ty))
                 //     .flatten();
-                let generic_params: Vec<_> = ast
-                    .generics
-                    .type_params()
-                    .map(|param| &param.ident)
-                    .collect();
-                let generic_params = &generic_params;
                 // let extra_where_clauses = quote! {
                 //     where
                 //         #(#all_field_tys: trans_schema::Schematic + 'static,)*
@@ -156,10 +164,7 @@ pub fn derive_schematic(input: proc_macro::TokenStream) -> proc_macro::TokenStre
                     let expanded = quote! {
                         impl #impl_generics trans_schema::Schematic for #input_type #ty_generics #where_clause {
                             fn create_schema() -> trans_schema::Schema {
-                                let mut base_name = #base_name.to_owned();
-                                #(
-                                    base_name += &trans_schema::schema::<#generic_params>().full_name().raw();
-                                )*
+                                let base_name = #final_name;
                                 trans_schema::Schema::Enum {
                                     base_name: trans_schema::Name::new(base_name),
                                     variants: vec![#(trans_schema::Name::new(stringify!(#variants).to_owned())),*],
@@ -192,10 +197,7 @@ pub fn derive_schematic(input: proc_macro::TokenStream) -> proc_macro::TokenStre
                     let expanded = quote! {
                         impl #impl_generics trans_schema::Schematic for #input_type #ty_generics #where_clause {
                             fn create_schema() -> trans_schema::Schema {
-                                let mut base_name = #base_name.to_owned();
-                                #(
-                                    base_name += &trans_schema::schema::<#generic_params>().full_name().raw();
-                                )*
+                                let base_name = #final_name;
                                 trans_schema::Schema::OneOf {
                                     base_name: trans_schema::Name::new(base_name),
                                     variants: vec![#(#variants),*],
