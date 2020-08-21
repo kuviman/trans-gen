@@ -10,3 +10,5 @@ pub type FSharp = trans_gen_core::GeneratorImpl<trans_gen_fsharp::Generator>;
 pub type Cpp = trans_gen_core::GeneratorImpl<trans_gen_cpp::Generator>;
 pub type Dlang = trans_gen_core::GeneratorImpl<trans_gen_dlang::Generator>;
 pub type Go = trans_gen_core::GeneratorImpl<trans_gen_go::Generator>;
+
+pub use trans_gen_core::*;

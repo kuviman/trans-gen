@@ -1,6 +1,6 @@
 [package]
 name = "trans-gen"
-version = "0.3.0-alpha.0"
+version = "0.3.0-alpha.1"
 authors = ["kuviman <kuviman@gmail.com>"]
 description = "Generating trans code from Rust into other languages"
 license = "MIT"
