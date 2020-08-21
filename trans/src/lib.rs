@@ -2,6 +2,8 @@ use byteorder::{ReadBytesExt, WriteBytesExt};
 
 pub use trans_derive::*;
 
+pub const VERSION: &str = env!("CARGO_PKG_VERSION");
+
 pub trait Trans: Sized {
     fn write_to(&self, writer: &mut dyn std::io::Write) -> std::io::Result<()>;
     fn read_from(reader: &mut dyn std::io::Read) -> std::io::Result<Self>;
