@@ -1,6 +1,6 @@
 [package]
 name = "trans-gen"
-version = "0.3.0-alpha.1"
+version = "0.3.0-alpha.2"
 authors = ["kuviman <kuviman@gmail.com>"]
 description = "Generating trans code from Rust into other languages"
 license = "MIT"
@@ -11,16 +11,4 @@ edition = "2018"
 tempfile = "3"
 
 [dependencies]
-trans-gen-core = { path = "core", version = "0.3.0-alpha" }
-trans-gen-python = { path = "gens/python", version = "0.3.0-alpha" }
-trans-gen-javascript = { path = "gens/javascript", version = "0.3.0-alpha" }
-trans-gen-ruby = { path = "gens/ruby", version = "0.3.0-alpha" }
-trans-gen-rust = { path = "gens/rust", version = "0.3.0-alpha" }
-trans-gen-java = { path = "gens/java", version = "0.3.0-alpha" }
-trans-gen-kotlin = { path = "gens/kotlin", version = "0.3.0-alpha" }
-trans-gen-scala = { path = "gens/scala", version = "0.3.0-alpha" }
-trans-gen-csharp = { path = "gens/csharp", version = "0.3.0-alpha" }
-trans-gen-fsharp = { path = "gens/fsharp", version = "0.3.0-alpha" }
-trans-gen-cpp = { path = "gens/cpp", version = "0.3.0-alpha" }
-trans-gen-dlang = { path = "gens/dlang", version = "0.3.0-alpha" }
-trans-gen-go = { path = "gens/go", version = "0.3.0-alpha" }
+trans = { path = "trans", version = "0.3.0-alpha" }
