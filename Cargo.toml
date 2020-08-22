@@ -11,7 +11,6 @@ edition = "2018"
 tempfile = "3"
 
 [dependencies]
-trans-schema = { path = "trans-schema", version = "0.3.0-alpha" }
 trans-gen-core = { path = "core", version = "0.3.0-alpha" }
 trans-gen-python = { path = "gens/python", version = "0.3.0-alpha" }
 trans-gen-javascript = { path = "gens/javascript", version = "0.3.0-alpha" }

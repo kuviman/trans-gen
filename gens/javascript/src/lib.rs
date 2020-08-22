@@ -1,6 +1,6 @@
 use std::collections::{HashMap, HashSet};
 use std::fmt::Write;
-use trans_gen_core::trans_schema::*;
+use trans_gen_core::trans::*;
 use trans_gen_core::Writer;
 
 fn conv(name: &str) -> String {

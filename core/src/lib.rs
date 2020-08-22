@@ -2,8 +2,7 @@ use std::collections::{HashMap, HashSet};
 
 use std::path::Path;
 pub use trans;
-pub use trans_schema;
-use trans_schema::*;
+use trans::*;
 
 #[derive(Debug)]
 pub struct File {
@@ -50,13 +49,13 @@ impl From<Vec<File>> for GenResult {
 
 pub trait Generator {
     fn new(name: &str, version: &str) -> Self;
-    fn add_only(&mut self, schema: &Schema);
+    fn add_only(&mut self, schema: &trans::Schema);
     fn result(self) -> GenResult;
 }
 
 pub struct GeneratorImpl<T: Generator> {
     inner: T,
-    added: HashMap<Name, Schema>,
+    added: HashMap<trans::Name, trans::Schema>,
 }
 
 impl<T: Generator> GeneratorImpl<T> {

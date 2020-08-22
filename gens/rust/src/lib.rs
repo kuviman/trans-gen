@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 use std::fmt::Write;
-use trans_gen_core::trans_schema::*;
+use trans_gen_core::trans::*;
 
 fn conv(name: &str) -> String {
     name.replace("Int32", "I32")

@@ -1,6 +1,6 @@
 [package]
 name = "trans-gen-csharp"
-version = "0.3.0-alpha.1"
+version = "0.3.0-alpha.2"
 authors = ["kuviman <kuviman@gmail.com>"]
 description = "Generating C# trans code"
 license = "MIT"

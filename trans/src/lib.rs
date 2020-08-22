@@ -1,18 +1,134 @@
 use byteorder::{ReadBytesExt, WriteBytesExt};
+use heck::*;
+use once_cell::sync::Lazy;
+use std::collections::{HashMap, HashSet};
+use std::sync::{Arc, Mutex};
 
 pub use trans_derive::*;
 
+pub mod prelude {
+    pub use super::Trans;
+    pub use trans_derive::*;
+}
+
 pub const VERSION: &str = env!("CARGO_PKG_VERSION");
 
-pub trait Trans: Sized {
+pub trait Trans: Sized + 'static {
+    fn create_schema() -> Schema;
     fn write_to(&self, writer: &mut dyn std::io::Write) -> std::io::Result<()>;
     fn read_from(reader: &mut dyn std::io::Read) -> std::io::Result<Self>;
+}
+
+#[derive(Debug, PartialEq, Eq, Hash, Clone)]
+pub struct Name(String);
+
+impl Name {
+    pub fn new(name: String) -> Self {
+        Self(name.to_camel_case())
+    }
+    pub fn raw(&self) -> String {
+        self.0.clone()
+    }
+    pub fn snake_case(&self, conv: impl FnOnce(&str) -> String) -> String {
+        conv(&self.0).to_snake_case()
+    }
+    pub fn camel_case(&self, conv: impl FnOnce(&str) -> String) -> String {
+        conv(&self.0).to_camel_case()
+    }
+    pub fn shouty_snake_case(&self, conv: impl FnOnce(&str) -> String) -> String {
+        conv(&self.0).to_shouty_snake_case()
+    }
+    pub fn mixed_case(&self, conv: impl FnOnce(&str) -> String) -> String {
+        conv(&self.0).to_mixed_case()
+    }
+}
+
+#[derive(Debug, PartialEq, Eq, Hash, Clone)]
+pub struct Field {
+    pub name: Name,
+    pub schema: Arc<Schema>,
+}
+
+#[derive(Debug, PartialEq, Eq, Hash, Clone)]
+pub struct Struct {
+    pub magic: Option<i32>,
+    pub name: Name,
+    pub fields: Vec<Field>,
+}
+
+#[derive(Debug, PartialEq, Eq, Hash, Clone)]
+pub enum Schema {
+    Bool,
+    Int32,
+    Int64,
+    Float32,
+    Float64,
+    String,
+    Struct(Struct),
+    OneOf {
+        base_name: Name,
+        variants: Vec<Struct>,
+    },
+    Option(Arc<Schema>),
+    Vec(Arc<Schema>),
+    Map(Arc<Schema>, Arc<Schema>),
+    Enum {
+        base_name: Name,
+        variants: Vec<Name>,
+    },
+}
+
+impl Schema {
+    pub fn full_name(&self) -> Name {
+        match self {
+            Schema::Bool => Name("Bool".to_owned()),
+            Schema::Int32 => Name("Int32".to_owned()),
+            Schema::Int64 => Name("Int64".to_owned()),
+            Schema::Float32 => Name("Float32".to_owned()),
+            Schema::Float64 => Name("Float64".to_owned()),
+            Schema::String => Name("String".to_owned()),
+            Schema::Struct(Struct { name, .. }) => name.clone(),
+            Schema::OneOf { base_name, .. } => base_name.to_owned(),
+            Schema::Option(inner) => Name(format!("Opt{}", inner.full_name().0)),
+            Schema::Vec(inner) => Name(format!("Vec{}", inner.full_name().0)),
+            Schema::Map(key, value) => {
+                Name(format!("Map{}{}", key.full_name().0, value.full_name().0))
+            }
+            Schema::Enum { base_name, .. } => base_name.clone(),
+        }
+    }
+    pub fn hashable(&self) -> bool {
+        match self {
+            Self::Bool | Self::Int32 | Self::Int64 | Self::String => true,
+            Self::Float32 | Self::Float64 => false,
+            Self::Option(_) => false,
+            Self::Struct(Struct { fields, .. }) => {
+                fields.iter().all(|field| field.schema.hashable())
+            }
+            Self::OneOf { .. } => false,
+            Self::Vec(_) => false,
+            Self::Map(_, _) => false,
+            Self::Enum { .. } => true,
+        }
+    }
+    pub fn of<T: Trans>() -> Arc<Schema> {
+        static MAP: Lazy<Mutex<HashSet<Arc<Schema>>>> = Lazy::new(|| Mutex::new(HashSet::new()));
+        let schema = T::create_schema();
+        if !MAP.lock().unwrap().contains(&schema) {
+            let schema = Arc::new(T::create_schema());
+            MAP.lock().unwrap().insert(schema);
+        }
+        MAP.lock().unwrap().get(&schema).unwrap().clone()
+    }
 }
 
 macro_rules! impl_for_tuple {
     ($($name:ident),*) => {
         #[allow(non_snake_case, unused_variables)]
         impl<$($name: Trans),*> Trans for ($($name,)*) {
+            fn create_schema() -> Schema {
+                todo!()
+            }
             fn read_from(reader: &mut dyn std::io::Read) -> std::io::Result<Self> {
                 Ok(($(<$name as Trans>::read_from(reader)?,)*))
             }
@@ -32,6 +148,9 @@ impl_for_tuple!(A, B, C);
 impl_for_tuple!(A, B, C, D);
 
 impl Trans for bool {
+    fn create_schema() -> Schema {
+        Schema::Bool
+    }
     fn read_from(reader: &mut dyn std::io::Read) -> std::io::Result<Self> {
         let value = reader.read_u8()?;
         match value {
@@ -49,6 +168,9 @@ impl Trans for bool {
 }
 
 impl Trans for usize {
+    fn create_schema() -> Schema {
+        Schema::Int32
+    }
     fn read_from(reader: &mut dyn std::io::Read) -> std::io::Result<Self> {
         Ok(i32::read_from(reader)? as usize)
     }
@@ -58,6 +180,9 @@ impl Trans for usize {
 }
 
 impl Trans for i32 {
+    fn create_schema() -> Schema {
+        Schema::Int32
+    }
     fn read_from(reader: &mut dyn std::io::Read) -> std::io::Result<Self> {
         reader.read_i32::<byteorder::LittleEndian>()
     }
@@ -67,6 +192,9 @@ impl Trans for i32 {
 }
 
 impl Trans for i64 {
+    fn create_schema() -> Schema {
+        Schema::Int64
+    }
     fn read_from(reader: &mut dyn std::io::Read) -> std::io::Result<Self> {
         reader.read_i64::<byteorder::LittleEndian>()
     }
@@ -76,6 +204,9 @@ impl Trans for i64 {
 }
 
 impl Trans for f32 {
+    fn create_schema() -> Schema {
+        Schema::Float32
+    }
     fn read_from(reader: &mut dyn std::io::Read) -> std::io::Result<Self> {
         reader.read_f32::<byteorder::LittleEndian>()
     }
@@ -85,6 +216,9 @@ impl Trans for f32 {
 }
 
 impl Trans for f64 {
+    fn create_schema() -> Schema {
+        Schema::Float64
+    }
     fn read_from(reader: &mut dyn std::io::Read) -> std::io::Result<Self> {
         reader.read_f64::<byteorder::LittleEndian>()
     }
@@ -94,6 +228,9 @@ impl Trans for f64 {
 }
 
 impl Trans for String {
+    fn create_schema() -> Schema {
+        Schema::String
+    }
     fn read_from(reader: &mut dyn std::io::Read) -> std::io::Result<Self> {
         let len = i32::read_from(reader)? as usize;
         let mut buf = vec![0; len];
@@ -107,6 +244,9 @@ impl Trans for String {
 }
 
 impl<T: Trans> Trans for Option<T> {
+    fn create_schema() -> Schema {
+        Schema::Option(Schema::of::<T>())
+    }
     fn read_from(reader: &mut dyn std::io::Read) -> std::io::Result<Self> {
         let is_some = bool::read_from(reader)?;
         Ok(if is_some {
@@ -125,6 +265,9 @@ impl<T: Trans> Trans for Option<T> {
 }
 
 impl<T: Trans> Trans for Vec<T> {
+    fn create_schema() -> Schema {
+        Schema::Vec(Schema::of::<T>())
+    }
     fn read_from(reader: &mut dyn std::io::Read) -> std::io::Result<Self> {
         let len = usize::read_from(reader)?;
         let mut result = Vec::with_capacity(len);
@@ -142,7 +285,10 @@ impl<T: Trans> Trans for Vec<T> {
     }
 }
 
-impl<K: Trans + Eq + std::hash::Hash, V: Trans> Trans for std::collections::HashMap<K, V> {
+impl<K: Trans + Eq + std::hash::Hash, V: Trans> Trans for HashMap<K, V> {
+    fn create_schema() -> Schema {
+        Schema::Map(Schema::of::<K>(), Schema::of::<V>())
+    }
     fn read_from(reader: &mut dyn std::io::Read) -> std::io::Result<Self> {
         let len = usize::read_from(reader)?;
         let mut result = Self::with_capacity(len);
@@ -159,4 +305,13 @@ impl<K: Trans + Eq + std::hash::Hash, V: Trans> Trans for std::collections::Hash
         }
         Ok(())
     }
+}
+
+#[test]
+fn test() {
+    assert_eq!(*Schema::of::<i32>(), Schema::Int32);
+    assert_eq!(*Schema::of::<i64>(), Schema::Int64);
+    assert_eq!(*Schema::of::<f32>(), Schema::Float32);
+    assert_eq!(*Schema::of::<f64>(), Schema::Float64);
+    assert_eq!(*Schema::of::<String>(), Schema::String);
 }
