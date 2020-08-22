@@ -74,8 +74,8 @@ fn write_struct(
     // Class
     writeln!(writer, "class {}", struc.name.camel_case(conv))?;
     writer.inc_ident();
-    if let Some((_, discriminant)) = base {
-        writeln!(writer, "TAG = {}", discriminant)?;
+    if let Some((_, tag)) = base {
+        writeln!(writer, "TAG = {}", tag)?;
     }
 
     // Fields
@@ -171,7 +171,7 @@ fn write_struct(
                 } => {
                     writeln!(writer, "{} = stream.read_int()", to,)?;
                     writeln!(writer, "if {} < 0 || {} > {}", to, to, variants.len())?;
-                    writeln!(writer, "    raise \"Unexpected discriminant value\"")?;
+                    writeln!(writer, "    raise \"Unexpected tag value\"")?;
                     writeln!(writer, "end")?;
                 }
             }
@@ -338,11 +338,11 @@ impl trans_gen_core::Generator for Generator {
                 writer.inc_ident();
                 writeln!(writer, "def self.read_from(stream)").unwrap();
                 writer.inc_ident();
-                writeln!(writer, "discriminant = stream.read_int()").unwrap();
+                writeln!(writer, "tag = stream.read_int()").unwrap();
                 for variant in variants {
                     writeln!(
                         writer,
-                        "if discriminant == {}::{}::TAG",
+                        "if tag == {}::{}::TAG",
                         base_name.camel_case(conv),
                         variant.name.camel_case(conv),
                     )
@@ -356,12 +356,12 @@ impl trans_gen_core::Generator for Generator {
                     .unwrap();
                     writeln!(writer, "end").unwrap();
                 }
-                writeln!(writer, "raise \"Unexpected discriminant value\"").unwrap();
+                writeln!(writer, "raise \"Unexpected tag value\"").unwrap();
                 writer.dec_ident();
                 writeln!(writer, "end").unwrap();
                 writeln!(writer).unwrap();
-                for (discriminant, variant) in variants.iter().enumerate() {
-                    write_struct(&mut writer, variant, Some((base_name, discriminant))).unwrap();
+                for (tag, variant) in variants.iter().enumerate() {
+                    write_struct(&mut writer, variant, Some((base_name, tag))).unwrap();
                 }
                 writer.dec_ident();
                 writeln!(writer, "end").unwrap();

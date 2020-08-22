@@ -67,8 +67,8 @@ fn write_struct(
     }
     writeln!(writer, ":")?;
     writer.inc_ident();
-    if let Some((_, discriminant)) = base {
-        writeln!(writer, "TAG = {}", discriminant)?;
+    if let Some((_, tag)) = base {
+        writeln!(writer, "TAG = {}", tag)?;
     }
 
     // Constructor
@@ -348,11 +348,11 @@ impl trans_gen_core::Generator for Generator {
                     writeln!(&mut writer, "def read_from(stream):").unwrap();
                     {
                         writer.inc_ident();
-                        writeln!(&mut writer, "discriminant = stream.read_int()").unwrap();
+                        writeln!(&mut writer, "tag = stream.read_int()").unwrap();
                         for variant in variants {
                             writeln!(
                                 &mut writer,
-                                "if discriminant == {}.TAG:",
+                                "if tag == {}.TAG:",
                                 variant.name.camel_case(conv)
                             )
                             .unwrap();
@@ -364,18 +364,14 @@ impl trans_gen_core::Generator for Generator {
                             )
                             .unwrap();
                         }
-                        writeln!(
-                            &mut writer,
-                            "raise Exception(\"Unexpected discriminant value\")"
-                        )
-                        .unwrap();
+                        writeln!(&mut writer, "raise Exception(\"Unexpected tag value\")").unwrap();
                         writer.dec_ident();
                     }
                     writer.dec_ident();
                 }
                 writeln!(&mut writer).unwrap();
-                for (discriminant, variant) in variants.iter().enumerate() {
-                    write_struct(&mut writer, variant, Some((base_name, discriminant))).unwrap();
+                for (tag, variant) in variants.iter().enumerate() {
+                    write_struct(&mut writer, variant, Some((base_name, tag))).unwrap();
                 }
                 writeln!(
                     &mut self.model_init,

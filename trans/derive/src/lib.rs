@@ -221,43 +221,41 @@ pub fn derive_trans(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
                 //     .extend(extra_where_clauses.predicates);
                 let (impl_generics, ty_generics, where_clause) = generics.split_for_impl();
                 let read_write_impl = {
-                    let variant_writes =
-                        variants.iter().enumerate().map(|(discriminant, variant)| {
-                            let discriminant = discriminant as i32;
-                            let variant_name = &variant.ident;
-                            let field_names: Vec<_> = variant
-                                .fields
-                                .iter()
-                                .map(|field| {
-                                    field
-                                        .ident
-                                        .as_ref()
-                                        .expect("Only named fields are supported")
-                                })
-                                .collect();
-                            let field_names = &field_names;
-                            let field_names_copy = field_names;
-                            quote! {
-                                #input_type::#variant_name { #(#field_names,)* } => {
-                                    trans::Trans::write_to(&#discriminant, writer)?;
-                                    #(trans::Trans::write_to(#field_names_copy, writer)?;)*
-                                }
+                    let variant_writes = variants.iter().enumerate().map(|(tag, variant)| {
+                        let tag = tag as i32;
+                        let variant_name = &variant.ident;
+                        let field_names: Vec<_> = variant
+                            .fields
+                            .iter()
+                            .map(|field| {
+                                field
+                                    .ident
+                                    .as_ref()
+                                    .expect("Only named fields are supported")
+                            })
+                            .collect();
+                        let field_names = &field_names;
+                        let field_names_copy = field_names;
+                        quote! {
+                            #input_type::#variant_name { #(#field_names,)* } => {
+                                trans::Trans::write_to(&#tag, writer)?;
+                                #(trans::Trans::write_to(#field_names_copy, writer)?;)*
                             }
-                        });
-                    let variant_reads =
-                        variants.iter().enumerate().map(|(discriminant, variant)| {
-                            let discriminant = discriminant as i32;
-                            let variant_name = &variant.ident;
-                            let field_names = variant
-                                .fields
-                                .iter()
-                                .map(|field| field.ident.as_ref().unwrap());
-                            quote! {
-                                #discriminant => #input_type::#variant_name {
-                                    #(#field_names: trans::Trans::read_from(reader)?,)*
-                                },
-                            }
-                        });
+                        }
+                    });
+                    let variant_reads = variants.iter().enumerate().map(|(tag, variant)| {
+                        let tag = tag as i32;
+                        let variant_name = &variant.ident;
+                        let field_names = variant
+                            .fields
+                            .iter()
+                            .map(|field| field.ident.as_ref().unwrap());
+                        quote! {
+                            #tag => #input_type::#variant_name {
+                                #(#field_names: trans::Trans::read_from(reader)?,)*
+                            },
+                        }
+                    });
                     quote! {
                         fn write_to(&self, writer: &mut dyn std::io::Write) -> std::io::Result<()> {
                             match self {
@@ -268,10 +266,10 @@ pub fn derive_trans(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
                         fn read_from(reader: &mut dyn std::io::Read) -> std::io::Result<Self> {
                             Ok(match <i32 as trans::Trans>::read_from(reader)? {
                                 #(#variant_reads)*
-                                discriminant => {
+                                tag => {
                                     return Err(std::io::Error::new(
                                         std::io::ErrorKind::Other,
-                                        format!("Unexpected discriminant {:?}", discriminant)));
+                                        format!("Unexpected tag {:?}", tag)));
                                 }
                             })
                         }

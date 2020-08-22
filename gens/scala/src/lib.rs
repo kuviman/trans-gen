@@ -148,8 +148,8 @@ fn write_struct(
     // Object
     writeln!(writer, "object {} {{", struc.name.camel_case(conv))?;
     writer.inc_ident();
-    if let Some((_, discriminant)) = base {
-        writeln!(writer, "val TAG: Int = {}", discriminant)?;
+    if let Some((_, tag)) = base {
+        writeln!(writer, "val TAG: Int = {}", tag)?;
     }
 
     // Reading
@@ -254,13 +254,13 @@ impl trans_gen_core::Generator for Generator {
                 writeln!(writer).unwrap();
                 writeln!(
                     writer,
-                    "sealed abstract class {} (val discriminant: Int) {{",
+                    "sealed abstract class {} (val tag: Int) {{",
                     base_name.camel_case(conv)
                 )
                 .unwrap();
                 writer.inc_ident();
                 writeln!(writer, "def writeTo(stream: java.io.OutputStream) {{").unwrap();
-                writeln!(writer, "    StreamUtil.writeInt(stream, discriminant)").unwrap();
+                writeln!(writer, "    StreamUtil.writeInt(stream, tag)").unwrap();
                 writeln!(writer, "}}").unwrap();
                 writer.dec_ident();
                 writeln!(writer, "}}").unwrap();
@@ -295,7 +295,7 @@ impl trans_gen_core::Generator for Generator {
                 }
                 writeln!(
                     writer,
-                    "case _ => throw new java.io.IOException(\"Unexpected discriminant value\")"
+                    "case _ => throw new java.io.IOException(\"Unexpected tag value\")"
                 )
                 .unwrap();
                 writer.dec_ident();
@@ -330,9 +330,8 @@ impl trans_gen_core::Generator for Generator {
                 writeln!(&mut writer, "object {} {{", base_name.camel_case(conv)).unwrap();
                 {
                     writer.inc_ident();
-                    for (discriminant, variant) in variants.iter().enumerate() {
-                        write_struct(&mut writer, variant, Some((base_name, discriminant)))
-                            .unwrap();
+                    for (tag, variant) in variants.iter().enumerate() {
+                        write_struct(&mut writer, variant, Some((base_name, tag))).unwrap();
                         writeln!(&mut writer).unwrap();
                     }
                     writeln!(
@@ -356,7 +355,7 @@ impl trans_gen_core::Generator for Generator {
                         }
                         writeln!(
                             &mut writer,
-                            "case _ => throw new java.io.IOException(\"Unexpected discriminant value\")"
+                            "case _ => throw new java.io.IOException(\"Unexpected tag value\")"
                         )
                         .unwrap();
                         writer.dec_ident();

@@ -158,8 +158,8 @@ fn write_struct(
     // Reading
     writeln!(writer, "companion object {{")?;
     writer.inc_ident();
-    if let Some((_, discriminant)) = base {
-        writeln!(writer, "val TAG = {}", discriminant)?;
+    if let Some((_, tag)) = base {
+        writeln!(writer, "val TAG = {}", tag)?;
     }
     writeln!(writer, "@Throws(java.io.IOException::class)")?;
     writeln!(
@@ -260,8 +260,8 @@ fn write_struct(
                     variants,
                 } => {
                     writeln!(writer, "when (StreamUtil.readInt(stream)) {{")?;
-                    for (discriminant, variant) in variants.iter().enumerate() {
-                        write!(writer, "{} ->", discriminant)?;
+                    for (tag, variant) in variants.iter().enumerate() {
+                        write!(writer, "{} ->", tag)?;
                         writeln!(
                             writer,
                             "{} = model.{}.{}",
@@ -272,7 +272,7 @@ fn write_struct(
                     }
                     writeln!(
                         writer,
-                        "else -> throw java.io.IOException(\"Unexpected discriminant value\")"
+                        "else -> throw java.io.IOException(\"Unexpected tag value\")"
                     )?;
                     writeln!(writer, "}}")?;
                 }
@@ -363,11 +363,7 @@ fn write_struct(
                     writeln!(writer, "}}")?;
                 }
                 Schema::Enum { .. } => {
-                    writeln!(
-                        writer,
-                        "StreamUtil.writeInt(stream, {}.discriminant)",
-                        value
-                    )?;
+                    writeln!(writer, "StreamUtil.writeInt(stream, {}.tag)", value)?;
                 }
             }
             Ok(())
@@ -407,7 +403,7 @@ impl trans_gen_core::Generator for Generator {
                 writeln!(writer).unwrap();
                 writeln!(
                     writer,
-                    "enum class {} private constructor(var discriminant: Int) {{",
+                    "enum class {} private constructor(var tag: Int) {{",
                     base_name.camel_case(conv)
                 )
                 .unwrap();
@@ -475,7 +471,7 @@ impl trans_gen_core::Generator for Generator {
                         }
                         writeln!(
                             writer,
-                            "else -> throw java.io.IOException(\"Unexpected discriminant value\")"
+                            "else -> throw java.io.IOException(\"Unexpected tag value\")"
                         )
                         .unwrap();
                         writer.dec_ident();
@@ -485,10 +481,9 @@ impl trans_gen_core::Generator for Generator {
                     writeln!(writer, "}}").unwrap();
                     writer.dec_ident();
                     writeln!(writer, "}}").unwrap();
-                    for (discriminant, variant) in variants.iter().enumerate() {
+                    for (tag, variant) in variants.iter().enumerate() {
                         writeln!(writer).unwrap();
-                        write_struct(&mut writer, variant, Some((base_name, discriminant)))
-                            .unwrap();
+                        write_struct(&mut writer, variant, Some((base_name, tag))).unwrap();
                     }
                     writer.dec_ident();
                 }

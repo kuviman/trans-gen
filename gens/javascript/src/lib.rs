@@ -329,13 +329,8 @@ fn write_struct(
         )?;
     }
 
-    if let Some((_, discriminant)) = base {
-        writeln!(
-            writer,
-            "{}.TAG = {};",
-            struc.name.camel_case(conv),
-            discriminant,
-        )?;
+    if let Some((_, tag)) = base {
+        writeln!(writer, "{}.TAG = {};", struc.name.camel_case(conv), tag,)?;
     }
 
     Ok(())
@@ -427,11 +422,11 @@ impl trans_gen_core::Generator for Generator {
                     writer.inc_ident();
                     writeln!(&mut writer, "static async readFrom(stream) {{").unwrap();
                     writer.inc_ident();
-                    writeln!(&mut writer, "let discriminant = await stream.readInt();").unwrap();
+                    writeln!(&mut writer, "let tag = await stream.readInt();").unwrap();
                     for variant in variants {
                         writeln!(
                             &mut writer,
-                            "if (discriminant == {}.TAG) {{",
+                            "if (tag == {}.TAG) {{",
                             variant.name.camel_case(conv)
                         )
                         .unwrap();
@@ -443,19 +438,15 @@ impl trans_gen_core::Generator for Generator {
                         .unwrap();
                         writeln!(&mut writer, "}}").unwrap();
                     }
-                    writeln!(
-                        &mut writer,
-                        "throw new Error(\"Unexpected discriminant value\");"
-                    )
-                    .unwrap();
+                    writeln!(&mut writer, "throw new Error(\"Unexpected tag value\");").unwrap();
                     writer.dec_ident();
                     writeln!(writer, "}}").unwrap();
                 }
                 writer.dec_ident();
                 writeln!(writer, "}}").unwrap();
                 writeln!(&mut writer).unwrap();
-                for (discriminant, variant) in variants.iter().enumerate() {
-                    write_struct(&mut writer, variant, Some((base_name, discriminant))).unwrap();
+                for (tag, variant) in variants.iter().enumerate() {
+                    write_struct(&mut writer, variant, Some((base_name, tag))).unwrap();
                 }
                 writeln!(writer, "module.exports = {};", base_name.camel_case(conv)).unwrap();
                 self.files.insert(file_name, writer.get());

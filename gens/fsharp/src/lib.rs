@@ -100,8 +100,8 @@ fn write_struct(
         "member this.writeTo(writer: System.IO.BinaryWriter) ="
     )?;
     writer.inc_ident();
-    if let Some((_, discriminant)) = base {
-        writeln!(writer, "writer.Write {}", discriminant)?;
+    if let Some((_, tag)) = base {
+        writeln!(writer, "writer.Write {}", tag)?;
     }
     if let Some(magic) = struc.magic {
         writeln!(writer, "writer.Write {}", magic)?;
@@ -292,8 +292,8 @@ impl trans_gen_core::Generator for Generator {
                 writeln!(writer, "namespace {}.Model", self.main_namespace).unwrap();
                 writeln!(writer, "type {} =", base_name.camel_case(conv)).unwrap();
                 writer.inc_ident();
-                for (discriminant, variant) in variants.iter().enumerate() {
-                    writeln!(writer, "| {} = {}", variant.camel_case(conv), discriminant).unwrap();
+                for (tag, variant) in variants.iter().enumerate() {
+                    writeln!(writer, "| {} = {}", variant.camel_case(conv), tag).unwrap();
                 }
                 writer.dec_ident();
                 self.files.push(trans_gen_core::File {
@@ -321,14 +321,14 @@ impl trans_gen_core::Generator for Generator {
                 writeln!(writer, "#nowarn \"0058\"").unwrap();
                 writeln!(writer, "namespace {}.Model", self.main_namespace).unwrap();
 
-                for (discriminant, variant) in variants.iter().enumerate() {
+                for (tag, variant) in variants.iter().enumerate() {
                     writeln!(&mut writer).unwrap();
-                    write_struct(&mut writer, variant, Some((base_name, discriminant))).unwrap();
+                    write_struct(&mut writer, variant, Some((base_name, tag))).unwrap();
                 }
 
                 writeln!(&mut writer, "type {} = ", base_name.camel_case(conv)).unwrap();
                 writer.inc_ident();
-                for (discriminant, variant) in variants.iter().enumerate() {
+                for (tag, variant) in variants.iter().enumerate() {
                     writeln!(
                         writer,
                         "| {} of {}{}",
@@ -348,7 +348,7 @@ impl trans_gen_core::Generator for Generator {
                 writer.inc_ident();
                 writeln!(writer, "match this with").unwrap();
                 writer.inc_ident();
-                for (discriminant, variant) in variants.iter().enumerate() {
+                for (tag, variant) in variants.iter().enumerate() {
                     writeln!(
                         writer,
                         "| {} value -> value.writeTo writer",
@@ -367,11 +367,11 @@ impl trans_gen_core::Generator for Generator {
                 writer.inc_ident();
                 writeln!(writer, "match reader.ReadInt32() with").unwrap();
                 writer.inc_ident();
-                for (discriminant, variant) in variants.iter().enumerate() {
+                for (tag, variant) in variants.iter().enumerate() {
                     writeln!(
                         writer,
                         "| {} -> {} ({}{}.readFrom reader)",
-                        discriminant,
+                        tag,
                         variant.name.camel_case(conv),
                         base_name.camel_case(conv),
                         variant.name.camel_case(conv),

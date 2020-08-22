@@ -101,8 +101,8 @@ fn write_struct(
     };
     writeln!(writer, "type {} struct {{", struct_name)?;
     writer.inc_ident();
-    if let Some((_, discriminant)) = base {
-        // TODO writeln!(writer, "static const int TAG = {}", discriminant)?;
+    if let Some((_, tag)) = base {
+        // TODO writeln!(writer, "static const int TAG = {}", tag)?;
     }
 
     // Fields
@@ -276,8 +276,8 @@ fn write_struct(
         struct_name,
     )?;
     writer.inc_ident();
-    if let Some((_, discriminant)) = base {
-        writeln!(writer, "WriteInt32(writer, {})", discriminant)?;
+    if let Some((_, tag)) = base {
+        writeln!(writer, "WriteInt32(writer, {})", tag)?;
     }
     if let Some(magic) = struc.magic {
         writeln!(writer, "WriteInt32(writer, {})", magic)?;
@@ -392,14 +392,14 @@ impl trans_gen_core::Generator for Generator {
                 writeln!(writer, "type {} int32", base_name.camel_case(conv)).unwrap();
                 writeln!(writer, "const (").unwrap();
                 writer.inc_ident();
-                for (discriminant, variant) in variants.iter().enumerate() {
+                for (tag, variant) in variants.iter().enumerate() {
                     writeln!(
                         writer,
                         "{}{} {} = {}",
                         base_name.camel_case(conv),
                         variant.camel_case(conv),
                         base_name.camel_case(conv),
-                        discriminant,
+                        tag,
                     )
                     .unwrap();
                 }
@@ -415,8 +415,8 @@ impl trans_gen_core::Generator for Generator {
                 .unwrap();
                 writer.inc_ident();
                 writeln!(writer, "switch ReadInt32(reader) {{").unwrap();
-                for (discriminant, variant) in variants.iter().enumerate() {
-                    writeln!(writer, "case {}:", discriminant).unwrap();
+                for (tag, variant) in variants.iter().enumerate() {
+                    writeln!(writer, "case {}:", tag).unwrap();
                     writeln!(
                         writer,
                         "    return {}{}",
@@ -426,7 +426,7 @@ impl trans_gen_core::Generator for Generator {
                     .unwrap();
                 }
                 writeln!(writer, "}}").unwrap();
-                writeln!(writer, "panic(\"Unexpected discriminant value\")").unwrap();
+                writeln!(writer, "panic(\"Unexpected tag value\")").unwrap();
                 writer.dec_ident();
                 writeln!(writer, "}}").unwrap();
                 self.files.insert(file_name, writer.get());
@@ -471,8 +471,8 @@ impl trans_gen_core::Generator for Generator {
                     writer.inc_ident();
                     writeln!(writer, "switch ReadInt32(reader) {{").unwrap();
                     writer.inc_ident();
-                    for (discriminant, variant) in variants.iter().enumerate() {
-                        writeln!(writer, "case {}:", discriminant).unwrap();
+                    for (tag, variant) in variants.iter().enumerate() {
+                        writeln!(writer, "case {}:", tag).unwrap();
                         writeln!(
                             writer,
                             "    return Read{}{}(reader)",
@@ -483,13 +483,12 @@ impl trans_gen_core::Generator for Generator {
                     }
                     writer.dec_ident();
                     writeln!(writer, "}}").unwrap();
-                    writeln!(writer, "panic(\"Unexpected discriminant value\")").unwrap();
+                    writeln!(writer, "panic(\"Unexpected tag value\")").unwrap();
                     writer.dec_ident();
                     writeln!(writer, "}}").unwrap();
-                    for (discriminant, variant) in variants.iter().enumerate() {
+                    for (tag, variant) in variants.iter().enumerate() {
                         writeln!(writer).unwrap();
-                        write_struct(&mut writer, variant, Some((base_name, discriminant)))
-                            .unwrap();
+                        write_struct(&mut writer, variant, Some((base_name, tag))).unwrap();
                     }
                 }
                 self.files.insert(file_name, writer.get());

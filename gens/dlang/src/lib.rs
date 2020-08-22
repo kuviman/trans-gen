@@ -67,8 +67,8 @@ fn write_struct(
         writeln!(writer, "struct {} {{", struc.name.camel_case(conv))?;
     }
     writer.inc_ident();
-    if let Some((_, discriminant)) = base {
-        writeln!(writer, "static const int TAG = {};", discriminant)?;
+    if let Some((_, tag)) = base {
+        writeln!(writer, "static const int TAG = {};", tag)?;
     }
 
     // Fields
@@ -227,8 +227,8 @@ fn write_struct(
                     variants,
                 } => {
                     writeln!(writer, "switch (reader.readInt()) {{")?;
-                    for (discriminant, variant) in variants.iter().enumerate() {
-                        writeln!(writer, "case {}:", discriminant)?;
+                    for (tag, variant) in variants.iter().enumerate() {
+                        writeln!(writer, "case {}:", tag)?;
                         writeln!(
                             writer,
                             "    {} = {}.{};",
@@ -239,10 +239,7 @@ fn write_struct(
                         writeln!(writer, "    break;")?;
                     }
                     writeln!(writer, "default:")?;
-                    writeln!(
-                        writer,
-                        "    throw new Exception(\"Unexpected discriminant value\");"
-                    )?;
+                    writeln!(writer, "    throw new Exception(\"Unexpected tag value\");")?;
                     writeln!(writer, "}}")?;
                 }
             }
@@ -391,8 +388,8 @@ impl trans_gen_core::Generator for Generator {
                 let mut writer = Writer::new();
                 writeln!(writer, "enum {} : int {{", base_name.camel_case(conv)).unwrap();
                 writer.inc_ident();
-                for (discriminant, variant) in variants.iter().enumerate() {
-                    writeln!(writer, "{} = {},", variant.camel_case(conv), discriminant,).unwrap();
+                for (tag, variant) in variants.iter().enumerate() {
+                    writeln!(writer, "{} = {},", variant.camel_case(conv), tag,).unwrap();
                 }
                 writer.dec_ident();
                 writeln!(writer, "}}").unwrap();
@@ -464,7 +461,7 @@ impl trans_gen_core::Generator for Generator {
                         writeln!(&mut writer, "default:").unwrap();
                         writeln!(
                             &mut writer,
-                            "    throw new Exception(\"Unexpected discriminant value\");"
+                            "    throw new Exception(\"Unexpected tag value\");"
                         )
                         .unwrap();
                         writer.dec_ident();
@@ -472,10 +469,9 @@ impl trans_gen_core::Generator for Generator {
                         writer.dec_ident();
                     }
                     writeln!(&mut writer, "}}").unwrap();
-                    for (discriminant, variant) in variants.iter().enumerate() {
+                    for (tag, variant) in variants.iter().enumerate() {
                         writeln!(&mut writer).unwrap();
-                        write_struct(&mut writer, variant, Some((base_name, discriminant)))
-                            .unwrap();
+                        write_struct(&mut writer, variant, Some((base_name, tag))).unwrap();
                     }
                     writer.dec_ident();
                 }

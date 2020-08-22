@@ -156,11 +156,11 @@ fn write_struct_def(
         writeln!(writer, "class {} {{", struc.name.camel_case(conv))?;
     }
     writer.inc_ident();
-    if let Some((_, discriminant)) = base {
+    if let Some((_, tag)) = base {
         writer.dec_ident();
         writeln!(writer, "public:")?;
         writer.inc_ident();
-        writeln!(writer, "static const int TAG = {};", discriminant)?;
+        writeln!(writer, "static const int TAG = {};", tag)?;
     }
 
     // Fields
@@ -423,8 +423,8 @@ fn write_struct_impl(
                     variants,
                 } => {
                     writeln!(writer, "switch (stream.readInt()) {{")?;
-                    for (discriminant, variant) in variants.iter().enumerate() {
-                        writeln!(writer, "case {}:", discriminant)?;
+                    for (tag, variant) in variants.iter().enumerate() {
+                        writeln!(writer, "case {}:", tag)?;
                         writeln!(
                             writer,
                             "    {} = {}::{};",
@@ -437,7 +437,7 @@ fn write_struct_impl(
                     writeln!(writer, "default:")?;
                     writeln!(
                         writer,
-                        "    throw std::runtime_error(\"Unexpected discriminant value\");"
+                        "    throw std::runtime_error(\"Unexpected tag value\");"
                     )?;
                     writeln!(writer, "}}")?;
                 }
@@ -783,15 +783,9 @@ impl trans_gen_core::Generator for Generator {
                 writeln!(writer, "virtual std::string toString() const = 0;").unwrap();
                 writer.dec_ident();
                 writeln!(writer, "}};").unwrap();
-                for (discriminant, variant) in variants.iter().enumerate() {
+                for (tag, variant) in variants.iter().enumerate() {
                     writeln!(writer).unwrap();
-                    write_struct_def(
-                        &mut writer,
-                        schema,
-                        variant,
-                        Some((base_name, discriminant)),
-                    )
-                    .unwrap();
+                    write_struct_def(&mut writer, schema, variant, Some((base_name, tag))).unwrap();
                 }
                 writeln!(writer).unwrap();
                 writeln!(writer, "#endif").unwrap();
@@ -801,15 +795,10 @@ impl trans_gen_core::Generator for Generator {
                 let mut writer = Writer::new();
                 writeln!(writer, "#include \"{}.hpp\"", base_name.camel_case(conv)).unwrap();
                 writeln!(writer, "#include <stdexcept>").unwrap();
-                for (discriminant, variant) in variants.iter().enumerate() {
+                for (tag, variant) in variants.iter().enumerate() {
                     writeln!(writer).unwrap();
-                    write_struct_impl(
-                        &mut writer,
-                        schema,
-                        variant,
-                        Some((base_name, discriminant)),
-                    )
-                    .unwrap();
+                    write_struct_impl(&mut writer, schema, variant, Some((base_name, tag)))
+                        .unwrap();
                 }
 
                 // Reading
@@ -822,8 +811,8 @@ impl trans_gen_core::Generator for Generator {
                 .unwrap();
                 writer.inc_ident();
                 writeln!(writer, "switch (stream.readInt()) {{").unwrap();
-                for (discriminant, variant) in variants.iter().enumerate() {
-                    writeln!(writer, "case {}:", discriminant).unwrap();
+                for (tag, variant) in variants.iter().enumerate() {
+                    writeln!(writer, "case {}:", tag).unwrap();
                     let variant_name = format!(
                         "{}::{}",
                         base_name.camel_case(conv),
@@ -839,7 +828,7 @@ impl trans_gen_core::Generator for Generator {
                 writeln!(writer, "default:").unwrap();
                 writeln!(
                     writer,
-                    "    throw std::runtime_error(\"Unexpected discriminant value\");"
+                    "    throw std::runtime_error(\"Unexpected tag value\");"
                 )
                 .unwrap();
                 writeln!(writer, "}}").unwrap();
