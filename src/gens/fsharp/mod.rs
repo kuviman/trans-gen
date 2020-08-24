@@ -375,11 +375,7 @@ impl crate::Generator for Generator {
                     )
                     .unwrap();
                 }
-                writeln!(
-                    writer,
-                    "| x -> failwith (sprintf \"Unexpected CustomDataType %d\" x)"
-                )
-                .unwrap();
+                writeln!(writer, "| x -> failwith (sprintf \"Unexpected tag %d\" x)").unwrap();
                 writer.dec_ident();
                 writer.dec_ident();
 
