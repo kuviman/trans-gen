@@ -197,7 +197,11 @@ fn write_struct_def(
         "static {} readFrom(InputStream& stream);",
         struc.name.camel_case(conv)
     )?;
-    writeln!(writer, "void writeTo(OutputStream& stream) const;")?;
+    writeln!(
+        writer,
+        "void writeTo(OutputStream& stream) const{};",
+        if base.is_some() { " override" } else { "" }
+    )?;
 
     // Eq
     if schema.hashable() {
