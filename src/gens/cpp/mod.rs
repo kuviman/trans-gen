@@ -635,7 +635,8 @@ fn write_struct_impl(
 }
 
 impl crate::Generator for Generator {
-    fn new(name: &str, version: &str) -> Self {
+    type Options = ();
+    fn new(name: &str, version: &str, _: ()) -> Self {
         let mut files = HashMap::new();
         files.insert(
             "Stream.hpp".to_owned(),

@@ -32,7 +32,8 @@ pub struct Generator {
     files: HashMap<String, String>,
 }
 impl crate::Generator for Generator {
-    fn new(name: &str, version: &str) -> Self {
+    type Options = ();
+    fn new(name: &str, version: &str, _: ()) -> Self {
         let mut files = HashMap::new();
         files.insert(
             "Cargo.toml".to_owned(),

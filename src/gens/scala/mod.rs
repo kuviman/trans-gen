@@ -226,7 +226,8 @@ fn write_struct(
 }
 
 impl crate::Generator for Generator {
-    fn new(name: &str, version: &str) -> Self {
+    type Options = ();
+    fn new(name: &str, version: &str, _: ()) -> Self {
         let mut files = HashMap::new();
         files.insert(
             "util/StreamUtil.scala".to_owned(),

@@ -23,21 +23,44 @@ fn type_name(schema: &Schema) -> String {
     }
 }
 
-fn get_doc<'a>(documentation: &'a Documentation, language: &str, error_msg: &str) -> &'a str {
-    if let Some(text) = documentation.get(language) {
-        text
-    } else {
-        // panic!("{}", error_msg);
-        "TODO: document"
+#[derive(Debug, Serialize, Deserialize)]
+pub struct Options {
+    pub language: String,
+    pub require_docs: bool,
+}
+
+impl Options {
+    fn get_doc<'a>(&self, documentation: &'a Documentation, error_msg: &str) -> &'a str {
+        if let Some(text) = documentation.get(&self.language) {
+            text
+        } else if self.require_docs {
+            panic!("{}", error_msg);
+        } else {
+            "TODO: document"
+        }
+    }
+}
+
+impl Default for Options {
+    fn default() -> Self {
+        Self {
+            language: "en".to_owned(),
+            require_docs: false,
+        }
     }
 }
 
 pub struct Generator {
     parts: Vec<String>,
+    options: Options,
 }
 impl crate::Generator for Generator {
-    fn new(name: &str, version: &str) -> Self {
-        Self { parts: Vec::new() }
+    type Options = Options;
+    fn new(name: &str, version: &str, options: Options) -> Self {
+        Self {
+            parts: Vec::new(),
+            options,
+        }
     }
     fn result(self) -> GenResult {
         GenResult {
@@ -48,7 +71,7 @@ impl crate::Generator for Generator {
         }
     }
     fn add_only(&mut self, schema: &Schema) {
-        let language = "en";
+        let language = &self.options.language;
         match schema {
             Schema::Struct(Struct {
                 documentation,
@@ -64,9 +87,8 @@ impl crate::Generator for Generator {
                     writeln!(
                         content,
                         "{}",
-                        get_doc(
+                        self.options.get_doc(
                             documentation,
-                            language,
                             &format!("{:?} not documented in {:?}", name, language)
                         )
                     )
@@ -80,9 +102,8 @@ impl crate::Generator for Generator {
                             "- `{}`: `{}` - {}",
                             field.name.snake_case(conv),
                             type_name(&field.schema),
-                            get_doc(
+                            self.options.get_doc(
                                 &field.documentation,
-                                language,
                                 &format!(
                                     "{:?}::{:?} not documented in {:?}",
                                     name, field.name, language
@@ -107,9 +128,8 @@ impl crate::Generator for Generator {
                     writeln!(
                         content,
                         "{}",
-                        get_doc(
+                        self.options.get_doc(
                             documentation,
-                            language,
                             &format!("{:?} not documented in {:?}", base_name, language)
                         )
                     )
@@ -122,9 +142,8 @@ impl crate::Generator for Generator {
                             content,
                             "- `{}` - {}",
                             variant.name.camel_case(conv),
-                            get_doc(
+                            self.options.get_doc(
                                 &variant.documentation,
-                                language,
                                 &format!(
                                     "{:?}::{:?} not documented in {:?}",
                                     base_name, variant.name, language
@@ -146,9 +165,8 @@ impl crate::Generator for Generator {
                                 "- `{}`: `{}` - {}",
                                 field.name.snake_case(conv),
                                 type_name(&field.schema),
-                                get_doc(
+                                self.options.get_doc(
                                     &field.documentation,
-                                    language,
                                     &format!(
                                         "{:?}::{:?}::{:?} not documented in {:?}",
                                         base_name, variant.name, field.name, language
@@ -175,9 +193,8 @@ impl crate::Generator for Generator {
                     writeln!(
                         content,
                         "{}",
-                        get_doc(
+                        self.options.get_doc(
                             documentation,
-                            language,
                             &format!("{:?} not documented in {:?}", base_name, language)
                         ),
                     )
@@ -190,9 +207,8 @@ impl crate::Generator for Generator {
                             content,
                             "- `{}` - {}",
                             variant.name.camel_case(conv),
-                            get_doc(
+                            self.options.get_doc(
                                 &variant.documentation,
-                                language,
                                 &format!(
                                     "{:?}::{:?} not documented in {:?}",
                                     base_name, variant.name, language

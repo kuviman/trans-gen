@@ -1,6 +1,6 @@
 [package]
 name = "trans-gen"
-version = "0.4.0-alpha.4"
+version = "0.4.0-alpha.5"
 authors = ["kuviman <kuviman@gmail.com>"]
 description = "Generating trans code from Rust into other languages"
 license = "MIT"
@@ -12,3 +12,4 @@ tempfile = "3"
 
 [dependencies]
 trans = { path = "trans", version = "0.4.0-alpha" }
+serde = { version = "1", features = ["derive"] }

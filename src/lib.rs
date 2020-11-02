@@ -1,5 +1,6 @@
 pub use trans;
 
+use serde::{Deserialize, Serialize};
 use std::collections::{HashMap, HashSet};
 use std::fmt::Write;
 use std::path::Path;
@@ -51,7 +52,8 @@ impl From<Vec<File>> for GenResult {
 }
 
 pub trait Generator {
-    fn new(name: &str, version: &str) -> Self;
+    type Options: Default;
+    fn new(name: &str, version: &str, options: Self::Options) -> Self;
     fn add_only(&mut self, schema: &trans::Schema);
     fn result(self) -> GenResult;
 }
@@ -62,9 +64,9 @@ pub struct GeneratorImpl<T: Generator> {
 }
 
 impl<T: Generator> GeneratorImpl<T> {
-    pub fn new(name: &str, version: &str) -> Self {
+    pub fn new(name: &str, version: &str, options: T::Options) -> Self {
         Self {
-            inner: T::new(name, version),
+            inner: T::new(name, version, options),
             added: HashMap::new(),
         }
     }

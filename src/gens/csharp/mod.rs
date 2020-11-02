@@ -441,7 +441,8 @@ fn write_struct(
 }
 
 impl crate::Generator for Generator {
-    fn new(name: &str, version: &str) -> Self {
+    type Options = ();
+    fn new(name: &str, version: &str, _: ()) -> Self {
         Self {
             main_namespace: Name::new(name.to_owned()).camel_case(conv),
             files: HashMap::new(),

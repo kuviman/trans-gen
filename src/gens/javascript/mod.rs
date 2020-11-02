@@ -338,7 +338,8 @@ fn file_name(name: &Name) -> String {
 }
 
 impl crate::Generator for Generator {
-    fn new(name: &str, version: &str) -> Self {
+    type Options = ();
+    fn new(name: &str, version: &str, _: ()) -> Self {
         let mut files = HashMap::new();
         files.insert(
             "stream-wrapper.js".to_owned(),
