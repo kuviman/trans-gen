@@ -19,8 +19,14 @@ pub trait Trans: Sized + 'static {
     fn read_from(reader: &mut dyn std::io::Read) -> std::io::Result<Self>;
 }
 
-#[derive(Debug, PartialEq, Eq, Hash, Clone)]
+#[derive(PartialEq, Eq, Hash, Clone)]
 pub struct Name(String);
+
+impl std::fmt::Debug for Name {
+    fn fmt(&self, fmt: &mut std::fmt::Formatter) -> std::fmt::Result {
+        write!(fmt, "{}", self.0)
+    }
+}
 
 impl Name {
     pub fn new(name: String) -> Self {
@@ -44,7 +50,28 @@ impl Name {
 }
 
 #[derive(Debug, PartialEq, Eq, Hash, Clone)]
+pub struct LanguageDocumentation {
+    pub language: String,
+    pub text: String,
+}
+
+#[derive(Debug, PartialEq, Eq, Hash, Clone)]
+pub struct Documentation {
+    pub languages: Vec<LanguageDocumentation>,
+}
+
+impl Documentation {
+    pub fn get(&self, language: &str) -> Option<&str> {
+        self.languages
+            .iter()
+            .find(|doc| doc.language == language)
+            .map(|doc| doc.text.as_str())
+    }
+}
+
+#[derive(Debug, PartialEq, Eq, Hash, Clone)]
 pub struct Field {
+    pub documentation: Documentation,
     pub name: Name,
     pub schema: Arc<Schema>,
 }
@@ -52,8 +79,15 @@ pub struct Field {
 #[derive(Debug, PartialEq, Eq, Hash, Clone)]
 pub struct Struct {
     pub magic: Option<i32>,
+    pub documentation: Documentation,
     pub name: Name,
     pub fields: Vec<Field>,
+}
+
+#[derive(Debug, PartialEq, Eq, Hash, Clone)]
+pub struct EnumVariant {
+    pub documentation: Documentation,
+    pub name: Name,
 }
 
 #[derive(Debug, PartialEq, Eq, Hash, Clone)]
@@ -66,6 +100,7 @@ pub enum Schema {
     String,
     Struct(Struct),
     OneOf {
+        documentation: Documentation,
         base_name: Name,
         variants: Vec<Struct>,
     },
@@ -73,8 +108,9 @@ pub enum Schema {
     Vec(Arc<Schema>),
     Map(Arc<Schema>, Arc<Schema>),
     Enum {
+        documentation: Documentation,
         base_name: Name,
-        variants: Vec<Name>,
+        variants: Vec<EnumVariant>,
     },
 }
 

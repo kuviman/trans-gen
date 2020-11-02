@@ -357,6 +357,7 @@ impl crate::Generator for Generator {
     fn add_only(&mut self, schema: &Schema) {
         match schema {
             Schema::Enum {
+                documentation,
                 base_name,
                 variants,
             } => {
@@ -375,7 +376,7 @@ impl crate::Generator for Generator {
                     writeln!(
                         writer,
                         "{} : {}{}",
-                        variant.camel_case(conv),
+                        variant.name.camel_case(conv),
                         index,
                         if index + 1 < variants.len() { "," } else { "" }
                     )
@@ -401,6 +402,7 @@ impl crate::Generator for Generator {
                 self.files.insert(file_name, writer.get());
             }
             Schema::OneOf {
+                documentation,
                 base_name,
                 variants,
             } => {

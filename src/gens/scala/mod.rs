@@ -242,6 +242,7 @@ impl crate::Generator for Generator {
             Schema::Enum {
                 base_name,
                 variants,
+                documentation,
             } => {
                 let file_name = format!("model/{}.scala", base_name.camel_case(conv));
                 let mut writer = Writer::new();
@@ -268,7 +269,7 @@ impl crate::Generator for Generator {
                     writeln!(
                         writer,
                         "case object {} extends {}({})",
-                        variant.shouty_snake_case(conv),
+                        variant.name.shouty_snake_case(conv),
                         base_name.camel_case(conv),
                         index,
                     )
@@ -286,7 +287,7 @@ impl crate::Generator for Generator {
                         writer,
                         "case {} => {}",
                         index,
-                        variant.shouty_snake_case(conv),
+                        variant.name.shouty_snake_case(conv),
                     )
                     .unwrap();
                 }
@@ -314,6 +315,7 @@ impl crate::Generator for Generator {
             Schema::OneOf {
                 base_name,
                 variants,
+                documentation,
             } => {
                 let file_name = format!("model/{}.scala", base_name.camel_case(conv));
                 let mut writer = Writer::new();

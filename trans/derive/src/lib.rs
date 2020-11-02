@@ -5,38 +5,87 @@ use quote::quote;
 
 use proc_macro2::TokenStream;
 
-fn field_schema_names<'a>(
-    fields: impl Iterator<Item = &'a syn::Field> + 'a,
-) -> impl Iterator<Item = syn::Ident> + 'a {
-    fields.map(|field| {
-        let mut name = field.ident.clone().unwrap();
-        for attr in &field.attrs {
-            if let Ok(syn::Meta::List(syn::MetaList {
-                path: ref meta_path,
-                ref nested,
-                ..
-            })) = attr.parse_meta()
-            {
-                if meta_path.is_ident("trans") {
-                    for inner in nested {
-                        match *inner {
-                            syn::NestedMeta::Meta(syn::Meta::NameValue(syn::MetaNameValue {
-                                path: ref meta_path,
-                                lit: syn::Lit::Str(ref lit),
-                                ..
-                            })) => {
-                                if meta_path.is_ident("rename") {
-                                    name = syn::Ident::new(&lit.value(), lit.span());
-                                }
+fn field_schema_name(field: &syn::Field) -> syn::Ident {
+    let mut name = field.ident.clone().unwrap();
+    for attr in &field.attrs {
+        if let Ok(syn::Meta::List(syn::MetaList {
+            path: ref meta_path,
+            ref nested,
+            ..
+        })) = attr.parse_meta()
+        {
+            if meta_path.is_ident("trans") {
+                for inner in nested {
+                    match *inner {
+                        syn::NestedMeta::Meta(syn::Meta::NameValue(syn::MetaNameValue {
+                            path: ref meta_path,
+                            lit: syn::Lit::Str(ref lit),
+                            ..
+                        })) => {
+                            if meta_path.is_ident("rename") {
+                                name = syn::Ident::new(&lit.value(), lit.span());
                             }
-                            _ => panic!("Unexpected meta"),
                         }
+                        _ => panic!("Unexpected meta"),
                     }
                 }
             }
         }
-        name
-    })
+    }
+    name
+}
+
+fn field_schema_names<'a>(
+    fields: impl Iterator<Item = &'a syn::Field> + 'a,
+) -> impl Iterator<Item = syn::Ident> + 'a {
+    fields.map(|field| field_schema_name(field))
+}
+
+fn get_documentation(attrs: &[syn::Attribute]) -> proc_macro2::TokenStream {
+    let mut language_docs = Vec::new();
+    let mut current_language = "en".to_owned();
+    let mut current_doc = String::new();
+    for attr in attrs {
+        if let Ok(syn::Meta::NameValue(syn::MetaNameValue {
+            path,
+            lit: syn::Lit::Str(lit),
+            ..
+        })) = attr.parse_meta()
+        {
+            if path.is_ident("doc") {
+                let text = lit.value();
+                for line in text.lines() {
+                    let line = line.trim();
+                    if !current_doc.is_empty() {
+                        current_doc.push(' ');
+                    }
+                    current_doc += line;
+                }
+            }
+        }
+    }
+    if !current_doc.is_empty() {
+        language_docs.push((current_language, current_doc));
+    }
+    let language_docs = language_docs.into_iter().map(|(language, text)| {
+        // let language = syn::LitStr::new(&language, proc_macro2::Span::call_site());
+        // let text = syn::LitStr::new(&text, proc_macro2::Span::call_site());
+        quote! {
+            trans::LanguageDocumentation {
+                language: #language.to_owned(),
+                text: #text.to_owned(),
+            }
+        }
+    });
+    quote! {
+        trans::Documentation {
+            languages: {
+                let mut result = Vec::new();
+                #(result.push(#language_docs);)*
+                result
+            },
+        }
+    }
 }
 
 #[proc_macro_derive(Trans, attributes(trans))]
@@ -135,19 +184,28 @@ pub fn derive_trans(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
                         .predicates
                         .extend(extra_where_clauses.predicates);
                     let (impl_generics, ty_generics, where_clause) = generics.split_for_impl();
+                    let schema_fields = fields.iter().map(|field| {
+                        let documentation = get_documentation(&field.attrs);
+                        let schema_name = field_schema_name(field);
+                        let ty = &field.ty;
+                        quote! {
+                            trans::Field {
+                                documentation: #documentation,
+                                name: trans::Name::new(stringify!(#schema_name).to_owned()),
+                                schema: trans::Schema::of::<#ty>(),
+                            }
+                        }
+                    });
+                    let documentation = get_documentation(&ast.attrs);
                     let expanded = quote! {
                         impl #impl_generics trans::Trans for #input_type #ty_generics #where_clause {
                             fn create_schema() -> trans::Schema {
                                 let name = #final_name;
                                 trans::Schema::Struct(trans::Struct {
+                                    documentation: #documentation,
                                     name: trans::Name::new(name),
                                     magic: #magic_value,
-                                    fields: vec![
-                                        #(trans::Field {
-                                            name: trans::Name::new(stringify!(#field_schema_names).to_owned()),
-                                            schema: trans::Schema::of::<#field_tys>(),
-                                        }),*
-                                    ],
+                                    fields: vec![#(#schema_fields),*],
                                 })
                             }
                             fn write_to(&self, writer: &mut dyn std::io::Write) -> std::io::Result<()> {
@@ -282,14 +340,24 @@ pub fn derive_trans(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
                         false
                     }
                 }) {
-                    let variants = variants.iter();
+                    let variants = variants.iter().map(|variant| {
+                        let documentation = get_documentation(&variant.attrs);
+                        quote! {
+                            trans::EnumVariant {
+                                name: trans::Name::new(stringify!(#variant).to_owned()),
+                                documentation: #documentation,
+                            }
+                        }
+                    });
+                    let documentation = get_documentation(&ast.attrs);
                     let expanded = quote! {
                         impl #impl_generics trans::Trans for #input_type #ty_generics #where_clause {
                             fn create_schema() -> trans::Schema {
                                 let base_name = #final_name;
                                 trans::Schema::Enum {
+                                    documentation: #documentation,
                                     base_name: trans::Name::new(base_name),
-                                    variants: vec![#(trans::Name::new(stringify!(#variants).to_owned())),*],
+                                    variants: vec![#(#variants),*],
                                 }
                             }
                             #read_write_impl
@@ -298,27 +366,40 @@ pub fn derive_trans(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
                     expanded.into()
                 } else {
                     let variants = variants.iter().map(|variant| {
+                        let documentation = get_documentation(&variant.attrs);
                         let variant_name = &variant.ident;
                         let field_schema_names = field_schema_names(variant.fields.iter());
                         let field_tys = variant.fields.iter().map(|field| &field.ty);
+                        let schema_fields = variant.fields.iter().map(|field| {
+                            let documentation = get_documentation(&field.attrs);
+                            let schema_name = field_schema_name(field);
+                            let ty = &field.ty;
+                            quote! {
+                                trans::Field {
+                                    documentation: #documentation,
+                                    name: trans::Name::new(stringify!(#schema_name).to_owned()),
+                                    schema: trans::Schema::of::<#ty>(),
+                                }
+                            }
+                        });
                         quote! {
                             trans::Struct {
+                                documentation: #documentation,
                                 name: trans::Name::new(stringify!(#variant_name).to_owned()),
                                 magic: None,
                                 fields: vec![
-                                    #(trans::Field {
-                                        name: trans::Name::new(stringify!(#field_schema_names).to_owned()),
-                                        schema: trans::Schema::of::<#field_tys>(),
-                                    }),*
+                                    #(#schema_fields),*
                                 ],
                             }
                         }
                     });
+                    let documentation = get_documentation(&ast.attrs);
                     let expanded = quote! {
                         impl #impl_generics trans::Trans for #input_type #ty_generics #where_clause {
                             fn create_schema() -> trans::Schema {
                                 let base_name = #final_name;
                                 trans::Schema::OneOf {
+                                    documentation: #documentation,
                                     base_name: trans::Name::new(base_name),
                                     variants: vec![#(#variants),*],
                                 }

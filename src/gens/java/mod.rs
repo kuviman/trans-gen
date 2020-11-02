@@ -279,6 +279,7 @@ fn write_struct(
                     writeln!(writer, "}}")?;
                 }
                 Schema::Enum {
+                    documentation,
                     base_name,
                     variants,
                 } => {
@@ -290,7 +291,7 @@ fn write_struct(
                             "    {} = model.{}.{};",
                             to,
                             base_name.camel_case(conv),
-                            variant.shouty_snake_case(conv)
+                            variant.name.shouty_snake_case(conv)
                         )?;
                         writeln!(writer, "    break;")?;
                     }
@@ -438,6 +439,7 @@ impl crate::Generator for Generator {
     fn add_only(&mut self, schema: &Schema) {
         match schema {
             Schema::Enum {
+                documentation,
                 base_name,
                 variants,
             } => {
@@ -453,7 +455,7 @@ impl crate::Generator for Generator {
                     writeln!(
                         writer,
                         "{}({}){}",
-                        variant.shouty_snake_case(conv),
+                        variant.name.shouty_snake_case(conv),
                         index,
                         if index + 1 < variants.len() { "," } else { ";" }
                     )
@@ -478,6 +480,7 @@ impl crate::Generator for Generator {
                 self.files.insert(file_name, writer.get());
             }
             Schema::OneOf {
+                documentation,
                 base_name,
                 variants,
             } => {

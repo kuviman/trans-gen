@@ -50,6 +50,7 @@ impl crate::Generator for Generator {
     fn add_only(&mut self, schema: &Schema) {
         match schema {
             Schema::Struct(Struct {
+                documentation,
                 name,
                 fields,
                 magic,
@@ -92,6 +93,7 @@ impl crate::Generator for Generator {
             Schema::OneOf {
                 base_name,
                 variants,
+                documentation,
             } => {
                 let file_name = format!("src/{}.rs", base_name.snake_case(conv));
                 let mut content = String::new();
@@ -128,6 +130,7 @@ impl crate::Generator for Generator {
             Schema::Enum {
                 base_name,
                 variants,
+                documentation,
             } => {
                 let file_name = format!("src/{}.rs", base_name.snake_case(conv));
                 let mut content = String::new();
@@ -143,7 +146,7 @@ impl crate::Generator for Generator {
                     .unwrap();
                     writeln!(content, "pub enum {} {{", base_name.camel_case(conv)).unwrap();
                     for variant in variants {
-                        writeln!(content, "    {},", variant.camel_case(conv)).unwrap();
+                        writeln!(content, "    {},", variant.name.camel_case(conv)).unwrap();
                     }
                     writeln!(content, "}}").unwrap();
                 }

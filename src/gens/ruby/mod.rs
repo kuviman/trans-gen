@@ -163,6 +163,7 @@ fn write_struct(
                     writeln!(writer, "end")?;
                 }
                 Schema::Enum {
+                    documentation,
                     base_name,
                     variants,
                 } => {
@@ -291,6 +292,7 @@ impl crate::Generator for Generator {
     fn add_only(&mut self, schema: &Schema) {
         match schema {
             Schema::Enum {
+                documentation,
                 base_name,
                 variants,
             } => {
@@ -299,7 +301,13 @@ impl crate::Generator for Generator {
                 writeln!(writer, "module {}", base_name.camel_case(conv)).unwrap();
                 writer.inc_ident();
                 for (index, variant) in variants.iter().enumerate() {
-                    writeln!(writer, "{} = {}", variant.shouty_snake_case(conv), index).unwrap();
+                    writeln!(
+                        writer,
+                        "{} = {}",
+                        variant.name.shouty_snake_case(conv),
+                        index
+                    )
+                    .unwrap();
                 }
                 writer.dec_ident();
                 writeln!(writer, "end").unwrap();
@@ -325,6 +333,7 @@ impl crate::Generator for Generator {
                 self.files.insert(file_name, writer.get());
             }
             Schema::OneOf {
+                documentation,
                 base_name,
                 variants,
             } => {
