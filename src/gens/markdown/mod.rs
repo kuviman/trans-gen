@@ -116,6 +116,7 @@ impl crate::Generator for Generator {
                     .unwrap();
                     writeln!(content).unwrap();
                     writeln!(content, "One of:").unwrap();
+                    writeln!(content).unwrap();
                     for variant in variants {
                         writeln!(
                             content,
@@ -134,7 +135,7 @@ impl crate::Generator for Generator {
                         writeln!(content).unwrap();
                         content.inc_ident();
                         if variant.fields.is_empty() {
-                            writeln!(content, "No fields:").unwrap();
+                            writeln!(content, "No fields").unwrap();
                         } else {
                             writeln!(content, "Fields:").unwrap();
                         }
