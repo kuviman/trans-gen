@@ -341,10 +341,11 @@ pub fn derive_trans(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
                     }
                 }) {
                     let variants = variants.iter().map(|variant| {
+                        let name = &variant.ident;
                         let documentation = get_documentation(&variant.attrs);
                         quote! {
                             trans::EnumVariant {
-                                name: trans::Name::new(stringify!(#variant).to_owned()),
+                                name: trans::Name::new(stringify!(#name).to_owned()),
                                 documentation: #documentation,
                             }
                         }
