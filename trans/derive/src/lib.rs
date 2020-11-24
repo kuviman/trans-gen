@@ -36,9 +36,8 @@ fn field_schema_name(field: &syn::Field) -> syn::Ident {
 }
 
 fn get_documentation(attrs: &[syn::Attribute]) -> proc_macro2::TokenStream {
-    let mut language_docs = Vec::new();
-    let mut current_language = "en".to_owned();
-    let mut current_doc = String::new();
+    use std::collections::HashMap;
+    let mut language_docs: HashMap<String, String> = HashMap::new();
     for attr in attrs {
         if let Ok(syn::Meta::NameValue(syn::MetaNameValue {
             path,
@@ -46,20 +45,30 @@ fn get_documentation(attrs: &[syn::Attribute]) -> proc_macro2::TokenStream {
             ..
         })) = attr.parse_meta()
         {
-            if path.is_ident("doc") {
+            let doc = if path.is_ident("doc") {
+                Some(("en".to_owned(), lit.value()))
+            } else if path.is_ident("trans_doc") {
                 let text = lit.value();
-                for line in text.lines() {
-                    let line = line.trim();
-                    if !current_doc.is_empty() {
-                        current_doc.push(' ');
-                    }
-                    current_doc += line;
+                let colon_pos = text
+                    .find(':')
+                    .expect("trans_doc should be in format \"LANG:TEXT\"");
+                Some((
+                    text[..colon_pos].to_owned(),
+                    text[colon_pos + 1..].to_owned(),
+                ))
+            } else {
+                None
+            };
+            if let Some((lang, text)) = doc {
+                let lang = lang.trim();
+                let text = text.trim();
+                let current_text = language_docs.entry(lang.to_owned()).or_default();
+                if !current_text.is_empty() {
+                    current_text.push(' ');
                 }
+                current_text.push_str(text);
             }
         }
-    }
-    if !current_doc.is_empty() {
-        language_docs.push((current_language, current_doc));
     }
     let language_docs = language_docs.into_iter().map(|(language, text)| {
         // let language = syn::LitStr::new(&language, proc_macro2::Span::call_site());
@@ -82,7 +91,7 @@ fn get_documentation(attrs: &[syn::Attribute]) -> proc_macro2::TokenStream {
     }
 }
 
-#[proc_macro_derive(Trans, attributes(trans))]
+#[proc_macro_derive(Trans, attributes(trans, trans_doc))]
 pub fn derive_trans(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
     let input: TokenStream = input.into();
     let result: TokenStream = {
