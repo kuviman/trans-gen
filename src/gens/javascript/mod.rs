@@ -149,9 +149,16 @@ fn write_struct(
                 Schema::String => {
                     writeln!(writer, "{} = await stream.readString();", to)?;
                 }
-                Schema::Struct(Struct { name, .. })
+                Schema::Struct(Struct {
+                    name,
+                    magic: _,
+                    documentation: _,
+                    fields: _,
+                })
                 | Schema::OneOf {
-                    base_name: name, ..
+                    base_name: name,
+                    documentation: _,
+                    variants: _,
                 } => {
                     writeln!(
                         writer,
@@ -201,7 +208,11 @@ fn write_struct(
                     writer.dec_ident();
                     writeln!(writer, "}}")?;
                 }
-                Schema::Enum { base_name, .. } => {
+                Schema::Enum {
+                    base_name: _,
+                    documentation: _,
+                    variants: _,
+                } => {
                     writeln!(writer, "{} = await stream.readInt();", to)?;
                 }
             }
@@ -286,7 +297,6 @@ fn write_struct(
                 }
                 Schema::Map(key_type, value_type) => {
                     writeln!(writer, "await stream.writeInt({}.size);", value)?;
-                    let index_var_name = index_var_name(index_var);
                     writeln!(writer, "for (let {}Entry of {}) {{", value, value)?;
                     writer.inc_ident();
                     writeln!(writer, "let {}Key = {}Entry[0];", value, value)?;
@@ -339,7 +349,7 @@ fn file_name(name: &Name) -> String {
 
 impl crate::Generator for Generator {
     type Options = ();
-    fn new(name: &str, version: &str, _: ()) -> Self {
+    fn new(_name: &str, _version: &str, _: ()) -> Self {
         let mut files = HashMap::new();
         files.insert(
             "stream-wrapper.js".to_owned(),
@@ -358,7 +368,7 @@ impl crate::Generator for Generator {
     fn add_only(&mut self, schema: &Schema) {
         match schema {
             Schema::Enum {
-                documentation,
+                documentation: _,
                 base_name,
                 variants,
             } => {
@@ -403,7 +413,7 @@ impl crate::Generator for Generator {
                 self.files.insert(file_name, writer.get());
             }
             Schema::OneOf {
-                documentation,
+                documentation: _,
                 base_name,
                 variants,
             } => {

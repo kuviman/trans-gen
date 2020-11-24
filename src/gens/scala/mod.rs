@@ -227,7 +227,7 @@ fn write_struct(
 
 impl crate::Generator for Generator {
     type Options = ();
-    fn new(name: &str, version: &str, _: ()) -> Self {
+    fn new(_name: &str, _version: &str, _: ()) -> Self {
         let mut files = HashMap::new();
         files.insert(
             "util/StreamUtil.scala".to_owned(),
@@ -243,7 +243,7 @@ impl crate::Generator for Generator {
             Schema::Enum {
                 base_name,
                 variants,
-                documentation,
+                documentation: _,
             } => {
                 let file_name = format!("model/{}.scala", base_name.camel_case(conv));
                 let mut writer = Writer::new();
@@ -316,7 +316,7 @@ impl crate::Generator for Generator {
             Schema::OneOf {
                 base_name,
                 variants,
-                documentation,
+                documentation: _,
             } => {
                 let file_name = format!("model/{}.scala", base_name.camel_case(conv));
                 let mut writer = Writer::new();

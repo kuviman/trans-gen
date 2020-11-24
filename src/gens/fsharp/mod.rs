@@ -45,12 +45,6 @@ fn type_post_array(schema: &Schema) -> String {
     }
 }
 
-fn index_var_name(index_var: &mut usize) -> String {
-    let result = "ijk".chars().nth(*index_var).unwrap();
-    *index_var += 1;
-    result.to_string()
-}
-
 fn var_name(name: &str) -> &str {
     match name.rfind('.') {
         Some(index) => &name[(index + 1)..],
@@ -75,17 +69,12 @@ fn write_struct(
     } else {
         writeln!(writer, "type {} = {{", struc_name)?;
         writer.inc_ident();
-        for (index, field) in struc.fields.iter().enumerate() {
+        for field in &struc.fields {
             writeln!(
                 writer,
                 "{}: {};",
                 field.name.camel_case(conv),
                 type_name(&field.schema),
-                // if index + 1 < struc.fields.len() {
-                //     ","
-                // } else {
-                //     ""
-                // },
             )?;
         }
         writeln!(writer, "}} with")?;
@@ -269,7 +258,7 @@ fn write_struct(
 
 impl crate::Generator for Generator {
     type Options = ();
-    fn new(name: &str, version: &str, _: ()) -> Self {
+    fn new(name: &str, _version: &str, _: ()) -> Self {
         Self {
             main_namespace: Name::new(name.to_owned()).camel_case(conv),
             files: Vec::new(),
@@ -281,7 +270,7 @@ impl crate::Generator for Generator {
     fn add_only(&mut self, schema: &Schema) {
         match schema {
             Schema::Enum {
-                documentation,
+                documentation: _,
                 base_name,
                 variants,
             } => {
@@ -312,7 +301,7 @@ impl crate::Generator for Generator {
                 });
             }
             Schema::OneOf {
-                documentation,
+                documentation: _,
                 base_name,
                 variants,
             } => {
@@ -328,7 +317,7 @@ impl crate::Generator for Generator {
 
                 writeln!(&mut writer, "type {} = ", base_name.camel_case(conv)).unwrap();
                 writer.inc_ident();
-                for (tag, variant) in variants.iter().enumerate() {
+                for variant in variants {
                     writeln!(
                         writer,
                         "| {} of {}{}",
@@ -348,7 +337,7 @@ impl crate::Generator for Generator {
                 writer.inc_ident();
                 writeln!(writer, "match this with").unwrap();
                 writer.inc_ident();
-                for (tag, variant) in variants.iter().enumerate() {
+                for variant in variants {
                     writeln!(
                         writer,
                         "| {} value -> value.writeTo writer",

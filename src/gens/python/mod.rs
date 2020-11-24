@@ -277,7 +277,7 @@ fn write_struct(
 
 impl crate::Generator for Generator {
     type Options = ();
-    fn new(name: &str, version: &str, _: ()) -> Self {
+    fn new(_name: &str, _version: &str, _: ()) -> Self {
         let mut files = HashMap::new();
         files.insert(
             "stream_wrapper.py".to_owned(),
@@ -298,7 +298,7 @@ impl crate::Generator for Generator {
     fn add_only(&mut self, schema: &Schema) {
         match schema {
             Schema::Enum {
-                documentation,
+                documentation: _,
                 base_name,
                 variants,
             } => {
@@ -341,7 +341,7 @@ impl crate::Generator for Generator {
                 self.files.insert(file_name, writer.get());
             }
             Schema::OneOf {
-                documentation,
+                documentation: _,
                 base_name,
                 variants,
             } => {

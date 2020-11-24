@@ -56,7 +56,7 @@ pub struct Generator {
 }
 impl crate::Generator for Generator {
     type Options = Options;
-    fn new(name: &str, version: &str, options: Options) -> Self {
+    fn new(_name: &str, _version: &str, options: Options) -> Self {
         Self {
             parts: Vec::new(),
             options,
@@ -77,7 +77,7 @@ impl crate::Generator for Generator {
                 documentation,
                 name,
                 fields,
-                magic,
+                magic: _,
             }) => {
                 let mut content = Writer::new();
                 {

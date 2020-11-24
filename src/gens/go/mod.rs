@@ -56,8 +56,8 @@ fn needs_stream(schema: &Schema) -> bool {
             | Schema::Vec(_)
             | Schema::Map(_, _)
             | Schema::Option(_) => true,
-            Schema::Struct(struc) => false,
-            Schema::OneOf { variants, .. } => false,
+            Schema::Struct(_) => false,
+            Schema::OneOf { .. } => false,
         }
     }
     fn struct_need_stream(struc: &Struct) -> bool {
@@ -79,7 +79,7 @@ fn needs_stream(schema: &Schema) -> bool {
         | Schema::Map(_, _)
         | Schema::Option(_) => true,
         Schema::Struct(struc) => struct_need_stream(struc),
-        Schema::OneOf { variants, .. } => true,
+        Schema::OneOf { .. } => true,
     }
 }
 
@@ -98,7 +98,7 @@ fn write_struct(
     };
     writeln!(writer, "type {} struct {{", struct_name)?;
     writer.inc_ident();
-    if let Some((_, tag)) = base {
+    if let Some((_base_name, _tag)) = base {
         // TODO writeln!(writer, "static const int TAG = {}", tag)?;
     }
 
@@ -131,7 +131,7 @@ fn write_struct(
     writer.inc_ident();
     writeln!(writer, "return {} {{", struct_name)?;
     writer.inc_ident();
-    for (index, field) in struc.fields.iter().enumerate() {
+    for (_index, field) in struc.fields.iter().enumerate() {
         writeln!(
             writer,
             "{}: {},",
@@ -360,7 +360,7 @@ fn write_struct(
 
 impl crate::Generator for Generator {
     type Options = ();
-    fn new(name: &str, version: &str, _: ()) -> Self {
+    fn new(name: &str, _version: &str, _: ()) -> Self {
         let mut files = HashMap::new();
         files.insert(
             "stream/stream.go".to_owned(),
@@ -371,13 +371,13 @@ impl crate::Generator for Generator {
             files,
         }
     }
-    fn result(mut self) -> GenResult {
+    fn result(self) -> GenResult {
         self.files.into()
     }
     fn add_only(&mut self, schema: &Schema) {
         match schema {
             Schema::Enum {
-                documentation,
+                documentation: _,
                 base_name,
                 variants,
             } => {
@@ -444,7 +444,7 @@ impl crate::Generator for Generator {
                 self.files.insert(file_name, writer.get());
             }
             Schema::OneOf {
-                documentation,
+                documentation: _,
                 base_name,
                 variants,
             } => {

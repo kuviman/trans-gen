@@ -83,7 +83,7 @@ fn write_struct(
     // Constructor
     write!(writer, "def initialize(")?;
     for (index, field) in struc.fields.iter().enumerate() {
-        if (index > 0) {
+        if index > 0 {
             write!(writer, ", ")?;
         }
         write!(writer, "{}", field.name.snake_case(conv))?;
@@ -163,8 +163,8 @@ fn write_struct(
                     writeln!(writer, "end")?;
                 }
                 Schema::Enum {
-                    documentation,
-                    base_name,
+                    documentation: _,
+                    base_name: _,
                     variants,
                 } => {
                     writeln!(writer, "{} = stream.read_int()", to,)?;
@@ -273,7 +273,7 @@ fn write_struct(
 
 impl crate::Generator for Generator {
     type Options = ();
-    fn new(name: &str, version: &str, _: ()) -> Self {
+    fn new(_name: &str, _version: &str, _: ()) -> Self {
         let mut files = HashMap::new();
         files.insert(
             "stream_wrapper.rb".to_owned(),
@@ -293,7 +293,7 @@ impl crate::Generator for Generator {
     fn add_only(&mut self, schema: &Schema) {
         match schema {
             Schema::Enum {
-                documentation,
+                documentation: _,
                 base_name,
                 variants,
             } => {
@@ -334,7 +334,7 @@ impl crate::Generator for Generator {
                 self.files.insert(file_name, writer.get());
             }
             Schema::OneOf {
-                documentation,
+                documentation: _,
                 base_name,
                 variants,
             } => {

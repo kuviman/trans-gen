@@ -289,7 +289,7 @@ fn write_struct(
                     writeln!(writer, "}}")?;
                 }
                 Schema::Enum {
-                    documentation,
+                    documentation: _,
                     base_name,
                     variants,
                 } => {
@@ -442,7 +442,7 @@ fn write_struct(
 
 impl crate::Generator for Generator {
     type Options = ();
-    fn new(name: &str, version: &str, _: ()) -> Self {
+    fn new(name: &str, _version: &str, _: ()) -> Self {
         Self {
             main_namespace: Name::new(name.to_owned()).camel_case(conv),
             files: HashMap::new(),
@@ -454,7 +454,7 @@ impl crate::Generator for Generator {
     fn add_only(&mut self, schema: &Schema) {
         match schema {
             Schema::Enum {
-                documentation,
+                documentation: _,
                 base_name,
                 variants,
             } => {
@@ -487,7 +487,7 @@ impl crate::Generator for Generator {
                 self.files.insert(file_name, writer.get());
             }
             Schema::OneOf {
-                documentation,
+                documentation: _,
                 base_name,
                 variants,
             } => {

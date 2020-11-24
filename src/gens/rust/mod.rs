@@ -51,7 +51,7 @@ impl crate::Generator for Generator {
     fn add_only(&mut self, schema: &Schema) {
         match schema {
             Schema::Struct(Struct {
-                documentation,
+                documentation: _,
                 name,
                 fields,
                 magic,
@@ -94,7 +94,7 @@ impl crate::Generator for Generator {
             Schema::OneOf {
                 base_name,
                 variants,
-                documentation,
+                documentation: _,
             } => {
                 let file_name = format!("src/{}.rs", base_name.snake_case(conv));
                 let mut content = String::new();
@@ -131,7 +131,7 @@ impl crate::Generator for Generator {
             Schema::Enum {
                 base_name,
                 variants,
-                documentation,
+                documentation: _,
             } => {
                 let file_name = format!("src/{}.rs", base_name.snake_case(conv));
                 let mut content = String::new();

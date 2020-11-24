@@ -35,12 +35,6 @@ fn field_schema_name(field: &syn::Field) -> syn::Ident {
     name
 }
 
-fn field_schema_names<'a>(
-    fields: impl Iterator<Item = &'a syn::Field> + 'a,
-) -> impl Iterator<Item = syn::Ident> + 'a {
-    fields.map(|field| field_schema_name(field))
-}
-
 fn get_documentation(attrs: &[syn::Attribute]) -> proc_macro2::TokenStream {
     let mut language_docs = Vec::new();
     let mut current_language = "en".to_owned();
@@ -165,7 +159,6 @@ pub fn derive_trans(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
                 syn::Fields::Named(_) => {
                     let field_tys: Vec<_> = fields.iter().map(|field| &field.ty).collect();
                     let field_tys = &field_tys;
-                    let field_schema_names: Vec<_> = field_schema_names(fields.iter()).collect();
                     let field_names: Vec<_> = fields
                         .iter()
                         .map(|field| field.ident.as_ref().unwrap())
@@ -261,22 +254,7 @@ pub fn derive_trans(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
                 syn::Fields::Unit => panic!("Unit structs not supported"),
             },
             syn::Data::Enum(syn::DataEnum { ref variants, .. }) => {
-                let mut generics = ast.generics.clone();
-                // let all_field_tys = variants
-                //     .iter()
-                //     .map(|variant| variant.fields.iter().map(|field| &field.ty))
-                //     .flatten();
-                // let extra_where_clauses = quote! {
-                //     where
-                //         #(#all_field_tys: trans::Trans + 'static,)*
-                //         #(#generic_params: trans::Trans,)*
-                // };
-                // let extra_where_clauses: syn::WhereClause =
-                //     syn::parse_str(&extra_where_clauses.to_string()).unwrap();
-                // generics
-                //     .make_where_clause()
-                //     .predicates
-                //     .extend(extra_where_clauses.predicates);
+                let generics = ast.generics.clone();
                 let (impl_generics, ty_generics, where_clause) = generics.split_for_impl();
                 let read_write_impl = {
                     let variant_writes = variants.iter().enumerate().map(|(tag, variant)| {
@@ -369,8 +347,6 @@ pub fn derive_trans(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
                     let variants = variants.iter().map(|variant| {
                         let documentation = get_documentation(&variant.attrs);
                         let variant_name = &variant.ident;
-                        let field_schema_names = field_schema_names(variant.fields.iter());
-                        let field_tys = variant.fields.iter().map(|field| &field.ty);
                         let schema_fields = variant.fields.iter().map(|field| {
                             let documentation = get_documentation(&field.attrs);
                             let schema_name = field_schema_name(field);
