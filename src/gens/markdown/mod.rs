@@ -23,7 +23,7 @@ fn type_name(schema: &Schema) -> String {
     }
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct Options {
     pub language: String,
     pub require_docs: bool,
