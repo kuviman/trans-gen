@@ -90,7 +90,7 @@ class StreamWrapper {
     }
 
     async readString() {
-        const length = this.readInt();
+        const length = await this.readInt();
         const buffer = await this._read(length);
         const result = buffer.toString();
         if (result.length !== length) {
