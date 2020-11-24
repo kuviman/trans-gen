@@ -212,13 +212,6 @@ fn write_struct_def(
         )?;
     }
 
-    // ToString
-    writeln!(
-        writer,
-        "std::string toString() const{};",
-        if base.is_some() { " override" } else { "" }
-    )?;
-
     writer.dec_ident();
     writeln!(writer, "}};").unwrap();
 
@@ -595,42 +588,6 @@ fn write_struct_impl(
         writeln!(writer, "}}")?;
     }
 
-    // ToString
-    writeln!(writer, "std::string {}::toString() const {{", full_name)?;
-    writer.inc_ident();
-    writeln!(writer, "return std::string({:?}) + \"(\" +", full_name)?;
-    writer.inc_ident();
-    for field in &struc.fields {
-        match *field.schema {
-            Schema::Struct(_) => {
-                writeln!(writer, "{}.toString() +", field.name.mixed_case(conv))?;
-            }
-            Schema::OneOf { .. } => {
-                writeln!(writer, "{}->toString() +", field.name.mixed_case(conv))?;
-            }
-            Schema::Bool => {
-                writeln!(
-                    writer,
-                    "({} ? \"true\" : \"false\") + ",
-                    field.name.mixed_case(conv)
-                )?;
-            }
-            Schema::String => {
-                writeln!(writer, "{} + ", field.name.mixed_case(conv))?;
-            }
-            Schema::Int32 | Schema::Int64 | Schema::Float32 | Schema::Float64 => {
-                writeln!(writer, "std::to_string({}) +", field.name.mixed_case(conv))?;
-            }
-            _ => {
-                writeln!(writer, "\"TODO\" + ")?;
-            }
-        }
-    }
-    writeln!(writer, "\")\";")?;
-    writer.dec_ident();
-    writer.dec_ident();
-    writeln!(writer, "}}")?;
-
     Ok(())
 }
 
@@ -785,7 +742,6 @@ impl crate::Generator for Generator {
                     "virtual void writeTo(OutputStream& stream) const = 0;",
                 )
                 .unwrap();
-                writeln!(writer, "virtual std::string toString() const = 0;").unwrap();
                 writer.dec_ident();
                 writeln!(writer, "}};").unwrap();
                 for (tag, variant) in variants.iter().enumerate() {
