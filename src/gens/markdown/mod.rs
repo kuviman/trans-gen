@@ -94,7 +94,15 @@ impl crate::Generator for Generator {
                     )
                     .unwrap();
                     writeln!(content).unwrap();
-                    writeln!(content, "Fields:").unwrap();
+                    writeln!(
+                        content,
+                        "{}",
+                        match language.as_str() {
+                            "ru" => "Поля:",
+                            "en" | _ => "Fields:",
+                        }
+                    )
+                    .unwrap();
                     writeln!(content).unwrap();
                     for field in fields {
                         writeln!(
@@ -135,7 +143,15 @@ impl crate::Generator for Generator {
                     )
                     .unwrap();
                     writeln!(content).unwrap();
-                    writeln!(content, "One of:").unwrap();
+                    writeln!(
+                        content,
+                        "{}",
+                        match language.as_str() {
+                            "ru" => "Варианты:",
+                            "en" | _ => "One of:",
+                        }
+                    )
+                    .unwrap();
                     writeln!(content).unwrap();
                     for variant in variants {
                         writeln!(
@@ -154,9 +170,25 @@ impl crate::Generator for Generator {
                         writeln!(content).unwrap();
                         content.inc_ident();
                         if variant.fields.is_empty() {
-                            writeln!(content, "No fields").unwrap();
+                            writeln!(
+                                content,
+                                "{}",
+                                match language.as_str() {
+                                    "ru" => "Нет полей",
+                                    "en" | _ => "No fields",
+                                }
+                            )
+                            .unwrap();
                         } else {
-                            writeln!(content, "Fields:").unwrap();
+                            writeln!(
+                                content,
+                                "{}",
+                                match language.as_str() {
+                                    "ru" => "Поля:",
+                                    "en" | _ => "Fields:",
+                                }
+                            )
+                            .unwrap();
                         }
                         writeln!(content).unwrap();
                         for field in &variant.fields {
@@ -200,7 +232,15 @@ impl crate::Generator for Generator {
                     )
                     .unwrap();
                     writeln!(content).unwrap();
-                    writeln!(content, "Variants:").unwrap();
+                    writeln!(
+                        content,
+                        "{}",
+                        match language.as_str() {
+                            "ru" => "Варианты:",
+                            "en" | _ => "Variants:",
+                        }
+                    )
+                    .unwrap();
                     writeln!(content).unwrap();
                     for variant in variants {
                         writeln!(
