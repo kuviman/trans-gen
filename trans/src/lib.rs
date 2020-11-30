@@ -13,6 +13,10 @@ pub mod prelude {
 
 pub const VERSION: &str = env!("CARGO_PKG_VERSION");
 
+fn try_from<U, T: std::convert::TryFrom<U>>(value: U) -> std::io::Result<T> {
+    T::try_from(value).map_err(|_| std::io::Error::new(std::io::ErrorKind::Other, "Invalid value"))
+}
+
 pub trait Trans: Sized + 'static {
     fn create_schema() -> Schema;
     fn write_to(&self, writer: &mut dyn std::io::Write) -> std::io::Result<()>;
@@ -208,10 +212,10 @@ impl Trans for usize {
         Schema::Int32
     }
     fn read_from(reader: &mut dyn std::io::Read) -> std::io::Result<Self> {
-        Ok(i32::read_from(reader)? as usize)
+        Ok(try_from(i32::read_from(reader)?)?)
     }
     fn write_to(&self, writer: &mut dyn std::io::Write) -> std::io::Result<()> {
-        (*self as i32).write_to(writer)
+        try_from::<usize, i32>(*self)?.write_to(writer)
     }
 }
 
@@ -268,13 +272,13 @@ impl Trans for String {
         Schema::String
     }
     fn read_from(reader: &mut dyn std::io::Read) -> std::io::Result<Self> {
-        let len = i32::read_from(reader)? as usize;
+        let len = usize::read_from(reader)?;
         let mut buf = vec![0; len];
         reader.read_exact(&mut buf)?;
         String::from_utf8(buf).map_err(|e| std::io::Error::new(std::io::ErrorKind::InvalidData, e))
     }
     fn write_to(&self, writer: &mut dyn std::io::Write) -> std::io::Result<()> {
-        (self.len() as i32).write_to(writer)?;
+        self.len().write_to(writer)?;
         writer.write_all(self.as_bytes())
     }
 }
