@@ -13,8 +13,15 @@ pub mod prelude {
 
 pub const VERSION: &str = env!("CARGO_PKG_VERSION");
 
-fn try_from<U, T: std::convert::TryFrom<U>>(value: U) -> std::io::Result<T> {
-    T::try_from(value).map_err(|_| std::io::Error::new(std::io::ErrorKind::Other, "Invalid value"))
+fn try_from<U: std::fmt::Debug + Copy, T: std::convert::TryFrom<U>>(
+    value: U,
+) -> std::io::Result<T> {
+    T::try_from(value).map_err(|_| {
+        std::io::Error::new(
+            std::io::ErrorKind::Other,
+            format!("{:?} is invalid value", value),
+        )
+    })
 }
 
 pub trait Trans: Sized + 'static {
