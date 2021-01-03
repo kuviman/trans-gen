@@ -1,6 +1,6 @@
 [package]
 name = "trans-derive"
-version = "0.4.0-alpha.4"
+version = "0.4.0"
 authors = ["kuviman <kuviman@gmail.com>"]
 description = "Serialization protocol for inter-language communication (derive macros)"
 license = "MIT"
