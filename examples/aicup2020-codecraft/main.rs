@@ -21,6 +21,7 @@ macro_rules! all_langs {
 #[derive(structopt::StructOpt)]
 enum Opt {
     Generate { path: std::path::PathBuf },
+    Test,
 }
 
 fn generate<T: trans_gen::Generator>(path: &std::path::Path) {
@@ -31,6 +32,15 @@ fn generate<T: trans_gen::Generator>(path: &std::path::Path) {
     result.write_to(path).unwrap();
 }
 
+fn generate_all(path: &std::path::Path) {
+    macro_rules! generate {
+        ($lang:ident) => {
+            generate::<trans_gen::gens::$lang::Generator>(&path.join(stringify!($lang)));
+        };
+    }
+    all_langs!(generate);
+}
+
 fn main() {
     let snapshot: model::PlayerView =
         serde_json::from_str(include_str!("snapshot.json")).expect("Failed to read snapshot");
@@ -38,12 +48,11 @@ fn main() {
 
     match opt {
         Opt::Generate { path } => {
-            macro_rules! generate {
-                ($lang:ident) => {
-                    generate::<trans_gen::gens::$lang::Generator>(&path.join(stringify!($lang)));
-                };
-            }
-            all_langs!(generate);
+            generate_all(&path);
+        }
+        Opt::Test => {
+            let tempdir = tempfile::tempdir().unwrap();
+            generate_all(tempdir.as_ref());
         }
     }
 }
