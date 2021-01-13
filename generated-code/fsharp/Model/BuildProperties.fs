@@ -1,5 +1,5 @@
 #nowarn "0058"
-namespace Aicup2020Codecraft.Model
+namespace Aicup2020CodecraftModel.Model
 type BuildProperties = {
     Options: EntityType[];
     InitHealth: option<int>;

@@ -1,4 +1,4 @@
-namespace Aicup2020Codecraft.Model
+namespace Aicup2020CodecraftModel.Model
 {
     public struct Player
     {

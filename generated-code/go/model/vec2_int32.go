@@ -1,7 +1,7 @@
 package model
 
 import "io"
-import . "aicup2020-codecraft/stream"
+import . "aicup2020-codecraft-model/stream"
 
 type Vec2Int32 struct {
     X int32

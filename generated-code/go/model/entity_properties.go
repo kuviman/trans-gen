@@ -1,7 +1,7 @@
 package model
 
 import "io"
-import . "aicup2020-codecraft/stream"
+import . "aicup2020-codecraft-model/stream"
 
 type EntityProperties struct {
     Size int32
