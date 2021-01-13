@@ -18,6 +18,7 @@ macro_rules! write_file {
     };
 }
 
+mod cpp;
 mod rust;
 
 fn command(cmd: &str) -> Command {
@@ -145,6 +146,7 @@ fn main() -> anyhow::Result<()> {
             generate_all(tempdir)?;
 
             test::<trans_gen::gens::rust::Generator>(&snapshot)?;
+            test::<trans_gen::gens::cpp::Generator>(&snapshot)?;
         }
     }
     Ok(())
