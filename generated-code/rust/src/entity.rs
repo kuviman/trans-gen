@@ -1,4 +1,5 @@
 use super::*;
+
 #[derive(Clone, Debug, trans::Trans)]
 pub struct Entity {
     pub id: i32,
