@@ -1,0 +1,11 @@
+use super::*;
+
+#[derive(Clone, Debug{{# if schema.hashable() { }}, PartialEq, Eq, Hash{{# } }}, trans::Trans)]
+- if let Some(magic) = magic {
+#[trans(magic = "{{ magic }}")]
+- }
+pub struct {{ name.camel_case(conv) }} {
+- for field in fields {
+    pub {{ field.name.snake_case(conv) }}: {{ type_name(&field.schema) }},
+- }
+}

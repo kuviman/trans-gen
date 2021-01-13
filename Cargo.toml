@@ -15,3 +15,4 @@ structopt = "0.3"
 [dependencies]
 trans = { path = "trans", version = "0.5.0-alpha" }
 serde = { version = "1", features = ["derive"] }
+templing = "0.1.0-alpha"

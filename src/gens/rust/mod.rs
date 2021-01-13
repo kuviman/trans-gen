@@ -29,24 +29,39 @@ fn type_name(schema: &Schema) -> String {
 }
 
 pub struct Generator {
-    files: HashMap<String, String>,
+    crate_name: String,
+    crate_version: String,
+    types: HashMap<String, String>,
 }
 impl crate::Generator for Generator {
     type Options = ();
     fn new(name: &str, version: &str, _: ()) -> Self {
-        let mut files = HashMap::new();
-        files.insert(
-            "Cargo.toml".to_owned(),
-            include_str!("Cargo.toml.template")
-                .replace("$name", name)
-                .replace("$version", version)
-                .replace("$trans-version", trans::VERSION),
-        );
-        files.insert("src/lib.rs".to_owned(), String::new());
-        Self { files }
+        Self {
+            crate_name: name.to_owned(),
+            crate_version: version.to_owned(),
+            types: HashMap::new(),
+        }
     }
     fn result(self) -> GenResult {
-        self.files.into()
+        let mut files = HashMap::new();
+        let types = self.types.keys();
+        let Self {
+            crate_name,
+            crate_version,
+            ..
+        } = self;
+        files.insert(
+            "Cargo.toml".to_owned(),
+            include_templing!("src/gens/rust/Cargo.toml.templing"),
+        );
+        files.insert(
+            "src/lib.rs".to_owned(),
+            include_templing!("src/gens/rust/lib.rs.templing"),
+        );
+        for (name, content) in self.types {
+            files.insert(format!("src/{}.rs", name), content);
+        }
+        files.into()
     }
     fn add_only(&mut self, schema: &Schema) {
         match schema {
@@ -56,108 +71,30 @@ impl crate::Generator for Generator {
                 fields,
                 magic,
             }) => {
-                let file_name = format!("src/{}.rs", name.snake_case(conv));
-                let mut content = String::new();
-                {
-                    let content = &mut content;
-
-                    writeln!(content, "use super::*;").unwrap();
-
-                    write!(content, "#[derive(Clone, Debug").unwrap();
-                    if schema.hashable() {
-                        write!(content, ", PartialEq, Eq, Hash").unwrap();
-                    }
-                    writeln!(content, ", trans::Trans)]").unwrap();
-                    if let Some(magic) = magic {
-                        writeln!(content, "#[trans(magic = \"{}\")]", magic).unwrap();
-                    }
-                    writeln!(content, "pub struct {} {{", name.camel_case(conv)).unwrap();
-                    for field in fields {
-                        writeln!(
-                            content,
-                            "    pub {}: {},",
-                            field.name.snake_case(conv),
-                            type_name(&field.schema)
-                        )
-                        .unwrap();
-                    }
-                    writeln!(content, "}}").unwrap();
-                }
-
-                let lib = self.files.get_mut("src/lib.rs").unwrap();
-                writeln!(lib).unwrap();
-                writeln!(lib, "mod {};", name.snake_case(conv)).unwrap();
-                writeln!(lib, "pub use self::{}::*;", name.snake_case(conv)).unwrap();
-
-                self.files.insert(file_name, content);
+                self.types.insert(
+                    name.snake_case(conv),
+                    include_templing!("src/gens/rust/struct.templing"),
+                );
             }
             Schema::OneOf {
                 base_name,
                 variants,
                 documentation: _,
             } => {
-                let file_name = format!("src/{}.rs", base_name.snake_case(conv));
-                let mut content = String::new();
-                {
-                    let content = &mut content;
-
-                    writeln!(content, "use super::*;").unwrap();
-
-                    writeln!(content, "#[derive(Clone, Debug, trans::Trans)]").unwrap();
-                    writeln!(content, "pub enum {} {{", base_name.camel_case(conv)).unwrap();
-                    for variant in variants {
-                        writeln!(content, "    {} {{", variant.name.camel_case(conv)).unwrap();
-                        for field in &variant.fields {
-                            writeln!(
-                                content,
-                                "        {}: {},",
-                                field.name.snake_case(conv),
-                                type_name(&field.schema)
-                            )
-                            .unwrap();
-                        }
-                        writeln!(content, "    }},").unwrap();
-                    }
-                    writeln!(content, "}}").unwrap();
-                }
-
-                let lib = self.files.get_mut("src/lib.rs").unwrap();
-                writeln!(lib).unwrap();
-                writeln!(lib, "mod {};", base_name.snake_case(conv)).unwrap();
-                writeln!(lib, "pub use self::{}::*;", base_name.snake_case(conv)).unwrap();
-
-                self.files.insert(file_name, content);
+                self.types.insert(
+                    base_name.snake_case(conv),
+                    include_templing!("src/gens/rust/oneof.templing"),
+                );
             }
             Schema::Enum {
                 base_name,
                 variants,
                 documentation: _,
             } => {
-                let file_name = format!("src/{}.rs", base_name.snake_case(conv));
-                let mut content = String::new();
-                {
-                    let content = &mut content;
-
-                    writeln!(content, "use super::*;").unwrap();
-
-                    writeln!(
-                        content,
-                        "#[derive(Clone, Debug, PartialEq, Eq, Hash, trans::Trans)]"
-                    )
-                    .unwrap();
-                    writeln!(content, "pub enum {} {{", base_name.camel_case(conv)).unwrap();
-                    for variant in variants {
-                        writeln!(content, "    {},", variant.name.camel_case(conv)).unwrap();
-                    }
-                    writeln!(content, "}}").unwrap();
-                }
-
-                let lib = self.files.get_mut("src/lib.rs").unwrap();
-                writeln!(lib).unwrap();
-                writeln!(lib, "mod {};", base_name.snake_case(conv)).unwrap();
-                writeln!(lib, "pub use self::{}::*;", base_name.snake_case(conv)).unwrap();
-
-                self.files.insert(file_name, content);
+                self.types.insert(
+                    base_name.snake_case(conv),
+                    include_templing!("src/gens/rust/enum.templing"),
+                );
             }
             Schema::Bool
             | Schema::Int32

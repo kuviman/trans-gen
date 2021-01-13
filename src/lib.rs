@@ -4,6 +4,7 @@ use serde::{Deserialize, Serialize};
 use std::collections::{HashMap, HashSet};
 use std::fmt::Write;
 use std::path::Path;
+use templing::*;
 use trans::*;
 
 pub mod gens;

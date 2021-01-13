@@ -1,0 +1,7 @@
+[package]
+name = "{{crate_name}}"
+version = "{{crate_version}}"
+edition = "2018"
+
+[dependencies]
+trans = "{{trans::VERSION}}"
