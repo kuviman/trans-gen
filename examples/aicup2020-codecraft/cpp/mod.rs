@@ -1,6 +1,7 @@
 use super::*;
 
 impl Generator for trans_gen::gens::cpp::Generator {
+    const NAME: &'static str = "C++";
     fn generate(path: &Path) -> anyhow::Result<()> {
         generate_model::<Self>(path).context("Failed to generate model")?;
         let project_name = "aicup2020-codecraft";

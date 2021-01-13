@@ -1,6 +1,7 @@
 use super::*;
 
 impl Generator for trans_gen::gens::rust::Generator {
+    const NAME: &'static str = "Rust";
     fn generate(path: &Path) -> anyhow::Result<()> {
         generate_model::<Self>(&path.join("model")).context("Failed to generate model")?;
         let crate_name = "aicup2020-codecraft";

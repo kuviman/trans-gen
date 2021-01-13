@@ -51,6 +51,18 @@ impl CommandExt for Command {
     }
 }
 
+fn format_duration(duration: std::time::Duration) -> String {
+    if duration.as_nanos() < 1000 {
+        format!("{} ns", duration.as_nanos())
+    } else if duration.as_micros() < 1000 {
+        format!("{} us", duration.as_micros())
+    } else if duration.as_millis() < 1000 {
+        format!("{} ms", duration.as_millis())
+    } else {
+        format!("{:.1} s", duration.as_secs_f64())
+    }
+}
+
 macro_rules! all_langs {
     ($macro:ident) => {
         $macro!(cpp);
@@ -76,6 +88,7 @@ enum Opt {
 }
 
 trait Generator: trans_gen::Generator {
+    const NAME: &'static str;
     fn generate(path: &Path) -> anyhow::Result<()>;
     fn build_local(path: &Path) -> anyhow::Result<()>;
     fn run_local(path: &Path, input_file: &Path, output_file: &Path) -> anyhow::Result<()>;
@@ -96,10 +109,16 @@ fn generate_model<T: trans_gen::Generator>(path: &Path) -> anyhow::Result<()> {
 }
 
 fn test<T: Generator>(input: &model::PlayerView) -> anyhow::Result<()> {
+    println!("Testing {}", T::NAME);
     let tempdir = tempfile::tempdir().context("Failed to create temp dir")?;
     let path = tempdir.as_ref();
     T::generate(path).context("Failed to generate code")?;
+
+    let start_time = std::time::Instant::now();
     T::build_local(path).context("Failed to build locally")?;
+    let running_duration = std::time::Instant::now().duration_since(start_time);
+    println!("Build duration: {}", format_duration(running_duration));
+
     let input_file = path.join("input.trans");
     trans::Trans::write_to(
         input,
@@ -109,7 +128,12 @@ fn test<T: Generator>(input: &model::PlayerView) -> anyhow::Result<()> {
     )
     .context("Failed to write input")?;
     let output_file = path.join("output.trans");
+
+    let start_time = std::time::Instant::now();
     T::run_local(path, &input_file, &output_file).context("Failed to run locally")?;
+    let running_duration = std::time::Instant::now().duration_since(start_time);
+    println!("Run duration: {}", format_duration(running_duration));
+
     let output: model::PlayerView = trans::Trans::read_from(&mut std::io::BufReader::new(
         std::fs::File::open(&output_file).context("Failed to open output file")?,
     ))
@@ -117,6 +141,7 @@ fn test<T: Generator>(input: &model::PlayerView) -> anyhow::Result<()> {
     if *input != output {
         anyhow::bail!("Input and output differ");
     }
+    println!("Test finished successfully");
     Ok(())
 }
 

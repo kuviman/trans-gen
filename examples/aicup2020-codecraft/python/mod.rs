@@ -1,6 +1,7 @@
 use super::*;
 
 impl Generator for trans_gen::gens::python::Generator {
+    const NAME: &'static str = "Python";
     fn generate(path: &Path) -> anyhow::Result<()> {
         generate_model::<Self>(path).context("Failed to generate model")?;
         write_file!(path, "main.py")?;
