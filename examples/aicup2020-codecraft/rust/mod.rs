@@ -22,13 +22,21 @@ impl Generator for trans_gen::gens::rust::Generator {
             .run()
     }
     fn run_local(path: &Path, input_file: &Path, output_file: &Path) -> anyhow::Result<()> {
-        command("cargo")
-            .arg("run")
-            .arg("--release")
-            .arg("--")
-            .arg(input_file)
-            .arg(output_file)
-            .current_dir(path)
-            .run()
+        let crate_name = "aicup2020-codecraft";
+        command(
+            path.join("target")
+                .join("release")
+                .join(format!(
+                    "{}{}",
+                    crate_name,
+                    if cfg!(windows) { ".exe" } else { "" }
+                ))
+                .to_str()
+                .unwrap(),
+        )
+        .arg(input_file)
+        .arg(output_file)
+        .current_dir(path)
+        .run()
     }
 }
