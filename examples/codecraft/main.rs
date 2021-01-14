@@ -27,6 +27,7 @@ macro_rules! all_runnable_langs {
         $macro!(python);
         $macro!(ruby);
         $macro!(rust);
+        $macro!(java);
     };
 }
 
@@ -34,7 +35,6 @@ macro_rules! all_langs {
     ($macro:ident) => {
         all_runnable_langs!($macro);
         $macro!(fsharp);
-        $macro!(java);
         $macro!(javascript);
         $macro!(kotlin);
         $macro!(markdown);
