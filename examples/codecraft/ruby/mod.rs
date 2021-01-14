@@ -7,6 +7,9 @@ impl Generator for trans_gen::gens::ruby::Generator {
         write_file!(path, "main.rb")?;
         Ok(())
     }
+}
+
+impl RunnableGenerator for trans_gen::gens::ruby::Generator {
     fn build_local(path: &Path) -> anyhow::Result<()> {
         Ok(())
     }

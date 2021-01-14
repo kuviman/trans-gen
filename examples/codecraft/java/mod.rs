@@ -13,6 +13,9 @@ impl Generator for trans_gen::gens::java::Generator {
         write_file!(path, "src/main/java/Runner.java", "Runner.java")?;
         Ok(())
     }
+}
+
+impl RunnableGenerator for trans_gen::gens::java::Generator {
     fn build_local(path: &Path) -> anyhow::Result<()> {
         command("mvn")
             .arg("package")

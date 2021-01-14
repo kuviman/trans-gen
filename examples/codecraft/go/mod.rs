@@ -12,6 +12,9 @@ impl Generator for trans_gen::gens::go::Generator {
         write_file!(path, "main.go")?;
         Ok(())
     }
+}
+
+impl RunnableGenerator for trans_gen::gens::go::Generator {
     fn build_local(path: &Path) -> anyhow::Result<()> {
         let project_name = "codecraft";
         command("go")

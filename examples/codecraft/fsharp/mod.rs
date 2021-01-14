@@ -12,6 +12,9 @@ impl Generator for trans_gen::gens::fsharp::Generator {
         )?;
         Ok(())
     }
+}
+
+impl RunnableGenerator for trans_gen::gens::fsharp::Generator {
     fn build_local(path: &Path) -> anyhow::Result<()> {
         command("dotnet")
             .current_dir(path)

@@ -8,6 +8,9 @@ impl Generator for trans_gen::gens::csharp::Generator {
         write_file!(path, "Runner.cs")?;
         Ok(())
     }
+}
+
+impl RunnableGenerator for trans_gen::gens::csharp::Generator {
     fn build_local(path: &Path) -> anyhow::Result<()> {
         command("dotnet")
             .current_dir(path)

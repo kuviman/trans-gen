@@ -7,6 +7,9 @@ impl Generator for trans_gen::gens::javascript::Generator {
         write_file!(path, "main.js")?;
         Ok(())
     }
+}
+
+impl RunnableGenerator for trans_gen::gens::javascript::Generator {
     fn build_local(path: &Path) -> anyhow::Result<()> {
         Ok(())
     }

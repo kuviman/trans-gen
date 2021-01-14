@@ -12,6 +12,9 @@ impl Generator for trans_gen::gens::dlang::Generator {
         write_file!(path, "source/app.d", "app.d")?;
         Ok(())
     }
+}
+
+impl RunnableGenerator for trans_gen::gens::dlang::Generator {
     fn build_local(path: &Path) -> anyhow::Result<()> {
         command("dub")
             .arg("build")

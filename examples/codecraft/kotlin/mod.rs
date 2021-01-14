@@ -13,6 +13,9 @@ impl Generator for trans_gen::gens::kotlin::Generator {
         write_file!(path, "src/main/kotlin/Runner.kt", "Runner.kt")?;
         Ok(())
     }
+}
+
+impl RunnableGenerator for trans_gen::gens::kotlin::Generator {
     fn build_local(path: &Path) -> anyhow::Result<()> {
         command("mvn")
             .arg("package")

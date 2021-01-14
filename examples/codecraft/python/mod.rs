@@ -7,6 +7,9 @@ impl Generator for trans_gen::gens::python::Generator {
         write_file!(path, "main.py")?;
         Ok(())
     }
+}
+
+impl RunnableGenerator for trans_gen::gens::python::Generator {
     fn build_local(path: &Path) -> anyhow::Result<()> {
         Ok(())
     }

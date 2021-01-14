@@ -12,6 +12,9 @@ impl Generator for trans_gen::gens::cpp::Generator {
         write_file!(path, "main.cpp")?;
         Ok(())
     }
+}
+
+impl RunnableGenerator for trans_gen::gens::cpp::Generator {
     fn build_local(path: &Path) -> anyhow::Result<()> {
         let standard: &str = "17";
         command("cmake")

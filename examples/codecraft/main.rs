@@ -99,8 +99,19 @@ enum Opt {
 trait Generator: trans_gen::Generator {
     const NAME: &'static str;
     fn generate(path: &Path) -> anyhow::Result<()>;
+}
+
+trait RunnableGenerator: Generator {
     fn build_local(path: &Path) -> anyhow::Result<()>;
     fn run_local(path: &Path, input_file: &Path, output_file: &Path) -> anyhow::Result<()>;
+}
+
+impl Generator for trans_gen::gens::markdown::Generator {
+    const NAME: &'static str = "Markdown";
+    fn generate(path: &Path) -> anyhow::Result<()> {
+        generate_model::<Self>(path)?;
+        Ok(())
+    }
 }
 
 fn generate_model<T: trans_gen::Generator>(path: &Path) -> anyhow::Result<Vec<String>> {
@@ -115,7 +126,7 @@ fn generate_model<T: trans_gen::Generator>(path: &Path) -> anyhow::Result<Vec<St
     Ok(files)
 }
 
-fn test<T: Generator>(input: &model::PlayerView) -> anyhow::Result<()> {
+fn test<T: RunnableGenerator>(input: &model::PlayerView) -> anyhow::Result<()> {
     println!("Testing {}", T::NAME);
     let tempdir = tempfile::tempdir().context("Failed to create temp dir")?;
     let path = tempdir.as_ref();
@@ -155,8 +166,10 @@ fn test<T: Generator>(input: &model::PlayerView) -> anyhow::Result<()> {
 fn generate_all(path: &Path) -> anyhow::Result<()> {
     macro_rules! generate {
         ($lang:ident) => {
-            generate_model::<trans_gen::gens::$lang::Generator>(&path.join(stringify!($lang)))
-                .context(format!("Failed to generate {}", stringify!($lang)))?;
+            <trans_gen::gens::$lang::Generator as Generator>::generate(
+                &path.join(stringify!($lang)),
+            )
+            .context(format!("Failed to generate {}", stringify!($lang)))?;
         };
     }
     all_langs!(generate);

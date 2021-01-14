@@ -14,6 +14,9 @@ impl Generator for trans_gen::gens::rust::Generator {
         write_file!(path, "src/main.rs", "main.rs")?;
         Ok(())
     }
+}
+
+impl RunnableGenerator for trans_gen::gens::rust::Generator {
     fn build_local(path: &Path) -> anyhow::Result<()> {
         command("cargo")
             .arg("build")

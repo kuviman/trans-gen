@@ -13,6 +13,9 @@ impl Generator for trans_gen::gens::scala::Generator {
         write_file!(path, "src/main/scala/Runner.scala", "Runner.scala")?;
         Ok(())
     }
+}
+
+impl RunnableGenerator for trans_gen::gens::scala::Generator {
     fn build_local(path: &Path) -> anyhow::Result<()> {
         command("mvn")
             .arg("package")
