@@ -1,27 +1,32 @@
 use super::*;
 
-impl Generator for trans_gen::gens::dlang::Generator {
-    const NAME: &'static str = "D";
+impl Generator for trans_gen::gens::go::Generator {
+    const NAME: &'static str = "Go";
     fn generate(path: &Path) -> anyhow::Result<()> {
-        generate_model::<Self>(&path.join("source")).context("Failed to generate model")?;
-        let project_name = "aicup2020-codecraft";
+        generate_model::<Self>(path).context("Failed to generate model")?;
+        let project_name = "codecraft";
         std::fs::write(
-            path.join("dub.json"),
-            &include_templing!("examples/aicup2020-codecraft/dlang/files/dub.json.templing"),
+            path.join("go.mod"),
+            &include_templing!("examples/codecraft/go/files/go.mod.templing"),
         )?;
-        write_file!(path, "source/app.d", "app.d")?;
+        write_file!(path, "main.go")?;
         Ok(())
     }
     fn build_local(path: &Path) -> anyhow::Result<()> {
-        command("dub")
+        let project_name = "codecraft";
+        command("go")
             .arg("build")
-            .arg("-b")
-            .arg("release")
+            .arg("-o")
+            .arg(format!(
+                "{}{}",
+                project_name,
+                if cfg!(windows) { ".exe" } else { "" }
+            ))
             .current_dir(path)
             .run()
     }
     fn run_local(path: &Path, input_file: &Path, output_file: &Path) -> anyhow::Result<()> {
-        let project_name = "aicup2020-codecraft";
+        let project_name = "codecraft";
         command(
             path.join(format!(
                 "{}{}",

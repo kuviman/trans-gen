@@ -19,10 +19,10 @@ jobs:
         with:
           command: test
 
-      - name: aicup2020-codecraft
+      - name: codecraft
         run: |
           git config --global user.name 'CI'
           git config --global user.email '<>'
-          git fetch origin aicup2020-codecraft
-          bash examples/aicup2020-codecraft/update-branch.sh
-          git push origin aicup2020-codecraft
+          git fetch origin codecraft
+          bash examples/codecraft/update-branch.sh
+          git push origin codecraft

@@ -4,7 +4,7 @@ impl Generator for trans_gen::gens::csharp::Generator {
     const NAME: &'static str = "C#";
     fn generate(path: &Path) -> anyhow::Result<()> {
         generate_model::<Self>(path).context("Failed to generate model")?;
-        write_file!(path, "aicup2020-codecraft.csproj", "project.csproj")?;
+        write_file!(path, "codecraft.csproj", "project.csproj")?;
         write_file!(path, "Runner.cs")?;
         Ok(())
     }
@@ -20,7 +20,7 @@ impl Generator for trans_gen::gens::csharp::Generator {
     }
     fn run_local(path: &Path, input_file: &Path, output_file: &Path) -> anyhow::Result<()> {
         command("dotnet")
-            .arg("aicup2020-codecraft.dll")
+            .arg("codecraft.dll")
             .arg(input_file)
             .arg(output_file)
             .current_dir(path)

@@ -1,7 +1,7 @@
 using System;
 using System.IO;
 
-namespace Aicup2020Codecraft
+namespace Codecraft
 {
     public class Runner
     {

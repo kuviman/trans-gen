@@ -99,7 +99,7 @@ trait Generator: trans_gen::Generator {
 
 fn generate_model<T: trans_gen::Generator>(path: &Path) -> anyhow::Result<()> {
     let mut generator =
-        trans_gen::GeneratorImpl::<T>::new("aicup2020-codecraft", "1.0.0", Default::default());
+        trans_gen::GeneratorImpl::<T>::new("codecraft", "1.0.0", Default::default());
     generator.add(&trans::Schema::of::<model::PlayerView>());
     let result = generator.result();
     result

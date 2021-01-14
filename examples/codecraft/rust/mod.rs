@@ -4,12 +4,12 @@ impl Generator for trans_gen::gens::rust::Generator {
     const NAME: &'static str = "Rust";
     fn generate(path: &Path) -> anyhow::Result<()> {
         generate_model::<Self>(&path.join("model")).context("Failed to generate model")?;
-        let crate_name = "aicup2020-codecraft";
+        let crate_name = "codecraft";
         let crate_version = env!("CARGO_PKG_VERSION");
         let model_crate_name = format!("{}-model", crate_name);
         std::fs::write(
             path.join("Cargo.toml"),
-            &include_templing!("examples/aicup2020-codecraft/rust/files/Cargo.toml.templing"),
+            &include_templing!("examples/codecraft/rust/files/Cargo.toml.templing"),
         )?;
         write_file!(path, "src/main.rs", "main.rs")?;
         Ok(())
@@ -22,7 +22,7 @@ impl Generator for trans_gen::gens::rust::Generator {
             .run()
     }
     fn run_local(path: &Path, input_file: &Path, output_file: &Path) -> anyhow::Result<()> {
-        let crate_name = "aicup2020-codecraft";
+        let crate_name = "codecraft";
         command(
             path.join("target")
                 .join("release")

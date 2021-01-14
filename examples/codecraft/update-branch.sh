@@ -2,8 +2,8 @@ set -ex
 
 cd "$(dirname "$0")"
 
-git worktree add branch aicup2020-codecraft
-cargo run --example aicup2020-codecraft -- generate branch/generated-code
+git worktree add branch codecraft
+cargo run --example codecraft -- generate branch/generated-code
 pushd branch
 git add .
 git commit -m "Update generated code" || true

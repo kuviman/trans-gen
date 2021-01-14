@@ -1,8 +1,8 @@
 package main
 
 import (
-	. "aicup2020-codecraft/model"
 	"bufio"
+	. "codecraft/model"
 	"os"
 )
 

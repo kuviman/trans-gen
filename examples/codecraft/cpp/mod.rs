@@ -4,10 +4,10 @@ impl Generator for trans_gen::gens::cpp::Generator {
     const NAME: &'static str = "C++";
     fn generate(path: &Path) -> anyhow::Result<()> {
         generate_model::<Self>(path).context("Failed to generate model")?;
-        let project_name = "aicup2020-codecraft";
+        let project_name = "codecraft";
         std::fs::write(
             path.join("CMakeLists.txt"),
-            &include_templing!("examples/aicup2020-codecraft/cpp/files/CMakeLists.txt.templing"),
+            &include_templing!("examples/codecraft/cpp/files/CMakeLists.txt.templing"),
         )?;
         write_file!(path, "main.cpp")?;
         Ok(())
@@ -31,7 +31,7 @@ impl Generator for trans_gen::gens::cpp::Generator {
         Ok(())
     }
     fn run_local(path: &Path, input_file: &Path, output_file: &Path) -> anyhow::Result<()> {
-        let project_name = "aicup2020-codecraft";
+        let project_name = "codecraft";
         command(
             PathBuf::from(if cfg!(windows) { "Release" } else { "." })
                 .join(format!(
