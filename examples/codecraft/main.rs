@@ -31,13 +31,13 @@ macro_rules! all_runnable_langs {
         $macro!(kotlin);
         $macro!(scala);
         $macro!(fsharp);
+        $macro!(javascript);
     };
 }
 
 macro_rules! all_langs {
     ($macro:ident) => {
         all_runnable_langs!($macro);
-        $macro!(javascript);
         $macro!(markdown);
     };
 }
