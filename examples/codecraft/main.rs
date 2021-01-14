@@ -23,6 +23,7 @@ mod csharp;
 mod dlang;
 mod go;
 mod python;
+mod ruby;
 mod rust;
 
 fn command(cmd: &str) -> Command {
@@ -180,6 +181,7 @@ fn main() -> anyhow::Result<()> {
             test!(csharp);
             test!(dlang);
             test!(go);
+            test!(ruby);
         }
     }
     Ok(())
