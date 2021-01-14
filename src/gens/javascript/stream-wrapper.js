@@ -27,17 +27,17 @@ class StreamWrapper {
     async readInt() {
         const buffer = await this.stream.read(INT_SIZE);
         if (this.isLittleEndianMachine) {
-            return parseInt(buffer.readInt32LE(0, INT_SIZE));
+            return buffer.readInt32LE();
         }
-        return parseInt(buffer.readInt32BE(0, INT_SIZE));
+        return buffer.readInt32BE();
     }
 
     async readLong() {
         const buffer = await this.stream.read(LONG_SIZE);
         if (this.isLittleEndianMachine) {
-            return parseInt(buffer.readBigInt64LE());
+            return buffer.readBigInt64LE();
         }
-        return parseInt(buffer.readBigInt64BE());
+        return buffer.readBigInt64BE();
     }
 
     async readFloat() {
