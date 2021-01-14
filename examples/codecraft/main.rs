@@ -29,6 +29,7 @@ macro_rules! all_runnable_langs {
         $macro!(rust);
         $macro!(java);
         $macro!(kotlin);
+        $macro!(scala);
     };
 }
 
@@ -38,7 +39,6 @@ macro_rules! all_langs {
         $macro!(fsharp);
         $macro!(javascript);
         $macro!(markdown);
-        $macro!(scala);
     };
 }
 
