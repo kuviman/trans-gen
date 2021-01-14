@@ -169,9 +169,6 @@ fn main() -> anyhow::Result<()> {
             generate_all(&path)?;
         }
         Opt::Test { langs } => {
-            let tempdir = tempfile::tempdir().context("Failed to create temp dir")?;
-            let tempdir = tempdir.as_ref();
-
             macro_rules! test {
                 ($lang:ident) => {
                     if langs.is_empty() || langs.contains(&stringify!($lang).to_owned()) {
