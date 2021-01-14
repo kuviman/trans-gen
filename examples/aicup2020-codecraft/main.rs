@@ -19,6 +19,7 @@ macro_rules! write_file {
 }
 
 mod cpp;
+mod csharp;
 mod python;
 mod rust;
 
@@ -174,6 +175,7 @@ fn main() -> anyhow::Result<()> {
             test::<trans_gen::gens::rust::Generator>(&snapshot)?;
             test::<trans_gen::gens::cpp::Generator>(&snapshot)?;
             test::<trans_gen::gens::python::Generator>(&snapshot)?;
+            test::<trans_gen::gens::csharp::Generator>(&snapshot)?;
         }
     }
     Ok(())
