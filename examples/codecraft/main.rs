@@ -30,13 +30,13 @@ macro_rules! all_runnable_langs {
         $macro!(java);
         $macro!(kotlin);
         $macro!(scala);
+        $macro!(fsharp);
     };
 }
 
 macro_rules! all_langs {
     ($macro:ident) => {
         all_runnable_langs!($macro);
-        $macro!(fsharp);
         $macro!(javascript);
         $macro!(markdown);
     };
@@ -103,15 +103,16 @@ trait Generator: trans_gen::Generator {
     fn run_local(path: &Path, input_file: &Path, output_file: &Path) -> anyhow::Result<()>;
 }
 
-fn generate_model<T: trans_gen::Generator>(path: &Path) -> anyhow::Result<()> {
+fn generate_model<T: trans_gen::Generator>(path: &Path) -> anyhow::Result<Vec<String>> {
     let mut generator =
         trans_gen::GeneratorImpl::<T>::new("codecraft", "1.0.0", Default::default());
     generator.add(&trans::Schema::of::<model::PlayerView>());
     let result = generator.result();
+    let files = result.files.iter().map(|file| file.path.clone()).collect();
     result
         .write_to(path)
         .context("Failed to write generated result")?;
-    Ok(())
+    Ok(files)
 }
 
 fn test<T: Generator>(input: &model::PlayerView) -> anyhow::Result<()> {
