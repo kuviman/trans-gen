@@ -92,7 +92,7 @@ fn format_duration(duration: std::time::Duration) -> String {
 
 #[derive(structopt::StructOpt)]
 enum Opt {
-    Generate { path: PathBuf },
+    Generate { path: PathBuf, langs: Vec<String> },
     Test { langs: Vec<String> },
 }
 
@@ -163,27 +163,28 @@ fn test<T: RunnableGenerator>(input: &model::PlayerView) -> anyhow::Result<()> {
     Ok(())
 }
 
-fn generate_all(path: &Path) -> anyhow::Result<()> {
-    macro_rules! generate {
-        ($lang:ident) => {
-            <trans_gen::gens::$lang::Generator as Generator>::generate(
-                &path.join(stringify!($lang)),
-            )
-            .context(format!("Failed to generate {}", stringify!($lang)))?;
-        };
-    }
-    all_langs!(generate);
-    Ok(())
-}
-
 fn main() -> anyhow::Result<()> {
     let snapshot: model::PlayerView =
         serde_json::from_str(include_str!("snapshot.json")).expect("Failed to read snapshot");
     let opt: Opt = structopt::StructOpt::from_args();
 
     match opt {
-        Opt::Generate { path } => {
-            generate_all(&path)?;
+        Opt::Generate { path, langs } => {
+            macro_rules! generate {
+                ($lang:ident) => {
+                    if langs.is_empty() || langs.contains(&stringify!($lang).to_owned()) {
+                        let path = if langs.len() == 1 {
+                            path.clone()
+                        } else {
+                            path.join(stringify!($lang))
+                        };
+                        <trans_gen::gens::$lang::Generator as Generator>::generate(&path)
+                            .context(format!("Failed to generate {}", stringify!($lang)))?;
+                    }
+                };
+            }
+            std::fs::remove_dir_all(&path).context("Failed to clear target directory")?;
+            all_langs!(generate);
         }
         Opt::Test { langs } => {
             macro_rules! test {
