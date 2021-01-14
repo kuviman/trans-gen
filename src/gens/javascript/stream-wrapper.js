@@ -59,11 +59,7 @@ class StreamWrapper {
     async readString() {
         const length = await this.readInt();
         const buffer = await this.stream.read(length);
-        const result = buffer.toString();
-        if (result.length !== length) {
-            throw new Error('Unexpected EOF');
-        }
-        return result;
+        return buffer.toString();
     }
 
     // Writing primitives
@@ -115,8 +111,9 @@ class StreamWrapper {
     }
 
     async writeString(value) {
-        this.writeInt(value.length);
-        return await this.stream.write(value, 'utf8');
+        const data = Buffer.from(value);
+        this.writeInt(data.length);
+        return await this.stream.write(data);
     }
 }
 
