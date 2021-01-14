@@ -87,7 +87,7 @@ macro_rules! all_langs {
 #[derive(structopt::StructOpt)]
 enum Opt {
     Generate { path: PathBuf },
-    Test,
+    Test { langs: Vec<String> },
 }
 
 trait Generator: trans_gen::Generator {
@@ -168,18 +168,24 @@ fn main() -> anyhow::Result<()> {
         Opt::Generate { path } => {
             generate_all(&path)?;
         }
-        Opt::Test => {
+        Opt::Test { langs } => {
             let tempdir = tempfile::tempdir().context("Failed to create temp dir")?;
             let tempdir = tempdir.as_ref();
 
-            generate_all(tempdir)?;
+            macro_rules! test {
+                ($lang:ident) => {
+                    if langs.is_empty() || langs.contains(&stringify!($lang).to_owned()) {
+                        test::<trans_gen::gens::$lang::Generator>(&snapshot)?;
+                    }
+                };
+            }
 
-            test::<trans_gen::gens::rust::Generator>(&snapshot)?;
-            test::<trans_gen::gens::cpp::Generator>(&snapshot)?;
-            test::<trans_gen::gens::python::Generator>(&snapshot)?;
-            test::<trans_gen::gens::csharp::Generator>(&snapshot)?;
-            test::<trans_gen::gens::dlang::Generator>(&snapshot)?;
-            test::<trans_gen::gens::go::Generator>(&snapshot)?;
+            test!(rust);
+            test!(cpp);
+            test!(python);
+            test!(csharp);
+            test!(dlang);
+            test!(go);
         }
     }
     Ok(())
