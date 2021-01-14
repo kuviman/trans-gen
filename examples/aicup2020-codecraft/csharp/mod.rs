@@ -4,7 +4,7 @@ impl Generator for trans_gen::gens::csharp::Generator {
     const NAME: &'static str = "C#";
     fn generate(path: &Path) -> anyhow::Result<()> {
         generate_model::<Self>(path).context("Failed to generate model")?;
-        write_file!(path, "aicup2020-codecraft.csproj")?;
+        write_file!(path, "aicup2020-codecraft.csproj", "project.csproj")?;
         write_file!(path, "Runner.cs")?;
         Ok(())
     }

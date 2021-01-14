@@ -37,7 +37,7 @@ impl crate::Generator for Generator {
     type Options = ();
     fn new(name: &str, version: &str, _: ()) -> Self {
         Self {
-            crate_name: name.to_owned(),
+            crate_name: format!("{}-model", name),
             crate_version: version.to_owned(),
             types: HashMap::new(),
         }

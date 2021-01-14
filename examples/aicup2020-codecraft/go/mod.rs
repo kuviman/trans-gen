@@ -4,7 +4,7 @@ impl Generator for trans_gen::gens::go::Generator {
     const NAME: &'static str = "Go";
     fn generate(path: &Path) -> anyhow::Result<()> {
         generate_model::<Self>(path).context("Failed to generate model")?;
-        let project_name = "aicup2020-codecraft-model";
+        let project_name = "aicup2020-codecraft";
         std::fs::write(
             path.join("go.mod"),
             &include_templing!("examples/aicup2020-codecraft/go/files/go.mod.templing"),
@@ -13,7 +13,7 @@ impl Generator for trans_gen::gens::go::Generator {
         Ok(())
     }
     fn build_local(path: &Path) -> anyhow::Result<()> {
-        let project_name = "aicup2020-codecraft-model";
+        let project_name = "aicup2020-codecraft";
         command("go")
             .arg("build")
             .arg("-o")
@@ -26,7 +26,7 @@ impl Generator for trans_gen::gens::go::Generator {
             .run()
     }
     fn run_local(path: &Path, input_file: &Path, output_file: &Path) -> anyhow::Result<()> {
-        let project_name = "aicup2020-codecraft-model";
+        let project_name = "aicup2020-codecraft";
         command(
             path.join(format!(
                 "{}{}",
