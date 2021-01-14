@@ -18,13 +18,36 @@ macro_rules! write_file {
     };
 }
 
-mod cpp;
-mod csharp;
-mod dlang;
-mod go;
-mod python;
-mod ruby;
-mod rust;
+macro_rules! all_runnable_langs {
+    ($macro:ident) => {
+        $macro!(cpp);
+        $macro!(csharp);
+        $macro!(dlang);
+        $macro!(go);
+        $macro!(python);
+        $macro!(ruby);
+        $macro!(rust);
+    };
+}
+
+macro_rules! all_langs {
+    ($macro:ident) => {
+        all_runnable_langs!($macro);
+        $macro!(fsharp);
+        $macro!(java);
+        $macro!(javascript);
+        $macro!(kotlin);
+        $macro!(markdown);
+        $macro!(scala);
+    };
+}
+
+macro_rules! declare_mod {
+    ($lang:ident) => {
+        mod $lang;
+    };
+}
+all_runnable_langs!(declare_mod);
 
 fn command(cmd: &str) -> Command {
     let mut parts = cmd.split_whitespace();
@@ -65,24 +88,6 @@ fn format_duration(duration: std::time::Duration) -> String {
     } else {
         format!("{:.1} s", duration.as_secs_f64())
     }
-}
-
-macro_rules! all_langs {
-    ($macro:ident) => {
-        $macro!(cpp);
-        $macro!(csharp);
-        $macro!(dlang);
-        $macro!(fsharp);
-        $macro!(go);
-        $macro!(java);
-        $macro!(javascript);
-        $macro!(kotlin);
-        $macro!(markdown);
-        $macro!(python);
-        $macro!(ruby);
-        $macro!(rust);
-        $macro!(scala);
-    };
 }
 
 #[derive(structopt::StructOpt)]
@@ -174,14 +179,7 @@ fn main() -> anyhow::Result<()> {
                     }
                 };
             }
-
-            test!(rust);
-            test!(cpp);
-            test!(python);
-            test!(csharp);
-            test!(dlang);
-            test!(go);
-            test!(ruby);
+            all_runnable_langs!(test);
         }
     }
     Ok(())
