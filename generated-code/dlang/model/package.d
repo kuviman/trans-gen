@@ -1,9 +1,0 @@
-public import entity_type;
-public import build_properties;
-public import attack_properties;
-public import repair_properties;
-public import entity_properties;
-public import player;
-public import vec2_int;
-public import entity;
-public import player_view;
