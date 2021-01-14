@@ -1,7 +1,9 @@
 [package]
-name = "codecraft-model"
-version = "1.0.0"
+name = "codecraft"
+version = "0.5.0-alpha.0"
 edition = "2018"
 
 [dependencies]
+model = { path = "model", package = "codecraft-model" }
+anyhow = "1"
 trans = "0.5.0-alpha.0"
