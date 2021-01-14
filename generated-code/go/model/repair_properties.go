@@ -1,7 +1,7 @@
 package model
 
 import "io"
-import . "aicup2020-codecraft-model/stream"
+import . "codecraft/stream"
 
 type RepairProperties struct {
     ValidTargets []EntityType

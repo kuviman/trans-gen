@@ -1,5 +1,5 @@
 [package]
-name = "aicup2020-codecraft-model"
+name = "codecraft-model"
 version = "1.0.0"
 edition = "2018"
 

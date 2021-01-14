@@ -1,5 +1,5 @@
 #nowarn "0058"
-namespace Aicup2020CodecraftModel.Model
+namespace Codecraft.Model
 type RepairProperties = {
     ValidTargets: EntityType[];
     Power: int;
