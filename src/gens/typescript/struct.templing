@@ -1,0 +1,4 @@
+{{ imports(schema) }}
+import { StreamWrapper } from "../stream-wrapper";
+
+{{ struct_impl(struc, None) }}

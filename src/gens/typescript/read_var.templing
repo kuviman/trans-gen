@@ -1,0 +1,56 @@
+- match schema {
+- Schema::Bool => {
+{{ var }} = await stream.readBool();
+- }
+- Schema::Int32 => {
+{{ var }} = await stream.readInt();
+- }
+- Schema::Int64 => {
+{{ var }} = await stream.readLong();
+- }
+- Schema::Float32 => {
+{{ var }} = await stream.readFloat();
+- }
+- Schema::Float64 => {
+{{ var }} = await stream.readDouble();
+- }
+- Schema::String => {
+{{ var }} = await stream.readString();
+- }
+- Schema::Struct(Struct { name, .. }) | Schema::OneOf { base_name: name, .. } => {
+{{ var }} = await {{ name.camel_case(conv) }}.readFrom(stream);
+- }
+- Schema::Option(inner) => {
+if (await stream.readBool()) {
+    {{ read_var(var, inner) }}
+} else {
+    {{ var }} = null;
+}
+- }
+- Schema::Vec(inner) => {
+{{ var }} = [];
+- let count_var = format!("{}Count", var); let count_var = &count_var;
+for (let {{ count_var }} = await stream.readInt(); {{ count_var }} > 0; {{ count_var }}--) {
+    - let element_var = format!("{}Element", var); let element_var = &element_var;
+    let {{ element_var }};
+    {{ read_var(element_var, inner) }}
+    {{ var }}.push({{ element_var }});
+}
+- }
+- Schema::Map(key_type, value_type) => {
+{{ var }} = new Map();
+- let count_var = format!("{}Count", var); let count_var = &count_var;
+for (let {{ count_var }} = await stream.readInt(); {{ count_var }} > 0; {{ count_var }}--) {
+    - let key_var = format!("{}Key", var); let key_var = &key_var;
+    - let value_var = format!("{}Value", var); let value_var = &value_var;
+    let {{ key_var }};
+    let {{ value_var }};
+    {{ read_var(key_var, key_type) }}
+    {{ read_var(value_var, value_type) }}
+    {{ var }}.set({{ key_var }}, {{ value_var }})
+}
+- }
+- Schema::Enum { .. } => {
+{{ var }} = await stream.readInt();
+- }
+- }

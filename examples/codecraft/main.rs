@@ -32,6 +32,7 @@ macro_rules! all_runnable_langs {
         $macro!(scala);
         $macro!(fsharp);
         $macro!(javascript);
+        $macro!(typescript);
     };
 }
 

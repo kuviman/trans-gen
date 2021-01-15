@@ -1,0 +1,3 @@
+- for name in &imports {
+import { {{ name.camel_case(conv) }} } from "./{{ file_name(name) }}";
+- }
