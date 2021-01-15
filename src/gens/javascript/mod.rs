@@ -13,9 +13,9 @@ pub struct Generator {
 }
 
 fn imports(schema: &Schema) -> String {
-    let mut imports = HashSet::new();
-    fn add_imports_struct(struc: &Struct, imports: &mut HashSet<Name>) {
-        fn add_imports(schema: &Schema, imports: &mut HashSet<Name>) {
+    let mut imports = BTreeSet::new();
+    fn add_imports_struct(struc: &Struct, imports: &mut BTreeSet<Name>) {
+        fn add_imports(schema: &Schema, imports: &mut BTreeSet<Name>) {
             match schema {
                 Schema::Struct(Struct { name, .. })
                 | Schema::OneOf {

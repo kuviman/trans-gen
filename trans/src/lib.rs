@@ -30,7 +30,7 @@ pub trait Trans: Sized + 'static {
     fn read_from(reader: &mut dyn std::io::Read) -> std::io::Result<Self>;
 }
 
-#[derive(PartialEq, Eq, Hash, Clone)]
+#[derive(PartialEq, Eq, Hash, PartialOrd, Ord, Clone)]
 pub struct Name(String);
 
 impl std::fmt::Debug for Name {
