@@ -1,0 +1,55 @@
+class {{ struc.name.camel_case(conv) }}~
+- if let Some((base_name, _)) = base {
+    ~ extends {{ base_name.camel_case(conv) }} {
+- } else {
+    ~ {
+- }
+    constructor(~
+    - for (index, field) in struc.fields.iter().enumerate() {
+        ~{{field.name.mixed_case(conv)}}~
+        - if index + 1 < struc.fields.len() {
+            ~, ~
+        - }
+    - }
+    ~) {
+        - if base.is_some() {
+        super();
+        - }
+        - for field in &struc.fields {
+        this.{{ field.name.mixed_case(conv) }} = {{ field.name.mixed_case(conv) }};
+        - }
+    }
+
+    static async readFrom(stream) {
+        - for field in &struc.fields {
+        let {{ field.name.mixed_case(conv) }};
+        {{ read_var(&field.name.mixed_case(conv), &field.schema) }}
+        - }
+        return new {{ struc.name.camel_case(conv) }}(~
+        - for (index, field) in struc.fields.iter().enumerate() {
+            ~{{field.name.mixed_case(conv)}}~
+            - if index + 1 < struc.fields.len() {
+                ~, ~
+            - }
+        - }
+        ~)
+    }
+
+    async writeTo(stream) {
+        - if base.is_some() {
+        await stream.writeInt({{ struc.name.camel_case(conv) }}.TAG);
+        - }
+        - if let Some(magic) = struc.magic {
+        await stream.writeInt({{ magic }});
+        - }
+        - for field in &struc.fields {
+        let {{ field.name.mixed_case(conv) }} = this.{{ field.name.mixed_case(conv) }};
+        {{ write_var(&field.name.mixed_case(conv), &field.schema) }}
+        - }
+    }
+}
+
+- if let Some((base_name, tag)) = base {
+{{ struc.name.camel_case(conv) }}.TAG = {{ tag }};
+{{ base_name.camel_case(conv) }}.{{ struc.name.camel_case(conv) }} = {{ struc.name.camel_case(conv) }};
+- }

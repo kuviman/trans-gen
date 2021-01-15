@@ -10,8 +10,8 @@ class FileWrapper {
     }
     async read(byteCount) {
         const buffer = Buffer.alloc(byteCount);
-        const read = fs.readSync(this.file, buffer, 0, byteCount);
-        if (read != byteCount) {
+        const readBytes = fs.readSync(this.file, buffer, 0, byteCount, null);
+        if (readBytes != byteCount) {
             throw new Error("Unexpected EOF");
         }
         return buffer;

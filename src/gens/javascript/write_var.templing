@@ -1,0 +1,53 @@
+- match schema {
+- Schema::Bool => {
+await stream.writeBool({{ var }});
+- }
+- Schema::Int32 => {
+await stream.writeInt({{ var }});
+- }
+- Schema::Int64 => {
+await stream.writeLong({{ var }});
+- }
+- Schema::Float32 => {
+await stream.writeFloat({{ var }});
+- }
+- Schema::Float64 => {
+await stream.writeDouble({{ var }});
+- }
+- Schema::String => {
+await stream.writeString({{ var }});
+- }
+- Schema::Struct(_) | Schema::OneOf { .. } => {
+await {{ var }}.writeTo(stream);
+- }
+- Schema::Option(inner) => {
+if ({{ var }} === null) {
+    await stream.writeBool(false);
+} else {
+    await stream.writeBool(true);
+    {{ write_var(var, inner) }}
+}
+- }
+- Schema::Vec(inner) => {
+await stream.writeInt({{ var }}.length);
+- let element_var = format!("{}Element", var); let element_var = &element_var;
+for (let {{ element_var }} of {{ var }}) {
+    {{ write_var(element_var, inner) }}
+}
+- }
+- Schema::Map(key_type, value_type) => {
+await stream.writeInt({{ var }}.size);
+- let entry_var = format!("{}Entry", var); let entry_var = &entry_var;
+for (let {{ entry_var }} of {{ var }}) {
+    - let key_var = format!("{}Key", var); let key_var = &key_var;
+    - let value_var = format!("{}Value", var); let value_var = &value_var;
+    let {{ key_var }} = {{ entry_var }}[0];
+    let {{ value_var }} = {{ entry_var }}[1];
+    {{ write_var(key_var, key_type) }}
+    {{ write_var(value_var, value_type) }}
+}
+- }
+- Schema::Enum { .. } => {
+await stream.writeInt({{ var }});
+- }
+- }

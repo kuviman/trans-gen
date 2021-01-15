@@ -1,0 +1,3 @@
+{{ imports(schema) }}
+{{ struct_impl(struc, None) }}
+module.exports = {{ struc.name.camel_case(conv) }}

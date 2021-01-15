@@ -1,0 +1,17 @@
+{{ imports(schema) }}
+
+class {{ base_name.camel_case(conv) }} {
+    static async readFrom(stream) {
+        let tag = await stream.readInt();
+        - for variant in variants {
+            if (tag == {{ variant.name.camel_case(conv) }}.TAG) {
+                return await {{ variant.name.camel_case(conv) }}.readFrom(stream);
+            }
+        - }
+        throw new Error("Unexpected tag value");
+    }
+}
+- for (tag, variant) in variants.iter().enumerate() {
+{{ struct_impl(variant, Some((base_name, tag))) }}
+- }
+module.exports = {{ base_name.camel_case(conv) }};
