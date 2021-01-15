@@ -1,6 +1,6 @@
-const Player = require('./player');
-const EntityProperties = require('./entity-properties');
 const Entity = require('./entity');
+const EntityProperties = require('./entity-properties');
+const Player = require('./player');
 class PlayerView {
     constructor(myId, mapSize, fogOfWar, entityProperties, maxTickCount, maxPathfindNodes, currentTick, players, entities) {
         this.myId = myId;
@@ -50,7 +50,7 @@ class PlayerView {
             entitiesElement = await Entity.readFrom(stream);
             entities.push(entitiesElement);
         }
-        return new PlayerView(myId, mapSize, fogOfWar, entityProperties, maxTickCount, maxPathfindNodes, currentTick, players, entities)
+        return new PlayerView(myId, mapSize, fogOfWar, entityProperties, maxTickCount, maxPathfindNodes, currentTick, players, entities);
     }
 
     async writeTo(stream) {

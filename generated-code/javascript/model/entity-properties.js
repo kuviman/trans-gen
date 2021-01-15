@@ -1,5 +1,5 @@
-const BuildProperties = require('./build-properties');
 const AttackProperties = require('./attack-properties');
+const BuildProperties = require('./build-properties');
 const RepairProperties = require('./repair-properties');
 class EntityProperties {
     constructor(size, buildScore, destroyScore, canMove, populationProvide, populationUse, maxHealth, initialCost, sightRange, resourcePerHealth, build, attack, repair) {
@@ -57,7 +57,7 @@ class EntityProperties {
         } else {
             repair = null;
         }
-        return new EntityProperties(size, buildScore, destroyScore, canMove, populationProvide, populationUse, maxHealth, initialCost, sightRange, resourcePerHealth, build, attack, repair)
+        return new EntityProperties(size, buildScore, destroyScore, canMove, populationProvide, populationUse, maxHealth, initialCost, sightRange, resourcePerHealth, build, attack, repair);
     }
 
     async writeTo(stream) {

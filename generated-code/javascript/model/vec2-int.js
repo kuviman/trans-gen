@@ -10,7 +10,7 @@ class Vec2Int {
         x = await stream.readInt();
         let y;
         y = await stream.readInt();
-        return new Vec2Int(x, y)
+        return new Vec2Int(x, y);
     }
 
     async writeTo(stream) {

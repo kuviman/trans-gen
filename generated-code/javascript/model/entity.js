@@ -26,7 +26,7 @@ class Entity {
         health = await stream.readInt();
         let active;
         active = await stream.readBool();
-        return new Entity(id, playerId, entityType, position, health, active)
+        return new Entity(id, playerId, entityType, position, health, active);
     }
 
     async writeTo(stream) {

@@ -15,7 +15,7 @@ class RepairProperties {
         }
         let power;
         power = await stream.readInt();
-        return new RepairProperties(validTargets, power)
+        return new RepairProperties(validTargets, power);
     }
 
     async writeTo(stream) {

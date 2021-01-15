@@ -13,7 +13,7 @@ class AttackProperties {
         damage = await stream.readInt();
         let collectResource;
         collectResource = await stream.readBool();
-        return new AttackProperties(attackRange, damage, collectResource)
+        return new AttackProperties(attackRange, damage, collectResource);
     }
 
     async writeTo(stream) {

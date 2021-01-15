@@ -19,7 +19,7 @@ class BuildProperties {
         } else {
             initHealth = null;
         }
-        return new BuildProperties(options, initHealth)
+        return new BuildProperties(options, initHealth);
     }
 
     async writeTo(stream) {

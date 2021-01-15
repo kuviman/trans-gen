@@ -13,7 +13,7 @@ class Player {
         score = await stream.readInt();
         let resource;
         resource = await stream.readInt();
-        return new Player(id, score, resource)
+        return new Player(id, score, resource);
     }
 
     async writeTo(stream) {
