@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <TargetFramework>netcoreapp5.0</TargetFramework>
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <Compile Include="Model/OneOf.fs" />
+        <Compile Include="Model/Enumeration.fs" />
+        <Compile Include="Model/Structure.fs" />
+        <Compile Include="Runner.fs" />
+    </ItemGroup>
+
+</Project>

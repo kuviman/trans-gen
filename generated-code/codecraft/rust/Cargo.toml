@@ -1,0 +1,8 @@
+[package]
+name = "trans-gen-test-model"
+version = "0.5.0-alpha.0"
+edition = "2018"
+
+[dependencies]
+trans = "0.5.0-alpha.0"
+anyhow = "1"
