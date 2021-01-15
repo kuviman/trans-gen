@@ -1,13 +1,19 @@
 pub use trans;
 
+use anyhow::{anyhow, Context as _};
 use serde::{Deserialize, Serialize};
-use std::collections::{BTreeSet, HashMap, HashSet};
+use std::collections::{BTreeSet, HashMap};
 use std::fmt::Write;
-use std::path::Path;
+use std::path::{Path, PathBuf};
+use std::process::Command;
 use templing::*;
 use trans::*;
 
+mod util;
+use util::*;
+
 pub mod gens;
+pub mod testing;
 
 #[derive(Debug)]
 pub struct File {
@@ -53,57 +59,57 @@ impl From<Vec<File>> for GenResult {
 }
 
 pub trait Generator {
+    const NAME: &'static str;
     type Options: Default;
     fn new(name: &str, version: &str, options: Self::Options) -> Self;
     fn add_only(&mut self, schema: &trans::Schema);
-    fn result(self) -> GenResult;
+    fn generate(self, extra_files: Vec<File>) -> GenResult;
 }
 
-pub struct GeneratorImpl<T: Generator> {
-    inner: T,
-    added: HashMap<trans::Name, trans::Schema>,
+pub trait RunnableGenerator: Generator {
+    fn build_local(path: &Path) -> anyhow::Result<()>;
+    fn run_local(path: &Path) -> anyhow::Result<Command>;
 }
 
-impl<T: Generator> GeneratorImpl<T> {
-    pub fn new(name: &str, version: &str, options: T::Options) -> Self {
-        Self {
-            inner: T::new(name, version, options),
-            added: HashMap::new(),
-        }
-    }
-    pub fn add(&mut self, schema: &Schema) {
+pub fn generate<T: Generator>(
+    name: &str,
+    version: &str,
+    options: T::Options,
+    schemas: &[std::sync::Arc<Schema>],
+    extra_files: Vec<File>,
+) -> GenResult {
+    fn add<T: Generator>(generator: &mut T, added: &mut HashMap<Name, Schema>, schema: &Schema) {
         let schema_name = schema.full_name();
-        let current = self.added.get(&schema_name);
-        if let Some(current) = current {
+        if let Some(current) = added.get(&schema_name) {
             assert_eq!(
                 current, schema,
                 "Two schemas with same name but different structure"
             );
             return;
         }
-        self.added.insert(schema_name, schema.clone());
+        added.insert(schema_name, schema.clone());
         match schema {
             Schema::Struct(Struct { fields, .. }) => {
                 for field in fields {
-                    self.add(&field.schema);
+                    add(generator, added, &field.schema);
                 }
             }
             Schema::OneOf { variants, .. } => {
                 for variant in variants {
                     for field in &variant.fields {
-                        self.add(&field.schema);
+                        add(generator, added, &field.schema);
                     }
                 }
             }
             Schema::Option(inner) => {
-                self.add(inner);
+                add(generator, added, inner);
             }
             Schema::Vec(inner) => {
-                self.add(inner);
+                add(generator, added, inner);
             }
             Schema::Map(key_type, value_type) => {
-                self.add(key_type);
-                self.add(value_type);
+                add(generator, added, key_type);
+                add(generator, added, value_type);
             }
             Schema::Bool
             | Schema::Int32
@@ -113,11 +119,14 @@ impl<T: Generator> GeneratorImpl<T> {
             | Schema::String
             | Schema::Enum { .. } => {}
         }
-        self.inner.add_only(schema);
+        generator.add_only(schema);
     }
-    pub fn result(self) -> GenResult {
-        self.inner.result()
+    let mut generator = T::new(name, version, options);
+    let mut added = HashMap::new();
+    for schema in schemas {
+        add(&mut generator, &mut added, schema);
     }
+    generator.generate(extra_files)
 }
 
 pub struct Writer {

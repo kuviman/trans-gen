@@ -592,8 +592,11 @@ fn write_struct_impl(
 }
 
 impl crate::Generator for Generator {
+    const NAME: &'static str = "C++";
     type Options = ();
-    fn new(_name: &str, _version: &str, _: ()) -> Self {
+    fn new(name: &str, _version: &str, _: ()) -> Self {
+        let project_name = name;
+
         let mut files = HashMap::new();
         files.insert(
             "Stream.hpp".to_owned(),
@@ -603,18 +606,25 @@ impl crate::Generator for Generator {
             "Stream.cpp".to_owned(),
             include_str!("Stream.cpp").to_owned(),
         );
+        files.insert(
+            "CMakeLists.txt".to_owned(),
+            include_templing!("src/gens/cpp/CmakeLists.txt.templing"),
+        );
         Self {
             files,
             model_include: "#ifndef _MODEL_HPP_\n#define _MODEL_HPP_\n\n".to_owned(),
         }
     }
-    fn result(self) -> GenResult {
+    fn generate(self, extra_files: Vec<File>) -> GenResult {
         let Self {
             mut files,
             mut model_include,
         } = self;
         model_include.push_str("\n#endif\n");
         files.insert("model/Model.hpp".to_owned(), model_include.to_owned());
+        for file in extra_files {
+            files.insert(file.path, file.content);
+        }
         files.into()
     }
     fn add_only(&mut self, schema: &Schema) {
@@ -808,5 +818,62 @@ impl crate::Generator for Generator {
             | Schema::Vec(_)
             | Schema::Map(_, _) => {}
         }
+    }
+}
+
+impl RunnableGenerator for Generator {
+    fn build_local(path: &Path) -> anyhow::Result<()> {
+        let standard: &str = "17";
+        command("cmake")
+            .current_dir(path)
+            .arg(format!("-DCMAKE_CXX_STANDARD={}", standard))
+            .arg("-DCMAKE_BUILD_TYPE=RELEASE")
+            .arg("-DCMAKE_VERBOSE_MAKEFILE=ON")
+            .arg(".")
+            .run()?;
+        command("cmake")
+            .current_dir(path)
+            .arg("--build")
+            .arg(".")
+            .arg("--config")
+            .arg("Release")
+            .run()?;
+        Ok(())
+    }
+    fn run_local(path: &Path) -> anyhow::Result<Command> {
+        let exe_dir = PathBuf::from(if cfg!(windows) { "Release" } else { "." });
+        fn executable(path: &Path) -> anyhow::Result<String> {
+            for line in std::fs::read_to_string(path.join("CMakeLists.txt"))?.lines() {
+                if let Some(args) = line.strip_prefix("add_executable(") {
+                    match args.split_whitespace().next() {
+                        Some(executable) => return Ok(executable.to_owned()),
+                        None => anyhow::bail!("Failed to parse executable()"),
+                    }
+                }
+            }
+            anyhow::bail!("Failed to determine executable");
+        };
+        let executable = executable(path)?;
+        let mut command = command(
+            exe_dir
+                .join(format!(
+                    "{}{}",
+                    executable,
+                    if cfg!(windows) { ".exe" } else { "" }
+                ))
+                .to_str()
+                .unwrap(),
+        );
+        command.current_dir(path);
+        Ok(command)
+    }
+}
+
+impl testing::FileReadWrite for Generator {
+    fn extra_files(schema: &Schema) -> Vec<File> {
+        vec![File {
+            path: "main.cpp".to_owned(),
+            content: include_templing!("src/gens/cpp/file_read_write.cpp.templing"),
+        }]
     }
 }

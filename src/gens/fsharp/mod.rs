@@ -257,6 +257,7 @@ fn write_struct(
 }
 
 impl crate::Generator for Generator {
+    const NAME: &'static str = "F#";
     type Options = ();
     fn new(name: &str, _version: &str, _: ()) -> Self {
         Self {
@@ -264,7 +265,14 @@ impl crate::Generator for Generator {
             files: Vec::new(),
         }
     }
-    fn result(self) -> GenResult {
+    fn generate(mut self, extra_files: Vec<File>) -> GenResult {
+        self.files.extend(extra_files);
+        let source_files = self.files.iter().filter(|file| file.path.ends_with(".fs"));
+        let fsproj = include_templing!("src/gens/fsharp/project.fsproj.templing");
+        self.files.push(File {
+            path: format!("{}.fsproj", self.main_namespace),
+            content: fsproj,
+        });
         self.files.into()
     }
     fn add_only(&mut self, schema: &Schema) {
@@ -387,5 +395,49 @@ impl crate::Generator for Generator {
             | Schema::Vec(_)
             | Schema::Map(_, _) => {}
         }
+    }
+}
+
+impl RunnableGenerator for Generator {
+    fn build_local(path: &Path) -> anyhow::Result<()> {
+        command("dotnet")
+            .current_dir(path)
+            .arg("publish")
+            .arg("-c")
+            .arg("Release")
+            .arg("-o")
+            .arg(".")
+            .run()
+    }
+    fn run_local(path: &Path) -> anyhow::Result<Command> {
+        fn project_name(path: &Path) -> anyhow::Result<String> {
+            for file in std::fs::read_dir(path)? {
+                let file = file?;
+                if file.path().extension() == Some("fsproj".as_ref()) {
+                    return Ok(file
+                        .path()
+                        .file_stem()
+                        .unwrap()
+                        .to_str()
+                        .unwrap()
+                        .to_owned());
+                }
+            }
+            anyhow::bail!("Failed to determine project name")
+        }
+        let mut command = command("dotnet");
+        command
+            .arg(format!("{}.dll", project_name(path)?))
+            .current_dir(path);
+        Ok(command)
+    }
+}
+
+impl testing::FileReadWrite for Generator {
+    fn extra_files(schema: &Schema) -> Vec<File> {
+        vec![File {
+            path: "Runner.fs".to_owned(),
+            content: include_templing!("src/gens/fsharp/FileReadWrite.fs.templing"),
+        }]
     }
 }

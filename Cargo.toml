@@ -8,12 +8,13 @@ homepage = "https://github.com/kuviman/trans-gen"
 edition = "2018"
 
 [dev-dependencies]
-tempfile = "3"
-serde_json = "1"
 structopt = "0.3"
 
 [dependencies]
 trans = { path = "trans", version = "0.5.0-alpha" }
 serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+toml = "0.5"
 templing = "0.1.0-alpha"
+tempfile = "3"
 anyhow = "1"

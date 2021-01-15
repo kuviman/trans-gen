@@ -358,19 +358,31 @@ fn write_struct(
 }
 
 impl crate::Generator for Generator {
+    const NAME: &'static str = "D";
     type Options = ();
-    fn new(_name: &str, _version: &str, _: ()) -> Self {
+    fn new(name: &str, _version: &str, _: ()) -> Self {
+        let name = Name::new(name.to_owned());
         let mut files = HashMap::new();
-        files.insert("stream.d".to_owned(), include_str!("stream.d").to_owned());
+        files.insert(
+            "source/stream.d".to_owned(),
+            include_str!("stream.d").to_owned(),
+        );
+        files.insert(
+            "dub.json".to_owned(),
+            include_templing!("src/gens/dlang/dub.json.templing"),
+        );
         Self {
             model_init: String::new(),
             files,
         }
     }
-    fn result(mut self) -> GenResult {
+    fn generate(mut self, extra_files: Vec<File>) -> GenResult {
         if !self.model_init.is_empty() {
             self.files
-                .insert("model/package.d".to_owned(), self.model_init);
+                .insert("source/model/package.d".to_owned(), self.model_init);
+        }
+        for file in extra_files {
+            self.files.insert(file.path, file.content);
         }
         self.files.into()
     }
@@ -381,7 +393,7 @@ impl crate::Generator for Generator {
                 base_name,
                 variants,
             } => {
-                let file_name = format!("model/{}.d", base_name.snake_case(conv));
+                let file_name = format!("source/model/{}.d", base_name.snake_case(conv));
                 let mut writer = Writer::new();
                 writeln!(writer, "enum {} : int {{", base_name.camel_case(conv)).unwrap();
                 writer.inc_ident();
@@ -399,7 +411,7 @@ impl crate::Generator for Generator {
                 .unwrap();
             }
             Schema::Struct(struc) => {
-                let file_name = format!("model/{}.d", struc.name.snake_case(conv));
+                let file_name = format!("source/model/{}.d", struc.name.snake_case(conv));
                 let mut writer = Writer::new();
                 writeln!(writer, "import model;").unwrap();
                 writeln!(writer, "import stream;").unwrap();
@@ -420,7 +432,7 @@ impl crate::Generator for Generator {
                 base_name,
                 variants,
             } => {
-                let file_name = format!("model/{}.d", base_name.snake_case(conv));
+                let file_name = format!("source/model/{}.d", base_name.snake_case(conv));
                 let mut writer = Writer::new();
                 writeln!(writer, "import model;").unwrap();
                 writeln!(writer, "import stream;").unwrap();
@@ -492,5 +504,47 @@ impl crate::Generator for Generator {
             | Schema::Vec(_)
             | Schema::Map(_, _) => {}
         }
+    }
+}
+
+impl RunnableGenerator for Generator {
+    fn build_local(path: &Path) -> anyhow::Result<()> {
+        command("dub")
+            .arg("build")
+            .arg("-b")
+            .arg("release")
+            .current_dir(path)
+            .run()
+    }
+    fn run_local(path: &Path) -> anyhow::Result<Command> {
+        let project_name = serde_json::from_str::<serde_json::Value>(
+            &std::fs::read_to_string(path.join("dub.json")).context("Failed to read dub.json")?,
+        )
+        .context("Failed to parse dub.json")?
+        .get("name")
+        .ok_or(anyhow!("No name in dub.json"))?
+        .as_str()
+        .ok_or(anyhow!("Name is not string in dub.json"))?
+        .to_owned();
+        let mut command = command(
+            path.join(format!(
+                "{}{}",
+                project_name,
+                if cfg!(windows) { ".exe" } else { "" }
+            ))
+            .to_str()
+            .unwrap(),
+        );
+        command.current_dir(path);
+        Ok(command)
+    }
+}
+
+impl testing::FileReadWrite for Generator {
+    fn extra_files(schema: &Schema) -> Vec<File> {
+        vec![File {
+            path: "source/app.d".to_owned(),
+            content: include_templing!("src/gens/dlang/file_read_write.d.templing"),
+        }]
     }
 }

@@ -41,7 +41,7 @@ class StreamWrapper
 
     def read_string()
         length = read_int()
-        @stream.read_bytes(length).pack("U*")
+        @stream.read_bytes(length)
     end
 
     # Writing primitives

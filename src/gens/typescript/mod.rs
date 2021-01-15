@@ -114,7 +114,7 @@ impl Generator {
                 )
                 .unwrap();
                 self.files.insert(
-                    format!("model/{}.ts", file_name(base_name)),
+                    format!("src/model/{}.ts", file_name(base_name)),
                     include_templing!("src/gens/typescript/enum.templing"),
                 );
             }
@@ -128,7 +128,7 @@ impl Generator {
                 )
                 .unwrap();
                 self.files.insert(
-                    format!("model/{}.ts", file_name(&struc.name)),
+                    format!("src/model/{}.ts", file_name(&struc.name)),
                     include_templing!("src/gens/typescript/struct.templing"),
                 );
             }
@@ -146,7 +146,7 @@ impl Generator {
                 )
                 .unwrap();
                 self.files.insert(
-                    format!("model/{}.ts", file_name(base_name)),
+                    format!("src/model/{}.ts", file_name(base_name)),
                     include_templing!("src/gens/typescript/oneof.templing"),
                 );
             }
@@ -165,24 +165,66 @@ impl Generator {
 }
 
 impl crate::Generator for Generator {
+    const NAME: &'static str = "TypeScript";
     type Options = ();
-    fn new(_name: &str, _version: &str, _: ()) -> Self {
+    fn new(name: &str, version: &str, _: ()) -> Self {
+        let project_name = Name::new(name.to_owned())
+            .snake_case(conv)
+            .replace('_', "-");
+        let project_version = version;
         let mut files = HashMap::new();
         files.insert(
-            "stream-wrapper.ts".to_owned(),
+            "src/stream-wrapper.ts".to_owned(),
             include_str!("stream-wrapper.ts").to_owned(),
+        );
+        files.insert(
+            "tsconfig.json".to_owned(),
+            include_str!("tsconfig.json").to_owned(),
+        );
+        files.insert(
+            "package.json".to_owned(),
+            include_templing!("src/gens/typescript/package.json.templing").to_owned(),
         );
         Self {
             files,
             index_file: String::new(),
         }
     }
-    fn result(mut self) -> GenResult {
+    fn generate(mut self, extra_files: Vec<File>) -> GenResult {
         self.files
-            .insert("model/index.ts".to_owned(), self.index_file);
+            .insert("src/model/index.ts".to_owned(), self.index_file);
+        for file in extra_files {
+            self.files.insert(file.path, file.content);
+        }
         self.files.into()
     }
     fn add_only(&mut self, schema: &Schema) {
         self.add_only(schema).unwrap();
+    }
+}
+
+impl RunnableGenerator for Generator {
+    fn build_local(path: &Path) -> anyhow::Result<()> {
+        command("npm").arg("install").current_dir(path).run()?;
+        command("npm")
+            .arg("run")
+            .arg("build")
+            .current_dir(path)
+            .run()?;
+        Ok(())
+    }
+    fn run_local(path: &Path) -> anyhow::Result<Command> {
+        let mut command = command("node");
+        command.arg("main.js").current_dir(path.join("build"));
+        Ok(command)
+    }
+}
+
+impl testing::FileReadWrite for Generator {
+    fn extra_files(schema: &Schema) -> Vec<File> {
+        vec![File {
+            path: "src/main.ts".to_owned(),
+            content: include_templing!("src/gens/typescript/file-read-write.ts.templing"),
+        }]
     }
 }

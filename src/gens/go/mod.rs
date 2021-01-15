@@ -359,19 +359,28 @@ fn write_struct(
 }
 
 impl crate::Generator for Generator {
+    const NAME: &'static str = "Go";
     type Options = ();
     fn new(name: &str, _version: &str, _: ()) -> Self {
+        let name = Name::new(name.to_owned());
         let mut files = HashMap::new();
         files.insert(
             "stream/stream.go".to_owned(),
             include_str!("stream.go").to_owned(),
         );
+        files.insert(
+            "go.mod".to_owned(),
+            include_templing!("src/gens/go/go.mod.templing"),
+        );
         Self {
-            mod_name: name.to_owned(),
+            mod_name: name.snake_case(conv),
             files,
         }
     }
-    fn result(self) -> GenResult {
+    fn generate(mut self, extra_files: Vec<File>) -> GenResult {
+        for file in extra_files {
+            self.files.insert(file.path, file.content);
+        }
         self.files.into()
     }
     fn add_only(&mut self, schema: &Schema) {
@@ -503,5 +512,54 @@ impl crate::Generator for Generator {
             | Schema::Vec(_)
             | Schema::Map(_, _) => {}
         }
+    }
+}
+
+fn project_name(path: &Path) -> anyhow::Result<String> {
+    Ok(std::fs::read_to_string(path.join("go.mod"))
+        .context("Failed to read go.mod")?
+        .lines()
+        .next()
+        .ok_or(anyhow!("go.mod is empty"))?
+        .strip_prefix("module ")
+        .ok_or(anyhow!("Expected to see module name in go.mod"))?
+        .trim()
+        .to_owned())
+}
+
+impl RunnableGenerator for Generator {
+    fn build_local(path: &Path) -> anyhow::Result<()> {
+        command("go")
+            .arg("build")
+            .arg("-o")
+            .arg(format!(
+                "{}{}",
+                project_name(path)?,
+                if cfg!(windows) { ".exe" } else { "" }
+            ))
+            .current_dir(path)
+            .run()
+    }
+    fn run_local(path: &Path) -> anyhow::Result<Command> {
+        let mut command = command(
+            path.join(format!(
+                "{}{}",
+                project_name(path)?,
+                if cfg!(windows) { ".exe" } else { "" }
+            ))
+            .to_str()
+            .unwrap(),
+        );
+        command.current_dir(path);
+        Ok(command)
+    }
+}
+
+impl testing::FileReadWrite for Generator {
+    fn extra_files(schema: &Schema) -> Vec<File> {
+        vec![File {
+            path: "main.go".to_owned(),
+            content: include_templing!("src/gens/go/file_read_write.go.templing"),
+        }]
     }
 }

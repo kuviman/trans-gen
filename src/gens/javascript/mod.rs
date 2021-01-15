@@ -141,6 +141,7 @@ impl Generator {
 }
 
 impl crate::Generator for Generator {
+    const NAME: &'static str = "JavaScript";
     type Options = ();
     fn new(_name: &str, _version: &str, _: ()) -> Self {
         let mut files = HashMap::new();
@@ -153,12 +154,44 @@ impl crate::Generator for Generator {
             index_file: String::new(),
         }
     }
-    fn result(mut self) -> GenResult {
+    fn generate(mut self, extra_files: Vec<File>) -> GenResult {
         self.files
             .insert("model/index.js".to_owned(), self.index_file);
+        for file in extra_files {
+            self.files.insert(file.path, file.content);
+        }
         self.files.into()
     }
     fn add_only(&mut self, schema: &Schema) {
         self.add_only(schema).unwrap();
+    }
+}
+
+impl RunnableGenerator for Generator {
+    fn build_local(path: &Path) -> anyhow::Result<()> {
+        Ok(())
+    }
+    fn run_local(path: &Path) -> anyhow::Result<Command> {
+        let mut command = command("node");
+        command.arg("main.js").current_dir(path);
+        Ok(command)
+    }
+}
+
+impl testing::FileReadWrite for Generator {
+    fn extra_files(schema: &Schema) -> Vec<File> {
+        fn type_name(schema: &Schema) -> String {
+            match schema {
+                Schema::Struct(Struct { name, .. })
+                | Schema::OneOf {
+                    base_name: name, ..
+                } => name.camel_case(conv),
+                _ => unreachable!(),
+            }
+        }
+        vec![File {
+            path: "main.js".to_owned(),
+            content: include_templing!("src/gens/javascript/file-read-write.js.templing"),
+        }]
     }
 }

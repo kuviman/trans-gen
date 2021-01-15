@@ -441,14 +441,24 @@ fn write_struct(
 }
 
 impl crate::Generator for Generator {
+    const NAME: &'static str = "C#";
     type Options = ();
     fn new(name: &str, _version: &str, _: ()) -> Self {
+        let name = Name::new(name.to_owned());
+        let mut files = HashMap::new();
+        files.insert(
+            format!("{}.csproj", name.camel_case(conv)),
+            include_str!("project.csproj").to_owned(),
+        );
         Self {
-            main_namespace: Name::new(name.to_owned()).camel_case(conv),
-            files: HashMap::new(),
+            main_namespace: name.camel_case(conv),
+            files,
         }
     }
-    fn result(self) -> GenResult {
+    fn generate(mut self, extra_files: Vec<File>) -> GenResult {
+        for file in extra_files {
+            self.files.insert(file.path, file.content);
+        }
         self.files.into()
     }
     fn add_only(&mut self, schema: &Schema) {
@@ -564,5 +574,49 @@ impl crate::Generator for Generator {
             | Schema::Vec(_)
             | Schema::Map(_, _) => {}
         }
+    }
+}
+
+impl RunnableGenerator for Generator {
+    fn build_local(path: &Path) -> anyhow::Result<()> {
+        command("dotnet")
+            .current_dir(path)
+            .arg("publish")
+            .arg("-c")
+            .arg("Release")
+            .arg("-o")
+            .arg(".")
+            .run()
+    }
+    fn run_local(path: &Path) -> anyhow::Result<Command> {
+        fn project_name(path: &Path) -> anyhow::Result<String> {
+            for file in std::fs::read_dir(path)? {
+                let file = file?;
+                if file.path().extension() == Some("csproj".as_ref()) {
+                    return Ok(file
+                        .path()
+                        .file_stem()
+                        .unwrap()
+                        .to_str()
+                        .unwrap()
+                        .to_owned());
+                }
+            }
+            anyhow::bail!("Failed to determine project name")
+        }
+        let mut command = command("dotnet");
+        command
+            .arg(format!("{}.dll", project_name(path)?))
+            .current_dir(path);
+        Ok(command)
+    }
+}
+
+impl testing::FileReadWrite for Generator {
+    fn extra_files(schema: &Schema) -> Vec<File> {
+        vec![File {
+            path: "Runner.cs".to_owned(),
+            content: include_templing!("src/gens/csharp/FileReadWrite.cs.templing"),
+        }]
     }
 }

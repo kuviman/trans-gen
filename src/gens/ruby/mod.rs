@@ -272,6 +272,7 @@ fn write_struct(
 }
 
 impl crate::Generator for Generator {
+    const NAME: &'static str = "Ruby";
     type Options = ();
     fn new(_name: &str, _version: &str, _: ()) -> Self {
         let mut files = HashMap::new();
@@ -284,9 +285,12 @@ impl crate::Generator for Generator {
             files,
         }
     }
-    fn result(mut self) -> GenResult {
+    fn generate(mut self, extra_files: Vec<File>) -> GenResult {
         if !self.model_init.is_empty() {
             self.files.insert("model.rb".to_owned(), self.model_init);
+        }
+        for file in extra_files {
+            self.files.insert(file.path, file.content);
         }
         self.files.into()
     }
@@ -390,5 +394,34 @@ impl crate::Generator for Generator {
             | Schema::Vec(_)
             | Schema::Map(_, _) => {}
         }
+    }
+}
+
+impl RunnableGenerator for Generator {
+    fn build_local(path: &Path) -> anyhow::Result<()> {
+        Ok(())
+    }
+    fn run_local(path: &Path) -> anyhow::Result<Command> {
+        let mut command = command("ruby");
+        command.arg("main.rb").current_dir(path);
+        Ok(command)
+    }
+}
+
+impl testing::FileReadWrite for Generator {
+    fn extra_files(schema: &Schema) -> Vec<File> {
+        fn type_name(schema: &Schema) -> String {
+            match schema {
+                Schema::Struct(Struct { name, .. })
+                | Schema::OneOf {
+                    base_name: name, ..
+                } => name.camel_case(conv),
+                _ => unreachable!(),
+            }
+        }
+        vec![File {
+            path: "main.rb".to_owned(),
+            content: include_templing!("src/gens/ruby/file_read_write.rb.templing"),
+        }]
     }
 }

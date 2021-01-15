@@ -226,16 +226,28 @@ fn write_struct(
 }
 
 impl crate::Generator for Generator {
+    const NAME: &'static str = "Scala";
     type Options = ();
-    fn new(_name: &str, _version: &str, _: ()) -> Self {
+    fn new(name: &str, _version: &str, _: ()) -> Self {
+        let project_name = Name::new(name.to_owned())
+            .snake_case(conv)
+            .replace('_', "-");
+        let project_name = &project_name;
         let mut files = HashMap::new();
         files.insert(
-            "util/StreamUtil.scala".to_owned(),
+            "pom.xml".to_owned(),
+            include_templing!("src/gens/scala/pom.xml.templing"),
+        );
+        files.insert(
+            "src/main/scala/util/StreamUtil.scala".to_owned(),
             include_str!("StreamUtil.scala").to_owned(),
         );
         Self { files }
     }
-    fn result(self) -> GenResult {
+    fn generate(mut self, extra_files: Vec<File>) -> GenResult {
+        for file in extra_files {
+            self.files.insert(file.path, file.content);
+        }
         self.files.into()
     }
     fn add_only(&mut self, schema: &Schema) {
@@ -245,7 +257,8 @@ impl crate::Generator for Generator {
                 variants,
                 documentation: _,
             } => {
-                let file_name = format!("model/{}.scala", base_name.camel_case(conv));
+                let file_name =
+                    format!("src/main/scala/model/{}.scala", base_name.camel_case(conv));
                 let mut writer = Writer::new();
                 writeln!(writer, "package model").unwrap();
                 writeln!(writer).unwrap();
@@ -304,7 +317,8 @@ impl crate::Generator for Generator {
                 self.files.insert(file_name, writer.get());
             }
             Schema::Struct(struc) => {
-                let file_name = format!("model/{}.scala", struc.name.camel_case(conv));
+                let file_name =
+                    format!("src/main/scala/model/{}.scala", struc.name.camel_case(conv));
                 let mut writer = Writer::new();
                 writeln!(writer, "package model").unwrap();
                 writeln!(writer).unwrap();
@@ -318,7 +332,8 @@ impl crate::Generator for Generator {
                 variants,
                 documentation: _,
             } => {
-                let file_name = format!("model/{}.scala", base_name.camel_case(conv));
+                let file_name =
+                    format!("src/main/scala/model/{}.scala", base_name.camel_case(conv));
                 let mut writer = Writer::new();
                 writeln!(writer, "package model").unwrap();
                 writeln!(writer).unwrap();
@@ -378,5 +393,48 @@ impl crate::Generator for Generator {
             | Schema::Vec(_)
             | Schema::Map(_, _) => {}
         }
+    }
+}
+
+impl RunnableGenerator for Generator {
+    fn build_local(path: &Path) -> anyhow::Result<()> {
+        command("mvn")
+            .arg("package")
+            .arg("--batch-mode")
+            .current_dir(path)
+            .run()
+    }
+    fn run_local(path: &Path) -> anyhow::Result<Command> {
+        fn project_name(path: &Path) -> anyhow::Result<String> {
+            let pom =
+                std::fs::read_to_string(path.join("pom.xml")).context("Failed to read pom.xml")?;
+            for line in pom.lines() {
+                let line = line.trim();
+                if let Some(line) = line.strip_prefix("<name>") {
+                    if let Some(line) = line.strip_suffix("</name>") {
+                        return Ok(line.trim().to_owned());
+                    }
+                }
+            }
+            anyhow::bail!("Failed to determine project name")
+        }
+        let mut command = command("java");
+        command
+            .arg("-jar")
+            .arg(format!(
+                "target/{}-jar-with-dependencies.jar",
+                project_name(path)?,
+            ))
+            .current_dir(path);
+        Ok(command)
+    }
+}
+
+impl testing::FileReadWrite for Generator {
+    fn extra_files(schema: &Schema) -> Vec<File> {
+        vec![File {
+            path: "src/main/scala/Runner.scala".to_owned(),
+            content: include_templing!("src/gens/scala/FileReadWrite.scala.templing"),
+        }]
     }
 }

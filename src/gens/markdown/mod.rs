@@ -55,6 +55,7 @@ pub struct Generator {
     options: Options,
 }
 impl crate::Generator for Generator {
+    const NAME: &'static str = "Markdown";
     type Options = Options;
     fn new(_name: &str, _version: &str, options: Options) -> Self {
         Self {
@@ -62,13 +63,15 @@ impl crate::Generator for Generator {
             options,
         }
     }
-    fn result(self) -> GenResult {
-        GenResult {
-            files: vec![File {
-                path: "doc.md".to_owned(),
-                content: self.parts.join("\n"),
-            }],
+    fn generate(self, extra_files: Vec<File>) -> GenResult {
+        let mut files = vec![File {
+            path: "doc.md".to_owned(),
+            content: self.parts.join("\n"),
+        }];
+        for file in extra_files {
+            files.push(file);
         }
+        GenResult { files }
     }
     fn add_only(&mut self, schema: &Schema) {
         let language = &self.options.language;

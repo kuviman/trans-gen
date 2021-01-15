@@ -1,14 +1,10 @@
 - let full_name = if let Some((base_name, _)) = base {
-static {{ struc.name.camel_case(conv) }} = class extends {{ base_name.camel_case(conv) }} {
+export class {{ struc.name.camel_case(conv) }} extends {{ base_name.camel_case(conv) }} {
 - format!("{}.{}", base_name.camel_case(conv), struc.name.camel_case(conv))
 - } else {
 export class {{ struc.name.camel_case(conv) }} {
 - struc.name.camel_case(conv)
 - };
-    - if let Some((base_name, tag)) = base {
-    static const TAG = {{ tag }};
-
-    - }
     - for field in &struc.fields {
     {{ field.name.mixed_case(conv) }}: {{ type_name(&field.schema) }}
     - }
@@ -57,3 +53,9 @@ export class {{ struc.name.camel_case(conv) }} {
         - }
     }
 }
+
+- if let Some((base_name, tag)) = base {
+export namespace {{ struc.name.camel_case(conv) }} {
+    export const TAG = {{ tag }};
+}
+- }

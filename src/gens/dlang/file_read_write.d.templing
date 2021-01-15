@@ -1,0 +1,45 @@
+import model;
+import stream;
+import std.stdio;
+import std.conv;
+import std.exception;
+
+class FileStream : Stream
+{
+    this(File file)
+    {
+        this.file = file;
+    }
+
+    override ubyte[] readBytes(size_t byteCount)
+    {
+        return this.file.rawRead(new ubyte[byteCount]);
+    }
+
+    override void writeBytes(const ubyte[] data)
+    {
+        this.file.rawWrite(data);
+    }
+
+    override void flush()
+    {
+        this.file.flush();
+    }
+
+private:
+    File file;
+}
+
+void main(string[] args)
+{
+    if (args.length != 3)
+    {
+        throw new Error("Pass input and output as parameters");
+    }
+
+    string inputFile = args[1];
+    string outputFile = args[2];
+
+    {{ type_name(schema) }} input = {{ type_name(schema) }}.readFrom(new FileStream(File(inputFile, "rb")));
+    input.writeTo(new FileStream(File(outputFile, "wb")));
+}

@@ -276,6 +276,7 @@ fn write_struct(
 }
 
 impl crate::Generator for Generator {
+    const NAME: &'static str = "Python";
     type Options = ();
     fn new(_name: &str, _version: &str, _: ()) -> Self {
         let mut files = HashMap::new();
@@ -288,10 +289,13 @@ impl crate::Generator for Generator {
             files,
         }
     }
-    fn result(mut self) -> GenResult {
+    fn generate(mut self, extra_files: Vec<File>) -> GenResult {
         if !self.model_init.is_empty() {
             self.files
                 .insert("model/__init__.py".to_owned(), self.model_init);
+        }
+        for file in extra_files {
+            self.files.insert(file.path, file.content);
         }
         self.files.into()
     }
@@ -398,5 +402,34 @@ impl crate::Generator for Generator {
             | Schema::Vec(_)
             | Schema::Map(_, _) => {}
         }
+    }
+}
+
+impl RunnableGenerator for Generator {
+    fn build_local(path: &Path) -> anyhow::Result<()> {
+        Ok(())
+    }
+    fn run_local(path: &Path) -> anyhow::Result<Command> {
+        let mut command = command(if cfg!(windows) { "py -3" } else { "python3" });
+        command.arg("main.py").current_dir(path);
+        Ok(command)
+    }
+}
+
+impl testing::FileReadWrite for Generator {
+    fn extra_files(schema: &Schema) -> Vec<File> {
+        fn type_name(schema: &Schema) -> String {
+            match schema {
+                Schema::Struct(Struct { name, .. })
+                | Schema::OneOf {
+                    base_name: name, ..
+                } => name.camel_case(conv),
+                _ => unreachable!(),
+            }
+        }
+        vec![File {
+            path: "main.py".to_owned(),
+            content: include_templing!("src/gens/python/file_read_write.py.templing"),
+        }]
     }
 }

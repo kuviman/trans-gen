@@ -7,6 +7,6 @@ pub enum {{ base_name.camel_case(conv) }} {
     - for field in &variant.fields {
         {{ field.name.snake_case(conv) }}: {{ type_name(&field.schema) }},
     - }
-    }
+    },
 - }
 }

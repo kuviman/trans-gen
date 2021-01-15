@@ -1,9 +1,0 @@
-[package]
-name = "{{crate_name}}"
-version = "{{crate_version}}"
-edition = "2018"
-
-[dependencies]
-model = { path = "model", package = "{{model_crate_name}}" }
-anyhow = "1"
-trans = "{{trans::VERSION}}"

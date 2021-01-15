@@ -1,0 +1,22 @@
+{
+    "one_of_one": {
+        "OptionOne": {
+            "value": [
+                1,
+                2,
+                3
+            ]
+        }
+    },
+    "one_of_two": {
+        "OptionTwo": {
+            "value": 123
+        }
+    },
+    "hash_map": {
+        "ValueOne": 5,
+        "ValueTwo": 6
+    },
+    "text": "Hello, world!",
+    "real_number": 123.456
+}

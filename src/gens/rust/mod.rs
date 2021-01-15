@@ -34,6 +34,7 @@ pub struct Generator {
     types: HashMap<String, String>,
 }
 impl crate::Generator for Generator {
+    const NAME: &'static str = "Rust";
     type Options = ();
     fn new(name: &str, version: &str, _: ()) -> Self {
         Self {
@@ -42,7 +43,7 @@ impl crate::Generator for Generator {
             types: HashMap::new(),
         }
     }
-    fn result(self) -> GenResult {
+    fn generate(self, extra_files: Vec<File>) -> GenResult {
         let mut files = HashMap::new();
         let types = self.types.keys();
         let Self {
@@ -55,11 +56,14 @@ impl crate::Generator for Generator {
             include_templing!("src/gens/rust/Cargo.toml.templing"),
         );
         files.insert(
-            "src/lib.rs".to_owned(),
-            include_templing!("src/gens/rust/lib.rs.templing"),
+            "src/model/mod.rs".to_owned(),
+            include_templing!("src/gens/rust/mod.rs.templing"),
         );
         for (name, content) in self.types {
-            files.insert(format!("src/{}.rs", name), content);
+            files.insert(format!("src/model/{}.rs", name), content);
+        }
+        for file in extra_files {
+            files.insert(file.path, file.content);
         }
         files.into()
     }
@@ -106,5 +110,54 @@ impl crate::Generator for Generator {
             | Schema::Vec(_)
             | Schema::Map(_, _) => {}
         }
+    }
+}
+
+impl RunnableGenerator for Generator {
+    fn build_local(path: &Path) -> anyhow::Result<()> {
+        command("cargo")
+            .arg("build")
+            .arg("--release")
+            .current_dir(path)
+            .run()
+    }
+    fn run_local(path: &Path) -> anyhow::Result<Command> {
+        fn package_name(path: &Path) -> anyhow::Result<String> {
+            let toml: toml::Value = toml::from_str(
+                &std::fs::read_to_string(path.join("Cargo.toml"))
+                    .context("Failed to read Cargo.toml")?,
+            )
+            .context("Failed to parse Cargo.toml")?;
+            Ok(toml
+                .get("package")
+                .ok_or(anyhow!("Failed to find package in Cargo.toml"))?
+                .get("name")
+                .ok_or(anyhow!("Failed to find package name in Cargo.toml"))?
+                .as_str()
+                .ok_or(anyhow!("Package name is not string"))?
+                .to_owned())
+        }
+        let mut command = command(
+            path.join("target")
+                .join("release")
+                .join(format!(
+                    "{}{}",
+                    package_name(path)?,
+                    if cfg!(windows) { ".exe" } else { "" }
+                ))
+                .to_str()
+                .unwrap(),
+        );
+        command.current_dir(path);
+        Ok(command)
+    }
+}
+
+impl testing::FileReadWrite for Generator {
+    fn extra_files(schema: &Schema) -> Vec<File> {
+        vec![File {
+            path: "src/main.rs".to_owned(),
+            content: include_templing!("src/gens/rust/file_read_write.rs.templing"),
+        }]
     }
 }
