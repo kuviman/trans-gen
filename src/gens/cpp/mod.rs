@@ -608,7 +608,7 @@ impl crate::Generator for Generator {
         );
         files.insert(
             "CMakeLists.txt".to_owned(),
-            include_templing!("src/gens/cpp/CmakeLists.txt.templing"),
+            include_templing!("src/gens/cpp/CMakeLists.txt.templing"),
         );
         Self {
             files,
