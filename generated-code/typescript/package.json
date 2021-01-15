@@ -1,0 +1,13 @@
+{
+  "name": "codecraft",
+  "version": "0.5.0-alpha.0",
+  "main": "index.js",
+  "scripts": {
+    "build": "rimraf ./build && tsc",
+    "start": "npm run build && node build/index.js"
+  },
+  "devDependencies": {
+    "@types/node": "^14.14.20",
+    "rimraf": "^3.0.2"
+  }
+}

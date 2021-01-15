@@ -1,8 +1,21 @@
-const Entity = require('./entity');
-const EntityProperties = require('./entity-properties');
-const Player = require('./player');
-class PlayerView {
-    constructor(myId, mapSize, fogOfWar, entityProperties, maxTickCount, maxPathfindNodes, currentTick, players, entities) {
+import { Entity } from "./entity";
+import { EntityProperties } from "./entity-properties";
+import { EntityType } from "./entity-type";
+import { Player } from "./player";
+import { StreamWrapper } from "../stream-wrapper";
+
+export class PlayerView {
+    myId: number
+    mapSize: number
+    fogOfWar: boolean
+    entityProperties: Map<EntityType, EntityProperties>
+    maxTickCount: number
+    maxPathfindNodes: number
+    currentTick: number
+    players: Array<Player>
+    entities: Array<Entity>
+
+    constructor(myId: number, mapSize: number, fogOfWar: boolean, entityProperties: Map<EntityType, EntityProperties>, maxTickCount: number, maxPathfindNodes: number, currentTick: number, players: Array<Player>, entities: Array<Entity>) {
         this.myId = myId;
         this.mapSize = mapSize;
         this.fogOfWar = fogOfWar;
@@ -14,7 +27,7 @@ class PlayerView {
         this.entities = entities;
     }
 
-    static async readFrom(stream) {
+    static async readFrom(stream: StreamWrapper): Promise<PlayerView> {
         let myId;
         myId = await stream.readInt();
         let mapSize;
@@ -50,10 +63,10 @@ class PlayerView {
             entitiesElement = await Entity.readFrom(stream);
             entities.push(entitiesElement);
         }
-        return new PlayerView(myId, mapSize, fogOfWar, entityProperties, maxTickCount, maxPathfindNodes, currentTick, players, entities);
+        return new PlayerView(myId, mapSize, fogOfWar, entityProperties, maxTickCount, maxPathfindNodes, currentTick, players, entities)
     }
 
-    async writeTo(stream) {
+    async writeTo(stream: StreamWrapper) {
         let myId = this.myId;
         await stream.writeInt(myId);
         let mapSize = this.mapSize;
@@ -84,4 +97,3 @@ class PlayerView {
         }
     }
 }
-module.exports = PlayerView
