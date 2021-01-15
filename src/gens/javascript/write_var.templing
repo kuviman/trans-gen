@@ -37,12 +37,9 @@ for (let {{ element_var }} of {{ var }}) {
 - }
 - Schema::Map(key_type, value_type) => {
 await stream.writeInt({{ var }}.size);
-- let entry_var = format!("{}Entry", var); let entry_var = &entry_var;
-for (let {{ entry_var }} of {{ var }}) {
-    - let key_var = format!("{}Key", var); let key_var = &key_var;
-    - let value_var = format!("{}Value", var); let value_var = &value_var;
-    let {{ key_var }} = {{ entry_var }}[0];
-    let {{ value_var }} = {{ entry_var }}[1];
+- let key_var = format!("{}Key", var); let key_var = &key_var;
+- let value_var = format!("{}Value", var); let value_var = &value_var;
+for (let [{{ key_var }}, {{ value_var }}] of {{ var }}) {
     {{ write_var(key_var, key_type) }}
     {{ write_var(value_var, value_type) }}
 }
