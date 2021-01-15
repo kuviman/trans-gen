@@ -32,7 +32,7 @@ class {{ struc.name.camel_case(conv) }}~
                 ~, ~
             - }
         - }
-        ~)
+        ~);
     }
 
     async writeTo(stream) {
