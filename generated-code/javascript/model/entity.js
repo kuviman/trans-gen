@@ -8,6 +8,7 @@ class Entity {
         this.health = health;
         this.active = active;
     }
+
     static async readFrom(stream) {
         let id;
         id = await stream.readInt();
@@ -25,8 +26,9 @@ class Entity {
         health = await stream.readInt();
         let active;
         active = await stream.readBool();
-        return new Entity(id, playerId, entityType, position, health, active);
+        return new Entity(id, playerId, entityType, position, health, active)
     }
+
     async writeTo(stream) {
         let id = this.id;
         await stream.writeInt(id);

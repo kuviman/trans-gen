@@ -1,20 +1,23 @@
+
 class RepairProperties {
     constructor(validTargets, power) {
         this.validTargets = validTargets;
         this.power = power;
     }
+
     static async readFrom(stream) {
         let validTargets;
         validTargets = [];
-        for (let i = await stream.readInt(); i > 0; i--) {
+        for (let validTargetsCount = await stream.readInt(); validTargetsCount > 0; validTargetsCount--) {
             let validTargetsElement;
             validTargetsElement = await stream.readInt();
             validTargets.push(validTargetsElement);
         }
         let power;
         power = await stream.readInt();
-        return new RepairProperties(validTargets, power);
+        return new RepairProperties(validTargets, power)
     }
+
     async writeTo(stream) {
         let validTargets = this.validTargets;
         await stream.writeInt(validTargets.length);

@@ -27,17 +27,17 @@ class StreamWrapper {
     async readInt() {
         const buffer = await this.stream.read(INT_SIZE);
         if (this.isLittleEndianMachine) {
-            return parseInt(buffer.readInt32LE(0, INT_SIZE));
+            return buffer.readInt32LE();
         }
-        return parseInt(buffer.readInt32BE(0, INT_SIZE));
+        return buffer.readInt32BE();
     }
 
     async readLong() {
         const buffer = await this.stream.read(LONG_SIZE);
         if (this.isLittleEndianMachine) {
-            return parseInt(buffer.readBigInt64LE());
+            return buffer.readBigInt64LE();
         }
-        return parseInt(buffer.readBigInt64BE());
+        return buffer.readBigInt64BE();
     }
 
     async readFloat() {
@@ -59,11 +59,7 @@ class StreamWrapper {
     async readString() {
         const length = await this.readInt();
         const buffer = await this.stream.read(length);
-        const result = buffer.toString();
-        if (result.length !== length) {
-            throw new Error('Unexpected EOF');
-        }
-        return result;
+        return buffer.toString();
     }
 
     // Writing primitives
@@ -115,8 +111,9 @@ class StreamWrapper {
     }
 
     async writeString(value) {
-        this.writeInt(value.length);
-        return await this.stream.write(value, 'utf8');
+        const data = Buffer.from(value);
+        this.writeInt(data.length);
+        return await this.stream.write(data);
     }
 }
 

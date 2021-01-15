@@ -1,12 +1,14 @@
+
 class BuildProperties {
     constructor(options, initHealth) {
         this.options = options;
         this.initHealth = initHealth;
     }
+
     static async readFrom(stream) {
         let options;
         options = [];
-        for (let i = await stream.readInt(); i > 0; i--) {
+        for (let optionsCount = await stream.readInt(); optionsCount > 0; optionsCount--) {
             let optionsElement;
             optionsElement = await stream.readInt();
             options.push(optionsElement);
@@ -17,8 +19,9 @@ class BuildProperties {
         } else {
             initHealth = null;
         }
-        return new BuildProperties(options, initHealth);
+        return new BuildProperties(options, initHealth)
     }
+
     async writeTo(stream) {
         let options = this.options;
         await stream.writeInt(options.length);

@@ -17,6 +17,7 @@ class EntityProperties {
         this.attack = attack;
         this.repair = repair;
     }
+
     static async readFrom(stream) {
         let size;
         size = await stream.readInt();
@@ -56,8 +57,9 @@ class EntityProperties {
         } else {
             repair = null;
         }
-        return new EntityProperties(size, buildScore, destroyScore, canMove, populationProvide, populationUse, maxHealth, initialCost, sightRange, resourcePerHealth, build, attack, repair);
+        return new EntityProperties(size, buildScore, destroyScore, canMove, populationProvide, populationUse, maxHealth, initialCost, sightRange, resourcePerHealth, build, attack, repair)
     }
+
     async writeTo(stream) {
         let size = this.size;
         await stream.writeInt(size);
