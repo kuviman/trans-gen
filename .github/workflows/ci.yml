@@ -43,47 +43,48 @@ jobs:
         include:
           - language: C++
             lang: cpp
-            uses: docker://gcc
+            docker: gcc
           - language: C#
             lang: csharp
-            uses: docker://mcr.microsoft.com/dotnet/sdk
+            docker: mcr.microsoft.com/dotnet/sdk
           - language: D
             lang: dlang
-            uses: docker://dlanguage/dmd
+            docker: dlanguage/dmd
           - language: F#
             lang: fsharp
-            uses: docker://mcr.microsoft.com/dotnet/sdk
+            docker: mcr.microsoft.com/dotnet/sdk
           - language: Go
             lang: go
-            uses: docker://golang
+            docker: golang
           - language: Java
             lang: java
-            uses: docker://maven
+            docker: maven
           - language: JavaScript
             lang: javascript
-            uses: docker://node
+            docker: node
           - language: Kotlin
             lang: kotlin
-            uses: docker://maven
+            docker: maven
           # - language: Markdown
           #   lang: markdown
-          #   uses: docker://???
+          #   docker: ???
           - language: Python
             lang: python
-            uses: docker://python
+            docker: python
           - language: Ruby
             lang: ruby
-            uses: docker://ruby
+            docker: ruby
           - language: Rust
             lang: rust
-            uses: docker://rust
+            docker: rust
           - language: Scala
             lang: scala
-            uses: docker://maven
+            docker: maven
           - language: TypeScript
             lang: typescript
-            uses: docker://node
+            docker: node
     runs-on: ubuntu-latest
+    container: ${{ matrix.docker }}
     steps:
       - name: Download artifacts
         uses: actions/download-artifact@v2
@@ -94,9 +95,8 @@ jobs:
         run: chmod +x testing
 
       - name: Run tests
-        uses: ${{ matrix.uses }}
-        with:
-          args: ./testing --lang=${{ matrix.lang }} test
+        run: |
+          ./testing --lang=${{ matrix.lang }} test
 
   update-testing-branch:
     name: Update testing branch
