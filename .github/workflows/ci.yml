@@ -23,7 +23,7 @@ jobs:
           command: test --release
 
       - name: Build testing binary
-      - uses: actions-rs/cargo@v1
+        uses: actions-rs/cargo@v1
         with:
           command: build --release --example testing
 
