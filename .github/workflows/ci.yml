@@ -45,6 +45,7 @@ jobs:
           - language: C++
             lang: cpp
             docker: gcc
+            setup: apt-get update && apt-get install -y cmake
           - language: C#
             lang: csharp
             docker: mcr.microsoft.com/dotnet/sdk
@@ -97,6 +98,7 @@ jobs:
 
       - name: Run tests
         run: |
+          ${{ matrix.setup }}
           ./testing --lang=${{ matrix.lang }} test
 
   update-testing-branch:
