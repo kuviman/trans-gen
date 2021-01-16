@@ -20,12 +20,14 @@ jobs:
       - name: Run cargo test
         uses: actions-rs/cargo@v1
         with:
-          command: test --release
+          command: test
+          args: --release
 
       - name: Build testing binary
         uses: actions-rs/cargo@v1
         with:
-          command: build --release --example testing
+          command: build
+          args: --release --example testing
 
       - name: Update testing branch
         run: |
