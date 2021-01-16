@@ -43,46 +43,46 @@ jobs:
         include:
           - language: C++
             lang: cpp
-            docker: gcc
+            uses: docker://gcc
           - language: C#
             lang: csharp
-            docker: mcr.microsoft.com/dotnet/sdk
+            uses: docker://mcr.microsoft.com/dotnet/sdk
           - language: D
             lang: dlang
-            docker: dlanguage/dmd
+            uses: docker://dlanguage/dmd
           - language: F#
             lang: fsharp
-            docker: mcr.microsoft.com/dotnet/sdk
+            uses: docker://mcr.microsoft.com/dotnet/sdk
           - language: Go
             lang: go
-            docker: golang
+            uses: docker://golang
           - language: Java
             lang: java
-            docker: maven
+            uses: docker://maven
           - language: JavaScript
             lang: javascript
-            docker: node
+            uses: docker://node
           - language: Kotlin
             lang: kotlin
-            docker: maven
+            uses: docker://maven
           # - language: Markdown
           #   lang: markdown
-          #   docker: ???
+          #   uses: docker://???
           - language: Python
             lang: python
-            docker: python
+            uses: docker://python
           - language: Ruby
             lang: ruby
-            docker: ruby
+            uses: docker://ruby
           - language: Rust
             lang: rust
-            docker: rust
+            uses: docker://rust
           - language: Scala
             lang: scala
-            docker: maven
+            uses: docker://maven
           - language: TypeScript
             lang: typescript
-            docker: node
+            uses: docker://node
     runs-on: ubuntu-latest
     steps:
       - name: Download artifacts
@@ -94,7 +94,7 @@ jobs:
         run: chmod +x testing
 
       - name: Run tests
-        uses: docker://${{ matrix.docker }}
+        uses: ${{ matrix.uses }}
         with:
           args: ./testing --lang=${{ matrix.lang }} test
 
