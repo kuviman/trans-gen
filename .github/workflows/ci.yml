@@ -29,5 +29,12 @@ jobs:
           git config --global user.name 'CI'
           git config --global user.email '<>'
           git fetch origin testing
-          bash examples/testing/update-branch.sh
+          git worktree add testing-branch testing
+          cargo run --release --example testing -- generate testing-branch/generated-code
+          pushd testing-branch
+          git add .
+          git diff --cached --exit-code || git commit -m "Update generated code"
+          popd
+          rm -rf branch
+          git worktree prune
           git push origin testing
