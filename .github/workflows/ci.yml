@@ -35,9 +35,74 @@ jobs:
           name: testing
           path: target/release/examples/testing
 
+  test-languages:
+    name: Test ${{ matrix.language }}
+    needs: build-test
+    strategy:
+      matrix:
+        include:
+          - language: C++
+            lang: cpp
+            docker: gcc
+          - language: C#
+            lang: csharp
+            docker: mcr.microsoft.com/dotnet/sdk
+          - language: D
+            lang: dlang
+            docker: dlanguage/dmd
+          - language: F#
+            lang: fsharp
+            docker: mcr.microsoft.com/dotnet/sdk
+          - language: Go
+            lang: go
+            docker: golang
+          - language: Java
+            lang: java
+            docker: maven
+          - language: JavaScript
+            lang: javascript
+            docker: node
+          - language: Kotlin
+            lang: kotlin
+            docker: maven
+          # - language: Markdown
+          #   lang: markdown
+          #   docker: ???
+          - language: Python
+            lang: python
+            docker: python
+          - language: Ruby
+            lang: ruby
+            docker: ruby
+          - language: Rust
+            lang: rust
+            docker: rust
+          - language: Scala
+            lang: scala
+            docker: maven
+          - language: TypeScript
+            lang: typescript
+            docker: node
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download artifacts
+        uses: actions/download-artifact@v2
+        with:
+          name: testing
+
+      - name: Prepare testing binary
+        run: chmod +x testing
+
+      - name: Run tests
+        uses: docker://${{ matrix.docker }}
+        with:
+          args: ./testing --lang=${{ matrix.lang }} test
+
   update-testing-branch:
     name: Update testing branch
-    needs: build-test
+    needs:
+      - build-test
+      - test-languages
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/master'
     steps:
