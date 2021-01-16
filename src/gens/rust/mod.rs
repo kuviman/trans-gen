@@ -31,7 +31,7 @@ fn type_name(schema: &Schema) -> String {
 pub struct Generator {
     crate_name: String,
     crate_version: String,
-    types: HashMap<String, String>,
+    types: BTreeMap<String, String>,
 }
 impl crate::Generator for Generator {
     const NAME: &'static str = "Rust";
@@ -40,7 +40,7 @@ impl crate::Generator for Generator {
         Self {
             crate_name: format!("{}-model", name),
             crate_version: version.to_owned(),
-            types: HashMap::new(),
+            types: BTreeMap::new(),
         }
     }
     fn generate(self, extra_files: Vec<File>) -> GenResult {

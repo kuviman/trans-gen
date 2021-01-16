@@ -2,7 +2,7 @@ pub use trans;
 
 use anyhow::{anyhow, Context as _};
 use serde::{Deserialize, Serialize};
-use std::collections::{BTreeSet, HashMap};
+use std::collections::{BTreeMap, BTreeSet, HashMap};
 use std::fmt::Write;
 use std::path::{Path, PathBuf};
 use std::process::Command;
