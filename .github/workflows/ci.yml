@@ -29,13 +29,31 @@ jobs:
           command: build
           args: --release --example testing
 
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: testing
+          path: target/release/examples/testing
+
+  update-testing-branch:
+    name: Update testing branch
+    needs: build-test
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/master'
+    steps:
+      - name: Download artifacts
+        uses: actions/download-artifact@v2
+        with:
+          name: testing
+
       - name: Update testing branch
         run: |
           git config --global user.name 'CI'
           git config --global user.email '<>'
           git fetch origin testing
           git worktree add testing-branch testing
-          cargo run --release --example testing -- generate testing-branch/generated-code
+          chmod +x testing
+          ./testing generate testing-branch/generated-code
           pushd testing-branch
           git add .
           git diff --cached --exit-code || git commit -m "Update generated code"
