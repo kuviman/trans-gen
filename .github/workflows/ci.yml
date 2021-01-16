@@ -39,6 +39,7 @@ jobs:
     name: Test ${{ matrix.language }}
     needs: build-test
     strategy:
+      fail-fast: false
       matrix:
         include:
           - language: C++
