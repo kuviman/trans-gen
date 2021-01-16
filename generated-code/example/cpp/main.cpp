@@ -46,8 +46,10 @@ int main(int argc, char* argv[])
     char* input_file = argv[1];
     char* output_file = argv[2];
 
-    Structure input = Structure::readFrom(FileInputStream(input_file));
-    input.writeTo(FileOutputStream(output_file));
+    FileInputStream fileInputStream(input_file);
+    Structure input = Structure::readFrom(fileInputStream);
+    FileOutputStream fileOutputStream(output_file);
+    input.writeTo(fileOutputStream);
 
     return 0;
 }
