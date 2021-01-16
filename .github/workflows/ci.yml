@@ -3,8 +3,8 @@ on: [push, pull_request]
 name: Continuous integration
 
 jobs:
-  ci:
-    name: Check
+  build-test:
+    name: Build and run package tests
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -17,9 +17,14 @@ jobs:
 
       - uses: actions-rs/cargo@v1
         with:
-          command: test
+          command: test --release
 
-      - name: testing
+      - name: Build testing
+      - uses: actions-rs/cargo@v1
+        with:
+          command: build --release --example testing
+
+      - name: Update testing branch
         run: |
           git config --global user.name 'CI'
           git config --global user.email '<>'
