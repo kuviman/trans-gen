@@ -1,6 +1,7 @@
-require_relative 'build_properties'
 require_relative 'attack_properties'
+require_relative 'build_properties'
 require_relative 'repair_properties'
+
 class EntityProperties
     attr_accessor :size
     attr_accessor :build_score
@@ -15,6 +16,7 @@ class EntityProperties
     attr_accessor :build
     attr_accessor :attack
     attr_accessor :repair
+
     def initialize(size, build_score, destroy_score, can_move, population_provide, population_use, max_health, initial_cost, sight_range, resource_per_health, build, attack, repair)
         @size = size
         @build_score = build_score
@@ -30,6 +32,7 @@ class EntityProperties
         @attack = attack
         @repair = repair
     end
+
     def self.read_from(stream)
         size = stream.read_int()
         build_score = stream.read_int()
@@ -58,6 +61,7 @@ class EntityProperties
         end
         EntityProperties.new(size, build_score, destroy_score, can_move, population_provide, population_use, max_health, initial_cost, sight_range, resource_per_health, build, attack, repair)
     end
+
     def write_to(stream)
         stream.write_int(@size)
         stream.write_int(@build_score)

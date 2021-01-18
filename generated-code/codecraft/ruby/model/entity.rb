@@ -1,5 +1,6 @@
 require_relative 'entity_type'
 require_relative 'vec2_int'
+
 class Entity
     attr_accessor :id
     attr_accessor :player_id
@@ -7,6 +8,7 @@ class Entity
     attr_accessor :position
     attr_accessor :health
     attr_accessor :active
+
     def initialize(id, player_id, entity_type, position, health, active)
         @id = id
         @player_id = player_id
@@ -15,6 +17,7 @@ class Entity
         @health = health
         @active = active
     end
+
     def self.read_from(stream)
         id = stream.read_int()
         if stream.read_bool()
@@ -23,7 +26,7 @@ class Entity
             player_id = nil
         end
         entity_type = stream.read_int()
-        if entity_type < 0 || entity_type > 10
+        if entity_type < 0 || entity_type >= 10
             raise "Unexpected tag value"
         end
         position = Vec2Int.read_from(stream)
@@ -31,6 +34,7 @@ class Entity
         active = stream.read_bool()
         Entity.new(id, player_id, entity_type, position, health, active)
     end
+
     def write_to(stream)
         stream.write_int(@id)
         if @player_id.nil?

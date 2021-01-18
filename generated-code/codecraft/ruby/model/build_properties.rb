@@ -1,16 +1,19 @@
 require_relative 'entity_type'
+
 class BuildProperties
     attr_accessor :options
     attr_accessor :init_health
+
     def initialize(options, init_health)
         @options = options
         @init_health = init_health
     end
+
     def self.read_from(stream)
         options = []
         stream.read_int().times do |_|
             options_element = stream.read_int()
-            if options_element < 0 || options_element > 10
+            if options_element < 0 || options_element >= 10
                 raise "Unexpected tag value"
             end
             options.push(options_element)
@@ -22,10 +25,11 @@ class BuildProperties
         end
         BuildProperties.new(options, init_health)
     end
+
     def write_to(stream)
         stream.write_int(@options.length())
-        @options.each do |element|
-            stream.write_int(element)
+        @options.each do |options_element|
+            stream.write_int(options_element)
         end
         if @init_health.nil?
             stream.write_bool(false)
