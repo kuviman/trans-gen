@@ -17,7 +17,7 @@ pub struct NewTypeI32(i32);
 #[trans_doc = "ru:Пример one of"]
 #[derive(PartialEq, Debug, Serialize, Deserialize, Trans)]
 pub enum OneOf {
-    OptionOne { value: Vec<i32> },
+    OptionOne { vec_i32: Vec<i32>, long_int: i64 },
     OptionTwo { value: usize },
 }
 
@@ -29,7 +29,8 @@ pub struct Structure {
     one_of_two: OneOf,
     hash_map: HashMap<Enumeration, NewTypeI32>,
     text: String,
-    real_number: f64,
+    float_number: f32,
+    double_number: f64,
 }
 
 pub type Model = Structure;

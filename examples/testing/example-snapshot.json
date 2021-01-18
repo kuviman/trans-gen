@@ -1,11 +1,12 @@
 {
     "one_of_one": {
         "OptionOne": {
-            "value": [
+            "vec_i32": [
                 1,
                 2,
                 3
-            ]
+            ],
+            "long_int": 4611686018427387904
         }
     },
     "one_of_two": {
@@ -18,5 +19,6 @@
         "ValueTwo": 6
     },
     "text": "Hello, world!",
-    "real_number": 123.456
+    "float_number": -50.234,
+    "double_number": 123.456
 }
