@@ -12,9 +12,10 @@ pub struct Generator {
     files: HashMap<String, String>,
 }
 
-fn add_imports(writer: &mut Writer, schema: &Schema) -> std::fmt::Result {
-    fn add_imports_struct(writer: &mut Writer, struc: &Struct) -> std::fmt::Result {
-        fn add_for_field(writer: &mut Writer, schema: &Schema) -> std::fmt::Result {
+fn imports(schema: &Schema) -> String {
+    let mut imports = BTreeSet::new();
+    fn add_imports_struct(struc: &Struct, imports: &mut BTreeSet<Name>) {
+        fn add_for_field(schema: &Schema, imports: &mut BTreeSet<Name>) {
             match schema {
                 Schema::Struct(Struct { name, .. })
                 | Schema::OneOf {
@@ -23,17 +24,17 @@ fn add_imports(writer: &mut Writer, schema: &Schema) -> std::fmt::Result {
                 | Schema::Enum {
                     base_name: name, ..
                 } => {
-                    writeln!(writer, "require_relative '{}'", name.snake_case(conv),)?;
+                    imports.insert(name.clone());
                 }
                 Schema::Option(inner) => {
-                    add_for_field(writer, inner)?;
+                    add_for_field(inner, imports);
                 }
                 Schema::Vec(inner) => {
-                    add_for_field(writer, inner)?;
+                    add_for_field(inner, imports);
                 }
                 Schema::Map(key_type, value_type) => {
-                    add_for_field(writer, key_type)?;
-                    add_for_field(writer, value_type)?;
+                    add_for_field(key_type, imports);
+                    add_for_field(value_type, imports);
                 }
                 Schema::Bool
                 | Schema::Int32
@@ -42,233 +43,35 @@ fn add_imports(writer: &mut Writer, schema: &Schema) -> std::fmt::Result {
                 | Schema::Float64
                 | Schema::String => {}
             }
-            Ok(())
         }
         for field in &struc.fields {
-            add_for_field(writer, &field.schema)?;
+            add_for_field(&field.schema, imports);
         }
-        Ok(())
     }
     match schema {
         Schema::Struct(struc) => {
-            add_imports_struct(writer, struc)?;
+            add_imports_struct(struc, &mut imports);
         }
         Schema::OneOf { variants, .. } => {
             for variant in variants {
-                add_imports_struct(writer, variant)?;
+                add_imports_struct(variant, &mut imports);
             }
         }
         _ => {}
     }
-    Ok(())
+    include_templing!("src/gens/ruby/imports.templing")
 }
 
-fn write_struct(
-    writer: &mut Writer,
-    struc: &Struct,
-    base: Option<(&Name, usize)>,
-) -> std::fmt::Result {
-    // Class
-    writeln!(writer, "class {}", struc.name.camel_case(conv))?;
-    writer.inc_ident();
-    if let Some((_, tag)) = base {
-        writeln!(writer, "TAG = {}", tag)?;
-    }
+fn read_var(var: &str, schema: &Schema) -> String {
+    include_templing!("src/gens/ruby/read_var.templing")
+}
 
-    // Fields
-    for field in &struc.fields {
-        writeln!(writer, "attr_accessor :{}", field.name.snake_case(conv))?;
-    }
+fn write_var(var: &str, schema: &Schema) -> String {
+    include_templing!("src/gens/ruby/write_var.templing")
+}
 
-    // Constructor
-    write!(writer, "def initialize(")?;
-    for (index, field) in struc.fields.iter().enumerate() {
-        if index > 0 {
-            write!(writer, ", ")?;
-        }
-        write!(writer, "{}", field.name.snake_case(conv))?;
-    }
-    writeln!(writer, ")")?;
-    for field in &struc.fields {
-        writeln!(
-            writer,
-            "    @{} = {}",
-            field.name.snake_case(conv),
-            field.name.snake_case(conv)
-        )?;
-    }
-    writeln!(writer, "end")?;
-
-    // Reading
-    writeln!(writer, "def self.read_from(stream)")?;
-    writer.inc_ident();
-    for field in &struc.fields {
-        fn assign(writer: &mut Writer, to: &str, schema: &Schema) -> std::fmt::Result {
-            match schema {
-                Schema::Bool => {
-                    writeln!(writer, "{} = stream.read_bool()", to)?;
-                }
-                Schema::Int32 => {
-                    writeln!(writer, "{} = stream.read_int()", to)?;
-                }
-                Schema::Int64 => {
-                    writeln!(writer, "{} = stream.read_long()", to)?;
-                }
-                Schema::Float32 => {
-                    writeln!(writer, "{} = stream.read_float()", to)?;
-                }
-                Schema::Float64 => {
-                    writeln!(writer, "{} = stream.read_double()", to)?;
-                }
-                Schema::String => {
-                    writeln!(writer, "{} = stream.read_string()", to)?;
-                }
-                Schema::Struct(Struct { name, .. })
-                | Schema::OneOf {
-                    base_name: name, ..
-                } => {
-                    writeln!(
-                        writer,
-                        "{} = {}.read_from(stream)",
-                        to,
-                        name.camel_case(conv)
-                    )?;
-                }
-                Schema::Option(inner) => {
-                    writeln!(writer, "if stream.read_bool()")?;
-                    writer.inc_ident();
-                    assign(writer, to, inner)?;
-                    writer.dec_ident();
-                    writeln!(writer, "else")?;
-                    writeln!(writer, "    {} = nil", to)?;
-                    writeln!(writer, "end")?;
-                }
-                Schema::Vec(inner) => {
-                    writeln!(writer, "{} = []", to)?;
-                    writeln!(writer, "stream.read_int().times do |_|")?;
-                    writer.inc_ident();
-                    assign(writer, &format!("{}_element", to), inner)?;
-                    writeln!(writer, "{}.push({}_element)", to, to)?;
-                    writer.dec_ident();
-                    writeln!(writer, "end")?;
-                }
-                Schema::Map(key_type, value_type) => {
-                    writeln!(writer, "{} = Hash.new", to)?;
-                    writeln!(writer, "stream.read_int().times do |_|")?;
-                    writer.inc_ident();
-                    assign(writer, &format!("{}_key", to), key_type)?;
-                    assign(writer, &format!("{}_value", to), value_type)?;
-                    writeln!(writer, "{}[{}_key] = {}_value", to, to, to)?;
-                    writer.dec_ident();
-                    writeln!(writer, "end")?;
-                }
-                Schema::Enum {
-                    documentation: _,
-                    base_name: _,
-                    variants,
-                } => {
-                    writeln!(writer, "{} = stream.read_int()", to,)?;
-                    writeln!(writer, "if {} < 0 || {} > {}", to, to, variants.len())?;
-                    writeln!(writer, "    raise \"Unexpected tag value\"")?;
-                    writeln!(writer, "end")?;
-                }
-            }
-            Ok(())
-        }
-        assign(writer, &field.name.snake_case(conv), &field.schema)?;
-    }
-    write!(writer, "{}.new(", struc.name.camel_case(conv))?;
-    let mut first = true;
-    for field in &struc.fields {
-        if first {
-            first = false;
-        } else {
-            write!(writer, ", ")?;
-        }
-        write!(writer, "{}", field.name.snake_case(conv))?;
-    }
-    writeln!(writer, ")")?;
-    writer.dec_ident();
-    writeln!(writer, "end")?;
-
-    // Writing
-    writeln!(writer, "def write_to(stream)")?;
-    writer.inc_ident();
-    if base.is_some() {
-        writeln!(writer, "stream.write_int(TAG)")?;
-    }
-    if let Some(magic) = struc.magic {
-        writeln!(writer, "stream.write_int({})", magic)?;
-    }
-    for field in &struc.fields {
-        fn write(writer: &mut Writer, value: &str, schema: &Schema) -> std::fmt::Result {
-            match schema {
-                Schema::Bool => {
-                    writeln!(writer, "stream.write_bool({})", value)?;
-                }
-                Schema::Int32 => {
-                    writeln!(writer, "stream.write_int({})", value)?;
-                }
-                Schema::Int64 => {
-                    writeln!(writer, "stream.write_long({})", value)?;
-                }
-                Schema::Float32 => {
-                    writeln!(writer, "stream.write_float({})", value)?;
-                }
-                Schema::Float64 => {
-                    writeln!(writer, "stream.write_double({})", value)?;
-                }
-                Schema::String => {
-                    writeln!(writer, "stream.write_string({})", value)?;
-                }
-                Schema::Struct(_) | Schema::OneOf { .. } => {
-                    writeln!(writer, "{}.write_to(stream)", value)?;
-                }
-                Schema::Option(inner) => {
-                    writeln!(writer, "if {}.nil?", value)?;
-                    writeln!(writer, "    stream.write_bool(false)")?;
-                    writeln!(writer, "else")?;
-                    writer.inc_ident();
-                    writeln!(writer, "stream.write_bool(true)")?;
-                    write(writer, value, inner)?;
-                    writer.dec_ident();
-                    writeln!(writer, "end")?;
-                }
-                Schema::Vec(inner) => {
-                    writeln!(writer, "stream.write_int({}.length())", value)?;
-                    writeln!(writer, "{}.each do |element|", value)?;
-                    writer.inc_ident();
-                    write(writer, "element", inner)?;
-                    writer.dec_ident();
-                    writeln!(writer, "end")?;
-                }
-                Schema::Map(key_type, value_type) => {
-                    writeln!(writer, "stream.write_int({}.length())", value)?;
-                    writeln!(writer, "{}.each do |key, value|", value)?;
-                    writer.inc_ident();
-                    write(writer, "key", key_type)?;
-                    write(writer, "value", value_type)?;
-                    writer.dec_ident();
-                    writeln!(writer, "end")?;
-                }
-                Schema::Enum { .. } => {
-                    writeln!(writer, "stream.write_int({})", value)?;
-                }
-            }
-            Ok(())
-        }
-        write(
-            writer,
-            &format!("@{}", field.name.snake_case(conv)),
-            &field.schema,
-        )?;
-    }
-    writer.dec_ident();
-    writeln!(writer, "end")?;
-
-    writer.dec_ident();
-    writeln!(writer, "end")?;
-    Ok(())
+fn struct_impl(struc: &Struct, base: Option<(&Name, usize)>) -> String {
+    include_templing!("src/gens/ruby/struct_impl.templing")
 }
 
 impl crate::Generator for Generator {
@@ -301,88 +104,44 @@ impl crate::Generator for Generator {
                 base_name,
                 variants,
             } => {
-                let file_name = format!("model/{}.rb", base_name.snake_case(conv));
-                let mut writer = Writer::new();
-                writeln!(writer, "module {}", base_name.camel_case(conv)).unwrap();
-                writer.inc_ident();
-                for (index, variant) in variants.iter().enumerate() {
-                    writeln!(
-                        writer,
-                        "{} = {}",
-                        variant.name.shouty_snake_case(conv),
-                        index
-                    )
-                    .unwrap();
-                }
-                writer.dec_ident();
-                writeln!(writer, "end").unwrap();
                 writeln!(
                     &mut self.model_init,
                     "require_relative 'model/{}'",
                     base_name.snake_case(conv),
                 )
                 .unwrap();
-                self.files.insert(file_name, writer.get());
+                self.files.insert(
+                    format!("model/{}.rb", base_name.snake_case(conv)),
+                    include_templing!("src/gens/ruby/enum.templing"),
+                );
             }
             Schema::Struct(struc) => {
-                let file_name = format!("model/{}.rb", struc.name.snake_case(conv));
-                let mut writer = Writer::new();
-                add_imports(&mut writer, schema).unwrap();
-                write_struct(&mut writer, struc, None).unwrap();
                 writeln!(
                     &mut self.model_init,
                     "require_relative 'model/{}'",
                     struc.name.snake_case(conv),
                 )
                 .unwrap();
-                self.files.insert(file_name, writer.get());
+                self.files.insert(
+                    format!("model/{}.rb", struc.name.snake_case(conv)),
+                    include_templing!("src/gens/ruby/struct.templing"),
+                );
             }
             Schema::OneOf {
                 documentation: _,
                 base_name,
                 variants,
             } => {
-                let file_name = format!("model/{}.rb", base_name.snake_case(conv));
-                let mut writer = Writer::new();
-                add_imports(&mut writer, schema).unwrap();
-                writeln!(writer, "class {}", base_name.camel_case(conv)).unwrap();
-                writer.inc_ident();
-                writeln!(writer, "def self.read_from(stream)").unwrap();
-                writer.inc_ident();
-                writeln!(writer, "tag = stream.read_int()").unwrap();
-                for variant in variants {
-                    writeln!(
-                        writer,
-                        "if tag == {}::{}::TAG",
-                        base_name.camel_case(conv),
-                        variant.name.camel_case(conv),
-                    )
-                    .unwrap();
-                    writeln!(
-                        writer,
-                        "    return {}::{}.read_from(stream)",
-                        base_name.camel_case(conv),
-                        variant.name.camel_case(conv),
-                    )
-                    .unwrap();
-                    writeln!(writer, "end").unwrap();
-                }
-                writeln!(writer, "raise \"Unexpected tag value\"").unwrap();
-                writer.dec_ident();
-                writeln!(writer, "end").unwrap();
-                writeln!(writer).unwrap();
-                for (tag, variant) in variants.iter().enumerate() {
-                    write_struct(&mut writer, variant, Some((base_name, tag))).unwrap();
-                }
-                writer.dec_ident();
-                writeln!(writer, "end").unwrap();
                 writeln!(
                     &mut self.model_init,
                     "require_relative 'model/{}'",
                     base_name.snake_case(conv),
                 )
                 .unwrap();
-                self.files.insert(file_name, writer.get());
+                self.files.insert(
+                    format!("model/{}.rb", base_name.snake_case(conv)),
+                    include_templing!("src/gens/ruby/oneof.templing"),
+                );
             }
             Schema::Bool
             | Schema::Int32

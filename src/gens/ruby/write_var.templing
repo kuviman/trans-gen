@@ -1,0 +1,51 @@
+- let raw_var = var.trim_start_matches('@');
+- match schema {
+- Schema::Bool => {
+stream.write_bool({{ var }})
+- }
+- Schema::Int32 => {
+stream.write_int({{ var }})
+- }
+- Schema::Int64 => {
+stream.write_long({{ var }})
+- }
+- Schema::Float32 => {
+stream.write_float({{ var }})
+- }
+- Schema::Float64 => {
+stream.write_double({{ var }})
+- }
+- Schema::String => {
+stream.write_string({{ var }})
+- }
+- Schema::Struct(_) | Schema::OneOf { .. } => {
+{{ var }}.write_to(stream)
+- }
+- Schema::Option(inner) => {
+if {{ var }}.nil?
+    stream.write_bool(false)
+else
+    stream.write_bool(true)
+    {{ write_var(var, inner) }}
+end
+- }
+- Schema::Vec(inner) => {
+stream.write_int({{ var }}.length())
+- let element_var = format!("{}_element", raw_var); let element_var = &element_var;
+{{ var }}.each do |{{ element_var }}|
+    {{ write_var(element_var, inner) }}
+end
+- }
+- Schema::Map(key_type, value_type) => {
+stream.write_int({{ var }}.length())
+- let key_var = format!("{}_key", raw_var); let key_var = &key_var;
+- let value_var = format!("{}_value", raw_var); let value_var = &value_var;
+{{ var }}.each do |{{ key_var }}, {{ value_var }}|
+    {{ write_var(key_var, key_type) }}
+    {{ write_var(value_var, value_type) }}
+end
+- }
+- Schema::Enum { .. } => {
+stream.write_int({{ var }})
+- }
+- }

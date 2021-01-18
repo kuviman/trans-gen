@@ -1,0 +1,3 @@
+{{ imports(schema) }}
+
+{{ struct_impl(struc, None) }}

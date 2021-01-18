@@ -1,0 +1,17 @@
+{{ imports(schema) }}
+
+class {{ base_name.camel_case(conv) }}
+    def self.read_from(stream)
+        tag = stream.read_int()
+        - for variant in variants {
+        if tag == {{ base_name.camel_case(conv) }}::{{ variant.name.camel_case(conv) }}::TAG
+            return {{ base_name.camel_case(conv) }}::{{ variant.name.camel_case(conv) }}.read_from(stream)
+        end
+        - }
+        raise "Unexpected tag value"
+    end
+
+    - for (tag, variant) in variants.iter().enumerate() {
+    {{ struct_impl(variant, Some((base_name, tag))) }}
+    - }
+end

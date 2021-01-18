@@ -1,0 +1,5 @@
+module {{ base_name.camel_case(conv) }}
+- for (index, variant) in variants.iter().enumerate() {
+    {{ variant.name.shouty_snake_case(conv) }} = {{ index }}
+- }
+end

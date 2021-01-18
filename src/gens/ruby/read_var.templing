@@ -1,0 +1,54 @@
+- match schema {
+- Schema::Bool => {
+{{ var }} = stream.read_bool()
+- }
+- Schema::Int32 => {
+{{ var }} = stream.read_int()
+- }
+- Schema::Int64 => {
+{{ var }} = stream.read_long()
+- }
+- Schema::Float32 => {
+{{ var }} = stream.read_float()
+- }
+- Schema::Float64 => {
+{{ var }} = stream.read_double()
+- }
+- Schema::String => {
+{{ var }} = stream.read_string()
+- }
+- Schema::Struct(Struct { name, .. }) | Schema::OneOf { base_name: name, .. } => {
+{{ var }} = {{ name.camel_case(conv) }}.read_from(stream)
+- }
+- Schema::Option(inner) => {
+if stream.read_bool()
+    {{ read_var(var, inner) }}
+else
+    {{ var }} = nil
+end
+- }
+- Schema::Vec(inner) => {
+{{ var }} = []
+stream.read_int().times do |_|
+    - let element_var = format!("{}_element", var); let element_var = &element_var;
+    {{ read_var(element_var, inner) }}
+    {{ var }}.push({{ element_var }})
+end
+- }
+- Schema::Map(key_type, value_type) => {
+{{ var }} = Hash.new
+stream.read_int().times do |_|
+    - let key_var = format!("{}_key", var); let key_var = &key_var;
+    - let value_var = format!("{}_value", var); let value_var = &value_var;
+    {{ read_var(key_var, key_type) }}
+    {{ read_var(value_var, value_type) }}
+    {{ var }}[{{ key_var }}] = {{ value_var }}
+end
+- }
+- Schema::Enum { variants, .. } => {
+{{ var }} = stream.read_int()
+if {{ var }} < 0 || {{ var }} >= {{ variants.len() }}
+    raise "Unexpected tag value"
+end
+- }
+- }
