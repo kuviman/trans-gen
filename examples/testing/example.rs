@@ -52,7 +52,7 @@ pub struct Structure {
     one_of_two: OneOf,
     /// Dictionary
     #[trans_doc = "ru:Таблица"]
-    hash_map: HashMap<Enumeration, NewTypeI32>,
+    hash_map: HashMap<Enumeration, NewTypeInt32>,
     /// Text
     #[trans_doc = "ru:Текст"]
     text: String,
