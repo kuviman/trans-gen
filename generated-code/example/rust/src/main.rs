@@ -1,6 +1,7 @@
 use anyhow::Context;
 
 mod model;
+mod trans;
 
 fn main() -> anyhow::Result<()> {
     let mut args = std::env::args();

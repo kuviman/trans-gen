@@ -1,3 +1,5 @@
+use crate::trans;
+
 mod attack_properties;
 pub use self::attack_properties::*;
 mod build_properties;

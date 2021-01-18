@@ -1,3 +1,5 @@
+use crate::trans;
+
 mod enumeration;
 pub use self::enumeration::*;
 mod one_of;
