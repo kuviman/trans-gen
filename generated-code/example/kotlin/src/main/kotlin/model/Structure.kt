@@ -7,14 +7,16 @@ class Structure {
     lateinit var oneOfTwo: model.OneOf
     lateinit var hashMap: MutableMap<model.Enumeration, Int>
     lateinit var text: String
-    var realNumber: Double = 0.0
+    var floatNumber: Float = 0.0f
+    var doubleNumber: Double = 0.0
     constructor() {}
-    constructor(oneOfOne: model.OneOf, oneOfTwo: model.OneOf, hashMap: MutableMap<model.Enumeration, Int>, text: String, realNumber: Double) {
+    constructor(oneOfOne: model.OneOf, oneOfTwo: model.OneOf, hashMap: MutableMap<model.Enumeration, Int>, text: String, floatNumber: Float, doubleNumber: Double) {
         this.oneOfOne = oneOfOne
         this.oneOfTwo = oneOfTwo
         this.hashMap = hashMap
         this.text = text
-        this.realNumber = realNumber
+        this.floatNumber = floatNumber
+        this.doubleNumber = doubleNumber
     }
     companion object {
         @Throws(java.io.IOException::class)
@@ -36,7 +38,8 @@ class Structure {
                 result.hashMap.put(hashMapKey, hashMapValue)
             }
             result.text = StreamUtil.readString(stream)
-            result.realNumber = StreamUtil.readDouble(stream)
+            result.floatNumber = StreamUtil.readFloat(stream)
+            result.doubleNumber = StreamUtil.readDouble(stream)
             return result
         }
     }
@@ -50,6 +53,7 @@ class Structure {
             StreamUtil.writeInt(stream, hashMapEntry.value)
         }
         StreamUtil.writeString(stream, text)
-        StreamUtil.writeDouble(stream, realNumber)
+        StreamUtil.writeFloat(stream, floatNumber)
+        StreamUtil.writeDouble(stream, doubleNumber)
     }
 }

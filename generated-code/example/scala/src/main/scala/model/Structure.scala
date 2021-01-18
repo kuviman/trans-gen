@@ -2,7 +2,7 @@ package model
 
 import util.StreamUtil
 
-case class Structure(oneOfOne: model.OneOf, oneOfTwo: model.OneOf, hashMap: Map[model.Enumeration, Int], text: String, realNumber: Double) {
+case class Structure(oneOfOne: model.OneOf, oneOfTwo: model.OneOf, hashMap: Map[model.Enumeration, Int], text: String, floatNumber: Float, doubleNumber: Double) {
     def writeTo(stream: java.io.OutputStream) {
         oneOfOne.writeTo(stream)
         oneOfTwo.writeTo(stream)
@@ -12,7 +12,8 @@ case class Structure(oneOfOne: model.OneOf, oneOfTwo: model.OneOf, hashMap: Map[
             StreamUtil.writeInt(stream, value)
         }
         StreamUtil.writeString(stream, text)
-        StreamUtil.writeDouble(stream, realNumber)
+        StreamUtil.writeFloat(stream, floatNumber)
+        StreamUtil.writeDouble(stream, doubleNumber)
     }
 }
 object Structure {
@@ -28,6 +29,8 @@ object Structure {
         )}.toMap
         ,
         StreamUtil.readString(stream)
+        ,
+        StreamUtil.readFloat(stream)
         ,
         StreamUtil.readDouble(stream)
         )

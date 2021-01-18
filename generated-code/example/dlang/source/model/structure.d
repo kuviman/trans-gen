@@ -8,13 +8,15 @@ struct Structure {
     OneOf oneOfTwo;
     int[Enumeration] hashMap;
     string text;
-    double realNumber;
-    this(OneOf oneOfOne, OneOf oneOfTwo, int[Enumeration] hashMap, string text, double realNumber) {
+    float floatNumber;
+    double doubleNumber;
+    this(OneOf oneOfOne, OneOf oneOfTwo, int[Enumeration] hashMap, string text, float floatNumber, double doubleNumber) {
         this.oneOfOne = oneOfOne;
         this.oneOfTwo = oneOfTwo;
         this.hashMap = hashMap;
         this.text = text;
-        this.realNumber = realNumber;
+        this.floatNumber = floatNumber;
+        this.doubleNumber = doubleNumber;
     }
     static Structure readFrom(Stream reader) {
         auto result = Structure();
@@ -39,7 +41,8 @@ struct Structure {
             result.hashMap[hashMapKey] = hashMapValue;
         }
         result.text = reader.readString();
-        result.realNumber = reader.readDouble();
+        result.floatNumber = reader.readFloat();
+        result.doubleNumber = reader.readDouble();
         return result;
     }
     void writeTo(Stream writer) const {
@@ -51,7 +54,8 @@ struct Structure {
             writer.write(hashMapValue);
         }
         writer.write(text);
-        writer.write(realNumber);
+        writer.write(floatNumber);
+        writer.write(doubleNumber);
     }
     string toString() const {
         return "Structure" ~ "(" ~
@@ -59,7 +63,8 @@ struct Structure {
             to!string(oneOfTwo) ~
             to!string(hashMap) ~
             to!string(text) ~
-            to!string(realNumber) ~
+            to!string(floatNumber) ~
+            to!string(doubleNumber) ~
             ")";
     }
 }

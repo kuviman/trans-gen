@@ -19,9 +19,10 @@ class OneOf::OptionOne : public OneOf {
 public:
     static const int TAG = 0;
 public:
-    std::vector<int> value;
+    std::vector<int> vecI32;
+    long long longInt;
     OptionOne();
-    OptionOne(std::vector<int> value);
+    OptionOne(std::vector<int> vecI32, long long longInt);
     static OptionOne readFrom(InputStream& stream);
     void writeTo(OutputStream& stream) const override;
 };

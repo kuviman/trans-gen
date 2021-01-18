@@ -8,15 +8,17 @@ type Structure struct {
     OneOfTwo OneOf
     HashMap map[Enumeration]int32
     Text string
-    RealNumber float64
+    FloatNumber float32
+    DoubleNumber float64
 }
-func NewStructure(oneOfOne OneOf, oneOfTwo OneOf, hashMap map[Enumeration]int32, text string, realNumber float64) Structure {
+func NewStructure(oneOfOne OneOf, oneOfTwo OneOf, hashMap map[Enumeration]int32, text string, floatNumber float32, doubleNumber float64) Structure {
     return Structure {
         OneOfOne: oneOfOne,
         OneOfTwo: oneOfTwo,
         HashMap: hashMap,
         Text: text,
-        RealNumber: realNumber,
+        FloatNumber: floatNumber,
+        DoubleNumber: doubleNumber,
     }
 }
 func ReadStructure(reader io.Reader) Structure {
@@ -33,7 +35,8 @@ func ReadStructure(reader io.Reader) Structure {
         result.HashMap[HashMapKey] = HashMapValue
     }
     result.Text = ReadString(reader)
-    result.RealNumber = ReadFloat64(reader)
+    result.FloatNumber = ReadFloat32(reader)
+    result.DoubleNumber = ReadFloat64(reader)
     return result
 }
 func (value Structure) Write(writer io.Writer) {
@@ -45,5 +48,6 @@ func (value Structure) Write(writer io.Writer) {
         WriteInt32(writer, HashMapValue)
     }
     WriteString(writer, value.Text)
-    WriteFloat64(writer, value.RealNumber)
+    WriteFloat32(writer, value.FloatNumber)
+    WriteFloat64(writer, value.DoubleNumber)
 }

@@ -1,11 +1,12 @@
 const OneOf = require('./one-of');
 class Structure {
-    constructor(oneOfOne, oneOfTwo, hashMap, text, realNumber) {
+    constructor(oneOfOne, oneOfTwo, hashMap, text, floatNumber, doubleNumber) {
         this.oneOfOne = oneOfOne;
         this.oneOfTwo = oneOfTwo;
         this.hashMap = hashMap;
         this.text = text;
-        this.realNumber = realNumber;
+        this.floatNumber = floatNumber;
+        this.doubleNumber = doubleNumber;
     }
 
     static async readFrom(stream) {
@@ -24,9 +25,11 @@ class Structure {
         }
         let text;
         text = await stream.readString();
-        let realNumber;
-        realNumber = await stream.readDouble();
-        return new Structure(oneOfOne, oneOfTwo, hashMap, text, realNumber);
+        let floatNumber;
+        floatNumber = await stream.readFloat();
+        let doubleNumber;
+        doubleNumber = await stream.readDouble();
+        return new Structure(oneOfOne, oneOfTwo, hashMap, text, floatNumber, doubleNumber);
     }
 
     async writeTo(stream) {
@@ -42,8 +45,10 @@ class Structure {
         }
         let text = this.text;
         await stream.writeString(text);
-        let realNumber = this.realNumber;
-        await stream.writeDouble(realNumber);
+        let floatNumber = this.floatNumber;
+        await stream.writeFloat(floatNumber);
+        let doubleNumber = this.doubleNumber;
+        await stream.writeDouble(doubleNumber);
     }
 }
 module.exports = Structure

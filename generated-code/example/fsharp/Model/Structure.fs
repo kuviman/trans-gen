@@ -5,7 +5,8 @@ type Structure = {
     OneOfTwo: OneOf;
     HashMap: Map<Enumeration, int>;
     Text: string;
-    RealNumber: double;
+    FloatNumber: single;
+    DoubleNumber: double;
     } with
     member this.writeTo(writer: System.IO.BinaryWriter) =
         this.OneOfOne.writeTo writer
@@ -18,7 +19,8 @@ type Structure = {
         let TextData : byte[] = System.Text.Encoding.UTF8.GetBytes this.Text
         writer.Write TextData.Length
         writer.Write TextData
-        writer.Write this.RealNumber
+        writer.Write this.FloatNumber
+        writer.Write this.DoubleNumber
     static member readFrom(reader: System.IO.BinaryReader) = {
         OneOfOne = OneOf.readFrom reader
         OneOfTwo = OneOf.readFrom reader
@@ -28,5 +30,6 @@ type Structure = {
             yield (key, value)
             ] |> Map.ofList
         Text = reader.ReadInt32() |> reader.ReadBytes |> System.Text.Encoding.UTF8.GetString
-        RealNumber = reader.ReadDouble()
+        FloatNumber = reader.ReadSingle()
+        DoubleNumber = reader.ReadDouble()
     }

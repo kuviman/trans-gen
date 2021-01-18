@@ -13,29 +13,34 @@ class OneOf {
     }
 }
 class OptionOne extends OneOf {
-    constructor(value) {
+    constructor(vecI32, longInt) {
         super();
-        this.value = value;
+        this.vecI32 = vecI32;
+        this.longInt = longInt;
     }
 
     static async readFrom(stream) {
-        let value;
-        value = [];
-        for (let valueCount = await stream.readInt(); valueCount > 0; valueCount--) {
-            let valueElement;
-            valueElement = await stream.readInt();
-            value.push(valueElement);
+        let vecI32;
+        vecI32 = [];
+        for (let vecI32Count = await stream.readInt(); vecI32Count > 0; vecI32Count--) {
+            let vecI32Element;
+            vecI32Element = await stream.readInt();
+            vecI32.push(vecI32Element);
         }
-        return new OptionOne(value);
+        let longInt;
+        longInt = await stream.readLong();
+        return new OptionOne(vecI32, longInt);
     }
 
     async writeTo(stream) {
         await stream.writeInt(OptionOne.TAG);
-        let value = this.value;
-        await stream.writeInt(value.length);
-        for (let valueElement of value) {
-            await stream.writeInt(valueElement);
+        let vecI32 = this.vecI32;
+        await stream.writeInt(vecI32.length);
+        for (let vecI32Element of vecI32) {
+            await stream.writeInt(vecI32Element);
         }
+        let longInt = this.longInt;
+        await stream.writeLong(longInt);
     }
 }
 

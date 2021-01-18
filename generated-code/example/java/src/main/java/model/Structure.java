@@ -15,16 +15,20 @@ public class Structure {
     private String text;
     public String getText() { return text; }
     public void setText(String text) { this.text = text; }
-    private double realNumber;
-    public double getRealNumber() { return realNumber; }
-    public void setRealNumber(double realNumber) { this.realNumber = realNumber; }
+    private float floatNumber;
+    public float getFloatNumber() { return floatNumber; }
+    public void setFloatNumber(float floatNumber) { this.floatNumber = floatNumber; }
+    private double doubleNumber;
+    public double getDoubleNumber() { return doubleNumber; }
+    public void setDoubleNumber(double doubleNumber) { this.doubleNumber = doubleNumber; }
     public Structure() {}
-    public Structure(model.OneOf oneOfOne, model.OneOf oneOfTwo, java.util.Map<model.Enumeration, Integer> hashMap, String text, double realNumber) {
+    public Structure(model.OneOf oneOfOne, model.OneOf oneOfTwo, java.util.Map<model.Enumeration, Integer> hashMap, String text, float floatNumber, double doubleNumber) {
         this.oneOfOne = oneOfOne;
         this.oneOfTwo = oneOfTwo;
         this.hashMap = hashMap;
         this.text = text;
-        this.realNumber = realNumber;
+        this.floatNumber = floatNumber;
+        this.doubleNumber = doubleNumber;
     }
     public static Structure readFrom(java.io.InputStream stream) throws java.io.IOException {
         Structure result = new Structure();
@@ -49,7 +53,8 @@ public class Structure {
             result.hashMap.put(hashMapKey, hashMapValue);
         }
         result.text = StreamUtil.readString(stream);
-        result.realNumber = StreamUtil.readDouble(stream);
+        result.floatNumber = StreamUtil.readFloat(stream);
+        result.doubleNumber = StreamUtil.readDouble(stream);
         return result;
     }
     public void writeTo(java.io.OutputStream stream) throws java.io.IOException {
@@ -63,6 +68,7 @@ public class Structure {
             StreamUtil.writeInt(stream, hashMapValue);
         }
         StreamUtil.writeString(stream, text);
-        StreamUtil.writeDouble(stream, realNumber);
+        StreamUtil.writeFloat(stream, floatNumber);
+        StreamUtil.writeDouble(stream, doubleNumber);
     }
 }

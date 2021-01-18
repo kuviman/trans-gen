@@ -2,12 +2,13 @@ from .one_of import OneOf
 from .one_of import OneOf
 from .enumeration import Enumeration
 class Structure:
-    def __init__(self, one_of_one, one_of_two, hash_map, text, real_number):
+    def __init__(self, one_of_one, one_of_two, hash_map, text, float_number, double_number):
         self.one_of_one = one_of_one
         self.one_of_two = one_of_two
         self.hash_map = hash_map
         self.text = text
-        self.real_number = real_number
+        self.float_number = float_number
+        self.double_number = double_number
     @staticmethod
     def read_from(stream):
         one_of_one = OneOf.read_from(stream)
@@ -18,8 +19,9 @@ class Structure:
             hash_map_value = stream.read_int()
             hash_map[hash_map_key] = hash_map_value
         text = stream.read_string()
-        real_number = stream.read_double()
-        return Structure(one_of_one, one_of_two, hash_map, text, real_number)
+        float_number = stream.read_float()
+        double_number = stream.read_double()
+        return Structure(one_of_one, one_of_two, hash_map, text, float_number, double_number)
     def write_to(self, stream):
         self.one_of_one.write_to(stream)
         self.one_of_two.write_to(stream)
@@ -28,12 +30,14 @@ class Structure:
             stream.write_int(key)
             stream.write_int(value)
         stream.write_string(self.text)
-        stream.write_double(self.real_number)
+        stream.write_float(self.float_number)
+        stream.write_double(self.double_number)
     def __repr__(self):
         return "Structure(" + \
             repr(self.one_of_one) + "," + \
             repr(self.one_of_two) + "," + \
             repr(self.hash_map) + "," + \
             repr(self.text) + "," + \
-            repr(self.real_number) + \
+            repr(self.float_number) + "," + \
+            repr(self.double_number) + \
             ")"

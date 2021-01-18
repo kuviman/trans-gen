@@ -6,13 +6,15 @@ class Structure
     attr_accessor :one_of_two
     attr_accessor :hash_map
     attr_accessor :text
-    attr_accessor :real_number
-    def initialize(one_of_one, one_of_two, hash_map, text, real_number)
+    attr_accessor :float_number
+    attr_accessor :double_number
+    def initialize(one_of_one, one_of_two, hash_map, text, float_number, double_number)
         @one_of_one = one_of_one
         @one_of_two = one_of_two
         @hash_map = hash_map
         @text = text
-        @real_number = real_number
+        @float_number = float_number
+        @double_number = double_number
     end
     def self.read_from(stream)
         one_of_one = OneOf.read_from(stream)
@@ -27,8 +29,9 @@ class Structure
             hash_map[hash_map_key] = hash_map_value
         end
         text = stream.read_string()
-        real_number = stream.read_double()
-        Structure.new(one_of_one, one_of_two, hash_map, text, real_number)
+        float_number = stream.read_float()
+        double_number = stream.read_double()
+        Structure.new(one_of_one, one_of_two, hash_map, text, float_number, double_number)
     end
     def write_to(stream)
         @one_of_one.write_to(stream)
@@ -39,6 +42,7 @@ class Structure
             stream.write_int(value)
         end
         stream.write_string(@text)
-        stream.write_double(@real_number)
+        stream.write_float(@float_number)
+        stream.write_double(@double_number)
     end
 end

@@ -6,14 +6,16 @@ namespace TransGenTest.Model
         public Model.OneOf OneOfTwo { get; set; }
         public System.Collections.Generic.IDictionary<Model.Enumeration, int> HashMap { get; set; }
         public string Text { get; set; }
-        public double RealNumber { get; set; }
-        public Structure(Model.OneOf oneOfOne, Model.OneOf oneOfTwo, System.Collections.Generic.IDictionary<Model.Enumeration, int> hashMap, string text, double realNumber)
+        public float FloatNumber { get; set; }
+        public double DoubleNumber { get; set; }
+        public Structure(Model.OneOf oneOfOne, Model.OneOf oneOfTwo, System.Collections.Generic.IDictionary<Model.Enumeration, int> hashMap, string text, float floatNumber, double doubleNumber)
         {
             this.OneOfOne = oneOfOne;
             this.OneOfTwo = oneOfTwo;
             this.HashMap = hashMap;
             this.Text = text;
-            this.RealNumber = realNumber;
+            this.FloatNumber = floatNumber;
+            this.DoubleNumber = doubleNumber;
         }
         public static Structure ReadFrom(System.IO.BinaryReader reader)
         {
@@ -41,7 +43,8 @@ namespace TransGenTest.Model
                 result.HashMap.Add(HashMapKey, HashMapValue);
             }
             result.Text = System.Text.Encoding.UTF8.GetString(reader.ReadBytes(reader.ReadInt32()));
-            result.RealNumber = reader.ReadDouble();
+            result.FloatNumber = reader.ReadSingle();
+            result.DoubleNumber = reader.ReadDouble();
             return result;
         }
         public void WriteTo(System.IO.BinaryWriter writer)
@@ -59,7 +62,8 @@ namespace TransGenTest.Model
             var TextData = System.Text.Encoding.UTF8.GetBytes(Text);
             writer.Write(TextData.Length);
             writer.Write(TextData);
-            writer.Write(RealNumber);
+            writer.Write(FloatNumber);
+            writer.Write(DoubleNumber);
         }
     }
 }

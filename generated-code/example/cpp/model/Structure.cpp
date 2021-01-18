@@ -1,7 +1,7 @@
 #include "Structure.hpp"
 
 Structure::Structure() { }
-Structure::Structure(std::shared_ptr<OneOf> oneOfOne, std::shared_ptr<OneOf> oneOfTwo, std::unordered_map<Enumeration, int> hashMap, std::string text, double realNumber) : oneOfOne(oneOfOne), oneOfTwo(oneOfTwo), hashMap(hashMap), text(text), realNumber(realNumber) { }
+Structure::Structure(std::shared_ptr<OneOf> oneOfOne, std::shared_ptr<OneOf> oneOfTwo, std::unordered_map<Enumeration, int> hashMap, std::string text, float floatNumber, double doubleNumber) : oneOfOne(oneOfOne), oneOfTwo(oneOfTwo), hashMap(hashMap), text(text), floatNumber(floatNumber), doubleNumber(doubleNumber) { }
 Structure Structure::readFrom(InputStream& stream) {
     Structure result;
     result.oneOfOne = OneOf::readFrom(stream);
@@ -26,7 +26,8 @@ Structure Structure::readFrom(InputStream& stream) {
         result.hashMap.emplace(std::make_pair(hashMapKey, hashMapValue));
     }
     result.text = stream.readString();
-    result.realNumber = stream.readDouble();
+    result.floatNumber = stream.readFloat();
+    result.doubleNumber = stream.readDouble();
     return result;
 }
 void Structure::writeTo(OutputStream& stream) const {
@@ -38,5 +39,6 @@ void Structure::writeTo(OutputStream& stream) const {
         stream.write(hashMapEntry.second);
     }
     stream.write(text);
-    stream.write(realNumber);
+    stream.write(floatNumber);
+    stream.write(doubleNumber);
 }

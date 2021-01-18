@@ -17,31 +17,37 @@ export abstract class OneOf {
 
 export namespace OneOf {
     export class OptionOne extends OneOf {
-        value: Array<number>
+        vecI32: Array<number>
+        longInt: bigint
     
-        constructor(value: Array<number>) {
+        constructor(vecI32: Array<number>, longInt: bigint) {
             super();
-            this.value = value;
+            this.vecI32 = vecI32;
+            this.longInt = longInt;
         }
     
         static async readFrom(stream: StreamWrapper): Promise<OneOf.OptionOne> {
-            let value;
-            value = [];
-            for (let valueCount = await stream.readInt(); valueCount > 0; valueCount--) {
-                let valueElement;
-                valueElement = await stream.readInt();
-                value.push(valueElement);
+            let vecI32;
+            vecI32 = [];
+            for (let vecI32Count = await stream.readInt(); vecI32Count > 0; vecI32Count--) {
+                let vecI32Element;
+                vecI32Element = await stream.readInt();
+                vecI32.push(vecI32Element);
             }
-            return new OptionOne(value)
+            let longInt;
+            longInt = await stream.readLong();
+            return new OptionOne(vecI32, longInt)
         }
     
         async writeTo(stream: StreamWrapper) {
             await stream.writeInt(OptionOne.TAG);
-            let value = this.value;
-            await stream.writeInt(value.length);
-            for (let valueElement of value) {
-                await stream.writeInt(valueElement);
+            let vecI32 = this.vecI32;
+            await stream.writeInt(vecI32.length);
+            for (let vecI32Element of vecI32) {
+                await stream.writeInt(vecI32Element);
             }
+            let longInt = this.longInt;
+            await stream.writeLong(longInt);
         }
     }
     
