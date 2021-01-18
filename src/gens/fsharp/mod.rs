@@ -2,7 +2,7 @@ use super::*;
 
 fn conv(name: &str) -> String {
     name.replace("Int32", "Int")
-        .replace("Int64", "Long")
+        .replace("Int64", "Int64")
         .replace("Float32", "Single")
         .replace("Float64", "Double")
         .replace("Params", "Parameters")
@@ -21,7 +21,7 @@ fn type_name_prearray(schema: &Schema) -> String {
     match schema {
         Schema::Bool => "bool".to_owned(),
         Schema::Int32 => "int".to_owned(),
-        Schema::Int64 => "long".to_owned(),
+        Schema::Int64 => "int64".to_owned(),
         Schema::Float32 => "single".to_owned(),
         Schema::Float64 => "double".to_owned(),
         Schema::String => "string".to_owned(),
