@@ -127,7 +127,7 @@ jobs:
           ./testing generate testing-branch/generated-code
           pushd testing-branch
           git add .
-          git diff --cached --exit-code || git commit -m "Update generated code"
+          git diff --cached --exit-code || git commit -m "Update generated code (run ${{ github.run_id }})"
           popd
           rm -rf branch
           git worktree prune
