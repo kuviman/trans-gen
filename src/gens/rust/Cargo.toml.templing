@@ -4,5 +4,5 @@ version = "{{crate_version}}"
 edition = "2018"
 
 [dependencies]
-trans = "{{trans::VERSION}}"
 anyhow = "1"
+byteorder = "1"

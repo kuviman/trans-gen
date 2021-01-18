@@ -1,3 +1,5 @@
+use crate::trans;
+
 - for mod_name in types {
 mod {{mod_name}};
 pub use self::{{mod_name}}::*;

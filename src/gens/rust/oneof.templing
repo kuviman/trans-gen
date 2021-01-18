@@ -1,6 +1,6 @@
 use super::*;
 
-#[derive(Clone, Debug, trans::Trans)]
+#[derive(Clone, Debug)]
 pub enum {{ base_name.camel_case(conv) }} {
 - for variant in variants {
     {{ variant.name.camel_case(conv) }} {
@@ -9,4 +9,44 @@ pub enum {{ base_name.camel_case(conv) }} {
     - }
     },
 - }
+}
+
+impl trans::Trans for {{ base_name.camel_case(conv) }} {
+    fn write_to(&self, writer: &mut dyn std::io::Write) -> std::io::Result<()> {
+        match self {
+            - for (tag, variant) in variants.iter().enumerate() {
+            Self::{{ variant.name.camel_case(conv) }} {
+                - for field in &variant.fields {
+                {{ field.name.snake_case(conv) }},
+                - }
+            } => {
+                <i32 as trans::Trans>::write_to(&{{ tag }}, writer)?;
+                - for field in &variant.fields {
+                {{ field.name.snake_case(conv) }}.write_to(writer)?;
+                - }
+            }
+            - }
+        }
+        Ok(())
+    }
+    fn read_from(reader: &mut dyn std::io::Read) -> std::io::Result<Self> {
+        let tag = <i32 as trans::Trans>::read_from(reader)?;
+        match tag {
+            - for (tag, variant) in variants.iter().enumerate() {
+            {{ tag }} => {
+                - for field in &variant.fields {
+                let {{ field.name.snake_case(conv) }}: {{ type_name(&field.schema) }} = trans::Trans::read_from(reader)?;
+                - }
+                Ok(Self::{{ variant.name.camel_case(conv) }} {
+                    - for field in &variant.fields {
+                    {{ field.name.snake_case(conv) }},
+                    - }
+                })
+            }
+            - }
+            _ => Err(std::io::Error::new(
+                std::io::ErrorKind::Other,
+                format!("Unexpected tag {:?}", tag))),
+        }
+    }
 }

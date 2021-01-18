@@ -59,6 +59,10 @@ impl crate::Generator for Generator {
             "src/model/mod.rs".to_owned(),
             include_templing!("src/gens/rust/mod.rs.templing"),
         );
+        files.insert(
+            "src/trans.rs".to_owned(),
+            include_str!("trans.rs").to_owned(),
+        );
         for (name, content) in self.types {
             files.insert(format!("src/model/{}.rs", name), content);
         }

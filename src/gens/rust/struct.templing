@@ -1,11 +1,27 @@
 use super::*;
 
-#[derive(Clone, Debug{{# if schema.hashable() { }}, PartialEq, Eq, Hash{{# } }}, trans::Trans)]
-- if let Some(magic) = magic {
-#[trans(magic = "{{ magic }}")]
-- }
+#[derive(Clone, Debug{{# if schema.hashable() { }}, PartialEq, Eq, Hash{{# } }})]
 pub struct {{ name.camel_case(conv) }} {
 - for field in fields {
     pub {{ field.name.snake_case(conv) }}: {{ type_name(&field.schema) }},
 - }
+}
+
+impl trans::Trans for {{ name.camel_case(conv) }} {
+    fn write_to(&self, writer: &mut dyn std::io::Write) -> std::io::Result<()> {
+        - for field in fields {
+        self.{{ field.name.snake_case(conv) }}.write_to(writer)?;
+        - }
+        Ok(())
+    }
+    fn read_from(reader: &mut dyn std::io::Read) -> std::io::Result<Self> {
+        - for field in fields {
+        let {{ field.name.snake_case(conv) }}: {{ type_name(&field.schema) }} = trans::Trans::read_from(reader)?;
+        - }
+        Ok(Self {
+            - for field in fields {
+            {{ field.name.snake_case(conv) }},
+            - }
+        })
+    }
 }
