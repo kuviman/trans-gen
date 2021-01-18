@@ -210,6 +210,7 @@ impl crate::Generator for Generator {
                             )
                             .unwrap();
                         }
+                        writeln!(content).unwrap();
                         content.dec_ident();
                     }
                 }
