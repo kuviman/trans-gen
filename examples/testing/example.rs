@@ -15,7 +15,7 @@ pub enum Enumeration {
 }
 
 #[derive(Debug, Serialize, Deserialize, PartialEq, Eq, Hash, Copy, Clone, Trans)]
-pub struct NewTypeI32(i32);
+pub struct NewTypeInt32(i32);
 
 /// Oneof example
 #[trans_doc = "ru:Пример one of"]
@@ -26,7 +26,7 @@ pub enum OneOf {
     OptionOne {
         /// List of integers
         #[trans_doc = "ru:Список целых чисел"]
-        vec_i32: Vec<i32>,
+        vec_int32: Vec<i32>,
         /// Long integer
         #[trans_doc = "ru:Длинное целое"]
         long_int: i64,
