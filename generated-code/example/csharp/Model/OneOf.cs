@@ -19,21 +19,21 @@ namespace TransGenTest.Model
         public class OptionOne : OneOf
         {
             public const int TAG = 0;
-            public int[] VecI32 { get; set; }
+            public int[] VecInt { get; set; }
             public long LongInt { get; set; }
             public OptionOne() {}
-            public OptionOne(int[] vecI32, long longInt)
+            public OptionOne(int[] vecInt, long longInt)
             {
-                this.VecI32 = vecI32;
+                this.VecInt = vecInt;
                 this.LongInt = longInt;
             }
             public static new OptionOne ReadFrom(System.IO.BinaryReader reader)
             {
                 var result = new OptionOne();
-                result.VecI32 = new int[reader.ReadInt32()];
-                for (int i = 0; i < result.VecI32.Length; i++)
+                result.VecInt = new int[reader.ReadInt32()];
+                for (int i = 0; i < result.VecInt.Length; i++)
                 {
-                    result.VecI32[i] = reader.ReadInt32();
+                    result.VecInt[i] = reader.ReadInt32();
                 }
                 result.LongInt = reader.ReadInt64();
                 return result;
@@ -41,10 +41,10 @@ namespace TransGenTest.Model
             public override void WriteTo(System.IO.BinaryWriter writer)
             {
                 writer.Write(TAG);
-                writer.Write(VecI32.Length);
-                foreach (var VecI32Element in VecI32)
+                writer.Write(VecInt.Length);
+                foreach (var VecIntElement in VecInt)
                 {
-                    writer.Write(VecI32Element);
+                    writer.Write(VecIntElement);
                 }
                 writer.Write(LongInt);
             }

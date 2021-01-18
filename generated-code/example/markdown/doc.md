@@ -8,7 +8,7 @@ One of:
 
     Fields:
 
-    - `vec_i32`: `[int32]` - List of integers
+    - `vec_int32`: `[int32]` - List of integers
     - `long_int`: `int64` - Long integer
 
 - `OptionTwo` - Second option

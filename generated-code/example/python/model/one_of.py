@@ -10,26 +10,26 @@ class OneOf:
 
 class OptionOne(OneOf):
     TAG = 0
-    def __init__(self, vec_i32, long_int):
-        self.vec_i32 = vec_i32
+    def __init__(self, vec_int, long_int):
+        self.vec_int = vec_int
         self.long_int = long_int
     @staticmethod
     def read_from(stream):
-        vec_i32 = []
+        vec_int = []
         for _ in range(stream.read_int()):
-            vec_i32_element = stream.read_int()
-            vec_i32.append(vec_i32_element)
+            vec_int_element = stream.read_int()
+            vec_int.append(vec_int_element)
         long_int = stream.read_long()
-        return OptionOne(vec_i32, long_int)
+        return OptionOne(vec_int, long_int)
     def write_to(self, stream):
         stream.write_int(self.TAG)
-        stream.write_int(len(self.vec_i32))
-        for element in self.vec_i32:
+        stream.write_int(len(self.vec_int))
+        for element in self.vec_int:
             stream.write_int(element)
         stream.write_long(self.long_int)
     def __repr__(self):
         return "OptionOne(" + \
-            repr(self.vec_i32) + "," + \
+            repr(self.vec_int) + "," + \
             repr(self.long_int) + \
             ")"
 OneOf.OptionOne = OptionOne

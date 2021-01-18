@@ -18,33 +18,33 @@ abstract class OneOf {
 
     static class OptionOne : OneOf {
         static const int TAG = 0;
-        int[] vecI32;
+        int[] vecInt;
         long longInt;
         this() {}
-        this(int[] vecI32, long longInt) {
-            this.vecI32 = vecI32;
+        this(int[] vecInt, long longInt) {
+            this.vecInt = vecInt;
             this.longInt = longInt;
         }
         static OptionOne readFrom(Stream reader) {
             auto result = new OptionOne();
-            result.vecI32 = new int[reader.readInt()];
-            for (int i = 0; i < result.vecI32.length; i++) {
-                result.vecI32[i] = reader.readInt();
+            result.vecInt = new int[reader.readInt()];
+            for (int i = 0; i < result.vecInt.length; i++) {
+                result.vecInt[i] = reader.readInt();
             }
             result.longInt = reader.readLong();
             return result;
         }
         override void writeTo(Stream writer) const {
             writer.write(TAG);
-            writer.write(cast(int)(vecI32.length));
-            foreach (vecI32Element; vecI32) {
-                writer.write(vecI32Element);
+            writer.write(cast(int)(vecInt.length));
+            foreach (vecIntElement; vecInt) {
+                writer.write(vecIntElement);
             }
             writer.write(longInt);
         }
         override string toString() const {
             return "OptionOne" ~ "(" ~
-                to!string(vecI32) ~
+                to!string(vecInt) ~
                 to!string(longInt) ~
                 ")";
         }

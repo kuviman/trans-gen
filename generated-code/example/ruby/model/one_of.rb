@@ -12,25 +12,25 @@ class OneOf
 
     class OptionOne
         TAG = 0
-        attr_accessor :vec_i32
+        attr_accessor :vec_int
         attr_accessor :long_int
-        def initialize(vec_i32, long_int)
-            @vec_i32 = vec_i32
+        def initialize(vec_int, long_int)
+            @vec_int = vec_int
             @long_int = long_int
         end
         def self.read_from(stream)
-            vec_i32 = []
+            vec_int = []
             stream.read_int().times do |_|
-                vec_i32_element = stream.read_int()
-                vec_i32.push(vec_i32_element)
+                vec_int_element = stream.read_int()
+                vec_int.push(vec_int_element)
             end
             long_int = stream.read_long()
-            OptionOne.new(vec_i32, long_int)
+            OptionOne.new(vec_int, long_int)
         end
         def write_to(stream)
             stream.write_int(TAG)
-            stream.write_int(@vec_i32.length())
-            @vec_i32.each do |element|
+            stream.write_int(@vec_int.length())
+            @vec_int.each do |element|
                 stream.write_int(element)
             end
             stream.write_long(@long_int)

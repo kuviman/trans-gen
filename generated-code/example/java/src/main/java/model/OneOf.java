@@ -17,22 +17,22 @@ public abstract class OneOf {
 
     public static class OptionOne extends OneOf {
         public static final int TAG = 0;
-        private int[] vecI32;
-        public int[] getVecI32() { return vecI32; }
-        public void setVecI32(int[] vecI32) { this.vecI32 = vecI32; }
+        private int[] vecInt;
+        public int[] getVecInt() { return vecInt; }
+        public void setVecInt(int[] vecInt) { this.vecInt = vecInt; }
         private long longInt;
         public long getLongInt() { return longInt; }
         public void setLongInt(long longInt) { this.longInt = longInt; }
         public OptionOne() {}
-        public OptionOne(int[] vecI32, long longInt) {
-            this.vecI32 = vecI32;
+        public OptionOne(int[] vecInt, long longInt) {
+            this.vecInt = vecInt;
             this.longInt = longInt;
         }
         public static OptionOne readFrom(java.io.InputStream stream) throws java.io.IOException {
             OptionOne result = new OptionOne();
-            result.vecI32 = new int[StreamUtil.readInt(stream)];
-            for (int i = 0; i < result.vecI32.length; i++) {
-                result.vecI32[i] = StreamUtil.readInt(stream);
+            result.vecInt = new int[StreamUtil.readInt(stream)];
+            for (int i = 0; i < result.vecInt.length; i++) {
+                result.vecInt[i] = StreamUtil.readInt(stream);
             }
             result.longInt = StreamUtil.readLong(stream);
             return result;
@@ -40,9 +40,9 @@ public abstract class OneOf {
         @Override
         public void writeTo(java.io.OutputStream stream) throws java.io.IOException {
             StreamUtil.writeInt(stream, TAG);
-            StreamUtil.writeInt(stream, vecI32.length);
-            for (int vecI32Element : vecI32) {
-                StreamUtil.writeInt(stream, vecI32Element);
+            StreamUtil.writeInt(stream, vecInt.length);
+            for (int vecIntElement : vecInt) {
+                StreamUtil.writeInt(stream, vecIntElement);
             }
             StreamUtil.writeLong(stream, longInt);
         }

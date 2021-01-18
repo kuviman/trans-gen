@@ -17,29 +17,29 @@ func ReadOneOf(reader io.Reader) OneOf {
 }
 
 type OneOfOptionOne struct {
-    VecI32 []int32
+    VecInt32 []int32
     LongInt int64
 }
-func NewOneOfOptionOne(vecI32 []int32, longInt int64) OneOfOptionOne {
+func NewOneOfOptionOne(vecInt32 []int32, longInt int64) OneOfOptionOne {
     return OneOfOptionOne {
-        VecI32: vecI32,
+        VecInt32: vecInt32,
         LongInt: longInt,
     }
 }
 func ReadOneOfOptionOne(reader io.Reader) OneOfOptionOne {
     result := OneOfOptionOne {}
-    result.VecI32 = make([]int32, ReadInt32(reader))
-    for i := range result.VecI32 {
-        result.VecI32[i] = ReadInt32(reader)
+    result.VecInt32 = make([]int32, ReadInt32(reader))
+    for i := range result.VecInt32 {
+        result.VecInt32[i] = ReadInt32(reader)
     }
     result.LongInt = ReadInt64(reader)
     return result
 }
 func (value OneOfOptionOne) Write(writer io.Writer) {
     WriteInt32(writer, 0)
-    WriteInt32(writer, int32(len(value.VecI32)))
-    for _, VecI32Element := range value.VecI32 {
-        WriteInt32(writer, VecI32Element)
+    WriteInt32(writer, int32(len(value.VecInt32)))
+    for _, VecInt32Element := range value.VecInt32 {
+        WriteInt32(writer, VecInt32Element)
     }
     WriteInt64(writer, value.LongInt)
 }

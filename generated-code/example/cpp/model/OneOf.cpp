@@ -2,21 +2,21 @@
 #include <stdexcept>
 
 OneOf::OptionOne::OptionOne() { }
-OneOf::OptionOne::OptionOne(std::vector<int> vecI32, long long longInt) : vecI32(vecI32), longInt(longInt) { }
+OneOf::OptionOne::OptionOne(std::vector<int> vecInt, long long longInt) : vecInt(vecInt), longInt(longInt) { }
 OneOf::OptionOne OneOf::OptionOne::readFrom(InputStream& stream) {
     OneOf::OptionOne result;
-    result.vecI32 = std::vector<int>(stream.readInt());
-    for (size_t i = 0; i < result.vecI32.size(); i++) {
-        result.vecI32[i] = stream.readInt();
+    result.vecInt = std::vector<int>(stream.readInt());
+    for (size_t i = 0; i < result.vecInt.size(); i++) {
+        result.vecInt[i] = stream.readInt();
     }
     result.longInt = stream.readLongLong();
     return result;
 }
 void OneOf::OptionOne::writeTo(OutputStream& stream) const {
     stream.write(TAG);
-    stream.write((int)(vecI32.size()));
-    for (const int& vecI32Element : vecI32) {
-        stream.write(vecI32Element);
+    stream.write((int)(vecInt.size()));
+    for (const int& vecIntElement : vecInt) {
+        stream.write(vecIntElement);
     }
     stream.write(longInt);
 }

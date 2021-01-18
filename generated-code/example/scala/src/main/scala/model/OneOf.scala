@@ -6,11 +6,11 @@ sealed trait OneOf {
     def writeTo(stream: java.io.OutputStream)
 }
 object OneOf {
-    case class OptionOne(vecI32: Seq[Int], longInt: Long) extends OneOf {
+    case class OptionOne(vecInt: Seq[Int], longInt: Long) extends OneOf {
         override def writeTo(stream: java.io.OutputStream) {
             StreamUtil.writeInt(stream, OptionOne.TAG)
-            StreamUtil.writeInt(stream, vecI32.length)
-            vecI32.foreach { value =>
+            StreamUtil.writeInt(stream, vecInt.length)
+            vecInt.foreach { value =>
                 StreamUtil.writeInt(stream, value)
             }
             StreamUtil.writeLong(stream, longInt)

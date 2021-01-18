@@ -2,18 +2,18 @@
 namespace TransGenTest.Model
 
 type OneOfOptionOne = {
-    VecI32: int[];
+    VecInt: int[];
     LongInt: int64;
     } with
     member this.writeTo(writer: System.IO.BinaryWriter) =
         writer.Write 0
-        writer.Write this.VecI32.Length
-        this.VecI32 |> Array.iter (fun value ->
+        writer.Write this.VecInt.Length
+        this.VecInt |> Array.iter (fun value ->
             writer.Write value
         )
         writer.Write this.LongInt
     static member readFrom(reader: System.IO.BinaryReader) = {
-        VecI32 = [|for _ in 1 .. reader.ReadInt32() do
+        VecInt = [|for _ in 1 .. reader.ReadInt32() do
             yield reader.ReadInt32()
         |]
         LongInt = reader.ReadInt64()

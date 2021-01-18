@@ -17,11 +17,11 @@ abstract class OneOf {
     }
 
     class OptionOne : OneOf {
-        lateinit var vecI32: Array<Int>
+        lateinit var vecInt: Array<Int>
         var longInt: Long = 0L
         constructor() {}
-        constructor(vecI32: Array<Int>, longInt: Long) {
-            this.vecI32 = vecI32
+        constructor(vecInt: Array<Int>, longInt: Long) {
+            this.vecInt = vecInt
             this.longInt = longInt
         }
         companion object {
@@ -29,10 +29,10 @@ abstract class OneOf {
             @Throws(java.io.IOException::class)
             fun readFrom(stream: java.io.InputStream): OptionOne {
                 val result = OptionOne()
-                result.vecI32 = Array(StreamUtil.readInt(stream), {
-                    var vecI32Value: Int
-                    vecI32Value = StreamUtil.readInt(stream)
-                    vecI32Value
+                result.vecInt = Array(StreamUtil.readInt(stream), {
+                    var vecIntValue: Int
+                    vecIntValue = StreamUtil.readInt(stream)
+                    vecIntValue
                 })
                 result.longInt = StreamUtil.readLong(stream)
                 return result
@@ -41,9 +41,9 @@ abstract class OneOf {
         @Throws(java.io.IOException::class)
         override fun writeTo(stream: java.io.OutputStream) {
             StreamUtil.writeInt(stream, TAG)
-            StreamUtil.writeInt(stream, vecI32.size)
-            for (vecI32Element in vecI32) {
-                StreamUtil.writeInt(stream, vecI32Element)
+            StreamUtil.writeInt(stream, vecInt.size)
+            for (vecIntElement in vecInt) {
+                StreamUtil.writeInt(stream, vecIntElement)
             }
             StreamUtil.writeLong(stream, longInt)
         }
