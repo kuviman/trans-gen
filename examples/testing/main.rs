@@ -49,7 +49,7 @@ fn main() -> anyhow::Result<()> {
                         } else {
                             path.join(stringify!($model))
                         };
-                        macro_rules! generate {
+                        macro_rules! generate_runnable {
                             ($lang:ident) => {
                                 if langs.is_empty() || langs.contains(&stringify!($lang).to_owned())
                                 {
@@ -66,7 +66,29 @@ fn main() -> anyhow::Result<()> {
                                 }
                             };
                         }
-                        trans_gen::all_runnable_gens!(generate);
+                        macro_rules! generate {
+                            ($lang:ident) => {
+                                if langs.is_empty() || langs.contains(&stringify!($lang).to_owned())
+                                {
+                                    let path = if langs.len() == 1 {
+                                        path.clone()
+                                    } else {
+                                        path.join(stringify!($lang))
+                                    };
+                                    trans_gen::generate::<trans_gen::gens::$lang::Generator>(
+                                        "trans-gen-test",
+                                        env!("CARGO_PKG_VERSION"),
+                                        Default::default(),
+                                        &[trans::Schema::of::<$model::Model>()],
+                                        vec![],
+                                    )
+                                    .write_to(path)
+                                    .context(format!("Failed to generate {}", stringify!($lang)))?;
+                                }
+                            };
+                        }
+                        trans_gen::all_runnable_gens!(generate_runnable);
+                        generate!(markdown);
                     }
                 };
             }
