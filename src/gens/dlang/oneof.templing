@@ -1,0 +1,22 @@
+import model;
+import stream;
+import std.conv;
+import std.typecons : Nullable;
+
+abstract class {{ base_name.camel_case(conv) }} {
+    abstract void writeTo(Stream writer) const;
+    static {{ base_name.camel_case(conv) }} readFrom(Stream reader) {
+        switch (reader.readInt()) {
+            - for variant in variants {
+            case {{ variant.name.camel_case(conv) }}.TAG:
+                return {{ variant.name.camel_case(conv) }}.readFrom(reader);
+            - }
+            default:
+                throw new Exception("Unexpected tag value");
+        }
+    }
+    - for (tag, variant) in variants.iter().enumerate() {
+    
+    {{ struct_impl(variant, Some((base_name, tag))) }}
+    - }
+}

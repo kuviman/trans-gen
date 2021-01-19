@@ -1,0 +1,6 @@
+import model;
+import stream;
+import std.conv;
+import std.typecons : Nullable;
+
+{{ struct_impl(struc, None) }}

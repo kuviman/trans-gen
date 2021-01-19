@@ -1,0 +1,56 @@
+- if let Some((base_name, _)) = base {
+static class {{ struc.name.camel_case(conv) }} : {{ base_name.camel_case(conv) }} {
+- } else {
+struct {{ struc.name.camel_case(conv) }} {
+- }
+    - if let Some((_, tag)) = base {
+    static const int TAG = {{ tag }};
+
+    - }
+    - for field in &struc.fields {
+    {{ type_name(&field.schema) }} {{ field.name.mixed_case(conv) }};
+    - }
+    - if base.is_some() {
+
+    this() {}
+    - }
+    - if !struc.fields.is_empty() {
+
+    this(~
+    - for (index, field) in struc.fields.iter().enumerate() {
+        - if index != 0 {
+            ~, ~
+        - }
+        ~{{ type_name(&field.schema) }} {{ field.name.mixed_case(conv) }}~
+    - }
+    ~) {
+        - for field in &struc.fields {
+        this.{{ field.name.mixed_case(conv) }} = {{ field.name.mixed_case(conv) }};
+        - }
+    }
+    - }
+
+    static {{ struc.name.camel_case(conv) }} readFrom(Stream reader) {
+        - for field in &struc.fields {
+        {{ type_name(&field.schema) }} {{ field.name.mixed_case(conv) }};
+        {{ read_var(&field.name.mixed_case(conv), &field.schema) }}
+        - }
+        return {{# if base.is_some() { }}new {{# } }}{{ struc.name.camel_case(conv) }}(~
+        - for (index, field) in struc.fields.iter().enumerate() {
+            - if index != 0 {
+                ~, ~
+            - }
+            ~{{ field.name.mixed_case(conv) }}~
+        - }
+        ~);
+    }
+
+    {{# if base.is_some() { }}override {{# } }}void writeTo(Stream writer) const {
+        - if base.is_some() {
+        writer.write(TAG);
+        - }
+        - for field in &struc.fields {
+        {{ write_var(&field.name.mixed_case(conv), &field.schema) }}
+        - }
+    }
+}

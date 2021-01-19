@@ -1,0 +1,5 @@
+enum {{ base_name.camel_case(conv) }} : int {
+    - for (tag, variant) in variants.iter().enumerate() {
+    {{ variant.name.camel_case(conv) }} = {{ tag }},
+    - }
+}
