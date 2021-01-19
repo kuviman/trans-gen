@@ -1,4 +1,3 @@
-
 class RepairProperties {
     constructor(validTargets, power) {
         this.validTargets = validTargets;

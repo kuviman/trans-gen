@@ -1,4 +1,3 @@
-
 class Vec2Int {
     constructor(x, y) {
         this.x = x;

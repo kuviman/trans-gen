@@ -1,5 +1,3 @@
-
-
 class OneOf
     def self.read_from(stream)
         tag = stream.read_int()

@@ -1,5 +1,3 @@
-
-
 class AttackProperties
     attr_accessor :attack_range
     attr_accessor :damage

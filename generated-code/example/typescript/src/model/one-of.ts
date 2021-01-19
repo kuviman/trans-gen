@@ -1,4 +1,3 @@
-
 import { StreamWrapper } from "../stream-wrapper";
 
 export abstract class OneOf {

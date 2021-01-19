@@ -1,4 +1,3 @@
-
 class Player {
     constructor(id, score, resource) {
         this.id = id;

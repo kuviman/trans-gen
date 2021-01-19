@@ -1,5 +1,3 @@
-
-
 class Vec2Int
     attr_accessor :x
     attr_accessor :y

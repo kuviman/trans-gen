@@ -1,4 +1,3 @@
-
 class BuildProperties {
     constructor(options, initHealth) {
         this.options = options;

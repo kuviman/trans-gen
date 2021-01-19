@@ -1,5 +1,3 @@
-
-
 class Player
     attr_accessor :id
     attr_accessor :score

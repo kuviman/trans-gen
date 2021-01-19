@@ -1,4 +1,3 @@
-
 class AttackProperties {
     constructor(attackRange, damage, collectResource) {
         this.attackRange = attackRange;

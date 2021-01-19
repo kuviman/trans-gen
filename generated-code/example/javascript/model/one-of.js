@@ -1,5 +1,3 @@
-
-
 class OneOf {
     static async readFrom(stream) {
         let tag = await stream.readInt();
