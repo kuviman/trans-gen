@@ -45,212 +45,24 @@ fn type_post_array(schema: &Schema) -> String {
     }
 }
 
-fn var_name(name: &str) -> &str {
-    match name.rfind('.') {
-        Some(index) => &name[(index + 1)..],
-        None => name,
-    }
+fn new_var(var: &str, suffix: &str) -> String {
+    let var = match var.rfind('.') {
+        Some(index) => &var[index + 1..],
+        None => var,
+    };
+    Name::new(format!("{}{}", var, suffix)).mixed_case(conv)
 }
 
-fn write_struct(
-    writer: &mut Writer,
-    struc: &Struct,
-    base: Option<(&Name, usize)>,
-) -> std::fmt::Result {
-    let struc_name = if let Some((base, _)) = base {
-        format!("{}{}", base.camel_case(conv), struc.name.camel_case(conv))
-    } else {
-        struc.name.camel_case(conv)
-    };
+fn read_var(schema: &Schema) -> String {
+    include_templing!("src/gens/fsharp/read_var.templing")
+}
 
-    if struc.fields.is_empty() {
-        writeln!(writer, "type {} = struct end with", struc_name)?;
-        writer.inc_ident();
-    } else {
-        writeln!(writer, "type {} = {{", struc_name)?;
-        writer.inc_ident();
-        for field in &struc.fields {
-            writeln!(
-                writer,
-                "{}: {};",
-                field.name.camel_case(conv),
-                type_name(&field.schema),
-            )?;
-        }
-        writeln!(writer, "}} with")?;
-    }
+fn write_var(var: &str, schema: &Schema) -> String {
+    include_templing!("src/gens/fsharp/write_var.templing")
+}
 
-    // Writing
-    writeln!(
-        writer,
-        "member this.writeTo(writer: System.IO.BinaryWriter) ="
-    )?;
-    writer.inc_ident();
-    if let Some((_, tag)) = base {
-        writeln!(writer, "writer.Write {}", tag)?;
-    }
-    for field in &struc.fields {
-        fn write(writer: &mut Writer, value: &str, schema: &Schema) -> std::fmt::Result {
-            match schema {
-                Schema::Bool => {
-                    writeln!(writer, "writer.Write {}", value)?;
-                }
-                Schema::Int32 => {
-                    writeln!(writer, "writer.Write {}", value)?;
-                }
-                Schema::Int64 => {
-                    writeln!(writer, "writer.Write {}", value)?;
-                }
-                Schema::Float32 => {
-                    writeln!(writer, "writer.Write {}", value)?;
-                }
-                Schema::Float64 => {
-                    writeln!(writer, "writer.Write {}", value)?;
-                }
-                Schema::String => {
-                    let data_var = format!("{}Data", var_name(value));
-                    writeln!(
-                        writer,
-                        "let {} : byte[] = System.Text.Encoding.UTF8.GetBytes {}",
-                        data_var, value
-                    )?;
-                    writeln!(writer, "writer.Write {}.Length", data_var)?;
-                    writeln!(writer, "writer.Write {}", data_var)?;
-                }
-                Schema::Struct(_) | Schema::OneOf { .. } => {
-                    writeln!(writer, "{}.writeTo writer", value)?;
-                }
-                Schema::Option(inner) => {
-                    writeln!(writer, "match {} with", value)?;
-                    writer.inc_ident();
-                    writeln!(writer, "| Some value ->")?;
-                    writer.inc_ident();
-                    writeln!(writer, "writer.Write true")?;
-                    write(writer, "value", inner)?;
-                    writer.dec_ident();
-                    writeln!(writer, "| None -> writer.Write false")?;
-                    writer.dec_ident();
-                }
-                Schema::Vec(inner) => {
-                    writeln!(writer, "writer.Write {}.Length", value)?;
-                    writeln!(writer, "{} |> Array.iter (fun value ->", value)?;
-                    writer.inc_ident();
-                    write(writer, "value", inner)?;
-                    writer.dec_ident();
-                    writeln!(writer, ")")?;
-                }
-                Schema::Map(key_type, value_type) => {
-                    writeln!(writer, "writer.Write {}.Count", value)?;
-                    writeln!(writer, "{} |> Map.iter (fun key value ->", value)?;
-                    writer.inc_ident();
-                    write(writer, "key", key_type)?;
-                    write(writer, "value", value_type)?;
-                    writer.dec_ident();
-                    writeln!(writer, ")")?;
-                }
-                Schema::Enum { .. } => {
-                    writeln!(writer, "writer.Write (int {})", value)?;
-                }
-            }
-            Ok(())
-        }
-        write(
-            writer,
-            &format!("this.{}", field.name.camel_case(conv)),
-            &field.schema,
-        )?;
-    }
-    writer.dec_ident();
-
-    // Reading
-    if struc.fields.is_empty() {
-        writeln!(
-            writer,
-            "static member readFrom(reader: System.IO.BinaryReader) = new {}()",
-            struc_name,
-        )?;
-    } else {
-        writeln!(
-            writer,
-            "static member readFrom(reader: System.IO.BinaryReader) = {{"
-        )?;
-        writer.inc_ident();
-        for field in &struc.fields {
-            fn read(writer: &mut Writer, schema: &Schema) -> std::fmt::Result {
-                match schema {
-                    Schema::Bool => {
-                        writeln!(writer, "reader.ReadBoolean()")?;
-                    }
-                    Schema::Int32 => {
-                        writeln!(writer, "reader.ReadInt32()")?;
-                    }
-                    Schema::Int64 => {
-                        writeln!(writer, "reader.ReadInt64()")?;
-                    }
-                    Schema::Float32 => {
-                        writeln!(writer, "reader.ReadSingle()")?;
-                    }
-                    Schema::Float64 => {
-                        writeln!(writer, "reader.ReadDouble()")?;
-                    }
-                    Schema::String => {
-                        writeln!(writer, "reader.ReadInt32() |> reader.ReadBytes |> System.Text.Encoding.UTF8.GetString")?;
-                    }
-                    Schema::Struct(Struct { name, .. })
-                    | Schema::OneOf {
-                        base_name: name, ..
-                    } => {
-                        writeln!(writer, "{}.readFrom reader", name.camel_case(conv))?;
-                    }
-                    Schema::Option(inner) => {
-                        writeln!(writer, "match reader.ReadBoolean() with")?;
-                        writer.inc_ident();
-                        writeln!(writer, "| true ->")?;
-                        writer.inc_ident();
-                        writeln!(writer, "Some(")?;
-                        writer.inc_ident();
-                        read(writer, inner)?;
-                        writeln!(writer, ")")?;
-                        writer.dec_ident();
-                        writer.dec_ident();
-                        writeln!(writer, "| false -> None")?;
-                        writer.dec_ident();
-                    }
-                    Schema::Vec(inner) => {
-                        writeln!(writer, "[|for _ in 1 .. reader.ReadInt32() do")?;
-                        writer.inc_ident();
-                        write!(writer, "yield ")?;
-                        read(writer, inner)?;
-                        writer.dec_ident();
-                        writeln!(writer, "|]")?;
-                    }
-                    Schema::Map(key_type, value_type) => {
-                        writeln!(writer, "[for _ in 1 .. reader.ReadInt32() do")?;
-                        writer.inc_ident();
-                        write!(writer, "let key = ")?;
-                        read(writer, key_type)?;
-                        write!(writer, "let value = ")?;
-                        read(writer, value_type)?;
-                        writeln!(writer, "yield (key, value)")?;
-                        writeln!(writer, "] |> Map.ofList")?;
-                        writer.dec_ident();
-                    }
-                    Schema::Enum { .. } => {
-                        writeln!(writer, "reader.ReadInt32() |> enum")?;
-                    }
-                }
-                Ok(())
-            }
-            write!(writer, "{} = ", field.name.camel_case(conv))?;
-            read(writer, &field.schema)?;
-        }
-        writer.dec_ident();
-        writeln!(writer, "}}")?;
-    }
-
-    writer.dec_ident();
-
-    Ok(())
+fn struct_impl(struc: &Struct, base: Option<(&Name, usize)>) -> String {
+    include_templing!("src/gens/fsharp/struct_impl.templing")
 }
 
 impl crate::Generator for Generator {
@@ -279,30 +91,15 @@ impl crate::Generator for Generator {
                 base_name,
                 variants,
             } => {
-                let file_name = format!("Model/{}.fs", base_name.camel_case(conv));
-                let mut writer = Writer::new();
-                writeln!(writer, "#nowarn \"0058\"").unwrap();
-                writeln!(writer, "namespace {}.Model", self.main_namespace).unwrap();
-                writeln!(writer, "type {} =", base_name.camel_case(conv)).unwrap();
-                writer.inc_ident();
-                for (tag, variant) in variants.iter().enumerate() {
-                    writeln!(writer, "| {} = {}", variant.name.camel_case(conv), tag).unwrap();
-                }
-                writer.dec_ident();
                 self.files.push(File {
-                    path: file_name,
-                    content: writer.get(),
+                    path: format!("Model/{}.fs", base_name.camel_case(conv)),
+                    content: include_templing!("src/gens/fsharp/enum.templing"),
                 });
             }
             Schema::Struct(struc) => {
-                let file_name = format!("Model/{}.fs", struc.name.camel_case(conv));
-                let mut writer = Writer::new();
-                writeln!(writer, "#nowarn \"0058\"").unwrap();
-                writeln!(writer, "namespace {}.Model", self.main_namespace).unwrap();
-                write_struct(&mut writer, struc, None).unwrap();
                 self.files.push(File {
-                    path: file_name,
-                    content: writer.get(),
+                    path: format!("Model/{}.fs", struc.name.camel_case(conv)),
+                    content: include_templing!("src/gens/fsharp/struct.templing"),
                 });
             }
             Schema::OneOf {
@@ -310,76 +107,9 @@ impl crate::Generator for Generator {
                 base_name,
                 variants,
             } => {
-                let file_name = format!("Model/{}.fs", base_name.camel_case(conv));
-                let mut writer = Writer::new();
-                writeln!(writer, "#nowarn \"0058\"").unwrap();
-                writeln!(writer, "namespace {}.Model", self.main_namespace).unwrap();
-
-                for (tag, variant) in variants.iter().enumerate() {
-                    writeln!(&mut writer).unwrap();
-                    write_struct(&mut writer, variant, Some((base_name, tag))).unwrap();
-                }
-
-                writeln!(&mut writer, "type {} = ", base_name.camel_case(conv)).unwrap();
-                writer.inc_ident();
-                for variant in variants {
-                    writeln!(
-                        writer,
-                        "| {} of {}{}",
-                        variant.name.camel_case(conv),
-                        base_name.camel_case(conv),
-                        variant.name.camel_case(conv)
-                    )
-                    .unwrap();
-                }
-                writeln!(writer, "with").unwrap();
-
-                writeln!(
-                    writer,
-                    "member this.writeTo(writer: System.IO.BinaryWriter) ="
-                )
-                .unwrap();
-                writer.inc_ident();
-                writeln!(writer, "match this with").unwrap();
-                writer.inc_ident();
-                for variant in variants {
-                    writeln!(
-                        writer,
-                        "| {} value -> value.writeTo writer",
-                        variant.name.camel_case(conv),
-                    )
-                    .unwrap();
-                }
-                writer.dec_ident();
-                writer.dec_ident();
-
-                writeln!(
-                    writer,
-                    "static member readFrom(reader: System.IO.BinaryReader) ="
-                )
-                .unwrap();
-                writer.inc_ident();
-                writeln!(writer, "match reader.ReadInt32() with").unwrap();
-                writer.inc_ident();
-                for (tag, variant) in variants.iter().enumerate() {
-                    writeln!(
-                        writer,
-                        "| {} -> {} ({}{}.readFrom reader)",
-                        tag,
-                        variant.name.camel_case(conv),
-                        base_name.camel_case(conv),
-                        variant.name.camel_case(conv),
-                    )
-                    .unwrap();
-                }
-                writeln!(writer, "| x -> failwith (sprintf \"Unexpected tag %d\" x)").unwrap();
-                writer.dec_ident();
-                writer.dec_ident();
-
-                writer.dec_ident();
                 self.files.push(File {
-                    path: file_name,
-                    content: writer.get(),
+                    path: format!("Model/{}.fs", base_name.camel_case(conv)),
+                    content: include_templing!("src/gens/fsharp/oneof.templing"),
                 });
             }
             Schema::Bool

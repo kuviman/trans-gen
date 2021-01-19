@@ -1,0 +1,32 @@
+- let struct_name = if let Some((base_name, _)) = base {
+-   format!("{}{}", base_name.camel_case(conv), struc.name.camel_case(conv))
+- } else {
+-   struc.name.camel_case(conv)
+- };
+- if struc.fields.is_empty() {
+type {{ struct_name }} = struct end with
+- } else {
+type {{ struct_name }} = {
+    - for field in &struc.fields {
+    {{ field.name.camel_case(conv) }}: {{ type_name(&field.schema) }};
+    - }
+} with
+- }
+
+    member this.writeTo(writer: System.IO.BinaryWriter) =
+        - if let Some((_, tag)) = base {
+        writer.Write {{ tag }}
+        - }
+        - for field in &struc.fields {
+        {{ write_var(&format!("this.{}", field.name.camel_case(conv)), &field.schema) }}
+        - }
+
+    - if struc.fields.is_empty() {
+    static member readFrom(reader: System.IO.BinaryReader) = new {}()
+    - } else {
+    static member readFrom(reader: System.IO.BinaryReader) = {
+        - for field in &struc.fields {
+        {{ field.name.camel_case(conv) }} = {{ read_var(&field.schema) }}
+        - }
+    }
+    - }

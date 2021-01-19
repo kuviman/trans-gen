@@ -1,0 +1,41 @@
+- match schema {
+- Schema::Bool => {
+reader.ReadBoolean()
+- }
+- Schema::Int32 => {
+reader.ReadInt32()
+- }
+- Schema::Int64 => {
+reader.ReadInt64()
+- }
+- Schema::Float32 => {
+reader.ReadSingle()
+- }
+- Schema::Float64 => {
+reader.ReadDouble()
+- }
+- Schema::String => {
+reader.ReadInt32() |> reader.ReadBytes |> System.Text.Encoding.UTF8.GetString
+- }
+- Schema::Struct(Struct { name, .. }) | Schema::OneOf { base_name: name, .. } => {
+{{ name.camel_case(conv) }}.readFrom reader;
+- }
+- Schema::Option(inner) => {
+match reader.ReadBoolean() with
+    | true -> Some({{ read_var(inner) }})
+    | false -> None
+- }
+- Schema::Vec(inner) => {
+[|for _ in 1 .. reader.ReadInt32() do
+    yield {{ read_var(inner) }} |]
+- }
+- Schema::Map(key_type, value_type) => {
+[for _ in 1 .. reader.ReadInt32() do
+    let key = {{ read_var(key_type) }}
+    let value = {{ read_var(value_type) }}
+    yield (key, value) ] |> Map.ofList
+- }
+- Schema::Enum { base_name, variants, .. } => {
+reader.ReadInt32() |> enum
+- }
+- }

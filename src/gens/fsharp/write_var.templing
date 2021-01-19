@@ -1,0 +1,35 @@
+- match schema {
+- Schema::Bool | Schema::Int32 | Schema::Int64 | Schema::Float32 | Schema::Float64 => {
+writer.Write {{ var }}
+- }
+- Schema::String => {
+- let data_var = new_var(var, "Data"); let data_var = &data_var;
+let {{ data_var }} : byte[] = System.Text.Encoding.UTF8.GetBytes {{ var }}
+writer.Write {{ data_var }}.Length
+writer.Write {{ data_var }}
+- }
+- Schema::Struct(_) | Schema::OneOf { .. } => {
+{{ var }}.writeTo writer
+- }
+- Schema::Option(inner) => {
+match {{ var }} with
+    | Some value ->
+        writer.Write true
+        {{ write_var("value", inner) }}
+    | None -> writer.Write false
+- }
+- Schema::Vec(inner) => {
+writer.Write {{ var }}.Length
+{{ var }} |> Array.iter (fun value ->
+    {{ write_var("value", inner) }} )
+- }
+- Schema::Map(key_type, value_type) => {
+writer.Write {{ var }}.Count
+{{ var }} |> Map.iter (fun key value ->
+    {{ write_var("key", key_type) }}
+    {{ write_var("value", value_type) }} )
+- }
+- Schema::Enum { .. } => {
+writer.Write (int {{ var }})
+- }
+- }

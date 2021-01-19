@@ -1,0 +1,25 @@
+#nowarn "0058"
+
+namespace {{ &self.main_namespace }}.Model
+
+- for (tag, variant) in variants.iter().enumerate() {
+{{ struct_impl(variant, Some((base_name, tag))) }}
+
+- }
+type {{ base_name.camel_case(conv) }} =
+    - for variant in variants {
+    | {{ variant.name.camel_case(conv) }} of {{ base_name.camel_case(conv) }}{{ variant.name.camel_case(conv) }}
+    - }
+    with
+    member this.writeTo(writer: System.IO.BinaryWriter) =
+        match this with
+            - for variant in variants {
+            | {{ variant.name.camel_case(conv) }} value -> value.writeTo writer
+            - }
+
+    static member readFrom(reader: System.IO.BinaryReader) =
+        match reader.ReadInt32() with
+            - for (tag, variant) in variants.iter().enumerate() {
+            | {{ tag }} -> {{ variant.name.camel_case(conv) }} ({{ base_name.camel_case(conv) }}{{ variant.name.camel_case(conv) }}.readFrom reader)
+            - }
+            | x -> failwith (sprintf "Unexpected tag %d" x)

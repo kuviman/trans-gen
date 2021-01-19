@@ -1,0 +1,8 @@
+#nowarn "0058"
+
+namespace {{ &self.main_namespace }}.Model
+
+type {{ base_name.camel_case(conv) }} =
+    - for (tag, variant) in variants.iter().enumerate() {
+    | {{ variant.name.camel_case(conv) }} = {{ tag }}
+    - }
