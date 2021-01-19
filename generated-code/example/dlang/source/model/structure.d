@@ -10,6 +10,7 @@ struct Structure {
     string text;
     float floatNumber;
     double doubleNumber;
+
     this(OneOf oneOfOne, OneOf oneOfTwo, int[Enumeration] hashMap, string text, float floatNumber, double doubleNumber) {
         this.oneOfOne = oneOfOne;
         this.oneOfTwo = oneOfTwo;
@@ -18,33 +19,40 @@ struct Structure {
         this.floatNumber = floatNumber;
         this.doubleNumber = doubleNumber;
     }
+
     static Structure readFrom(Stream reader) {
-        auto result = Structure();
-        result.oneOfOne = OneOf.readFrom(reader);
-        result.oneOfTwo = OneOf.readFrom(reader);
+        OneOf oneOfOne;
+        oneOfOne = OneOf.readFrom(reader);
+        OneOf oneOfTwo;
+        oneOfTwo = OneOf.readFrom(reader);
+        int[Enumeration] hashMap;
         int hashMapSize = reader.readInt();
-        result.hashMap.clear();
-        for (int i = 0; i < hashMapSize; i++) {
+        hashMap.clear();
+        for (int hashMapIndex = 0; hashMapIndex < hashMapSize; hashMapIndex++) {
             Enumeration hashMapKey;
-            switch (reader.readInt()) {
-            case 0:
-                hashMapKey = Enumeration.ValueOne;
-                break;
-            case 1:
-                hashMapKey = Enumeration.ValueTwo;
-                break;
-            default:
-                throw new Exception("Unexpected tag value");
-            }
             int hashMapValue;
+            switch (reader.readInt()) {
+                case 0:
+                    hashMapKey = Enumeration.ValueOne;
+                    break;
+                case 1:
+                    hashMapKey = Enumeration.ValueTwo;
+                    break;
+                default:
+                    throw new Exception("Unexpected tag value");
+            }
             hashMapValue = reader.readInt();
-            result.hashMap[hashMapKey] = hashMapValue;
+            hashMap[hashMapKey] = hashMapValue;
         }
-        result.text = reader.readString();
-        result.floatNumber = reader.readFloat();
-        result.doubleNumber = reader.readDouble();
-        return result;
+        string text;
+        text = reader.readString();
+        float floatNumber;
+        floatNumber = reader.readFloat();
+        double doubleNumber;
+        doubleNumber = reader.readDouble();
+        return Structure(oneOfOne, oneOfTwo, hashMap, text, floatNumber, doubleNumber);
     }
+
     void writeTo(Stream writer) const {
         oneOfOne.writeTo(writer);
         oneOfTwo.writeTo(writer);
@@ -56,15 +64,5 @@ struct Structure {
         writer.write(text);
         writer.write(floatNumber);
         writer.write(doubleNumber);
-    }
-    string toString() const {
-        return "Structure" ~ "(" ~
-            to!string(oneOfOne) ~
-            to!string(oneOfTwo) ~
-            to!string(hashMap) ~
-            to!string(text) ~
-            to!string(floatNumber) ~
-            to!string(doubleNumber) ~
-            ")";
     }
 }

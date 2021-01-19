@@ -18,22 +18,30 @@ abstract class OneOf {
 
     static class OptionOne : OneOf {
         static const int TAG = 0;
+    
         int[] vecInt;
         long longInt;
+    
         this() {}
+    
         this(int[] vecInt, long longInt) {
             this.vecInt = vecInt;
             this.longInt = longInt;
         }
+    
         static OptionOne readFrom(Stream reader) {
-            auto result = new OptionOne();
-            result.vecInt = new int[reader.readInt()];
-            for (int i = 0; i < result.vecInt.length; i++) {
-                result.vecInt[i] = reader.readInt();
+            int[] vecInt;
+            vecInt = new int[reader.readInt()];
+            for (int vecIntIndex = 0; vecIntIndex < vecInt.length; vecIntIndex++) {
+                int vecIntKey;
+                vecIntKey = reader.readInt();
+                vecInt[vecIntIndex] = vecIntKey;
             }
-            result.longInt = reader.readLong();
-            return result;
+            long longInt;
+            longInt = reader.readLong();
+            return new OptionOne(vecInt, longInt);
         }
+    
         override void writeTo(Stream writer) const {
             writer.write(TAG);
             writer.write(cast(int)(vecInt.length));
@@ -42,34 +50,28 @@ abstract class OneOf {
             }
             writer.write(longInt);
         }
-        override string toString() const {
-            return "OptionOne" ~ "(" ~
-                to!string(vecInt) ~
-                to!string(longInt) ~
-                ")";
-        }
     }
 
     static class OptionTwo : OneOf {
         static const int TAG = 1;
+    
         int value;
+    
         this() {}
+    
         this(int value) {
             this.value = value;
         }
+    
         static OptionTwo readFrom(Stream reader) {
-            auto result = new OptionTwo();
-            result.value = reader.readInt();
-            return result;
+            int value;
+            value = reader.readInt();
+            return new OptionTwo(value);
         }
+    
         override void writeTo(Stream writer) const {
             writer.write(TAG);
             writer.write(value);
-        }
-        override string toString() const {
-            return "OptionTwo" ~ "(" ~
-                to!string(value) ~
-                ")";
         }
     }
 }

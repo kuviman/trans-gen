@@ -6,56 +6,62 @@ import std.typecons : Nullable;
 struct BuildProperties {
     EntityType[] options;
     Nullable!(int) initHealth;
+
     this(EntityType[] options, Nullable!(int) initHealth) {
         this.options = options;
         this.initHealth = initHealth;
     }
+
     static BuildProperties readFrom(Stream reader) {
-        auto result = BuildProperties();
-        result.options = new EntityType[reader.readInt()];
-        for (int i = 0; i < result.options.length; i++) {
+        EntityType[] options;
+        options = new EntityType[reader.readInt()];
+        for (int optionsIndex = 0; optionsIndex < options.length; optionsIndex++) {
+            EntityType optionsKey;
             switch (reader.readInt()) {
-            case 0:
-                result.options[i] = EntityType.Wall;
-                break;
-            case 1:
-                result.options[i] = EntityType.House;
-                break;
-            case 2:
-                result.options[i] = EntityType.BuilderBase;
-                break;
-            case 3:
-                result.options[i] = EntityType.BuilderUnit;
-                break;
-            case 4:
-                result.options[i] = EntityType.MeleeBase;
-                break;
-            case 5:
-                result.options[i] = EntityType.MeleeUnit;
-                break;
-            case 6:
-                result.options[i] = EntityType.RangedBase;
-                break;
-            case 7:
-                result.options[i] = EntityType.RangedUnit;
-                break;
-            case 8:
-                result.options[i] = EntityType.Resource;
-                break;
-            case 9:
-                result.options[i] = EntityType.Turret;
-                break;
-            default:
-                throw new Exception("Unexpected tag value");
+                case 0:
+                    optionsKey = EntityType.Wall;
+                    break;
+                case 1:
+                    optionsKey = EntityType.House;
+                    break;
+                case 2:
+                    optionsKey = EntityType.BuilderBase;
+                    break;
+                case 3:
+                    optionsKey = EntityType.BuilderUnit;
+                    break;
+                case 4:
+                    optionsKey = EntityType.MeleeBase;
+                    break;
+                case 5:
+                    optionsKey = EntityType.MeleeUnit;
+                    break;
+                case 6:
+                    optionsKey = EntityType.RangedBase;
+                    break;
+                case 7:
+                    optionsKey = EntityType.RangedUnit;
+                    break;
+                case 8:
+                    optionsKey = EntityType.Resource;
+                    break;
+                case 9:
+                    optionsKey = EntityType.Turret;
+                    break;
+                default:
+                    throw new Exception("Unexpected tag value");
             }
+            options[optionsIndex] = optionsKey;
         }
+        Nullable!(int) initHealth;
         if (reader.readBool()) {
-            result.initHealth = reader.readInt();
+            initHealth = reader.readInt();
         } else {
-            result.initHealth.nullify();
+            initHealth.nullify();
         }
-        return result;
+        return BuildProperties(options, initHealth);
     }
+
     void writeTo(Stream writer) const {
         writer.write(cast(int)(options.length));
         foreach (optionsElement; options) {
@@ -67,11 +73,5 @@ struct BuildProperties {
             writer.write(true);
             writer.write(initHealth.get);
         }
-    }
-    string toString() const {
-        return "BuildProperties" ~ "(" ~
-            to!string(options) ~
-            to!string(initHealth) ~
-            ")";
     }
 }

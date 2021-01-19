@@ -17,6 +17,7 @@ struct EntityProperties {
     Nullable!(BuildProperties) build;
     Nullable!(AttackProperties) attack;
     Nullable!(RepairProperties) repair;
+
     this(int size, int buildScore, int destroyScore, bool canMove, int populationProvide, int populationUse, int maxHealth, int initialCost, int sightRange, int resourcePerHealth, Nullable!(BuildProperties) build, Nullable!(AttackProperties) attack, Nullable!(RepairProperties) repair) {
         this.size = size;
         this.buildScore = buildScore;
@@ -32,35 +33,49 @@ struct EntityProperties {
         this.attack = attack;
         this.repair = repair;
     }
+
     static EntityProperties readFrom(Stream reader) {
-        auto result = EntityProperties();
-        result.size = reader.readInt();
-        result.buildScore = reader.readInt();
-        result.destroyScore = reader.readInt();
-        result.canMove = reader.readBool();
-        result.populationProvide = reader.readInt();
-        result.populationUse = reader.readInt();
-        result.maxHealth = reader.readInt();
-        result.initialCost = reader.readInt();
-        result.sightRange = reader.readInt();
-        result.resourcePerHealth = reader.readInt();
+        int size;
+        size = reader.readInt();
+        int buildScore;
+        buildScore = reader.readInt();
+        int destroyScore;
+        destroyScore = reader.readInt();
+        bool canMove;
+        canMove = reader.readBool();
+        int populationProvide;
+        populationProvide = reader.readInt();
+        int populationUse;
+        populationUse = reader.readInt();
+        int maxHealth;
+        maxHealth = reader.readInt();
+        int initialCost;
+        initialCost = reader.readInt();
+        int sightRange;
+        sightRange = reader.readInt();
+        int resourcePerHealth;
+        resourcePerHealth = reader.readInt();
+        Nullable!(BuildProperties) build;
         if (reader.readBool()) {
-            result.build = BuildProperties.readFrom(reader);
+            build = BuildProperties.readFrom(reader);
         } else {
-            result.build.nullify();
+            build.nullify();
         }
+        Nullable!(AttackProperties) attack;
         if (reader.readBool()) {
-            result.attack = AttackProperties.readFrom(reader);
+            attack = AttackProperties.readFrom(reader);
         } else {
-            result.attack.nullify();
+            attack.nullify();
         }
+        Nullable!(RepairProperties) repair;
         if (reader.readBool()) {
-            result.repair = RepairProperties.readFrom(reader);
+            repair = RepairProperties.readFrom(reader);
         } else {
-            result.repair.nullify();
+            repair.nullify();
         }
-        return result;
+        return EntityProperties(size, buildScore, destroyScore, canMove, populationProvide, populationUse, maxHealth, initialCost, sightRange, resourcePerHealth, build, attack, repair);
     }
+
     void writeTo(Stream writer) const {
         writer.write(size);
         writer.write(buildScore);
@@ -90,22 +105,5 @@ struct EntityProperties {
             writer.write(true);
             repair.get.writeTo(writer);
         }
-    }
-    string toString() const {
-        return "EntityProperties" ~ "(" ~
-            to!string(size) ~
-            to!string(buildScore) ~
-            to!string(destroyScore) ~
-            to!string(canMove) ~
-            to!string(populationProvide) ~
-            to!string(populationUse) ~
-            to!string(maxHealth) ~
-            to!string(initialCost) ~
-            to!string(sightRange) ~
-            to!string(resourcePerHealth) ~
-            to!string(build) ~
-            to!string(attack) ~
-            to!string(repair) ~
-            ")";
     }
 }

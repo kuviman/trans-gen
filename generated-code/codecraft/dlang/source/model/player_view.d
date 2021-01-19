@@ -13,6 +13,7 @@ struct PlayerView {
     int currentTick;
     Player[] players;
     Entity[] entities;
+
     this(int myId, int mapSize, bool fogOfWar, EntityProperties[EntityType] entityProperties, int maxTickCount, int maxPathfindNodes, int currentTick, Player[] players, Entity[] entities) {
         this.myId = myId;
         this.mapSize = mapSize;
@@ -24,66 +25,80 @@ struct PlayerView {
         this.players = players;
         this.entities = entities;
     }
+
     static PlayerView readFrom(Stream reader) {
-        auto result = PlayerView();
-        result.myId = reader.readInt();
-        result.mapSize = reader.readInt();
-        result.fogOfWar = reader.readBool();
+        int myId;
+        myId = reader.readInt();
+        int mapSize;
+        mapSize = reader.readInt();
+        bool fogOfWar;
+        fogOfWar = reader.readBool();
+        EntityProperties[EntityType] entityProperties;
         int entityPropertiesSize = reader.readInt();
-        result.entityProperties.clear();
-        for (int i = 0; i < entityPropertiesSize; i++) {
+        entityProperties.clear();
+        for (int entityPropertiesIndex = 0; entityPropertiesIndex < entityPropertiesSize; entityPropertiesIndex++) {
             EntityType entityPropertiesKey;
-            switch (reader.readInt()) {
-            case 0:
-                entityPropertiesKey = EntityType.Wall;
-                break;
-            case 1:
-                entityPropertiesKey = EntityType.House;
-                break;
-            case 2:
-                entityPropertiesKey = EntityType.BuilderBase;
-                break;
-            case 3:
-                entityPropertiesKey = EntityType.BuilderUnit;
-                break;
-            case 4:
-                entityPropertiesKey = EntityType.MeleeBase;
-                break;
-            case 5:
-                entityPropertiesKey = EntityType.MeleeUnit;
-                break;
-            case 6:
-                entityPropertiesKey = EntityType.RangedBase;
-                break;
-            case 7:
-                entityPropertiesKey = EntityType.RangedUnit;
-                break;
-            case 8:
-                entityPropertiesKey = EntityType.Resource;
-                break;
-            case 9:
-                entityPropertiesKey = EntityType.Turret;
-                break;
-            default:
-                throw new Exception("Unexpected tag value");
-            }
             EntityProperties entityPropertiesValue;
+            switch (reader.readInt()) {
+                case 0:
+                    entityPropertiesKey = EntityType.Wall;
+                    break;
+                case 1:
+                    entityPropertiesKey = EntityType.House;
+                    break;
+                case 2:
+                    entityPropertiesKey = EntityType.BuilderBase;
+                    break;
+                case 3:
+                    entityPropertiesKey = EntityType.BuilderUnit;
+                    break;
+                case 4:
+                    entityPropertiesKey = EntityType.MeleeBase;
+                    break;
+                case 5:
+                    entityPropertiesKey = EntityType.MeleeUnit;
+                    break;
+                case 6:
+                    entityPropertiesKey = EntityType.RangedBase;
+                    break;
+                case 7:
+                    entityPropertiesKey = EntityType.RangedUnit;
+                    break;
+                case 8:
+                    entityPropertiesKey = EntityType.Resource;
+                    break;
+                case 9:
+                    entityPropertiesKey = EntityType.Turret;
+                    break;
+                default:
+                    throw new Exception("Unexpected tag value");
+            }
             entityPropertiesValue = EntityProperties.readFrom(reader);
-            result.entityProperties[entityPropertiesKey] = entityPropertiesValue;
+            entityProperties[entityPropertiesKey] = entityPropertiesValue;
         }
-        result.maxTickCount = reader.readInt();
-        result.maxPathfindNodes = reader.readInt();
-        result.currentTick = reader.readInt();
-        result.players = new Player[reader.readInt()];
-        for (int i = 0; i < result.players.length; i++) {
-            result.players[i] = Player.readFrom(reader);
+        int maxTickCount;
+        maxTickCount = reader.readInt();
+        int maxPathfindNodes;
+        maxPathfindNodes = reader.readInt();
+        int currentTick;
+        currentTick = reader.readInt();
+        Player[] players;
+        players = new Player[reader.readInt()];
+        for (int playersIndex = 0; playersIndex < players.length; playersIndex++) {
+            Player playersKey;
+            playersKey = Player.readFrom(reader);
+            players[playersIndex] = playersKey;
         }
-        result.entities = new Entity[reader.readInt()];
-        for (int i = 0; i < result.entities.length; i++) {
-            result.entities[i] = Entity.readFrom(reader);
+        Entity[] entities;
+        entities = new Entity[reader.readInt()];
+        for (int entitiesIndex = 0; entitiesIndex < entities.length; entitiesIndex++) {
+            Entity entitiesKey;
+            entitiesKey = Entity.readFrom(reader);
+            entities[entitiesIndex] = entitiesKey;
         }
-        return result;
+        return PlayerView(myId, mapSize, fogOfWar, entityProperties, maxTickCount, maxPathfindNodes, currentTick, players, entities);
     }
+
     void writeTo(Stream writer) const {
         writer.write(myId);
         writer.write(mapSize);
@@ -104,18 +119,5 @@ struct PlayerView {
         foreach (entitiesElement; entities) {
             entitiesElement.writeTo(writer);
         }
-    }
-    string toString() const {
-        return "PlayerView" ~ "(" ~
-            to!string(myId) ~
-            to!string(mapSize) ~
-            to!string(fogOfWar) ~
-            to!string(entityProperties) ~
-            to!string(maxTickCount) ~
-            to!string(maxPathfindNodes) ~
-            to!string(currentTick) ~
-            to!string(players) ~
-            to!string(entities) ~
-            ")";
     }
 }
