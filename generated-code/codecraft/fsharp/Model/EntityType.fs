@@ -1,5 +1,7 @@
 #nowarn "0058"
+
 namespace TransGenTest.Model
+
 type EntityType =
     | Wall = 0
     | House = 1

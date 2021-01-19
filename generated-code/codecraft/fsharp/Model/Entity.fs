@@ -1,5 +1,7 @@
 #nowarn "0058"
+
 namespace TransGenTest.Model
+
 type Entity = {
     Id: int;
     PlayerId: option<int>;
@@ -7,7 +9,8 @@ type Entity = {
     Position: Vec2Int;
     Health: int;
     Active: bool;
-    } with
+} with
+
     member this.writeTo(writer: System.IO.BinaryWriter) =
         writer.Write this.Id
         match this.PlayerId with
@@ -19,16 +22,14 @@ type Entity = {
         this.Position.writeTo writer
         writer.Write this.Health
         writer.Write this.Active
+
     static member readFrom(reader: System.IO.BinaryReader) = {
         Id = reader.ReadInt32()
         PlayerId = match reader.ReadBoolean() with
-            | true ->
-                Some(
-                    reader.ReadInt32()
-                    )
-            | false -> None
+                       | true -> Some(reader.ReadInt32())
+                       | false -> None
         EntityType = reader.ReadInt32() |> enum
-        Position = Vec2Int.readFrom reader
+        Position = Vec2Int.readFrom reader;
         Health = reader.ReadInt32()
         Active = reader.ReadBoolean()
     }

@@ -1,5 +1,7 @@
 #nowarn "0058"
+
 namespace TransGenTest.Model
+
 type EntityProperties = {
     Size: int;
     BuildScore: int;
@@ -14,7 +16,8 @@ type EntityProperties = {
     Build: option<BuildProperties>;
     Attack: option<AttackProperties>;
     Repair: option<RepairProperties>;
-    } with
+} with
+
     member this.writeTo(writer: System.IO.BinaryWriter) =
         writer.Write this.Size
         writer.Write this.BuildScore
@@ -41,6 +44,7 @@ type EntityProperties = {
                 writer.Write true
                 value.writeTo writer
             | None -> writer.Write false
+
     static member readFrom(reader: System.IO.BinaryReader) = {
         Size = reader.ReadInt32()
         BuildScore = reader.ReadInt32()
@@ -53,21 +57,12 @@ type EntityProperties = {
         SightRange = reader.ReadInt32()
         ResourcePerHealth = reader.ReadInt32()
         Build = match reader.ReadBoolean() with
-            | true ->
-                Some(
-                    BuildProperties.readFrom reader
-                    )
-            | false -> None
+                    | true -> Some(BuildProperties.readFrom reader;)
+                    | false -> None
         Attack = match reader.ReadBoolean() with
-            | true ->
-                Some(
-                    AttackProperties.readFrom reader
-                    )
-            | false -> None
+                     | true -> Some(AttackProperties.readFrom reader;)
+                     | false -> None
         Repair = match reader.ReadBoolean() with
-            | true ->
-                Some(
-                    RepairProperties.readFrom reader
-                    )
-            | false -> None
+                     | true -> Some(RepairProperties.readFrom reader;)
+                     | false -> None
     }

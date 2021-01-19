@@ -1,14 +1,18 @@
 #nowarn "0058"
+
 namespace TransGenTest.Model
+
 type AttackProperties = {
     AttackRange: int;
     Damage: int;
     CollectResource: bool;
-    } with
+} with
+
     member this.writeTo(writer: System.IO.BinaryWriter) =
         writer.Write this.AttackRange
         writer.Write this.Damage
         writer.Write this.CollectResource
+
     static member readFrom(reader: System.IO.BinaryReader) = {
         AttackRange = reader.ReadInt32()
         Damage = reader.ReadInt32()
