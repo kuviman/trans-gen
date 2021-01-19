@@ -15,6 +15,7 @@ namespace TransGenTest.Model
         public Model.BuildProperties? Build { get; set; }
         public Model.AttackProperties? Attack { get; set; }
         public Model.RepairProperties? Repair { get; set; }
+    
         public EntityProperties(int size, int buildScore, int destroyScore, bool canMove, int populationProvide, int populationUse, int maxHealth, int initialCost, int sightRange, int resourcePerHealth, Model.BuildProperties? build, Model.AttackProperties? attack, Model.RepairProperties? repair)
         {
             this.Size = size;
@@ -31,6 +32,7 @@ namespace TransGenTest.Model
             this.Attack = attack;
             this.Repair = repair;
         }
+    
         public static EntityProperties ReadFrom(System.IO.BinaryReader reader)
         {
             var result = new EntityProperties();
@@ -67,6 +69,7 @@ namespace TransGenTest.Model
             }
             return result;
         }
+    
         public void WriteTo(System.IO.BinaryWriter writer)
         {
             writer.Write(Size);
