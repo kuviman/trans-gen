@@ -178,11 +178,8 @@ fn write_struct(
     writer.inc_ident();
     if base.is_some() {
         writeln!(writer, "stream.write_int(self.TAG)")?;
-    } else if struc.fields.is_empty() && struc.magic.is_none() {
+    } else if struc.fields.is_empty() {
         writeln!(writer, "pass")?;
-    }
-    if let Some(magic) = struc.magic {
-        writeln!(writer, "stream.write_int({})", magic)?;
     }
     for field in &struc.fields {
         fn write(writer: &mut Writer, value: &str, schema: &Schema) -> std::fmt::Result {

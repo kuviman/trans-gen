@@ -80,7 +80,6 @@ impl crate::Generator for Generator {
                 documentation,
                 name,
                 fields,
-                magic: _,
             }) => {
                 let mut content = Writer::new();
                 {

@@ -39,9 +39,6 @@ class {{ struc.name.camel_case(conv) }}~
         - if base.is_some() {
         await stream.writeInt({{ struc.name.camel_case(conv) }}.TAG);
         - }
-        - if let Some(magic) = struc.magic {
-        await stream.writeInt({{ magic }});
-        - }
         - for field in &struc.fields {
         let {{ field.name.mixed_case(conv) }} = this.{{ field.name.mixed_case(conv) }};
         {{ write_var(&field.name.mixed_case(conv), &field.schema) }}

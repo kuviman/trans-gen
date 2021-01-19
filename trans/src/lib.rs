@@ -89,7 +89,6 @@ pub struct Field {
 
 #[derive(Debug, PartialEq, Eq, Hash, Clone)]
 pub struct Struct {
-    pub magic: Option<i32>,
     pub documentation: Documentation,
     pub name: Name,
     pub fields: Vec<Field>,

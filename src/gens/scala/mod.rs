@@ -71,9 +71,6 @@ fn write_struct(
             struc.name.camel_case(conv),
         )?;
     }
-    if let Some(magic) = struc.magic {
-        writeln!(writer, "StreamUtil.writeInt(stream, {})", magic)?;
-    }
     for field in &struc.fields {
         fn write(writer: &mut Writer, value: &str, schema: &Schema) -> std::fmt::Result {
             match schema {

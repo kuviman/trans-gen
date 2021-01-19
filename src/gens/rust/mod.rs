@@ -77,7 +77,6 @@ impl crate::Generator for Generator {
                 documentation: _,
                 name,
                 fields,
-                magic,
             }) => {
                 self.types.insert(
                     name.snake_case(conv),

@@ -105,7 +105,6 @@ pub fn derive_trans(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
         let generic_params = &generic_params;
         let mut base_name =
             syn::LitStr::new(&ast.ident.to_string(), proc_macro2::Span::call_site());
-        let mut magic: Option<syn::Expr> = None;
         let mut generics_in_name = true;
         for attr in &ast.attrs {
             if let Ok(syn::Meta::List(syn::MetaList {
@@ -124,8 +123,6 @@ pub fn derive_trans(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
                             })) => {
                                 if meta_path.is_ident("rename") {
                                     base_name = lit.clone();
-                                } else if meta_path.is_ident("magic") {
-                                    magic = Some(syn::parse_str(&lit.value()).unwrap());
                                 }
                             }
                             syn::NestedMeta::Meta(syn::Meta::Path(ref meta_path)) => {
@@ -139,21 +136,6 @@ pub fn derive_trans(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
                 }
             }
         }
-        let (magic_write, magic_read) = match &magic {
-            Some(magic) => (
-                quote! {
-                    <i32 as trans::Trans>::write_to(&#magic, writer)?;
-                },
-                quote! {
-                    assert_eq!(<i32 as trans::Trans>::read_from(reader)?, #magic);
-                },
-            ),
-            None => (quote! {}, quote! {}),
-        };
-        let magic_value = match &magic {
-            Some(expr) => quote! { Some(#expr) },
-            None => quote! { None },
-        };
         let final_name = quote! {{
             let mut name = #base_name.to_owned();
             if #generics_in_name {
@@ -206,17 +188,14 @@ pub fn derive_trans(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
                                 trans::Schema::Struct(trans::Struct {
                                     documentation: #documentation,
                                     name: trans::Name::new(name),
-                                    magic: #magic_value,
                                     fields: vec![#(#schema_fields),*],
                                 })
                             }
                             fn write_to(&self, writer: &mut dyn std::io::Write) -> std::io::Result<()> {
-                                #magic_write
                                 #(trans::Trans::write_to(&self.#field_names, writer)?;)*
                                 Ok(())
                             }
                             fn read_from(reader: &mut dyn std::io::Read) -> std::io::Result<Self> {
-                                #magic_read
                                 Ok(Self {
                                     #(#field_names: trans::Trans::read_from(reader)?),*
                                 })
@@ -228,9 +207,6 @@ pub fn derive_trans(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
                 syn::Fields::Unnamed(_) => {
                     if fields.iter().len() != 1 {
                         panic!("Tuple structs other than newtype not supported");
-                    }
-                    if magic.is_some() {
-                        panic!("Magic with newtypes not supported");
                     }
                     let inner_ty = fields.iter().next().unwrap();
                     let mut generics = ast.generics.clone();
@@ -372,7 +348,6 @@ pub fn derive_trans(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
                             trans::Struct {
                                 documentation: #documentation,
                                 name: trans::Name::new(stringify!(#variant_name).to_owned()),
-                                magic: None,
                                 fields: vec![
                                     #(#schema_fields),*
                                 ],

@@ -61,11 +61,10 @@ fn needs_stream(schema: &Schema) -> bool {
         }
     }
     fn struct_need_stream(struc: &Struct) -> bool {
-        struc.magic.is_some()
-            || struc
-                .fields
-                .iter()
-                .any(|field| needs_stream_inner(&field.schema))
+        struc
+            .fields
+            .iter()
+            .any(|field| needs_stream_inner(&field.schema))
     }
     match schema {
         Schema::Bool
@@ -275,9 +274,6 @@ fn write_struct(
     writer.inc_ident();
     if let Some((_, tag)) = base {
         writeln!(writer, "WriteInt32(writer, {})", tag)?;
-    }
-    if let Some(magic) = struc.magic {
-        writeln!(writer, "WriteInt32(writer, {})", magic)?;
     }
     for field in &struc.fields {
         fn write(writer: &mut Writer, value: &str, schema: &Schema) -> std::fmt::Result {

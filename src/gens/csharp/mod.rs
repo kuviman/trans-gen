@@ -338,9 +338,6 @@ fn write_struct(
     if base.is_some() {
         writeln!(writer, "writer.Write(TAG);")?;
     }
-    if let Some(magic) = struc.magic {
-        writeln!(writer, "writer.Write({});", magic)?;
-    }
     for field in &struc.fields {
         fn write(writer: &mut Writer, value: &str, schema: &Schema) -> std::fmt::Result {
             match schema {

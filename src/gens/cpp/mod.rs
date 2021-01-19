@@ -460,9 +460,6 @@ fn write_struct_impl(
     if base.is_some() {
         writeln!(writer, "stream.write(TAG);")?;
     }
-    if let Some(magic) = struc.magic {
-        writeln!(writer, "stream.write({});", magic)?;
-    }
     for field in &struc.fields {
         fn write(writer: &mut Writer, value: &str, schema: &Schema) -> std::fmt::Result {
             match schema {
