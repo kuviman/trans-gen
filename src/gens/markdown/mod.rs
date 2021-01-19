@@ -66,7 +66,7 @@ impl crate::Generator for Generator {
     fn generate(self, extra_files: Vec<File>) -> GenResult {
         let mut files = vec![File {
             path: "doc.md".to_owned(),
-            content: self.parts.join("\n"),
+            content: self.parts.join("\n\n"),
         }];
         for file in extra_files {
             files.push(file);
@@ -81,187 +81,24 @@ impl crate::Generator for Generator {
                 name,
                 fields,
             }) => {
-                let mut content = Writer::new();
-                {
-                    let content = &mut content;
-                    writeln!(content, "## `{}`", name.camel_case(conv)).unwrap();
-                    writeln!(content).unwrap();
-                    writeln!(
-                        content,
-                        "{}",
-                        self.options.get_doc(
-                            documentation,
-                            &format!("{:?} not documented in {:?}", name, language)
-                        )
-                    )
-                    .unwrap();
-                    writeln!(content).unwrap();
-                    writeln!(
-                        content,
-                        "{}",
-                        match language.as_str() {
-                            "ru" => "Поля:",
-                            "en" | _ => "Fields:",
-                        }
-                    )
-                    .unwrap();
-                    writeln!(content).unwrap();
-                    for field in fields {
-                        writeln!(
-                            content,
-                            "- `{}`: `{}` - {}",
-                            field.name.snake_case(conv),
-                            type_name(&field.schema),
-                            self.options.get_doc(
-                                &field.documentation,
-                                &format!(
-                                    "{:?}::{:?} not documented in {:?}",
-                                    name, field.name, language
-                                )
-                            ),
-                        )
-                        .unwrap();
-                    }
-                }
-                self.parts.push(content.get());
+                self.parts
+                    .push(include_templing!("src/gens/markdown/struct.templing"));
             }
             Schema::OneOf {
                 documentation,
                 base_name,
                 variants,
             } => {
-                let mut content = Writer::new();
-                {
-                    let content = &mut content;
-                    writeln!(content, "## `{}`", base_name.camel_case(conv)).unwrap();
-                    writeln!(content).unwrap();
-                    writeln!(
-                        content,
-                        "{}",
-                        self.options.get_doc(
-                            documentation,
-                            &format!("{:?} not documented in {:?}", base_name, language)
-                        )
-                    )
-                    .unwrap();
-                    writeln!(content).unwrap();
-                    writeln!(
-                        content,
-                        "{}",
-                        match language.as_str() {
-                            "ru" => "Варианты:",
-                            "en" | _ => "One of:",
-                        }
-                    )
-                    .unwrap();
-                    writeln!(content).unwrap();
-                    for variant in variants {
-                        writeln!(
-                            content,
-                            "- `{}` - {}",
-                            variant.name.camel_case(conv),
-                            self.options.get_doc(
-                                &variant.documentation,
-                                &format!(
-                                    "{:?}::{:?} not documented in {:?}",
-                                    base_name, variant.name, language
-                                )
-                            ),
-                        )
-                        .unwrap();
-                        writeln!(content).unwrap();
-                        content.inc_ident();
-                        if variant.fields.is_empty() {
-                            writeln!(
-                                content,
-                                "{}",
-                                match language.as_str() {
-                                    "ru" => "Нет полей",
-                                    "en" | _ => "No fields",
-                                }
-                            )
-                            .unwrap();
-                        } else {
-                            writeln!(
-                                content,
-                                "{}",
-                                match language.as_str() {
-                                    "ru" => "Поля:",
-                                    "en" | _ => "Fields:",
-                                }
-                            )
-                            .unwrap();
-                        }
-                        writeln!(content).unwrap();
-                        for field in &variant.fields {
-                            writeln!(
-                                content,
-                                "- `{}`: `{}` - {}",
-                                field.name.snake_case(conv),
-                                type_name(&field.schema),
-                                self.options.get_doc(
-                                    &field.documentation,
-                                    &format!(
-                                        "{:?}::{:?}::{:?} not documented in {:?}",
-                                        base_name, variant.name, field.name, language
-                                    )
-                                ),
-                            )
-                            .unwrap();
-                        }
-                        writeln!(content).unwrap();
-                        content.dec_ident();
-                    }
-                }
-                self.parts.push(content.get());
+                self.parts
+                    .push(include_templing!("src/gens/markdown/oneof.templing"));
             }
             Schema::Enum {
                 documentation,
                 base_name,
                 variants,
             } => {
-                let mut content = Writer::new();
-                {
-                    let content = &mut content;
-                    writeln!(content, "## `{}`", base_name.camel_case(conv)).unwrap();
-                    writeln!(content).unwrap();
-                    writeln!(
-                        content,
-                        "{}",
-                        self.options.get_doc(
-                            documentation,
-                            &format!("{:?} not documented in {:?}", base_name, language)
-                        ),
-                    )
-                    .unwrap();
-                    writeln!(content).unwrap();
-                    writeln!(
-                        content,
-                        "{}",
-                        match language.as_str() {
-                            "ru" => "Варианты:",
-                            "en" | _ => "Variants:",
-                        }
-                    )
-                    .unwrap();
-                    writeln!(content).unwrap();
-                    for variant in variants {
-                        writeln!(
-                            content,
-                            "- `{}` - {}",
-                            variant.name.camel_case(conv),
-                            self.options.get_doc(
-                                &variant.documentation,
-                                &format!(
-                                    "{:?}::{:?} not documented in {:?}",
-                                    base_name, variant.name, language
-                                )
-                            ),
-                        )
-                        .unwrap();
-                    }
-                }
-                self.parts.push(content.get());
+                self.parts
+                    .push(include_templing!("src/gens/markdown/enum.templing"));
             }
             Schema::Bool
             | Schema::Int32
