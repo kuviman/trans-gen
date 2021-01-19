@@ -1,0 +1,4 @@
+namespace {{ &self.main_namespace }}.Model
+{
+    {{ struct_impl(struc, None) }}
+}

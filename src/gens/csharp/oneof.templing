@@ -1,0 +1,23 @@
+namespace {{ &self.main_namespace }}.Model
+{
+    public abstract class {{ base_name.camel_case(conv) }}
+    {
+        public abstract void WriteTo(System.IO.BinaryWriter writer);
+        public static {{ base_name.camel_case(conv) }} ReadFrom(System.IO.BinaryReader reader)
+        {
+            switch (reader.ReadInt32())
+            {
+                - for variant in variants {
+                case {{ variant.name.camel_case(conv) }}.TAG:
+                    return {{ variant.name.camel_case(conv) }}.ReadFrom(reader);
+                - }
+                default:
+                    throw new System.Exception("Unexpected tag value");
+            }
+        }
+        - for (tag, variant) in variants.iter().enumerate() {
+
+        {{ struct_impl(variant, Some((base_name, tag))) }}
+        - }
+    }
+}

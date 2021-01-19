@@ -1,0 +1,61 @@
+- if let Some((base_name, _)) = base {
+public class {{ struc.name.camel_case(conv) }} : {{ base_name.camel_case(conv) }}
+- } else {
+public struct {{ struc.name.camel_case(conv) }}
+- }
+{
+    - if let Some((_, tag)) = base {
+    public const int TAG = {{ tag }};
+
+    - }
+    - for field in &struc.fields {
+    public {{ type_name(&field.schema) }} {{ field.name.camel_case(conv) }} { get; set; }
+    - }
+    - if base.is_some() {
+
+    public {{ struc.name.camel_case(conv) }}() { }
+    - }
+    - if !struc.fields.is_empty() {
+
+    public {{ struc.name.camel_case(conv) }}(~
+        - for (index, field) in struc.fields.iter().enumerate() {
+            - if index != 0 {
+                ~, ~
+            - }
+            ~{{ type_name(&field.schema) }} {{ field.name.mixed_case(conv) }}~
+        - }
+    ~)
+    {
+        - for field in &struc.fields {
+        this.{{ field.name.camel_case(conv) }} = {{ field.name.mixed_case(conv) }};
+        - }
+    }
+    - }
+
+    public static~
+    - if base.is_some() {
+        ~ new~
+    - }
+    ~ {{ struc.name.camel_case(conv) }} ReadFrom(System.IO.BinaryReader reader)
+    {
+        var result = new {{ struc.name.camel_case(conv) }}();
+        - for field in &struc.fields {
+        {{ read_var(&format!("result.{}", field.name.camel_case(conv)), &field.schema) }}
+        - }
+        return result;
+    }
+
+    public~
+    - if base.is_some() {
+        ~ override~
+    - }
+    ~ void WriteTo(System.IO.BinaryWriter writer)
+    {
+        - if base.is_some() {
+        writer.Write(TAG);
+        - }
+        - for field in &struc.fields {
+        {{ write_var(&field.name.camel_case(conv), &field.schema) }}
+        - }
+    }
+}

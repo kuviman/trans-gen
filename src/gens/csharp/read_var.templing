@@ -1,0 +1,68 @@
+- match schema {
+- Schema::Bool => {
+{{ var }} = reader.ReadBoolean();
+- }
+- Schema::Int32 => {
+{{ var }} = reader.ReadInt32();
+- }
+- Schema::Int64 => {
+{{ var }} = reader.ReadInt64();
+- }
+- Schema::Float32 => {
+{{ var }} = reader.ReadSingle();
+- }
+- Schema::Float64 => {
+{{ var }} = reader.ReadDouble();
+- }
+- Schema::String => {
+{{ var }} = System.Text.Encoding.UTF8.GetString(reader.ReadBytes(reader.ReadInt32()));
+- }
+- Schema::Struct(Struct { name, .. }) | Schema::OneOf { base_name: name, .. } => {
+{{ var }} = Model.{{ name.camel_case(conv) }}.ReadFrom(reader);
+- }
+- Schema::Option(inner) => {
+if (reader.ReadBoolean())
+{
+    {{ read_var(var, inner) }}
+} else
+{
+    {{ var }} = null;
+}
+- }
+- Schema::Vec(inner) => {
+{{ var }} = new {{ type_name_prearray(inner) }}[reader.ReadInt32()]{{ type_name_postarray(inner) }};
+- let index_var = new_var(var, "Index"); let index_var = &index_var;
+for (int {{ index_var }} = 0; {{ index_var }} < {{ var }}.Length; {{ index_var }}++)
+{
+    {{ read_var(&format!("{}[{}]", var, index_var), inner) }}
+}
+- }
+- Schema::Map(key_type, value_type) => {
+- let size_var = new_var(var, "Size"); let size_var = &size_var;
+int {{ size_var }} = reader.ReadInt32();
+{{ var }} = new System.Collections.Generic.Dictionary<{{ type_name(key_type) }}, {{ type_name(value_type) }}>({{ size_var }});
+- let index_var = new_var(var, "Index"); let index_var = &index_var;
+for (int {{ index_var }} = 0; {{ index_var }} < {{ size_var }}; {{ index_var }}++)
+{
+    - let key_var = new_var(var, "Key"); let key_var = &key_var;
+    - let value_var = new_var(var, "Value"); let value_var = &value_var;
+    {{ type_name(key_type) }} {{ key_var }};
+    {{ type_name(value_type) }} {{ value_var }};
+    {{ read_var(key_var, key_type) }}
+    {{ read_var(value_var, value_type) }}
+    {{ var }}.Add({{ key_var }}, {{ value_var }});
+}
+- }
+- Schema::Enum { base_name, variants, .. } => {
+switch (reader.ReadInt32())
+{
+    - for (tag, variant) in variants.iter().enumerate() {
+    case {{ tag }}:
+        {{ var }} = Model.{{ base_name.camel_case(conv) }}.{{ variant.name.camel_case(conv) }};
+        break;
+    - }
+    default:
+        throw new System.Exception("Unexpected tag value");
+}
+- }
+- }
