@@ -1,6 +1,7 @@
-from .build_properties import BuildProperties
 from .attack_properties import AttackProperties
+from .build_properties import BuildProperties
 from .repair_properties import RepairProperties
+
 class EntityProperties:
     def __init__(self, size, build_score, destroy_score, can_move, population_provide, population_use, max_health, initial_cost, sight_range, resource_per_health, build, attack, repair):
         self.size = size
@@ -16,6 +17,7 @@ class EntityProperties:
         self.build = build
         self.attack = attack
         self.repair = repair
+
     @staticmethod
     def read_from(stream):
         size = stream.read_int()
@@ -41,6 +43,7 @@ class EntityProperties:
         else:
             repair = None
         return EntityProperties(size, build_score, destroy_score, can_move, population_provide, population_use, max_health, initial_cost, sight_range, resource_per_health, build, attack, repair)
+
     def write_to(self, stream):
         stream.write_int(self.size)
         stream.write_int(self.build_score)
@@ -67,19 +70,32 @@ class EntityProperties:
         else:
             stream.write_bool(True)
             self.repair.write_to(stream)
+
     def __repr__(self):
         return "EntityProperties(" + \
-            repr(self.size) + "," + \
-            repr(self.build_score) + "," + \
-            repr(self.destroy_score) + "," + \
-            repr(self.can_move) + "," + \
-            repr(self.population_provide) + "," + \
-            repr(self.population_use) + "," + \
-            repr(self.max_health) + "," + \
-            repr(self.initial_cost) + "," + \
-            repr(self.sight_range) + "," + \
-            repr(self.resource_per_health) + "," + \
-            repr(self.build) + "," + \
-            repr(self.attack) + "," + \
+            repr(self.size) + \
+            ", " + \
+            repr(self.build_score) + \
+            ", " + \
+            repr(self.destroy_score) + \
+            ", " + \
+            repr(self.can_move) + \
+            ", " + \
+            repr(self.population_provide) + \
+            ", " + \
+            repr(self.population_use) + \
+            ", " + \
+            repr(self.max_health) + \
+            ", " + \
+            repr(self.initial_cost) + \
+            ", " + \
+            repr(self.sight_range) + \
+            ", " + \
+            repr(self.resource_per_health) + \
+            ", " + \
+            repr(self.build) + \
+            ", " + \
+            repr(self.attack) + \
+            ", " + \
             repr(self.repair) + \
             ")"

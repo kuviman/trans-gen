@@ -1,8 +1,10 @@
 from .entity_type import EntityType
+
 class BuildProperties:
     def __init__(self, options, init_health):
         self.options = options
         self.init_health = init_health
+
     @staticmethod
     def read_from(stream):
         options = []
@@ -14,6 +16,7 @@ class BuildProperties:
         else:
             init_health = None
         return BuildProperties(options, init_health)
+
     def write_to(self, stream):
         stream.write_int(len(self.options))
         for element in self.options:
@@ -23,8 +26,10 @@ class BuildProperties:
         else:
             stream.write_bool(True)
             stream.write_int(self.init_health)
+
     def __repr__(self):
         return "BuildProperties(" + \
-            repr(self.options) + "," + \
+            repr(self.options) + \
+            ", " + \
             repr(self.init_health) + \
             ")"

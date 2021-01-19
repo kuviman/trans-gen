@@ -1,7 +1,8 @@
-from .entity_type import EntityType
-from .entity_properties import EntityProperties
-from .player import Player
 from .entity import Entity
+from .entity_properties import EntityProperties
+from .entity_type import EntityType
+from .player import Player
+
 class PlayerView:
     def __init__(self, my_id, map_size, fog_of_war, entity_properties, max_tick_count, max_pathfind_nodes, current_tick, players, entities):
         self.my_id = my_id
@@ -13,6 +14,7 @@ class PlayerView:
         self.current_tick = current_tick
         self.players = players
         self.entities = entities
+
     @staticmethod
     def read_from(stream):
         my_id = stream.read_int()
@@ -35,6 +37,7 @@ class PlayerView:
             entities_element = Entity.read_from(stream)
             entities.append(entities_element)
         return PlayerView(my_id, map_size, fog_of_war, entity_properties, max_tick_count, max_pathfind_nodes, current_tick, players, entities)
+
     def write_to(self, stream):
         stream.write_int(self.my_id)
         stream.write_int(self.map_size)
@@ -52,15 +55,24 @@ class PlayerView:
         stream.write_int(len(self.entities))
         for element in self.entities:
             element.write_to(stream)
+
     def __repr__(self):
         return "PlayerView(" + \
-            repr(self.my_id) + "," + \
-            repr(self.map_size) + "," + \
-            repr(self.fog_of_war) + "," + \
-            repr(self.entity_properties) + "," + \
-            repr(self.max_tick_count) + "," + \
-            repr(self.max_pathfind_nodes) + "," + \
-            repr(self.current_tick) + "," + \
-            repr(self.players) + "," + \
+            repr(self.my_id) + \
+            ", " + \
+            repr(self.map_size) + \
+            ", " + \
+            repr(self.fog_of_war) + \
+            ", " + \
+            repr(self.entity_properties) + \
+            ", " + \
+            repr(self.max_tick_count) + \
+            ", " + \
+            repr(self.max_pathfind_nodes) + \
+            ", " + \
+            repr(self.current_tick) + \
+            ", " + \
+            repr(self.players) + \
+            ", " + \
             repr(self.entities) + \
             ")"

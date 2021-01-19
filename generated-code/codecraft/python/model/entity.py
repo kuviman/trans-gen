@@ -1,5 +1,6 @@
 from .entity_type import EntityType
 from .vec2_int import Vec2Int
+
 class Entity:
     def __init__(self, id, player_id, entity_type, position, health, active):
         self.id = id
@@ -8,6 +9,7 @@ class Entity:
         self.position = position
         self.health = health
         self.active = active
+
     @staticmethod
     def read_from(stream):
         id = stream.read_int()
@@ -20,6 +22,7 @@ class Entity:
         health = stream.read_int()
         active = stream.read_bool()
         return Entity(id, player_id, entity_type, position, health, active)
+
     def write_to(self, stream):
         stream.write_int(self.id)
         if self.player_id is None:
@@ -31,12 +34,18 @@ class Entity:
         self.position.write_to(stream)
         stream.write_int(self.health)
         stream.write_bool(self.active)
+
     def __repr__(self):
         return "Entity(" + \
-            repr(self.id) + "," + \
-            repr(self.player_id) + "," + \
-            repr(self.entity_type) + "," + \
-            repr(self.position) + "," + \
-            repr(self.health) + "," + \
+            repr(self.id) + \
+            ", " + \
+            repr(self.player_id) + \
+            ", " + \
+            repr(self.entity_type) + \
+            ", " + \
+            repr(self.position) + \
+            ", " + \
+            repr(self.health) + \
+            ", " + \
             repr(self.active) + \
             ")"
