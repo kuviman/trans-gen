@@ -1,0 +1,44 @@
+- match schema {
+- Schema::Bool => {
+stream.write_bool({{ var }})
+- }
+- Schema::Int32 => {
+stream.write_int({{ var }})
+- }
+- Schema::Int64 => {
+stream.write_long({{ var }})
+- }
+- Schema::Float32 => {
+stream.write_float({{ var }})
+- }
+- Schema::Float64 => {
+stream.write_double({{ var }})
+- }
+- Schema::String => {
+stream.write_string({{ var }})
+- }
+- Schema::Struct(_) | Schema::OneOf { .. } => {
+{{ var }}.write_to(stream)
+- }
+- Schema::Option(inner) => {
+if {{ var }} is None:
+    stream.write_bool(False)
+else:
+    stream.write_bool(True)
+    {{ write_var(var, inner) }}
+- }
+- Schema::Vec(inner) => {
+stream.write_int(len({{ var }}))
+for element in {{ var }}:
+    {{ write_var("element", inner) }}
+- }
+- Schema::Map(key_type, value_type) => {
+stream.write_int(len({{ var }}))
+for key, value in {{ var }}.items():
+    {{ write_var("key", key_type) }}
+    {{ write_var("value", value_type) }}
+- }
+- Schema::Enum { .. } => {
+stream.write_int({{ var }})
+- }
+- }

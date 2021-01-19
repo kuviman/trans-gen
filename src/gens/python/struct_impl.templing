@@ -1,0 +1,58 @@
+class {{ struc.name.camel_case(conv) }}~
+- if let Some((base_name, _)) = base {
+    ~({{ base_name.camel_case(conv) }})~
+- }
+~:
+    - if let Some((_, tag)) = base {
+    TAG = {{ tag }}
+
+    - }
+    def __init__(self~
+    - for field in &struc.fields {
+        ~, {{ field.name.snake_case(conv) }}~
+    - }
+    ~):
+        - for field in &struc.fields {
+        self.{{ field.name.snake_case(conv) }} = {{ field.name.snake_case(conv) }}
+        - }
+        - if struc.fields.is_empty() {
+        pass
+        - }
+
+    @staticmethod
+    def read_from(stream):
+        - for field in &struc.fields {
+        {{ read_var(&field.name.snake_case(conv), &field.schema) }}
+        - }
+        return {{ struc.name.camel_case(conv) }}(~
+        - for (index, field) in struc.fields.iter().enumerate() {
+        - if index != 0 {
+        ~, ~
+        - }
+        ~{{ field.name.snake_case(conv) }}~
+        - }
+        ~)
+    
+    def write_to(self, stream):
+        - if base.is_some() {
+        stream.write_int(self.TAG)
+        - } else if struc.fields.is_empty() {
+        pass
+        - }
+        - for field in &struc.fields {
+        {{ write_var(&format!("self.{}", field.name.snake_case(conv)), &field.schema) }}
+        - }
+    
+    def __repr__(self):
+        return "{{ struc.name.camel_case(conv) }}(" + \
+        - for (index, field) in struc.fields.iter().enumerate() {
+        - if index != 0 {
+            ", " + \
+        - }
+            repr(self.{{ field.name.snake_case(conv) }}) + \
+        - }
+            ")"
+
+- if let Some((base_name, _)) = base {
+{{ base_name.camel_case(conv) }}.{{ struc.name.camel_case(conv) }} = {{ struc.name.camel_case(conv) }}
+- }
