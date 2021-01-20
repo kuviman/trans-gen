@@ -13,7 +13,11 @@ pub struct Generator {
 }
 
 fn type_name(schema: &Schema) -> String {
-    format!("{}{}", type_name_prearray(schema), type_post_array(schema))
+    format!(
+        "{}{}",
+        type_name_prearray(schema),
+        type_name_postarray(schema),
+    )
 }
 
 fn type_name_obj(schema: &Schema) -> String {
@@ -24,17 +28,6 @@ fn type_name_obj(schema: &Schema) -> String {
         Schema::Float32 => "Float".to_owned(),
         Schema::Float64 => "Double".to_owned(),
         _ => type_name(schema),
-    }
-}
-
-fn type_name_prearray_obj(schema: &Schema) -> String {
-    match schema {
-        Schema::Bool => "Boolean".to_owned(),
-        Schema::Int32 => "Integer".to_owned(),
-        Schema::Int64 => "Long".to_owned(),
-        Schema::Float32 => "Float".to_owned(),
-        Schema::Float64 => "Double".to_owned(),
-        _ => type_name_prearray(schema),
     }
 }
 
@@ -63,23 +56,10 @@ fn type_name_prearray(schema: &Schema) -> String {
     }
 }
 
-fn type_post_array(schema: &Schema) -> String {
+fn type_name_postarray(schema: &Schema) -> String {
     match schema {
-        Schema::Vec(inner) => format!("[]{}", type_post_array(inner)),
+        Schema::Vec(inner) => format!("[]{}", type_name_postarray(inner)),
         _ => String::new(),
-    }
-}
-
-fn index_var_name(index_var: &mut usize) -> String {
-    let result = "ijk".chars().nth(*index_var).unwrap();
-    *index_var += 1;
-    result.to_string()
-}
-
-fn var_name(name: &str) -> &str {
-    match name.rfind('.') {
-        Some(index) => &name[(index + 1)..],
-        None => name,
     }
 }
 
@@ -90,335 +70,16 @@ fn getter_prefix(schema: &Schema) -> &'static str {
     }
 }
 
-fn write_struct(
-    writer: &mut Writer,
-    struc: &Struct,
-    base: Option<(&Name, usize)>,
-) -> std::fmt::Result {
-    // Class
-    if let Some((base_name, _)) = base {
-        writeln!(
-            writer,
-            "public static class {} extends {} {{",
-            struc.name.camel_case(conv),
-            base_name.camel_case(conv)
-        )?;
-    } else {
-        writeln!(writer, "public class {} {{", struc.name.camel_case(conv))?;
-    }
-    writer.inc_ident();
-    if let Some((_, tag)) = base {
-        writeln!(writer, "public static final int TAG = {};", tag)?;
-    }
+fn read_var(var: &str, schema: &Schema) -> String {
+    include_templing!("src/gens/java/read_var.templing")
+}
 
-    // Fields
-    for field in &struc.fields {
-        writeln!(
-            writer,
-            "private {} {};",
-            type_name(&field.schema),
-            field.name.mixed_case(conv)
-        )?;
-        writeln!(
-            writer,
-            "public {} {}{}() {{ return {}; }}",
-            type_name(&field.schema),
-            getter_prefix(&field.schema),
-            field.name.camel_case(conv),
-            field.name.mixed_case(conv)
-        )?;
-        writeln!(
-            writer,
-            "public void set{}({} {}) {{ this.{} = {}; }}",
-            field.name.camel_case(conv),
-            type_name(&field.schema),
-            field.name.mixed_case(conv),
-            field.name.mixed_case(conv),
-            field.name.mixed_case(conv)
-        )?;
-    }
+fn write_var(var: &str, schema: &Schema) -> String {
+    include_templing!("src/gens/java/write_var.templing")
+}
 
-    // Constructor
-    writeln!(writer, "public {}() {{}}", struc.name.camel_case(conv))?;
-    if !struc.fields.is_empty() {
-        write!(writer, "public {}(", struc.name.camel_case(conv))?;
-        for (index, field) in struc.fields.iter().enumerate() {
-            if index > 0 {
-                write!(writer, ", ")?;
-            }
-            write!(
-                writer,
-                "{} {}",
-                type_name(&field.schema),
-                field.name.mixed_case(conv)
-            )?;
-        }
-        writeln!(writer, ") {{")?;
-        for field in &struc.fields {
-            writeln!(
-                writer,
-                "    this.{} = {};",
-                field.name.mixed_case(conv),
-                field.name.mixed_case(conv)
-            )?;
-        }
-        writeln!(writer, "}}")?;
-    }
-
-    // Reading
-    writeln!(
-        writer,
-        "public static {} readFrom(java.io.InputStream stream) throws java.io.IOException {{",
-        struc.name.camel_case(conv)
-    )?;
-    writer.inc_ident();
-    writeln!(
-        writer,
-        "{} result = new {}();",
-        struc.name.camel_case(conv),
-        struc.name.camel_case(conv)
-    )?;
-    for field in &struc.fields {
-        fn assign(
-            writer: &mut Writer,
-            to: &str,
-            schema: &Schema,
-            index_var: &mut usize,
-        ) -> std::fmt::Result {
-            match schema {
-                Schema::Bool => {
-                    writeln!(writer, "{} = StreamUtil.readBoolean(stream);", to)?;
-                }
-                Schema::Int32 => {
-                    writeln!(writer, "{} = StreamUtil.readInt(stream);", to)?;
-                }
-                Schema::Int64 => {
-                    writeln!(writer, "{} = StreamUtil.readLong(stream);", to)?;
-                }
-                Schema::Float32 => {
-                    writeln!(writer, "{} = StreamUtil.readFloat(stream);", to)?;
-                }
-                Schema::Float64 => {
-                    writeln!(writer, "{} = StreamUtil.readDouble(stream);", to)?;
-                }
-                Schema::String => {
-                    writeln!(writer, "{} = StreamUtil.readString(stream);", to)?;
-                }
-                Schema::Struct(Struct { name, .. })
-                | Schema::OneOf {
-                    base_name: name, ..
-                } => {
-                    writeln!(
-                        writer,
-                        "{} = model.{}.readFrom(stream);",
-                        to,
-                        name.camel_case(conv)
-                    )?;
-                }
-                Schema::Option(inner) => {
-                    writeln!(writer, "if (StreamUtil.readBoolean(stream)) {{")?;
-                    writer.inc_ident();
-                    assign(writer, to, inner, index_var)?;
-                    writer.dec_ident();
-                    writeln!(writer, "}} else {{")?;
-                    writeln!(writer, "    {} = null;", to)?;
-                    writeln!(writer, "}}")?;
-                }
-                Schema::Vec(inner) => {
-                    writeln!(
-                        writer,
-                        "{} = new {}[StreamUtil.readInt(stream)]{};",
-                        to,
-                        type_name_prearray(inner),
-                        type_post_array(inner)
-                    )?;
-                    let index_var_name = index_var_name(index_var);
-                    writeln!(
-                        writer,
-                        "for (int {} = 0; {} < {}.length; {}++) {{",
-                        index_var_name, index_var_name, to, index_var_name
-                    )?;
-                    writer.inc_ident();
-                    assign(
-                        writer,
-                        &format!("{}[{}]", to, index_var_name),
-                        inner,
-                        index_var,
-                    )?;
-                    writer.dec_ident();
-                    writeln!(writer, "}}")?;
-                }
-                Schema::Map(key_type, value_type) => {
-                    let to_size = format!("{}Size", var_name(to));
-                    writeln!(writer, "int {} = StreamUtil.readInt(stream);", to_size)?;
-                    writeln!(writer, "{} = new java.util.HashMap<>({});", to, to_size)?;
-                    let index_var_name = index_var_name(index_var);
-                    writeln!(
-                        writer,
-                        "for (int {} = 0; {} < {}; {}++) {{",
-                        index_var_name, index_var_name, to_size, index_var_name
-                    )?;
-                    writer.inc_ident();
-                    writeln!(writer, "{} {}Key;", type_name(key_type), var_name(to))?;
-                    assign(writer, &format!("{}Key", var_name(to)), key_type, index_var)?;
-                    writeln!(writer, "{} {}Value;", type_name(value_type), var_name(to))?;
-                    assign(
-                        writer,
-                        &format!("{}Value", var_name(to)),
-                        value_type,
-                        index_var,
-                    )?;
-                    writeln!(
-                        writer,
-                        "{}.put({}Key, {}Value);",
-                        to,
-                        var_name(to),
-                        var_name(to)
-                    )?;
-                    writer.dec_ident();
-                    writeln!(writer, "}}")?;
-                }
-                Schema::Enum {
-                    documentation: _,
-                    base_name,
-                    variants,
-                } => {
-                    writeln!(writer, "switch (StreamUtil.readInt(stream)) {{")?;
-                    for (tag, variant) in variants.iter().enumerate() {
-                        writeln!(writer, "case {}:", tag)?;
-                        writeln!(
-                            writer,
-                            "    {} = model.{}.{};",
-                            to,
-                            base_name.camel_case(conv),
-                            variant.name.shouty_snake_case(conv)
-                        )?;
-                        writeln!(writer, "    break;")?;
-                    }
-                    writeln!(writer, "default:")?;
-                    writeln!(
-                        writer,
-                        "    throw new java.io.IOException(\"Unexpected tag value\");"
-                    )?;
-                    writeln!(writer, "}}")?;
-                }
-            }
-            Ok(())
-        }
-        assign(
-            writer,
-            &format!("result.{}", field.name.mixed_case(conv)),
-            &field.schema,
-            &mut 0,
-        )?;
-    }
-    writeln!(writer, "return result;")?;
-    writer.dec_ident();
-    writeln!(writer, "}}")?;
-
-    // Writing
-    if base.is_some() {
-        writeln!(writer, "@Override")?;
-    }
-    writeln!(
-        writer,
-        "public void writeTo(java.io.OutputStream stream) throws java.io.IOException {{",
-    )?;
-    writer.inc_ident();
-    if base.is_some() {
-        writeln!(writer, "StreamUtil.writeInt(stream, TAG);")?;
-    }
-    for field in &struc.fields {
-        fn write(writer: &mut Writer, value: &str, schema: &Schema) -> std::fmt::Result {
-            match schema {
-                Schema::Bool => {
-                    writeln!(writer, "StreamUtil.writeBoolean(stream, {});", value)?;
-                }
-                Schema::Int32 => {
-                    writeln!(writer, "StreamUtil.writeInt(stream, {});", value)?;
-                }
-                Schema::Int64 => {
-                    writeln!(writer, "StreamUtil.writeLong(stream, {});", value)?;
-                }
-                Schema::Float32 => {
-                    writeln!(writer, "StreamUtil.writeFloat(stream, {});", value)?;
-                }
-                Schema::Float64 => {
-                    writeln!(writer, "StreamUtil.writeDouble(stream, {});", value)?;
-                }
-                Schema::String => {
-                    writeln!(writer, "StreamUtil.writeString(stream, {});", value)?;
-                }
-                Schema::Struct(_) | Schema::OneOf { .. } => {
-                    writeln!(writer, "{}.writeTo(stream);", value)?;
-                }
-                Schema::Option(inner) => {
-                    writeln!(writer, "if ({} == null) {{", value)?;
-                    writeln!(writer, "    StreamUtil.writeBoolean(stream, false);")?;
-                    writeln!(writer, "}} else {{")?;
-                    writer.inc_ident();
-                    writeln!(writer, "StreamUtil.writeBoolean(stream, true);")?;
-                    write(writer, value, inner)?;
-                    writer.dec_ident();
-                    writeln!(writer, "}}")?;
-                }
-                Schema::Vec(inner) => {
-                    writeln!(writer, "StreamUtil.writeInt(stream, {}.length);", value)?;
-                    writeln!(
-                        writer,
-                        "for ({} {}Element : {}) {{",
-                        type_name(inner),
-                        var_name(value),
-                        value
-                    )?;
-                    writer.inc_ident();
-                    write(writer, &format!("{}Element", var_name(value)), inner)?;
-                    writer.dec_ident();
-                    writeln!(writer, "}}")?;
-                }
-                Schema::Map(key_type, value_type) => {
-                    writeln!(writer, "StreamUtil.writeInt(stream, {}.size());", value)?;
-                    writeln!(
-                        writer,
-                        "for (java.util.Map.Entry<{}, {}> {}Entry : {}.entrySet()) {{",
-                        type_name_obj(key_type),
-                        type_name_obj(value_type),
-                        var_name(value),
-                        value
-                    )?;
-                    writer.inc_ident();
-                    writeln!(
-                        writer,
-                        "{} {}Key = {}Entry.getKey();",
-                        type_name(key_type),
-                        var_name(value),
-                        var_name(value)
-                    )?;
-                    writeln!(
-                        writer,
-                        "{} {}Value = {}Entry.getValue();",
-                        type_name(value_type),
-                        var_name(value),
-                        var_name(value)
-                    )?;
-                    write(writer, &format!("{}Key", var_name(value)), key_type)?;
-                    write(writer, &format!("{}Value", var_name(value)), value_type)?;
-                    writer.dec_ident();
-                    writeln!(writer, "}}")?;
-                }
-                Schema::Enum { .. } => {
-                    writeln!(writer, "StreamUtil.writeInt(stream, {}.tag);", value)?;
-                }
-            }
-            Ok(())
-        }
-        write(writer, &field.name.mixed_case(conv), &field.schema)?;
-    }
-    writer.dec_ident();
-    writeln!(writer, "}}")?;
-    writer.dec_ident();
-    writeln!(writer, "}}")?;
-    Ok(())
+fn struct_impl(struc: &Struct, base: Option<(&Name, usize)>) -> String {
+    include_templing!("src/gens/java/struct_impl.templing")
 }
 
 impl crate::Generator for Generator {
@@ -453,105 +114,26 @@ impl crate::Generator for Generator {
                 base_name,
                 variants,
             } => {
-                let file_name = format!("src/main/java/model/{}.java", base_name.camel_case(conv));
-                let mut writer = Writer::new();
-                writeln!(writer, "package model;").unwrap();
-                writeln!(writer).unwrap();
-                writeln!(writer, "import util.StreamUtil;").unwrap();
-                writeln!(writer).unwrap();
-                writeln!(writer, "public enum {} {{", base_name.camel_case(conv)).unwrap();
-                writer.inc_ident();
-                for (index, variant) in variants.iter().enumerate() {
-                    writeln!(
-                        writer,
-                        "{}({}){}",
-                        variant.name.shouty_snake_case(conv),
-                        index,
-                        if index + 1 < variants.len() { "," } else { ";" }
-                    )
-                    .unwrap();
-                }
-                writeln!(writer, "public int tag;").unwrap();
-                writeln!(writer, "{}(int tag) {{", base_name.camel_case(conv)).unwrap();
-                writeln!(writer, "  this.tag = tag;").unwrap();
-                writeln!(writer, "}}").unwrap();
-                writer.dec_ident();
-                writeln!(writer, "}}").unwrap();
-                self.files.insert(file_name, writer.get());
+                self.files.insert(
+                    format!("src/main/java/model/{}.java", base_name.camel_case(conv)),
+                    include_templing!("src/gens/java/enum.templing"),
+                );
             }
             Schema::Struct(struc) => {
-                let file_name = format!("src/main/java/model/{}.java", struc.name.camel_case(conv));
-                let mut writer = Writer::new();
-                writeln!(writer, "package model;").unwrap();
-                writeln!(writer).unwrap();
-                writeln!(writer, "import util.StreamUtil;").unwrap();
-                writeln!(writer).unwrap();
-                write_struct(&mut writer, struc, None).unwrap();
-                self.files.insert(file_name, writer.get());
+                self.files.insert(
+                    format!("src/main/java/model/{}.java", struc.name.camel_case(conv)),
+                    include_templing!("src/gens/java/struct.templing"),
+                );
             }
             Schema::OneOf {
                 documentation: _,
                 base_name,
                 variants,
             } => {
-                let file_name = format!("src/main/java/model/{}.java", base_name.camel_case(conv));
-                let mut writer = Writer::new();
-                writeln!(writer, "package model;").unwrap();
-                writeln!(writer).unwrap();
-                writeln!(writer, "import util.StreamUtil;").unwrap();
-                writeln!(writer).unwrap();
-                writeln!(
-                    &mut writer,
-                    "public abstract class {} {{",
-                    base_name.camel_case(conv)
-                )
-                .unwrap();
-                {
-                    writer.inc_ident();
-                    writeln!(
-                        &mut writer,
-                        "public abstract void writeTo(java.io.OutputStream stream) throws java.io.IOException;"
-                    )
-                    .unwrap();
-                    writeln!(
-                        &mut writer,
-                        "public static {} readFrom(java.io.InputStream stream) throws java.io.IOException {{",
-                        base_name.camel_case(conv)
-                    )
-                    .unwrap();
-                    {
-                        writer.inc_ident();
-                        writeln!(&mut writer, "switch (StreamUtil.readInt(stream)) {{").unwrap();
-                        writer.inc_ident();
-                        for variant in variants {
-                            writeln!(&mut writer, "case {}.TAG:", variant.name.camel_case(conv))
-                                .unwrap();
-                            writeln!(
-                                &mut writer,
-                                "    return {}.readFrom(stream);",
-                                variant.name.camel_case(conv)
-                            )
-                            .unwrap();
-                        }
-                        writeln!(&mut writer, "default:").unwrap();
-                        writeln!(
-                            &mut writer,
-                            "    throw new java.io.IOException(\"Unexpected tag value\");"
-                        )
-                        .unwrap();
-                        writer.dec_ident();
-                        writeln!(&mut writer, "}}").unwrap();
-                        writer.dec_ident();
-                    }
-                    writeln!(&mut writer, "}}").unwrap();
-                    for (tag, variant) in variants.iter().enumerate() {
-                        writeln!(&mut writer).unwrap();
-                        write_struct(&mut writer, variant, Some((base_name, tag))).unwrap();
-                    }
-                    writer.dec_ident();
-                }
-                writeln!(&mut writer, "}}").unwrap();
-                self.files.insert(file_name, writer.get());
+                self.files.insert(
+                    format!("src/main/java/model/{}.java", base_name.camel_case(conv)),
+                    include_templing!("src/gens/java/oneof.templing"),
+                );
             }
             Schema::Bool
             | Schema::Int32

@@ -1,0 +1,53 @@
+- match schema {
+- Schema::Bool => {
+StreamUtil.writeBoolean(stream, {{ var }});
+- }
+- Schema::Int32 => {
+StreamUtil.writeInt(stream, {{ var }});
+- }
+- Schema::Int64 => {
+StreamUtil.writeLong(stream, {{ var }});
+- }
+- Schema::Float32 => {
+StreamUtil.writeFloat(stream, {{ var }});
+- }
+- Schema::Float64 => {
+StreamUtil.writeDouble(stream, {{ var }});
+- }
+- Schema::String => {
+StreamUtil.writeString(stream, {{ var }});
+- }
+- Schema::Struct(_) | Schema::OneOf { .. } => {
+{{ var }}.writeTo(stream);
+- }
+- Schema::Option(inner) => {
+if ({{ var }} == null) {
+    StreamUtil.writeBoolean(stream, false);
+} else {
+    StreamUtil.writeBoolean(stream, true);
+    {{ write_var(var, inner) }}
+}
+- }
+- Schema::Vec(inner) => {
+StreamUtil.writeInt(stream, {{ var }}.length);
+- let element_var = format!("{}Element", var); let element_var = &element_var;
+for ({{ type_name(inner) }} {{ element_var }} : {{ var }}) {
+    {{ write_var(element_var, inner) }}
+}
+- }
+- Schema::Map(key_type, value_type) => {
+StreamUtil.writeInt(stream, {{ var }}.size());
+- let entry_var = format!("{}Entry", var); let entry_var = &entry_var;
+for (java.util.Map.Entry<{{ type_name_obj(key_type) }}, {{ type_name_obj(value_type) }}> {{ entry_var }} : {{ var }}.entrySet()) {
+    - let key_var = format!("{}Key", var); let key_var = &key_var;
+    {{ type_name(key_type) }} {{ key_var }} = {{ entry_var }}.getKey();
+    {{ write_var(key_var, key_type) }}
+    - let value_var = format!("{}Value", var); let value_var = &value_var;
+    {{ type_name(value_type) }} {{ value_var }} = {{ entry_var }}.getValue();
+    {{ write_var(value_var, value_type) }}
+}
+- }
+- Schema::Enum { .. } => {
+StreamUtil.writeInt(stream, {{ var }}.tag);
+- }
+- }
