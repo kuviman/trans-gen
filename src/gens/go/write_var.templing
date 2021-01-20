@@ -1,0 +1,52 @@
+- match schema {
+- Schema::Bool => {
+WriteBool(writer, {{ var }})
+- }
+- Schema::Int32 => {
+WriteInt32(writer, {{ var }})
+- }
+- Schema::Int64 => {
+WriteInt64(writer, {{ var }})
+- }
+- Schema::Float32 => {
+WriteFloat32(writer, {{ var }})
+- }
+- Schema::Float64 => {
+WriteFloat64(writer, {{ var }})
+- }
+- Schema::String => {
+WriteString(writer, {{ var }})
+- }
+- Schema::Struct(_) | Schema::OneOf { .. } => {
+{{ var }}.Write(writer)
+- }
+- Schema::Option(inner) => {
+if {{ var }} == nil {
+    WriteBool(writer, false)
+} else {
+    WriteBool(writer, true)
+    - let value_var = format!("{}Value", var); let value_var = &value_var;
+    {{ value_var }} := *{{ var }}
+    {{ write_var(value_var, inner) }}
+}
+- }
+- Schema::Vec(inner) => {
+WriteInt32(writer, int32(len({{ var }})))
+- let element_var = format!("{}Element", var); let element_var = &element_var;
+for _, {{ element_var }} := range {{ var }} {
+    {{ write_var(element_var, inner) }}
+}
+- }
+- Schema::Map(key_type, value_type) => {
+WriteInt32(writer, int32(len({{ var }})))
+- let key_var = format!("{}Key", var); let key_var = &key_var;
+- let value_var = format!("{}Value", var); let value_var = &value_var;
+for {{ key_var }}, {{ value_var }} := range {{ var }} {
+    {{ write_var(key_var, key_type) }}
+    {{ write_var(value_var, value_type) }}
+}
+- }
+- Schema::Enum { .. } => {
+WriteInt32(writer, int32({{ var }}))
+- }
+- }

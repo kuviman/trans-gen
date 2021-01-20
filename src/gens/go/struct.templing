@@ -1,0 +1,8 @@
+package model
+
+import "io"
+- if needs_stream(schema) {
+import . "{{ &self.mod_name }}/stream"
+- }
+
+{{ struct_impl(struc, None) }}

@@ -1,0 +1,24 @@
+package model
+
+import "io"
+- if needs_stream(schema) {
+import . "{{ &self.mod_name }}/stream"
+- }
+
+type {{ base_name.camel_case(conv) }} interface {
+    Write(writer io.Writer)
+}
+
+func Read{{ base_name.camel_case(conv) }}(reader io.Reader) {{ base_name.camel_case(conv) }} {
+    switch ReadInt32(reader) {
+    - for (tag, variant) in variants.iter().enumerate() {
+    case {{ tag }}:
+        return Read{{ base_name.camel_case(conv) }}{{ variant.name.camel_case(conv) }}(reader)
+    - }
+    }
+    panic("Unexpected tag value")
+}
+- for (tag, variant) in variants.iter().enumerate() {
+
+{{ struct_impl(variant, Some((base_name, tag))) }}
+- }
