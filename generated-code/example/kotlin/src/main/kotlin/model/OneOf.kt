@@ -5,6 +5,7 @@ import util.StreamUtil
 abstract class OneOf {
     @Throws(java.io.IOException::class)
     abstract fun writeTo(stream: java.io.OutputStream)
+
     companion object {
         @Throws(java.io.IOException::class)
         fun readFrom(stream: java.io.InputStream): OneOf {
@@ -19,25 +20,12 @@ abstract class OneOf {
     class OptionOne : OneOf {
         lateinit var vecInt: Array<Int>
         var longInt: Long = 0L
-        constructor() {}
+    
         constructor(vecInt: Array<Int>, longInt: Long) {
             this.vecInt = vecInt
             this.longInt = longInt
         }
-        companion object {
-            val TAG = 0
-            @Throws(java.io.IOException::class)
-            fun readFrom(stream: java.io.InputStream): OptionOne {
-                val result = OptionOne()
-                result.vecInt = Array(StreamUtil.readInt(stream), {
-                    var vecIntValue: Int
-                    vecIntValue = StreamUtil.readInt(stream)
-                    vecIntValue
-                })
-                result.longInt = StreamUtil.readLong(stream)
-                return result
-            }
-        }
+    
         @Throws(java.io.IOException::class)
         override fun writeTo(stream: java.io.OutputStream) {
             StreamUtil.writeInt(stream, TAG)
@@ -47,27 +35,47 @@ abstract class OneOf {
             }
             StreamUtil.writeLong(stream, longInt)
         }
+    
+        companion object {
+            val TAG = 0
+    
+            @Throws(java.io.IOException::class)
+            fun readFrom(stream: java.io.InputStream): OptionOne {
+                var vecInt: Array<Int>
+                vecInt = Array(StreamUtil.readInt(stream), {
+                    var vecIntElement: Int
+                    vecIntElement = StreamUtil.readInt(stream)
+                    vecIntElement
+                })
+                var longInt: Long
+                longInt = StreamUtil.readLong(stream)
+                return OptionOne(vecInt, longInt)
+            }
+        }
     }
 
     class OptionTwo : OneOf {
         var value: Int = 0
-        constructor() {}
+    
         constructor(value: Int) {
             this.value = value
         }
-        companion object {
-            val TAG = 1
-            @Throws(java.io.IOException::class)
-            fun readFrom(stream: java.io.InputStream): OptionTwo {
-                val result = OptionTwo()
-                result.value = StreamUtil.readInt(stream)
-                return result
-            }
-        }
+    
         @Throws(java.io.IOException::class)
         override fun writeTo(stream: java.io.OutputStream) {
             StreamUtil.writeInt(stream, TAG)
             StreamUtil.writeInt(stream, value)
+        }
+    
+        companion object {
+            val TAG = 1
+    
+            @Throws(java.io.IOException::class)
+            fun readFrom(stream: java.io.InputStream): OptionTwo {
+                var value: Int
+                value = StreamUtil.readInt(stream)
+                return OptionTwo(value)
+            }
         }
     }
 }

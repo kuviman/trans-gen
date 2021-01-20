@@ -16,7 +16,7 @@ class EntityProperties {
     var build: model.BuildProperties? = null
     var attack: model.AttackProperties? = null
     var repair: model.RepairProperties? = null
-    constructor() {}
+
     constructor(size: Int, buildScore: Int, destroyScore: Int, canMove: Boolean, populationProvide: Int, populationUse: Int, maxHealth: Int, initialCost: Int, sightRange: Int, resourcePerHealth: Int, build: model.BuildProperties?, attack: model.AttackProperties?, repair: model.RepairProperties?) {
         this.size = size
         this.buildScore = buildScore
@@ -32,38 +32,7 @@ class EntityProperties {
         this.attack = attack
         this.repair = repair
     }
-    companion object {
-        @Throws(java.io.IOException::class)
-        fun readFrom(stream: java.io.InputStream): EntityProperties {
-            val result = EntityProperties()
-            result.size = StreamUtil.readInt(stream)
-            result.buildScore = StreamUtil.readInt(stream)
-            result.destroyScore = StreamUtil.readInt(stream)
-            result.canMove = StreamUtil.readBoolean(stream)
-            result.populationProvide = StreamUtil.readInt(stream)
-            result.populationUse = StreamUtil.readInt(stream)
-            result.maxHealth = StreamUtil.readInt(stream)
-            result.initialCost = StreamUtil.readInt(stream)
-            result.sightRange = StreamUtil.readInt(stream)
-            result.resourcePerHealth = StreamUtil.readInt(stream)
-            if (StreamUtil.readBoolean(stream)) {
-                result.build = model.BuildProperties.readFrom(stream)
-            } else {
-                result.build = null
-            }
-            if (StreamUtil.readBoolean(stream)) {
-                result.attack = model.AttackProperties.readFrom(stream)
-            } else {
-                result.attack = null
-            }
-            if (StreamUtil.readBoolean(stream)) {
-                result.repair = model.RepairProperties.readFrom(stream)
-            } else {
-                result.repair = null
-            }
-            return result
-        }
-    }
+
     @Throws(java.io.IOException::class)
     fun writeTo(stream: java.io.OutputStream) {
         StreamUtil.writeInt(stream, size)
@@ -76,26 +45,71 @@ class EntityProperties {
         StreamUtil.writeInt(stream, initialCost)
         StreamUtil.writeInt(stream, sightRange)
         StreamUtil.writeInt(stream, resourcePerHealth)
-        val build = build;
-        if (build == null) {
+        val buildValue = build
+        if (buildValue == null) {
             StreamUtil.writeBoolean(stream, false)
         } else {
             StreamUtil.writeBoolean(stream, true)
-            build.writeTo(stream)
+            buildValue.writeTo(stream)
         }
-        val attack = attack;
-        if (attack == null) {
+        val attackValue = attack
+        if (attackValue == null) {
             StreamUtil.writeBoolean(stream, false)
         } else {
             StreamUtil.writeBoolean(stream, true)
-            attack.writeTo(stream)
+            attackValue.writeTo(stream)
         }
-        val repair = repair;
-        if (repair == null) {
+        val repairValue = repair
+        if (repairValue == null) {
             StreamUtil.writeBoolean(stream, false)
         } else {
             StreamUtil.writeBoolean(stream, true)
-            repair.writeTo(stream)
+            repairValue.writeTo(stream)
+        }
+    }
+
+    companion object {
+        @Throws(java.io.IOException::class)
+        fun readFrom(stream: java.io.InputStream): EntityProperties {
+            var size: Int
+            size = StreamUtil.readInt(stream)
+            var buildScore: Int
+            buildScore = StreamUtil.readInt(stream)
+            var destroyScore: Int
+            destroyScore = StreamUtil.readInt(stream)
+            var canMove: Boolean
+            canMove = StreamUtil.readBoolean(stream)
+            var populationProvide: Int
+            populationProvide = StreamUtil.readInt(stream)
+            var populationUse: Int
+            populationUse = StreamUtil.readInt(stream)
+            var maxHealth: Int
+            maxHealth = StreamUtil.readInt(stream)
+            var initialCost: Int
+            initialCost = StreamUtil.readInt(stream)
+            var sightRange: Int
+            sightRange = StreamUtil.readInt(stream)
+            var resourcePerHealth: Int
+            resourcePerHealth = StreamUtil.readInt(stream)
+            var build: model.BuildProperties?
+            if (StreamUtil.readBoolean(stream)) {
+                build = model.BuildProperties.readFrom(stream)
+            } else {
+                build = null
+            }
+            var attack: model.AttackProperties?
+            if (StreamUtil.readBoolean(stream)) {
+                attack = model.AttackProperties.readFrom(stream)
+            } else {
+                attack = null
+            }
+            var repair: model.RepairProperties?
+            if (StreamUtil.readBoolean(stream)) {
+                repair = model.RepairProperties.readFrom(stream)
+            } else {
+                repair = null
+            }
+            return EntityProperties(size, buildScore, destroyScore, canMove, populationProvide, populationUse, maxHealth, initialCost, sightRange, resourcePerHealth, build, attack, repair)
         }
     }
 }

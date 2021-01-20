@@ -12,7 +12,7 @@ class PlayerView {
     var currentTick: Int = 0
     lateinit var players: Array<model.Player>
     lateinit var entities: Array<model.Entity>
-    constructor() {}
+
     constructor(myId: Int, mapSize: Int, fogOfWar: Boolean, entityProperties: MutableMap<model.EntityType, model.EntityProperties>, maxTickCount: Int, maxPathfindNodes: Int, currentTick: Int, players: Array<model.Player>, entities: Array<model.Entity>) {
         this.myId = myId
         this.mapSize = mapSize
@@ -24,50 +24,7 @@ class PlayerView {
         this.players = players
         this.entities = entities
     }
-    companion object {
-        @Throws(java.io.IOException::class)
-        fun readFrom(stream: java.io.InputStream): PlayerView {
-            val result = PlayerView()
-            result.myId = StreamUtil.readInt(stream)
-            result.mapSize = StreamUtil.readInt(stream)
-            result.fogOfWar = StreamUtil.readBoolean(stream)
-            val entityPropertiesSize = StreamUtil.readInt(stream)
-            result.entityProperties = mutableMapOf()
-            for (i in 0 until entityPropertiesSize) {
-                var entityPropertiesKey: model.EntityType
-                when (StreamUtil.readInt(stream)) {
-                0 ->entityPropertiesKey = model.EntityType.WALL
-                1 ->entityPropertiesKey = model.EntityType.HOUSE
-                2 ->entityPropertiesKey = model.EntityType.BUILDER_BASE
-                3 ->entityPropertiesKey = model.EntityType.BUILDER_UNIT
-                4 ->entityPropertiesKey = model.EntityType.MELEE_BASE
-                5 ->entityPropertiesKey = model.EntityType.MELEE_UNIT
-                6 ->entityPropertiesKey = model.EntityType.RANGED_BASE
-                7 ->entityPropertiesKey = model.EntityType.RANGED_UNIT
-                8 ->entityPropertiesKey = model.EntityType.RESOURCE
-                9 ->entityPropertiesKey = model.EntityType.TURRET
-                else -> throw java.io.IOException("Unexpected tag value")
-                }
-                var entityPropertiesValue: model.EntityProperties
-                entityPropertiesValue = model.EntityProperties.readFrom(stream)
-                result.entityProperties.put(entityPropertiesKey, entityPropertiesValue)
-            }
-            result.maxTickCount = StreamUtil.readInt(stream)
-            result.maxPathfindNodes = StreamUtil.readInt(stream)
-            result.currentTick = StreamUtil.readInt(stream)
-            result.players = Array(StreamUtil.readInt(stream), {
-                var playersValue: model.Player
-                playersValue = model.Player.readFrom(stream)
-                playersValue
-            })
-            result.entities = Array(StreamUtil.readInt(stream), {
-                var entitiesValue: model.Entity
-                entitiesValue = model.Entity.readFrom(stream)
-                entitiesValue
-            })
-            return result
-        }
-    }
+
     @Throws(java.io.IOException::class)
     fun writeTo(stream: java.io.OutputStream) {
         StreamUtil.writeInt(stream, myId)
@@ -75,8 +32,10 @@ class PlayerView {
         StreamUtil.writeBoolean(stream, fogOfWar)
         StreamUtil.writeInt(stream, entityProperties.size)
         for (entityPropertiesEntry in entityProperties) {
-            StreamUtil.writeInt(stream, entityPropertiesEntry.key.tag)
-            entityPropertiesEntry.value.writeTo(stream)
+            val entityPropertiesKey = entityPropertiesEntry.key
+            StreamUtil.writeInt(stream, entityPropertiesKey.tag)
+            val entityPropertiesValue = entityPropertiesEntry.value
+            entityPropertiesValue.writeTo(stream)
         }
         StreamUtil.writeInt(stream, maxTickCount)
         StreamUtil.writeInt(stream, maxPathfindNodes)
@@ -88,6 +47,59 @@ class PlayerView {
         StreamUtil.writeInt(stream, entities.size)
         for (entitiesElement in entities) {
             entitiesElement.writeTo(stream)
+        }
+    }
+
+    companion object {
+        @Throws(java.io.IOException::class)
+        fun readFrom(stream: java.io.InputStream): PlayerView {
+            var myId: Int
+            myId = StreamUtil.readInt(stream)
+            var mapSize: Int
+            mapSize = StreamUtil.readInt(stream)
+            var fogOfWar: Boolean
+            fogOfWar = StreamUtil.readBoolean(stream)
+            var entityProperties: MutableMap<model.EntityType, model.EntityProperties>
+            val entityPropertiesSize = StreamUtil.readInt(stream)
+            entityProperties = mutableMapOf();
+            for (entityPropertiesIndex in 0 until entityPropertiesSize) {
+                var entityPropertiesKey: model.EntityType
+                when (StreamUtil.readInt(stream)) {
+                0 -> entityPropertiesKey = model.EntityType.WALL
+                1 -> entityPropertiesKey = model.EntityType.HOUSE
+                2 -> entityPropertiesKey = model.EntityType.BUILDER_BASE
+                3 -> entityPropertiesKey = model.EntityType.BUILDER_UNIT
+                4 -> entityPropertiesKey = model.EntityType.MELEE_BASE
+                5 -> entityPropertiesKey = model.EntityType.MELEE_UNIT
+                6 -> entityPropertiesKey = model.EntityType.RANGED_BASE
+                7 -> entityPropertiesKey = model.EntityType.RANGED_UNIT
+                8 -> entityPropertiesKey = model.EntityType.RESOURCE
+                9 -> entityPropertiesKey = model.EntityType.TURRET
+                else -> throw java.io.IOException("Unexpected tag value")
+                }
+                var entityPropertiesValue: model.EntityProperties
+                entityPropertiesValue = model.EntityProperties.readFrom(stream)
+                entityProperties.put(entityPropertiesKey, entityPropertiesValue)
+            }
+            var maxTickCount: Int
+            maxTickCount = StreamUtil.readInt(stream)
+            var maxPathfindNodes: Int
+            maxPathfindNodes = StreamUtil.readInt(stream)
+            var currentTick: Int
+            currentTick = StreamUtil.readInt(stream)
+            var players: Array<model.Player>
+            players = Array(StreamUtil.readInt(stream), {
+                var playersElement: model.Player
+                playersElement = model.Player.readFrom(stream)
+                playersElement
+            })
+            var entities: Array<model.Entity>
+            entities = Array(StreamUtil.readInt(stream), {
+                var entitiesElement: model.Entity
+                entitiesElement = model.Entity.readFrom(stream)
+                entitiesElement
+            })
+            return PlayerView(myId, mapSize, fogOfWar, entityProperties, maxTickCount, maxPathfindNodes, currentTick, players, entities)
         }
     }
 }
