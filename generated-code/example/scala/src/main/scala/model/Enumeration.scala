@@ -11,9 +11,11 @@ sealed abstract class Enumeration (val tag: Int) {
 object Enumeration {
     case object VALUE_ONE extends Enumeration(0)
     case object VALUE_TWO extends Enumeration(1)
-    def readFrom(stream: java.io.InputStream): Enumeration = StreamUtil.readInt(stream) match {
-        case 0 => VALUE_ONE
-        case 1 => VALUE_TWO
-        case _ => throw new java.io.IOException("Unexpected tag value")
-    }
+
+    def readFrom(stream: java.io.InputStream): Enumeration =
+        StreamUtil.readInt(stream) match {
+            case VALUE_ONE.tag => VALUE_ONE
+            case VALUE_TWO.tag => VALUE_TWO
+            case _ => throw new java.io.IOException("Unexpected tag value")
+        }
 }

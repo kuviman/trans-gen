@@ -37,38 +37,27 @@ case class EntityProperties(size: Int, buildScore: Int, destroyScore: Int, canMo
         }
     }
 }
+
 object EntityProperties {
     def readFrom(stream: java.io.InputStream): EntityProperties = EntityProperties(
-        StreamUtil.readInt(stream)
-        ,
-        StreamUtil.readInt(stream)
-        ,
-        StreamUtil.readInt(stream)
-        ,
-        StreamUtil.readBoolean(stream)
-        ,
-        StreamUtil.readInt(stream)
-        ,
-        StreamUtil.readInt(stream)
-        ,
-        StreamUtil.readInt(stream)
-        ,
-        StreamUtil.readInt(stream)
-        ,
-        StreamUtil.readInt(stream)
-        ,
-        StreamUtil.readInt(stream)
-        ,
+        StreamUtil.readInt(stream),
+        StreamUtil.readInt(stream),
+        StreamUtil.readInt(stream),
+        StreamUtil.readBoolean(stream),
+        StreamUtil.readInt(stream),
+        StreamUtil.readInt(stream),
+        StreamUtil.readInt(stream),
+        StreamUtil.readInt(stream),
+        StreamUtil.readInt(stream),
+        StreamUtil.readInt(stream),
         if (StreamUtil.readBoolean(stream)) Some(
             model.BuildProperties.readFrom(stream)
-        ) else None
-        ,
+        ) else None,
         if (StreamUtil.readBoolean(stream)) Some(
             model.AttackProperties.readFrom(stream)
-        ) else None
-        ,
+        ) else None,
         if (StreamUtil.readBoolean(stream)) Some(
             model.RepairProperties.readFrom(stream)
         ) else None
-        )
+    )
 }

@@ -19,17 +19,19 @@ object EntityType {
     case object RANGED_UNIT extends EntityType(7)
     case object RESOURCE extends EntityType(8)
     case object TURRET extends EntityType(9)
-    def readFrom(stream: java.io.InputStream): EntityType = StreamUtil.readInt(stream) match {
-        case 0 => WALL
-        case 1 => HOUSE
-        case 2 => BUILDER_BASE
-        case 3 => BUILDER_UNIT
-        case 4 => MELEE_BASE
-        case 5 => MELEE_UNIT
-        case 6 => RANGED_BASE
-        case 7 => RANGED_UNIT
-        case 8 => RESOURCE
-        case 9 => TURRET
-        case _ => throw new java.io.IOException("Unexpected tag value")
-    }
+
+    def readFrom(stream: java.io.InputStream): EntityType =
+        StreamUtil.readInt(stream) match {
+            case WALL.tag => WALL
+            case HOUSE.tag => HOUSE
+            case BUILDER_BASE.tag => BUILDER_BASE
+            case BUILDER_UNIT.tag => BUILDER_UNIT
+            case MELEE_BASE.tag => MELEE_BASE
+            case MELEE_UNIT.tag => MELEE_UNIT
+            case RANGED_BASE.tag => RANGED_BASE
+            case RANGED_UNIT.tag => RANGED_UNIT
+            case RESOURCE.tag => RESOURCE
+            case TURRET.tag => TURRET
+            case _ => throw new java.io.IOException("Unexpected tag value")
+        }
 }

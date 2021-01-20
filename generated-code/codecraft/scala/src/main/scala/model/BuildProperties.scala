@@ -17,14 +17,14 @@ case class BuildProperties(options: Seq[model.EntityType], initHealth: Option[In
         }
     }
 }
+
 object BuildProperties {
     def readFrom(stream: java.io.InputStream): BuildProperties = BuildProperties(
         (0 until StreamUtil.readInt(stream)).map { _ =>
             model.EntityType.readFrom(stream)
-        }
-        ,
+        },
         if (StreamUtil.readBoolean(stream)) Some(
             StreamUtil.readInt(stream)
         ) else None
-        )
+    )
 }

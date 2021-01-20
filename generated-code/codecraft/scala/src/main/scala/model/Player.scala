@@ -9,12 +9,11 @@ case class Player(id: Int, score: Int, resource: Int) {
         StreamUtil.writeInt(stream, resource)
     }
 }
+
 object Player {
     def readFrom(stream: java.io.InputStream): Player = Player(
+        StreamUtil.readInt(stream),
+        StreamUtil.readInt(stream),
         StreamUtil.readInt(stream)
-        ,
-        StreamUtil.readInt(stream)
-        ,
-        StreamUtil.readInt(stream)
-        )
+    )
 }

@@ -16,22 +16,17 @@ case class Structure(oneOfOne: model.OneOf, oneOfTwo: model.OneOf, hashMap: Map[
         StreamUtil.writeDouble(stream, doubleNumber)
     }
 }
+
 object Structure {
     def readFrom(stream: java.io.InputStream): Structure = Structure(
-        model.OneOf.readFrom(stream)
-        ,
-        model.OneOf.readFrom(stream)
-        ,
+        model.OneOf.readFrom(stream),
+        model.OneOf.readFrom(stream),
         (0 until StreamUtil.readInt(stream)).map { _ => (
-            model.Enumeration.readFrom(stream)
-            ,
+            model.Enumeration.readFrom(stream),
             StreamUtil.readInt(stream)
-        )}.toMap
-        ,
-        StreamUtil.readString(stream)
-        ,
-        StreamUtil.readFloat(stream)
-        ,
+        )}.toMap,
+        StreamUtil.readString(stream),
+        StreamUtil.readFloat(stream),
         StreamUtil.readDouble(stream)
-        )
+    )
 }

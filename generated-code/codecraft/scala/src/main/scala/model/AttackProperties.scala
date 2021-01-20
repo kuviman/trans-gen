@@ -9,12 +9,11 @@ case class AttackProperties(attackRange: Int, damage: Int, collectResource: Bool
         StreamUtil.writeBoolean(stream, collectResource)
     }
 }
+
 object AttackProperties {
     def readFrom(stream: java.io.InputStream): AttackProperties = AttackProperties(
-        StreamUtil.readInt(stream)
-        ,
-        StreamUtil.readInt(stream)
-        ,
+        StreamUtil.readInt(stream),
+        StreamUtil.readInt(stream),
         StreamUtil.readBoolean(stream)
-        )
+    )
 }

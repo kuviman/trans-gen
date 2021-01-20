@@ -8,10 +8,10 @@ case class Vec2Int(x: Int, y: Int) {
         StreamUtil.writeInt(stream, y)
     }
 }
+
 object Vec2Int {
     def readFrom(stream: java.io.InputStream): Vec2Int = Vec2Int(
+        StreamUtil.readInt(stream),
         StreamUtil.readInt(stream)
-        ,
-        StreamUtil.readInt(stream)
-        )
+    )
 }
