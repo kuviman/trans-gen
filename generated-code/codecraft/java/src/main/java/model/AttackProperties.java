@@ -4,27 +4,49 @@ import util.StreamUtil;
 
 public class AttackProperties {
     private int attackRange;
-    public int getAttackRange() { return attackRange; }
-    public void setAttackRange(int attackRange) { this.attackRange = attackRange; }
+
+    public int getAttackRange() {
+        return attackRange;
+    }
+
+    public void setAttackRange(int value) {
+        this.attackRange = value;
+    }
     private int damage;
-    public int getDamage() { return damage; }
-    public void setDamage(int damage) { this.damage = damage; }
+
+    public int getDamage() {
+        return damage;
+    }
+
+    public void setDamage(int value) {
+        this.damage = value;
+    }
     private boolean collectResource;
-    public boolean isCollectResource() { return collectResource; }
-    public void setCollectResource(boolean collectResource) { this.collectResource = collectResource; }
-    public AttackProperties() {}
+
+    public boolean isCollectResource() {
+        return collectResource;
+    }
+
+    public void setCollectResource(boolean value) {
+        this.collectResource = value;
+    }
+
     public AttackProperties(int attackRange, int damage, boolean collectResource) {
         this.attackRange = attackRange;
         this.damage = damage;
         this.collectResource = collectResource;
     }
+
     public static AttackProperties readFrom(java.io.InputStream stream) throws java.io.IOException {
-        AttackProperties result = new AttackProperties();
-        result.attackRange = StreamUtil.readInt(stream);
-        result.damage = StreamUtil.readInt(stream);
-        result.collectResource = StreamUtil.readBoolean(stream);
-        return result;
+        int attackRange;
+        attackRange = StreamUtil.readInt(stream);
+        int damage;
+        damage = StreamUtil.readInt(stream);
+        boolean collectResource;
+        collectResource = StreamUtil.readBoolean(stream);
+        return new AttackProperties(attackRange, damage, collectResource);
     }
+
     public void writeTo(java.io.OutputStream stream) throws java.io.IOException {
         StreamUtil.writeInt(stream, attackRange);
         StreamUtil.writeInt(stream, damage);

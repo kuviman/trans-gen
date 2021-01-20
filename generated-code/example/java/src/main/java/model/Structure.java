@@ -4,24 +4,60 @@ import util.StreamUtil;
 
 public class Structure {
     private model.OneOf oneOfOne;
-    public model.OneOf getOneOfOne() { return oneOfOne; }
-    public void setOneOfOne(model.OneOf oneOfOne) { this.oneOfOne = oneOfOne; }
+
+    public model.OneOf getOneOfOne() {
+        return oneOfOne;
+    }
+
+    public void setOneOfOne(model.OneOf value) {
+        this.oneOfOne = value;
+    }
     private model.OneOf oneOfTwo;
-    public model.OneOf getOneOfTwo() { return oneOfTwo; }
-    public void setOneOfTwo(model.OneOf oneOfTwo) { this.oneOfTwo = oneOfTwo; }
+
+    public model.OneOf getOneOfTwo() {
+        return oneOfTwo;
+    }
+
+    public void setOneOfTwo(model.OneOf value) {
+        this.oneOfTwo = value;
+    }
     private java.util.Map<model.Enumeration, Integer> hashMap;
-    public java.util.Map<model.Enumeration, Integer> getHashMap() { return hashMap; }
-    public void setHashMap(java.util.Map<model.Enumeration, Integer> hashMap) { this.hashMap = hashMap; }
+
+    public java.util.Map<model.Enumeration, Integer> getHashMap() {
+        return hashMap;
+    }
+
+    public void setHashMap(java.util.Map<model.Enumeration, Integer> value) {
+        this.hashMap = value;
+    }
     private String text;
-    public String getText() { return text; }
-    public void setText(String text) { this.text = text; }
+
+    public String getText() {
+        return text;
+    }
+
+    public void setText(String value) {
+        this.text = value;
+    }
     private float floatNumber;
-    public float getFloatNumber() { return floatNumber; }
-    public void setFloatNumber(float floatNumber) { this.floatNumber = floatNumber; }
+
+    public float getFloatNumber() {
+        return floatNumber;
+    }
+
+    public void setFloatNumber(float value) {
+        this.floatNumber = value;
+    }
     private double doubleNumber;
-    public double getDoubleNumber() { return doubleNumber; }
-    public void setDoubleNumber(double doubleNumber) { this.doubleNumber = doubleNumber; }
-    public Structure() {}
+
+    public double getDoubleNumber() {
+        return doubleNumber;
+    }
+
+    public void setDoubleNumber(double value) {
+        this.doubleNumber = value;
+    }
+
     public Structure(model.OneOf oneOfOne, model.OneOf oneOfTwo, java.util.Map<model.Enumeration, Integer> hashMap, String text, float floatNumber, double doubleNumber) {
         this.oneOfOne = oneOfOne;
         this.oneOfTwo = oneOfTwo;
@@ -30,13 +66,16 @@ public class Structure {
         this.floatNumber = floatNumber;
         this.doubleNumber = doubleNumber;
     }
+
     public static Structure readFrom(java.io.InputStream stream) throws java.io.IOException {
-        Structure result = new Structure();
-        result.oneOfOne = model.OneOf.readFrom(stream);
-        result.oneOfTwo = model.OneOf.readFrom(stream);
+        model.OneOf oneOfOne;
+        oneOfOne = model.OneOf.readFrom(stream);
+        model.OneOf oneOfTwo;
+        oneOfTwo = model.OneOf.readFrom(stream);
+        java.util.Map<model.Enumeration, Integer> hashMap;
         int hashMapSize = StreamUtil.readInt(stream);
-        result.hashMap = new java.util.HashMap<>(hashMapSize);
-        for (int i = 0; i < hashMapSize; i++) {
+        hashMap = new java.util.HashMap<>(hashMapSize);
+        for (int hashMapIndex = 0; hashMapIndex < hashMapSize; hashMapIndex++) {
             model.Enumeration hashMapKey;
             switch (StreamUtil.readInt(stream)) {
             case 0:
@@ -50,21 +89,25 @@ public class Structure {
             }
             int hashMapValue;
             hashMapValue = StreamUtil.readInt(stream);
-            result.hashMap.put(hashMapKey, hashMapValue);
+            hashMap.put(hashMapKey, hashMapValue);
         }
-        result.text = StreamUtil.readString(stream);
-        result.floatNumber = StreamUtil.readFloat(stream);
-        result.doubleNumber = StreamUtil.readDouble(stream);
-        return result;
+        String text;
+        text = StreamUtil.readString(stream);
+        float floatNumber;
+        floatNumber = StreamUtil.readFloat(stream);
+        double doubleNumber;
+        doubleNumber = StreamUtil.readDouble(stream);
+        return new Structure(oneOfOne, oneOfTwo, hashMap, text, floatNumber, doubleNumber);
     }
+
     public void writeTo(java.io.OutputStream stream) throws java.io.IOException {
         oneOfOne.writeTo(stream);
         oneOfTwo.writeTo(stream);
         StreamUtil.writeInt(stream, hashMap.size());
         for (java.util.Map.Entry<model.Enumeration, Integer> hashMapEntry : hashMap.entrySet()) {
             model.Enumeration hashMapKey = hashMapEntry.getKey();
-            int hashMapValue = hashMapEntry.getValue();
             StreamUtil.writeInt(stream, hashMapKey.tag);
+            int hashMapValue = hashMapEntry.getValue();
             StreamUtil.writeInt(stream, hashMapValue);
         }
         StreamUtil.writeString(stream, text);

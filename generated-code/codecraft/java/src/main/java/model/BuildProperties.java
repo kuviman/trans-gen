@@ -4,62 +4,79 @@ import util.StreamUtil;
 
 public class BuildProperties {
     private model.EntityType[] options;
-    public model.EntityType[] getOptions() { return options; }
-    public void setOptions(model.EntityType[] options) { this.options = options; }
+
+    public model.EntityType[] getOptions() {
+        return options;
+    }
+
+    public void setOptions(model.EntityType[] value) {
+        this.options = value;
+    }
     private Integer initHealth;
-    public Integer getInitHealth() { return initHealth; }
-    public void setInitHealth(Integer initHealth) { this.initHealth = initHealth; }
-    public BuildProperties() {}
+
+    public Integer getInitHealth() {
+        return initHealth;
+    }
+
+    public void setInitHealth(Integer value) {
+        this.initHealth = value;
+    }
+
     public BuildProperties(model.EntityType[] options, Integer initHealth) {
         this.options = options;
         this.initHealth = initHealth;
     }
+
     public static BuildProperties readFrom(java.io.InputStream stream) throws java.io.IOException {
-        BuildProperties result = new BuildProperties();
-        result.options = new model.EntityType[StreamUtil.readInt(stream)];
-        for (int i = 0; i < result.options.length; i++) {
+        model.EntityType[] options;
+        options = new model.EntityType[StreamUtil.readInt(stream)];
+        for (int optionsIndex = 0; optionsIndex < options.length; optionsIndex++) {
+            model.EntityType optionsElement;
             switch (StreamUtil.readInt(stream)) {
             case 0:
-                result.options[i] = model.EntityType.WALL;
+                optionsElement = model.EntityType.WALL;
                 break;
             case 1:
-                result.options[i] = model.EntityType.HOUSE;
+                optionsElement = model.EntityType.HOUSE;
                 break;
             case 2:
-                result.options[i] = model.EntityType.BUILDER_BASE;
+                optionsElement = model.EntityType.BUILDER_BASE;
                 break;
             case 3:
-                result.options[i] = model.EntityType.BUILDER_UNIT;
+                optionsElement = model.EntityType.BUILDER_UNIT;
                 break;
             case 4:
-                result.options[i] = model.EntityType.MELEE_BASE;
+                optionsElement = model.EntityType.MELEE_BASE;
                 break;
             case 5:
-                result.options[i] = model.EntityType.MELEE_UNIT;
+                optionsElement = model.EntityType.MELEE_UNIT;
                 break;
             case 6:
-                result.options[i] = model.EntityType.RANGED_BASE;
+                optionsElement = model.EntityType.RANGED_BASE;
                 break;
             case 7:
-                result.options[i] = model.EntityType.RANGED_UNIT;
+                optionsElement = model.EntityType.RANGED_UNIT;
                 break;
             case 8:
-                result.options[i] = model.EntityType.RESOURCE;
+                optionsElement = model.EntityType.RESOURCE;
                 break;
             case 9:
-                result.options[i] = model.EntityType.TURRET;
+                optionsElement = model.EntityType.TURRET;
                 break;
             default:
                 throw new java.io.IOException("Unexpected tag value");
             }
+            options[optionsIndex] = optionsElement;
         }
+        Integer initHealth;
         if (StreamUtil.readBoolean(stream)) {
-            result.initHealth = StreamUtil.readInt(stream);
+            initHealth = StreamUtil.readInt(stream);
         } else {
-            result.initHealth = null;
+            initHealth = null;
         }
-        return result;
+        return new BuildProperties(options, initHealth);
     }
+
     public void writeTo(java.io.OutputStream stream) throws java.io.IOException {
         StreamUtil.writeInt(stream, options.length);
         for (model.EntityType optionsElement : options) {

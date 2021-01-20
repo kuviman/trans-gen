@@ -13,8 +13,10 @@ public enum EntityType {
     RANGED_UNIT(7),
     RESOURCE(8),
     TURRET(9);
+
     public int tag;
+
     EntityType(int tag) {
-      this.tag = tag;
+        this.tag = tag;
     }
 }

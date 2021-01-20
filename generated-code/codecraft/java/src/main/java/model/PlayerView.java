@@ -4,33 +4,87 @@ import util.StreamUtil;
 
 public class PlayerView {
     private int myId;
-    public int getMyId() { return myId; }
-    public void setMyId(int myId) { this.myId = myId; }
+
+    public int getMyId() {
+        return myId;
+    }
+
+    public void setMyId(int value) {
+        this.myId = value;
+    }
     private int mapSize;
-    public int getMapSize() { return mapSize; }
-    public void setMapSize(int mapSize) { this.mapSize = mapSize; }
+
+    public int getMapSize() {
+        return mapSize;
+    }
+
+    public void setMapSize(int value) {
+        this.mapSize = value;
+    }
     private boolean fogOfWar;
-    public boolean isFogOfWar() { return fogOfWar; }
-    public void setFogOfWar(boolean fogOfWar) { this.fogOfWar = fogOfWar; }
+
+    public boolean isFogOfWar() {
+        return fogOfWar;
+    }
+
+    public void setFogOfWar(boolean value) {
+        this.fogOfWar = value;
+    }
     private java.util.Map<model.EntityType, model.EntityProperties> entityProperties;
-    public java.util.Map<model.EntityType, model.EntityProperties> getEntityProperties() { return entityProperties; }
-    public void setEntityProperties(java.util.Map<model.EntityType, model.EntityProperties> entityProperties) { this.entityProperties = entityProperties; }
+
+    public java.util.Map<model.EntityType, model.EntityProperties> getEntityProperties() {
+        return entityProperties;
+    }
+
+    public void setEntityProperties(java.util.Map<model.EntityType, model.EntityProperties> value) {
+        this.entityProperties = value;
+    }
     private int maxTickCount;
-    public int getMaxTickCount() { return maxTickCount; }
-    public void setMaxTickCount(int maxTickCount) { this.maxTickCount = maxTickCount; }
+
+    public int getMaxTickCount() {
+        return maxTickCount;
+    }
+
+    public void setMaxTickCount(int value) {
+        this.maxTickCount = value;
+    }
     private int maxPathfindNodes;
-    public int getMaxPathfindNodes() { return maxPathfindNodes; }
-    public void setMaxPathfindNodes(int maxPathfindNodes) { this.maxPathfindNodes = maxPathfindNodes; }
+
+    public int getMaxPathfindNodes() {
+        return maxPathfindNodes;
+    }
+
+    public void setMaxPathfindNodes(int value) {
+        this.maxPathfindNodes = value;
+    }
     private int currentTick;
-    public int getCurrentTick() { return currentTick; }
-    public void setCurrentTick(int currentTick) { this.currentTick = currentTick; }
+
+    public int getCurrentTick() {
+        return currentTick;
+    }
+
+    public void setCurrentTick(int value) {
+        this.currentTick = value;
+    }
     private model.Player[] players;
-    public model.Player[] getPlayers() { return players; }
-    public void setPlayers(model.Player[] players) { this.players = players; }
+
+    public model.Player[] getPlayers() {
+        return players;
+    }
+
+    public void setPlayers(model.Player[] value) {
+        this.players = value;
+    }
     private model.Entity[] entities;
-    public model.Entity[] getEntities() { return entities; }
-    public void setEntities(model.Entity[] entities) { this.entities = entities; }
-    public PlayerView() {}
+
+    public model.Entity[] getEntities() {
+        return entities;
+    }
+
+    public void setEntities(model.Entity[] value) {
+        this.entities = value;
+    }
+
     public PlayerView(int myId, int mapSize, boolean fogOfWar, java.util.Map<model.EntityType, model.EntityProperties> entityProperties, int maxTickCount, int maxPathfindNodes, int currentTick, model.Player[] players, model.Entity[] entities) {
         this.myId = myId;
         this.mapSize = mapSize;
@@ -42,14 +96,18 @@ public class PlayerView {
         this.players = players;
         this.entities = entities;
     }
+
     public static PlayerView readFrom(java.io.InputStream stream) throws java.io.IOException {
-        PlayerView result = new PlayerView();
-        result.myId = StreamUtil.readInt(stream);
-        result.mapSize = StreamUtil.readInt(stream);
-        result.fogOfWar = StreamUtil.readBoolean(stream);
+        int myId;
+        myId = StreamUtil.readInt(stream);
+        int mapSize;
+        mapSize = StreamUtil.readInt(stream);
+        boolean fogOfWar;
+        fogOfWar = StreamUtil.readBoolean(stream);
+        java.util.Map<model.EntityType, model.EntityProperties> entityProperties;
         int entityPropertiesSize = StreamUtil.readInt(stream);
-        result.entityProperties = new java.util.HashMap<>(entityPropertiesSize);
-        for (int i = 0; i < entityPropertiesSize; i++) {
+        entityProperties = new java.util.HashMap<>(entityPropertiesSize);
+        for (int entityPropertiesIndex = 0; entityPropertiesIndex < entityPropertiesSize; entityPropertiesIndex++) {
             model.EntityType entityPropertiesKey;
             switch (StreamUtil.readInt(stream)) {
             case 0:
@@ -87,21 +145,31 @@ public class PlayerView {
             }
             model.EntityProperties entityPropertiesValue;
             entityPropertiesValue = model.EntityProperties.readFrom(stream);
-            result.entityProperties.put(entityPropertiesKey, entityPropertiesValue);
+            entityProperties.put(entityPropertiesKey, entityPropertiesValue);
         }
-        result.maxTickCount = StreamUtil.readInt(stream);
-        result.maxPathfindNodes = StreamUtil.readInt(stream);
-        result.currentTick = StreamUtil.readInt(stream);
-        result.players = new model.Player[StreamUtil.readInt(stream)];
-        for (int i = 0; i < result.players.length; i++) {
-            result.players[i] = model.Player.readFrom(stream);
+        int maxTickCount;
+        maxTickCount = StreamUtil.readInt(stream);
+        int maxPathfindNodes;
+        maxPathfindNodes = StreamUtil.readInt(stream);
+        int currentTick;
+        currentTick = StreamUtil.readInt(stream);
+        model.Player[] players;
+        players = new model.Player[StreamUtil.readInt(stream)];
+        for (int playersIndex = 0; playersIndex < players.length; playersIndex++) {
+            model.Player playersElement;
+            playersElement = model.Player.readFrom(stream);
+            players[playersIndex] = playersElement;
         }
-        result.entities = new model.Entity[StreamUtil.readInt(stream)];
-        for (int i = 0; i < result.entities.length; i++) {
-            result.entities[i] = model.Entity.readFrom(stream);
+        model.Entity[] entities;
+        entities = new model.Entity[StreamUtil.readInt(stream)];
+        for (int entitiesIndex = 0; entitiesIndex < entities.length; entitiesIndex++) {
+            model.Entity entitiesElement;
+            entitiesElement = model.Entity.readFrom(stream);
+            entities[entitiesIndex] = entitiesElement;
         }
-        return result;
+        return new PlayerView(myId, mapSize, fogOfWar, entityProperties, maxTickCount, maxPathfindNodes, currentTick, players, entities);
     }
+
     public void writeTo(java.io.OutputStream stream) throws java.io.IOException {
         StreamUtil.writeInt(stream, myId);
         StreamUtil.writeInt(stream, mapSize);
@@ -109,8 +177,8 @@ public class PlayerView {
         StreamUtil.writeInt(stream, entityProperties.size());
         for (java.util.Map.Entry<model.EntityType, model.EntityProperties> entityPropertiesEntry : entityProperties.entrySet()) {
             model.EntityType entityPropertiesKey = entityPropertiesEntry.getKey();
-            model.EntityProperties entityPropertiesValue = entityPropertiesEntry.getValue();
             StreamUtil.writeInt(stream, entityPropertiesKey.tag);
+            model.EntityProperties entityPropertiesValue = entityPropertiesEntry.getValue();
             entityPropertiesValue.writeTo(stream);
         }
         StreamUtil.writeInt(stream, maxTickCount);

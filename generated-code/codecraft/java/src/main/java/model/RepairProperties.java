@@ -4,58 +4,75 @@ import util.StreamUtil;
 
 public class RepairProperties {
     private model.EntityType[] validTargets;
-    public model.EntityType[] getValidTargets() { return validTargets; }
-    public void setValidTargets(model.EntityType[] validTargets) { this.validTargets = validTargets; }
+
+    public model.EntityType[] getValidTargets() {
+        return validTargets;
+    }
+
+    public void setValidTargets(model.EntityType[] value) {
+        this.validTargets = value;
+    }
     private int power;
-    public int getPower() { return power; }
-    public void setPower(int power) { this.power = power; }
-    public RepairProperties() {}
+
+    public int getPower() {
+        return power;
+    }
+
+    public void setPower(int value) {
+        this.power = value;
+    }
+
     public RepairProperties(model.EntityType[] validTargets, int power) {
         this.validTargets = validTargets;
         this.power = power;
     }
+
     public static RepairProperties readFrom(java.io.InputStream stream) throws java.io.IOException {
-        RepairProperties result = new RepairProperties();
-        result.validTargets = new model.EntityType[StreamUtil.readInt(stream)];
-        for (int i = 0; i < result.validTargets.length; i++) {
+        model.EntityType[] validTargets;
+        validTargets = new model.EntityType[StreamUtil.readInt(stream)];
+        for (int validTargetsIndex = 0; validTargetsIndex < validTargets.length; validTargetsIndex++) {
+            model.EntityType validTargetsElement;
             switch (StreamUtil.readInt(stream)) {
             case 0:
-                result.validTargets[i] = model.EntityType.WALL;
+                validTargetsElement = model.EntityType.WALL;
                 break;
             case 1:
-                result.validTargets[i] = model.EntityType.HOUSE;
+                validTargetsElement = model.EntityType.HOUSE;
                 break;
             case 2:
-                result.validTargets[i] = model.EntityType.BUILDER_BASE;
+                validTargetsElement = model.EntityType.BUILDER_BASE;
                 break;
             case 3:
-                result.validTargets[i] = model.EntityType.BUILDER_UNIT;
+                validTargetsElement = model.EntityType.BUILDER_UNIT;
                 break;
             case 4:
-                result.validTargets[i] = model.EntityType.MELEE_BASE;
+                validTargetsElement = model.EntityType.MELEE_BASE;
                 break;
             case 5:
-                result.validTargets[i] = model.EntityType.MELEE_UNIT;
+                validTargetsElement = model.EntityType.MELEE_UNIT;
                 break;
             case 6:
-                result.validTargets[i] = model.EntityType.RANGED_BASE;
+                validTargetsElement = model.EntityType.RANGED_BASE;
                 break;
             case 7:
-                result.validTargets[i] = model.EntityType.RANGED_UNIT;
+                validTargetsElement = model.EntityType.RANGED_UNIT;
                 break;
             case 8:
-                result.validTargets[i] = model.EntityType.RESOURCE;
+                validTargetsElement = model.EntityType.RESOURCE;
                 break;
             case 9:
-                result.validTargets[i] = model.EntityType.TURRET;
+                validTargetsElement = model.EntityType.TURRET;
                 break;
             default:
                 throw new java.io.IOException("Unexpected tag value");
             }
+            validTargets[validTargetsIndex] = validTargetsElement;
         }
-        result.power = StreamUtil.readInt(stream);
-        return result;
+        int power;
+        power = StreamUtil.readInt(stream);
+        return new RepairProperties(validTargets, power);
     }
+
     public void writeTo(java.io.OutputStream stream) throws java.io.IOException {
         StreamUtil.writeInt(stream, validTargets.length);
         for (model.EntityType validTargetsElement : validTargets) {

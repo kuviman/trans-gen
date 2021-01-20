@@ -4,6 +4,7 @@ import util.StreamUtil;
 
 public abstract class OneOf {
     public abstract void writeTo(java.io.OutputStream stream) throws java.io.IOException;
+
     public static OneOf readFrom(java.io.InputStream stream) throws java.io.IOException {
         switch (StreamUtil.readInt(stream)) {
             case OptionOne.TAG:
@@ -17,26 +18,44 @@ public abstract class OneOf {
 
     public static class OptionOne extends OneOf {
         public static final int TAG = 0;
+    
         private int[] vecInt;
-        public int[] getVecInt() { return vecInt; }
-        public void setVecInt(int[] vecInt) { this.vecInt = vecInt; }
+    
+        public int[] getVecInt() {
+            return vecInt;
+        }
+    
+        public void setVecInt(int[] value) {
+            this.vecInt = value;
+        }
         private long longInt;
-        public long getLongInt() { return longInt; }
-        public void setLongInt(long longInt) { this.longInt = longInt; }
-        public OptionOne() {}
+    
+        public long getLongInt() {
+            return longInt;
+        }
+    
+        public void setLongInt(long value) {
+            this.longInt = value;
+        }
+    
         public OptionOne(int[] vecInt, long longInt) {
             this.vecInt = vecInt;
             this.longInt = longInt;
         }
+    
         public static OptionOne readFrom(java.io.InputStream stream) throws java.io.IOException {
-            OptionOne result = new OptionOne();
-            result.vecInt = new int[StreamUtil.readInt(stream)];
-            for (int i = 0; i < result.vecInt.length; i++) {
-                result.vecInt[i] = StreamUtil.readInt(stream);
+            int[] vecInt;
+            vecInt = new int[StreamUtil.readInt(stream)];
+            for (int vecIntIndex = 0; vecIntIndex < vecInt.length; vecIntIndex++) {
+                int vecIntElement;
+                vecIntElement = StreamUtil.readInt(stream);
+                vecInt[vecIntIndex] = vecIntElement;
             }
-            result.longInt = StreamUtil.readLong(stream);
-            return result;
+            long longInt;
+            longInt = StreamUtil.readLong(stream);
+            return new OptionOne(vecInt, longInt);
         }
+    
         @Override
         public void writeTo(java.io.OutputStream stream) throws java.io.IOException {
             StreamUtil.writeInt(stream, TAG);
@@ -50,18 +69,27 @@ public abstract class OneOf {
 
     public static class OptionTwo extends OneOf {
         public static final int TAG = 1;
+    
         private int value;
-        public int getValue() { return value; }
-        public void setValue(int value) { this.value = value; }
-        public OptionTwo() {}
+    
+        public int getValue() {
+            return value;
+        }
+    
+        public void setValue(int value) {
+            this.value = value;
+        }
+    
         public OptionTwo(int value) {
             this.value = value;
         }
+    
         public static OptionTwo readFrom(java.io.InputStream stream) throws java.io.IOException {
-            OptionTwo result = new OptionTwo();
-            result.value = StreamUtil.readInt(stream);
-            return result;
+            int value;
+            value = StreamUtil.readInt(stream);
+            return new OptionTwo(value);
         }
+    
         @Override
         public void writeTo(java.io.OutputStream stream) throws java.io.IOException {
             StreamUtil.writeInt(stream, TAG);

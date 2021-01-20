@@ -4,45 +4,123 @@ import util.StreamUtil;
 
 public class EntityProperties {
     private int size;
-    public int getSize() { return size; }
-    public void setSize(int size) { this.size = size; }
+
+    public int getSize() {
+        return size;
+    }
+
+    public void setSize(int value) {
+        this.size = value;
+    }
     private int buildScore;
-    public int getBuildScore() { return buildScore; }
-    public void setBuildScore(int buildScore) { this.buildScore = buildScore; }
+
+    public int getBuildScore() {
+        return buildScore;
+    }
+
+    public void setBuildScore(int value) {
+        this.buildScore = value;
+    }
     private int destroyScore;
-    public int getDestroyScore() { return destroyScore; }
-    public void setDestroyScore(int destroyScore) { this.destroyScore = destroyScore; }
+
+    public int getDestroyScore() {
+        return destroyScore;
+    }
+
+    public void setDestroyScore(int value) {
+        this.destroyScore = value;
+    }
     private boolean canMove;
-    public boolean isCanMove() { return canMove; }
-    public void setCanMove(boolean canMove) { this.canMove = canMove; }
+
+    public boolean isCanMove() {
+        return canMove;
+    }
+
+    public void setCanMove(boolean value) {
+        this.canMove = value;
+    }
     private int populationProvide;
-    public int getPopulationProvide() { return populationProvide; }
-    public void setPopulationProvide(int populationProvide) { this.populationProvide = populationProvide; }
+
+    public int getPopulationProvide() {
+        return populationProvide;
+    }
+
+    public void setPopulationProvide(int value) {
+        this.populationProvide = value;
+    }
     private int populationUse;
-    public int getPopulationUse() { return populationUse; }
-    public void setPopulationUse(int populationUse) { this.populationUse = populationUse; }
+
+    public int getPopulationUse() {
+        return populationUse;
+    }
+
+    public void setPopulationUse(int value) {
+        this.populationUse = value;
+    }
     private int maxHealth;
-    public int getMaxHealth() { return maxHealth; }
-    public void setMaxHealth(int maxHealth) { this.maxHealth = maxHealth; }
+
+    public int getMaxHealth() {
+        return maxHealth;
+    }
+
+    public void setMaxHealth(int value) {
+        this.maxHealth = value;
+    }
     private int initialCost;
-    public int getInitialCost() { return initialCost; }
-    public void setInitialCost(int initialCost) { this.initialCost = initialCost; }
+
+    public int getInitialCost() {
+        return initialCost;
+    }
+
+    public void setInitialCost(int value) {
+        this.initialCost = value;
+    }
     private int sightRange;
-    public int getSightRange() { return sightRange; }
-    public void setSightRange(int sightRange) { this.sightRange = sightRange; }
+
+    public int getSightRange() {
+        return sightRange;
+    }
+
+    public void setSightRange(int value) {
+        this.sightRange = value;
+    }
     private int resourcePerHealth;
-    public int getResourcePerHealth() { return resourcePerHealth; }
-    public void setResourcePerHealth(int resourcePerHealth) { this.resourcePerHealth = resourcePerHealth; }
+
+    public int getResourcePerHealth() {
+        return resourcePerHealth;
+    }
+
+    public void setResourcePerHealth(int value) {
+        this.resourcePerHealth = value;
+    }
     private model.BuildProperties build;
-    public model.BuildProperties getBuild() { return build; }
-    public void setBuild(model.BuildProperties build) { this.build = build; }
+
+    public model.BuildProperties getBuild() {
+        return build;
+    }
+
+    public void setBuild(model.BuildProperties value) {
+        this.build = value;
+    }
     private model.AttackProperties attack;
-    public model.AttackProperties getAttack() { return attack; }
-    public void setAttack(model.AttackProperties attack) { this.attack = attack; }
+
+    public model.AttackProperties getAttack() {
+        return attack;
+    }
+
+    public void setAttack(model.AttackProperties value) {
+        this.attack = value;
+    }
     private model.RepairProperties repair;
-    public model.RepairProperties getRepair() { return repair; }
-    public void setRepair(model.RepairProperties repair) { this.repair = repair; }
-    public EntityProperties() {}
+
+    public model.RepairProperties getRepair() {
+        return repair;
+    }
+
+    public void setRepair(model.RepairProperties value) {
+        this.repair = value;
+    }
+
     public EntityProperties(int size, int buildScore, int destroyScore, boolean canMove, int populationProvide, int populationUse, int maxHealth, int initialCost, int sightRange, int resourcePerHealth, model.BuildProperties build, model.AttackProperties attack, model.RepairProperties repair) {
         this.size = size;
         this.buildScore = buildScore;
@@ -58,35 +136,49 @@ public class EntityProperties {
         this.attack = attack;
         this.repair = repair;
     }
+
     public static EntityProperties readFrom(java.io.InputStream stream) throws java.io.IOException {
-        EntityProperties result = new EntityProperties();
-        result.size = StreamUtil.readInt(stream);
-        result.buildScore = StreamUtil.readInt(stream);
-        result.destroyScore = StreamUtil.readInt(stream);
-        result.canMove = StreamUtil.readBoolean(stream);
-        result.populationProvide = StreamUtil.readInt(stream);
-        result.populationUse = StreamUtil.readInt(stream);
-        result.maxHealth = StreamUtil.readInt(stream);
-        result.initialCost = StreamUtil.readInt(stream);
-        result.sightRange = StreamUtil.readInt(stream);
-        result.resourcePerHealth = StreamUtil.readInt(stream);
+        int size;
+        size = StreamUtil.readInt(stream);
+        int buildScore;
+        buildScore = StreamUtil.readInt(stream);
+        int destroyScore;
+        destroyScore = StreamUtil.readInt(stream);
+        boolean canMove;
+        canMove = StreamUtil.readBoolean(stream);
+        int populationProvide;
+        populationProvide = StreamUtil.readInt(stream);
+        int populationUse;
+        populationUse = StreamUtil.readInt(stream);
+        int maxHealth;
+        maxHealth = StreamUtil.readInt(stream);
+        int initialCost;
+        initialCost = StreamUtil.readInt(stream);
+        int sightRange;
+        sightRange = StreamUtil.readInt(stream);
+        int resourcePerHealth;
+        resourcePerHealth = StreamUtil.readInt(stream);
+        model.BuildProperties build;
         if (StreamUtil.readBoolean(stream)) {
-            result.build = model.BuildProperties.readFrom(stream);
+            build = model.BuildProperties.readFrom(stream);
         } else {
-            result.build = null;
+            build = null;
         }
+        model.AttackProperties attack;
         if (StreamUtil.readBoolean(stream)) {
-            result.attack = model.AttackProperties.readFrom(stream);
+            attack = model.AttackProperties.readFrom(stream);
         } else {
-            result.attack = null;
+            attack = null;
         }
+        model.RepairProperties repair;
         if (StreamUtil.readBoolean(stream)) {
-            result.repair = model.RepairProperties.readFrom(stream);
+            repair = model.RepairProperties.readFrom(stream);
         } else {
-            result.repair = null;
+            repair = null;
         }
-        return result;
+        return new EntityProperties(size, buildScore, destroyScore, canMove, populationProvide, populationUse, maxHealth, initialCost, sightRange, resourcePerHealth, build, attack, repair);
     }
+
     public void writeTo(java.io.OutputStream stream) throws java.io.IOException {
         StreamUtil.writeInt(stream, size);
         StreamUtil.writeInt(stream, buildScore);
