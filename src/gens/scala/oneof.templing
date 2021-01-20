@@ -1,0 +1,22 @@
+package model
+
+import util.StreamUtil
+
+sealed trait {{ base_name.camel_case(conv) }} {
+    def writeTo(stream: java.io.OutputStream)
+}
+
+object {{ base_name.camel_case(conv) }} {
+    - for (tag, variant) in variants.iter().enumerate() {
+    {{ struct_impl(variant, Some((base_name, tag))) }}
+
+    - }
+    def readFrom(stream: java.io.InputStream): {{ base_name.camel_case(conv) }} = {
+        StreamUtil.readInt(stream) match {
+            - for variant in variants {
+            case {{ variant.name.camel_case(conv) }}.TAG => {{ variant.name.camel_case(conv) }}.readFrom(stream)
+            - }
+            case _ => throw new java.io.IOException("Unexpected tag value")
+        }
+    }
+}

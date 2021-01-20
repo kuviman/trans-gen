@@ -1,0 +1,45 @@
+- match schema {
+- Schema::Bool => {
+StreamUtil.writeBoolean(stream, {{ var }})
+- }
+- Schema::Int32 => {
+StreamUtil.writeInt(stream, {{ var }})
+- }
+- Schema::Int64 => {
+StreamUtil.writeLong(stream, {{ var }})
+- }
+- Schema::Float32 => {
+StreamUtil.writeFloat(stream, {{ var }})
+- }
+- Schema::Float64 => {
+StreamUtil.writeDouble(stream, {{ var }})
+- }
+- Schema::String => {
+StreamUtil.writeString(stream, {{ var }})
+- }
+- Schema::Struct(_) | Schema::OneOf { .. } | Schema::Enum { .. } => {
+{{ var }}.writeTo(stream)
+- }
+- Schema::Option(inner) => {
+{{ var }} match {
+    case None => StreamUtil.writeBoolean(stream, false)
+    case Some(value) => {
+        StreamUtil.writeBoolean(stream, true)
+        {{ write_var("value", inner) }}
+    }
+}
+- }
+- Schema::Vec(inner) => {
+StreamUtil.writeInt(stream, {{ var }}.length)
+{{ var }}.foreach { value =>
+    {{ write_var("value", inner) }}
+}
+- }
+- Schema::Map(key_type, value_type) => {
+StreamUtil.writeInt(stream, {{ var }}.size)
+{{ var }}.foreach { case (key, value) =>
+    {{ write_var("key", key_type) }}
+    {{ write_var("value", value_type) }}
+}
+- }
+- }

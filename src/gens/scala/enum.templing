@@ -1,0 +1,23 @@
+package model
+
+import util.StreamUtil
+
+sealed abstract class {{ base_name.camel_case(conv) }} (val tag: Int) {
+    def writeTo(stream: java.io.OutputStream) {
+        StreamUtil.writeInt(stream, tag)
+    }
+}
+
+object {{ base_name.camel_case(conv) }} {
+    - for (tag, variant) in variants.iter().enumerate() {
+    case object {{ variant.name.shouty_snake_case(conv) }} extends {{ base_name.camel_case(conv) }}({{ tag }})
+    - }
+
+    def readFrom(stream: java.io.InputStream): {{ base_name.camel_case(conv) }} =
+        StreamUtil.readInt(stream) match {
+            - for (tag, variant) in variants.iter().enumerate() {
+            case {{ variant.name.shouty_snake_case(conv) }}.tag => {{ variant.name.shouty_snake_case(conv) }}
+            - }
+            case _ => throw new java.io.IOException("Unexpected tag value")
+        }
+}

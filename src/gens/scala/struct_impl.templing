@@ -1,0 +1,33 @@
+case class {{ struc.name.camel_case(conv) }}(~
+    - for (index, field) in struc.fields.iter().enumerate() {
+    - if index != 0 {
+    ~, ~
+    - }
+    ~{{ field.name.mixed_case(conv) }}: {{ type_name(&field.schema) }}~
+    - }
+~)~
+- if let Some((base_name, _)) = base {
+    ~ extends {{ base_name.camel_case(conv) }}~
+- }
+~ {
+    {{# if base.is_some() { }}override {{# } }}def writeTo(stream: java.io.OutputStream) {
+        - if base.is_some() {
+        StreamUtil.writeInt(stream, {{ struc.name.camel_case(conv) }}.TAG)
+        - }
+        - for field in &struc.fields {
+        {{ write_var(&field.name.mixed_case(conv), &field.schema) }}
+        - }
+    }
+}
+
+object {{ struc.name.camel_case(conv) }} {
+    - if let Some((_, tag)) = base {
+    val TAG: Int = {{ tag }}
+
+    - }
+    def readFrom(stream: java.io.InputStream): {{ struc.name.camel_case(conv) }} = {{ struc.name.camel_case(conv) }}(
+        - for (index, field) in struc.fields.iter().enumerate() {
+        {{ read_var(&field.schema) }}{{# if index + 1 < struc.fields.len() { }},{{# } }}
+        - }
+    )
+}

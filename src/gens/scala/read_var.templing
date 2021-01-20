@@ -1,0 +1,39 @@
+- match schema {
+- Schema::Bool => {
+StreamUtil.readBoolean(stream)
+- }
+- Schema::Int32 => {
+StreamUtil.readInt(stream)
+- }
+- Schema::Int64 => {
+StreamUtil.readLong(stream)
+- }
+- Schema::Float32 => {
+StreamUtil.readFloat(stream)
+- }
+- Schema::Float64 => {
+StreamUtil.readDouble(stream)
+- }
+- Schema::String => {
+StreamUtil.readString(stream)
+- }
+- Schema::Struct(Struct { name, .. }) | Schema::OneOf { base_name: name, .. } | Schema::Enum { base_name: name, .. } => {
+model.{{ name.camel_case(conv) }}.readFrom(stream)
+- }
+- Schema::Option(inner) => {
+if (StreamUtil.readBoolean(stream)) Some(
+    {{ read_var(inner) }}
+) else None
+- }
+- Schema::Vec(inner) => {
+(0 until StreamUtil.readInt(stream)).map { _ =>
+    {{ read_var(inner) }}
+}
+- }
+- Schema::Map(key_type, value_type) => {
+(0 until StreamUtil.readInt(stream)).map { _ => (
+    {{ read_var(key_type) }},
+    {{ read_var(value_type) }}
+)}.toMap
+- }
+- }

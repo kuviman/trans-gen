@@ -1,0 +1,5 @@
+package model
+
+import util.StreamUtil
+
+{{ struct_impl(struc, None) }}
