@@ -18,6 +18,7 @@ type EntityProperties struct {
     Attack *AttackProperties
     Repair *RepairProperties
 }
+
 func NewEntityProperties(size int32, buildScore int32, destroyScore int32, canMove bool, populationProvide int32, populationUse int32, maxHealth int32, initialCost int32, sightRange int32, resourcePerHealth int32, build *BuildProperties, attack *AttackProperties, repair *RepairProperties) EntityProperties {
     return EntityProperties {
         Size: size,
@@ -35,68 +36,112 @@ func NewEntityProperties(size int32, buildScore int32, destroyScore int32, canMo
         Repair: repair,
     }
 }
+
 func ReadEntityProperties(reader io.Reader) EntityProperties {
-    result := EntityProperties {}
-    result.Size = ReadInt32(reader)
-    result.BuildScore = ReadInt32(reader)
-    result.DestroyScore = ReadInt32(reader)
-    result.CanMove = ReadBool(reader)
-    result.PopulationProvide = ReadInt32(reader)
-    result.PopulationUse = ReadInt32(reader)
-    result.MaxHealth = ReadInt32(reader)
-    result.InitialCost = ReadInt32(reader)
-    result.SightRange = ReadInt32(reader)
-    result.ResourcePerHealth = ReadInt32(reader)
+    var size int32
+    size = ReadInt32(reader)
+    var buildScore int32
+    buildScore = ReadInt32(reader)
+    var destroyScore int32
+    destroyScore = ReadInt32(reader)
+    var canMove bool
+    canMove = ReadBool(reader)
+    var populationProvide int32
+    populationProvide = ReadInt32(reader)
+    var populationUse int32
+    populationUse = ReadInt32(reader)
+    var maxHealth int32
+    maxHealth = ReadInt32(reader)
+    var initialCost int32
+    initialCost = ReadInt32(reader)
+    var sightRange int32
+    sightRange = ReadInt32(reader)
+    var resourcePerHealth int32
+    resourcePerHealth = ReadInt32(reader)
+    var build *BuildProperties
     if ReadBool(reader) {
-        var BuildValue BuildProperties
-        BuildValue = ReadBuildProperties(reader)
-        result.Build = &BuildValue
+        var buildValue BuildProperties
+        buildValue = ReadBuildProperties(reader)
+        build = &buildValue
     } else {
-        result.Build = nil
+        build = nil
     }
+    var attack *AttackProperties
     if ReadBool(reader) {
-        var AttackValue AttackProperties
-        AttackValue = ReadAttackProperties(reader)
-        result.Attack = &AttackValue
+        var attackValue AttackProperties
+        attackValue = ReadAttackProperties(reader)
+        attack = &attackValue
     } else {
-        result.Attack = nil
+        attack = nil
     }
+    var repair *RepairProperties
     if ReadBool(reader) {
-        var RepairValue RepairProperties
-        RepairValue = ReadRepairProperties(reader)
-        result.Repair = &RepairValue
+        var repairValue RepairProperties
+        repairValue = ReadRepairProperties(reader)
+        repair = &repairValue
     } else {
-        result.Repair = nil
+        repair = nil
     }
-    return result
+    return EntityProperties {
+        Size: size,
+        BuildScore: buildScore,
+        DestroyScore: destroyScore,
+        CanMove: canMove,
+        PopulationProvide: populationProvide,
+        PopulationUse: populationUse,
+        MaxHealth: maxHealth,
+        InitialCost: initialCost,
+        SightRange: sightRange,
+        ResourcePerHealth: resourcePerHealth,
+        Build: build,
+        Attack: attack,
+        Repair: repair,
+    }
 }
-func (value EntityProperties) Write(writer io.Writer) {
-    WriteInt32(writer, value.Size)
-    WriteInt32(writer, value.BuildScore)
-    WriteInt32(writer, value.DestroyScore)
-    WriteBool(writer, value.CanMove)
-    WriteInt32(writer, value.PopulationProvide)
-    WriteInt32(writer, value.PopulationUse)
-    WriteInt32(writer, value.MaxHealth)
-    WriteInt32(writer, value.InitialCost)
-    WriteInt32(writer, value.SightRange)
-    WriteInt32(writer, value.ResourcePerHealth)
-    if value.Build == nil {
+
+func (entityProperties EntityProperties) Write(writer io.Writer) {
+    size := entityProperties.Size
+    WriteInt32(writer, size)
+    buildScore := entityProperties.BuildScore
+    WriteInt32(writer, buildScore)
+    destroyScore := entityProperties.DestroyScore
+    WriteInt32(writer, destroyScore)
+    canMove := entityProperties.CanMove
+    WriteBool(writer, canMove)
+    populationProvide := entityProperties.PopulationProvide
+    WriteInt32(writer, populationProvide)
+    populationUse := entityProperties.PopulationUse
+    WriteInt32(writer, populationUse)
+    maxHealth := entityProperties.MaxHealth
+    WriteInt32(writer, maxHealth)
+    initialCost := entityProperties.InitialCost
+    WriteInt32(writer, initialCost)
+    sightRange := entityProperties.SightRange
+    WriteInt32(writer, sightRange)
+    resourcePerHealth := entityProperties.ResourcePerHealth
+    WriteInt32(writer, resourcePerHealth)
+    build := entityProperties.Build
+    if build == nil {
         WriteBool(writer, false)
     } else {
         WriteBool(writer, true)
-        (*value.Build).Write(writer)
+        buildValue := *build
+        buildValue.Write(writer)
     }
-    if value.Attack == nil {
+    attack := entityProperties.Attack
+    if attack == nil {
         WriteBool(writer, false)
     } else {
         WriteBool(writer, true)
-        (*value.Attack).Write(writer)
+        attackValue := *attack
+        attackValue.Write(writer)
     }
-    if value.Repair == nil {
+    repair := entityProperties.Repair
+    if repair == nil {
         WriteBool(writer, false)
     } else {
         WriteBool(writer, true)
-        (*value.Repair).Write(writer)
+        repairValue := *repair
+        repairValue.Write(writer)
     }
 }

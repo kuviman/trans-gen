@@ -14,6 +14,7 @@ type PlayerView struct {
     Players []Player
     Entities []Entity
 }
+
 func NewPlayerView(myId int32, mapSize int32, fogOfWar bool, entityProperties map[EntityType]EntityProperties, maxTickCount int32, maxPathfindNodes int32, currentTick int32, players []Player, entities []Entity) PlayerView {
     return PlayerView {
         MyId: myId,
@@ -27,51 +28,84 @@ func NewPlayerView(myId int32, mapSize int32, fogOfWar bool, entityProperties ma
         Entities: entities,
     }
 }
+
 func ReadPlayerView(reader io.Reader) PlayerView {
-    result := PlayerView {}
-    result.MyId = ReadInt32(reader)
-    result.MapSize = ReadInt32(reader)
-    result.FogOfWar = ReadBool(reader)
-    EntityPropertiesSize := ReadInt32(reader)
-    result.EntityProperties = make(map[EntityType]EntityProperties)
-    for i := int32(0); i < EntityPropertiesSize; i++ {
-        var EntityPropertiesKey EntityType
-        EntityPropertiesKey = ReadEntityType(reader)
-        var EntityPropertiesValue EntityProperties
-        EntityPropertiesValue = ReadEntityProperties(reader)
-        result.EntityProperties[EntityPropertiesKey] = EntityPropertiesValue
+    var myId int32
+    myId = ReadInt32(reader)
+    var mapSize int32
+    mapSize = ReadInt32(reader)
+    var fogOfWar bool
+    fogOfWar = ReadBool(reader)
+    var entityProperties map[EntityType]EntityProperties
+    entityPropertiesSize := ReadInt32(reader)
+    entityProperties = make(map[EntityType]EntityProperties)
+    for entityPropertiesIndex := int32(0); entityPropertiesIndex < entityPropertiesSize; entityPropertiesIndex++ {
+        var entityPropertiesKey EntityType
+        entityPropertiesKey = ReadEntityType(reader)
+        var entityPropertiesValue EntityProperties
+        entityPropertiesValue = ReadEntityProperties(reader)
+        entityProperties[entityPropertiesKey] = entityPropertiesValue
     }
-    result.MaxTickCount = ReadInt32(reader)
-    result.MaxPathfindNodes = ReadInt32(reader)
-    result.CurrentTick = ReadInt32(reader)
-    result.Players = make([]Player, ReadInt32(reader))
-    for i := range result.Players {
-        result.Players[i] = ReadPlayer(reader)
+    var maxTickCount int32
+    maxTickCount = ReadInt32(reader)
+    var maxPathfindNodes int32
+    maxPathfindNodes = ReadInt32(reader)
+    var currentTick int32
+    currentTick = ReadInt32(reader)
+    var players []Player
+    players = make([]Player, ReadInt32(reader))
+    for playersIndex := range players {
+        var playersElement Player
+        playersElement = ReadPlayer(reader)
+        players[playersIndex] = playersElement
     }
-    result.Entities = make([]Entity, ReadInt32(reader))
-    for i := range result.Entities {
-        result.Entities[i] = ReadEntity(reader)
+    var entities []Entity
+    entities = make([]Entity, ReadInt32(reader))
+    for entitiesIndex := range entities {
+        var entitiesElement Entity
+        entitiesElement = ReadEntity(reader)
+        entities[entitiesIndex] = entitiesElement
     }
-    return result
+    return PlayerView {
+        MyId: myId,
+        MapSize: mapSize,
+        FogOfWar: fogOfWar,
+        EntityProperties: entityProperties,
+        MaxTickCount: maxTickCount,
+        MaxPathfindNodes: maxPathfindNodes,
+        CurrentTick: currentTick,
+        Players: players,
+        Entities: entities,
+    }
 }
-func (value PlayerView) Write(writer io.Writer) {
-    WriteInt32(writer, value.MyId)
-    WriteInt32(writer, value.MapSize)
-    WriteBool(writer, value.FogOfWar)
-    WriteInt32(writer, int32(len(value.EntityProperties)))
-    for EntityPropertiesKey, EntityPropertiesValue := range value.EntityProperties {
-        WriteInt32(writer, int32(EntityPropertiesKey))
-        EntityPropertiesValue.Write(writer)
+
+func (playerView PlayerView) Write(writer io.Writer) {
+    myId := playerView.MyId
+    WriteInt32(writer, myId)
+    mapSize := playerView.MapSize
+    WriteInt32(writer, mapSize)
+    fogOfWar := playerView.FogOfWar
+    WriteBool(writer, fogOfWar)
+    entityProperties := playerView.EntityProperties
+    WriteInt32(writer, int32(len(entityProperties)))
+    for entityPropertiesKey, entityPropertiesValue := range entityProperties {
+        WriteInt32(writer, int32(entityPropertiesKey))
+        entityPropertiesValue.Write(writer)
     }
-    WriteInt32(writer, value.MaxTickCount)
-    WriteInt32(writer, value.MaxPathfindNodes)
-    WriteInt32(writer, value.CurrentTick)
-    WriteInt32(writer, int32(len(value.Players)))
-    for _, PlayersElement := range value.Players {
-        PlayersElement.Write(writer)
+    maxTickCount := playerView.MaxTickCount
+    WriteInt32(writer, maxTickCount)
+    maxPathfindNodes := playerView.MaxPathfindNodes
+    WriteInt32(writer, maxPathfindNodes)
+    currentTick := playerView.CurrentTick
+    WriteInt32(writer, currentTick)
+    players := playerView.Players
+    WriteInt32(writer, int32(len(players)))
+    for _, playersElement := range players {
+        playersElement.Write(writer)
     }
-    WriteInt32(writer, int32(len(value.Entities)))
-    for _, EntitiesElement := range value.Entities {
-        EntitiesElement.Write(writer)
+    entities := playerView.Entities
+    WriteInt32(writer, int32(len(entities)))
+    for _, entitiesElement := range entities {
+        entitiesElement.Write(writer)
     }
 }

@@ -7,36 +7,48 @@ type BuildProperties struct {
     Options []EntityType
     InitHealth *int32
 }
+
 func NewBuildProperties(options []EntityType, initHealth *int32) BuildProperties {
     return BuildProperties {
         Options: options,
         InitHealth: initHealth,
     }
 }
+
 func ReadBuildProperties(reader io.Reader) BuildProperties {
-    result := BuildProperties {}
-    result.Options = make([]EntityType, ReadInt32(reader))
-    for i := range result.Options {
-        result.Options[i] = ReadEntityType(reader)
+    var options []EntityType
+    options = make([]EntityType, ReadInt32(reader))
+    for optionsIndex := range options {
+        var optionsElement EntityType
+        optionsElement = ReadEntityType(reader)
+        options[optionsIndex] = optionsElement
     }
+    var initHealth *int32
     if ReadBool(reader) {
-        var InitHealthValue int32
-        InitHealthValue = ReadInt32(reader)
-        result.InitHealth = &InitHealthValue
+        var initHealthValue int32
+        initHealthValue = ReadInt32(reader)
+        initHealth = &initHealthValue
     } else {
-        result.InitHealth = nil
+        initHealth = nil
     }
-    return result
+    return BuildProperties {
+        Options: options,
+        InitHealth: initHealth,
+    }
 }
-func (value BuildProperties) Write(writer io.Writer) {
-    WriteInt32(writer, int32(len(value.Options)))
-    for _, OptionsElement := range value.Options {
-        WriteInt32(writer, int32(OptionsElement))
+
+func (buildProperties BuildProperties) Write(writer io.Writer) {
+    options := buildProperties.Options
+    WriteInt32(writer, int32(len(options)))
+    for _, optionsElement := range options {
+        WriteInt32(writer, int32(optionsElement))
     }
-    if value.InitHealth == nil {
+    initHealth := buildProperties.InitHealth
+    if initHealth == nil {
         WriteBool(writer, false)
     } else {
         WriteBool(writer, true)
-        WriteInt32(writer, (*value.InitHealth))
+        initHealthValue := *initHealth
+        WriteInt32(writer, initHealthValue)
     }
 }

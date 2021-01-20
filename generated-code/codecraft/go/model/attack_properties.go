@@ -8,6 +8,7 @@ type AttackProperties struct {
     Damage int32
     CollectResource bool
 }
+
 func NewAttackProperties(attackRange int32, damage int32, collectResource bool) AttackProperties {
     return AttackProperties {
         AttackRange: attackRange,
@@ -15,15 +16,26 @@ func NewAttackProperties(attackRange int32, damage int32, collectResource bool) 
         CollectResource: collectResource,
     }
 }
+
 func ReadAttackProperties(reader io.Reader) AttackProperties {
-    result := AttackProperties {}
-    result.AttackRange = ReadInt32(reader)
-    result.Damage = ReadInt32(reader)
-    result.CollectResource = ReadBool(reader)
-    return result
+    var attackRange int32
+    attackRange = ReadInt32(reader)
+    var damage int32
+    damage = ReadInt32(reader)
+    var collectResource bool
+    collectResource = ReadBool(reader)
+    return AttackProperties {
+        AttackRange: attackRange,
+        Damage: damage,
+        CollectResource: collectResource,
+    }
 }
-func (value AttackProperties) Write(writer io.Writer) {
-    WriteInt32(writer, value.AttackRange)
-    WriteInt32(writer, value.Damage)
-    WriteBool(writer, value.CollectResource)
+
+func (attackProperties AttackProperties) Write(writer io.Writer) {
+    attackRange := attackProperties.AttackRange
+    WriteInt32(writer, attackRange)
+    damage := attackProperties.Damage
+    WriteInt32(writer, damage)
+    collectResource := attackProperties.CollectResource
+    WriteBool(writer, collectResource)
 }

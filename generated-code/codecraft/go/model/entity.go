@@ -11,6 +11,7 @@ type Entity struct {
     Health int32
     Active bool
 }
+
 func NewEntity(id int32, playerId *int32, entityType EntityType, position Vec2Int32, health int32, active bool) Entity {
     return Entity {
         Id: id,
@@ -21,32 +22,53 @@ func NewEntity(id int32, playerId *int32, entityType EntityType, position Vec2In
         Active: active,
     }
 }
+
 func ReadEntity(reader io.Reader) Entity {
-    result := Entity {}
-    result.Id = ReadInt32(reader)
+    var id int32
+    id = ReadInt32(reader)
+    var playerId *int32
     if ReadBool(reader) {
-        var PlayerIdValue int32
-        PlayerIdValue = ReadInt32(reader)
-        result.PlayerId = &PlayerIdValue
+        var playerIdValue int32
+        playerIdValue = ReadInt32(reader)
+        playerId = &playerIdValue
     } else {
-        result.PlayerId = nil
+        playerId = nil
     }
-    result.EntityType = ReadEntityType(reader)
-    result.Position = ReadVec2Int32(reader)
-    result.Health = ReadInt32(reader)
-    result.Active = ReadBool(reader)
-    return result
+    var entityType EntityType
+    entityType = ReadEntityType(reader)
+    var position Vec2Int32
+    position = ReadVec2Int32(reader)
+    var health int32
+    health = ReadInt32(reader)
+    var active bool
+    active = ReadBool(reader)
+    return Entity {
+        Id: id,
+        PlayerId: playerId,
+        EntityType: entityType,
+        Position: position,
+        Health: health,
+        Active: active,
+    }
 }
-func (value Entity) Write(writer io.Writer) {
-    WriteInt32(writer, value.Id)
-    if value.PlayerId == nil {
+
+func (entity Entity) Write(writer io.Writer) {
+    id := entity.Id
+    WriteInt32(writer, id)
+    playerId := entity.PlayerId
+    if playerId == nil {
         WriteBool(writer, false)
     } else {
         WriteBool(writer, true)
-        WriteInt32(writer, (*value.PlayerId))
+        playerIdValue := *playerId
+        WriteInt32(writer, playerIdValue)
     }
-    WriteInt32(writer, int32(value.EntityType))
-    value.Position.Write(writer)
-    WriteInt32(writer, value.Health)
-    WriteBool(writer, value.Active)
+    entityType := entity.EntityType
+    WriteInt32(writer, int32(entityType))
+    position := entity.Position
+    position.Write(writer)
+    health := entity.Health
+    WriteInt32(writer, health)
+    active := entity.Active
+    WriteBool(writer, active)
 }

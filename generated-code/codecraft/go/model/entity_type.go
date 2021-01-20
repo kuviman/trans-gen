@@ -4,6 +4,7 @@ import "io"
 import . "trans_gen_test/stream"
 
 type EntityType int32
+
 const (
     EntityTypeWall EntityType = 0
     EntityTypeHouse EntityType = 1
@@ -16,6 +17,7 @@ const (
     EntityTypeResource EntityType = 8
     EntityTypeTurret EntityType = 9
 )
+
 func ReadEntityType(reader io.Reader) EntityType {
     switch ReadInt32(reader) {
     case 0:

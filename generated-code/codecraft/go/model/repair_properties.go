@@ -7,25 +7,36 @@ type RepairProperties struct {
     ValidTargets []EntityType
     Power int32
 }
+
 func NewRepairProperties(validTargets []EntityType, power int32) RepairProperties {
     return RepairProperties {
         ValidTargets: validTargets,
         Power: power,
     }
 }
+
 func ReadRepairProperties(reader io.Reader) RepairProperties {
-    result := RepairProperties {}
-    result.ValidTargets = make([]EntityType, ReadInt32(reader))
-    for i := range result.ValidTargets {
-        result.ValidTargets[i] = ReadEntityType(reader)
+    var validTargets []EntityType
+    validTargets = make([]EntityType, ReadInt32(reader))
+    for validTargetsIndex := range validTargets {
+        var validTargetsElement EntityType
+        validTargetsElement = ReadEntityType(reader)
+        validTargets[validTargetsIndex] = validTargetsElement
     }
-    result.Power = ReadInt32(reader)
-    return result
+    var power int32
+    power = ReadInt32(reader)
+    return RepairProperties {
+        ValidTargets: validTargets,
+        Power: power,
+    }
 }
-func (value RepairProperties) Write(writer io.Writer) {
-    WriteInt32(writer, int32(len(value.ValidTargets)))
-    for _, ValidTargetsElement := range value.ValidTargets {
-        WriteInt32(writer, int32(ValidTargetsElement))
+
+func (repairProperties RepairProperties) Write(writer io.Writer) {
+    validTargets := repairProperties.ValidTargets
+    WriteInt32(writer, int32(len(validTargets)))
+    for _, validTargetsElement := range validTargets {
+        WriteInt32(writer, int32(validTargetsElement))
     }
-    WriteInt32(writer, value.Power)
+    power := repairProperties.Power
+    WriteInt32(writer, power)
 }

@@ -11,6 +11,7 @@ type Structure struct {
     FloatNumber float32
     DoubleNumber float64
 }
+
 func NewStructure(oneOfOne OneOf, oneOfTwo OneOf, hashMap map[Enumeration]int32, text string, floatNumber float32, doubleNumber float64) Structure {
     return Structure {
         OneOfOne: oneOfOne,
@@ -21,33 +22,53 @@ func NewStructure(oneOfOne OneOf, oneOfTwo OneOf, hashMap map[Enumeration]int32,
         DoubleNumber: doubleNumber,
     }
 }
+
 func ReadStructure(reader io.Reader) Structure {
-    result := Structure {}
-    result.OneOfOne = ReadOneOf(reader)
-    result.OneOfTwo = ReadOneOf(reader)
-    HashMapSize := ReadInt32(reader)
-    result.HashMap = make(map[Enumeration]int32)
-    for i := int32(0); i < HashMapSize; i++ {
-        var HashMapKey Enumeration
-        HashMapKey = ReadEnumeration(reader)
-        var HashMapValue int32
-        HashMapValue = ReadInt32(reader)
-        result.HashMap[HashMapKey] = HashMapValue
+    var oneOfOne OneOf
+    oneOfOne = ReadOneOf(reader)
+    var oneOfTwo OneOf
+    oneOfTwo = ReadOneOf(reader)
+    var hashMap map[Enumeration]int32
+    hashMapSize := ReadInt32(reader)
+    hashMap = make(map[Enumeration]int32)
+    for hashMapIndex := int32(0); hashMapIndex < hashMapSize; hashMapIndex++ {
+        var hashMapKey Enumeration
+        hashMapKey = ReadEnumeration(reader)
+        var hashMapValue int32
+        hashMapValue = ReadInt32(reader)
+        hashMap[hashMapKey] = hashMapValue
     }
-    result.Text = ReadString(reader)
-    result.FloatNumber = ReadFloat32(reader)
-    result.DoubleNumber = ReadFloat64(reader)
-    return result
+    var text string
+    text = ReadString(reader)
+    var floatNumber float32
+    floatNumber = ReadFloat32(reader)
+    var doubleNumber float64
+    doubleNumber = ReadFloat64(reader)
+    return Structure {
+        OneOfOne: oneOfOne,
+        OneOfTwo: oneOfTwo,
+        HashMap: hashMap,
+        Text: text,
+        FloatNumber: floatNumber,
+        DoubleNumber: doubleNumber,
+    }
 }
-func (value Structure) Write(writer io.Writer) {
-    value.OneOfOne.Write(writer)
-    value.OneOfTwo.Write(writer)
-    WriteInt32(writer, int32(len(value.HashMap)))
-    for HashMapKey, HashMapValue := range value.HashMap {
-        WriteInt32(writer, int32(HashMapKey))
-        WriteInt32(writer, HashMapValue)
+
+func (structure Structure) Write(writer io.Writer) {
+    oneOfOne := structure.OneOfOne
+    oneOfOne.Write(writer)
+    oneOfTwo := structure.OneOfTwo
+    oneOfTwo.Write(writer)
+    hashMap := structure.HashMap
+    WriteInt32(writer, int32(len(hashMap)))
+    for hashMapKey, hashMapValue := range hashMap {
+        WriteInt32(writer, int32(hashMapKey))
+        WriteInt32(writer, hashMapValue)
     }
-    WriteString(writer, value.Text)
-    WriteFloat32(writer, value.FloatNumber)
-    WriteFloat64(writer, value.DoubleNumber)
+    text := structure.Text
+    WriteString(writer, text)
+    floatNumber := structure.FloatNumber
+    WriteFloat32(writer, floatNumber)
+    doubleNumber := structure.DoubleNumber
+    WriteFloat64(writer, doubleNumber)
 }
