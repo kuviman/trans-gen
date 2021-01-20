@@ -1,0 +1,55 @@
+- match schema {
+- Schema::Bool => {
+StreamUtil.writeBoolean(stream, {{ var }})
+- }
+- Schema::Int32 => {
+StreamUtil.writeInt(stream, {{ var }})
+- }
+- Schema::Int64 => {
+StreamUtil.writeLong(stream, {{ var }})
+- }
+- Schema::Float32 => {
+StreamUtil.writeFloat(stream, {{ var }})
+- }
+- Schema::Float64 => {
+StreamUtil.writeDouble(stream, {{ var }})
+- }
+- Schema::String => {
+StreamUtil.writeString(stream, {{ var }})
+- }
+- Schema::Struct(_) | Schema::OneOf { .. } => {
+{{ var }}.writeTo(stream)
+- }
+- Schema::Option(inner) => {
+- let value_var = format!("{}Value", var); let value_var = &value_var;
+val {{ value_var }} = {{ var }}
+if ({{ value_var }} == null) {
+    StreamUtil.writeBoolean(stream, false)
+} else {
+    StreamUtil.writeBoolean(stream, true)
+    {{ write_var(value_var, inner) }}
+}
+- }
+- Schema::Vec(inner) => {
+StreamUtil.writeInt(stream, {{ var }}.size)
+- let element_var = format!("{}Element", var); let element_var = &element_var;
+for ({{ element_var }} in {{ var }}) {
+    {{ write_var(element_var, inner) }}
+}
+- }
+- Schema::Map(key_type, value_type) => {
+StreamUtil.writeInt(stream, {{ var }}.size)
+- let entry_var = format!("{}Entry", var); let entry_var = &entry_var;
+for ({{ entry_var }} in {{ var }}) {
+    - let key_var = format!("{}Key", var); let key_var = &key_var;
+    val {{ key_var }} = {{ entry_var }}.key
+    {{ write_var(key_var, key_type) }}
+    - let value_var = format!("{}Value", var); let value_var = &value_var;
+    val {{ value_var }} = {{ entry_var }}.value
+    {{ write_var(value_var, value_type) }}
+}
+- }
+- Schema::Enum { .. } => {
+StreamUtil.writeInt(stream, {{ var }}.tag)
+- }
+- }

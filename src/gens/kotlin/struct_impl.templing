@@ -1,0 +1,58 @@
+- if let Some((base_name, _)) = base {
+class {{ struc.name.camel_case(conv) }} : {{ base_name.camel_case(conv) }} {
+- } else {
+class {{ struc.name.camel_case(conv) }} {
+- }
+    - for field in &struc.fields {
+    - if lateinit(&field.schema) {
+    lateinit var {{ field.name.mixed_case(conv) }}: {{ type_name(&field.schema) }}
+    - } else {
+    var {{ field.name.mixed_case(conv) }}: {{ type_name(&field.schema) }} = {{ default_value(&field.schema) }}
+    - }
+    - }
+
+    constructor(~
+        - for (index, field) in struc.fields.iter().enumerate() {
+            - if index != 0 {
+            ~, ~
+            - }
+            ~{{ field.name.mixed_case(conv) }}: {{ type_name(&field.schema) }}~
+        - }
+    ~) {
+        - for field in &struc.fields {
+        this.{{ field.name.mixed_case(conv) }} = {{ field.name.mixed_case(conv) }}
+        - }
+    }
+
+    @Throws(java.io.IOException::class)
+    {{# if base.is_some() { }}override {{# } }}fun writeTo(stream: java.io.OutputStream) {
+        - if base.is_some() {
+        StreamUtil.writeInt(stream, TAG)
+        - }
+        - for field in &struc.fields {
+        {{ write_var(&field.name.mixed_case(conv), &field.schema) }}
+        - }
+    }
+
+    companion object {
+        - if let Some((_, tag)) = base {
+        val TAG = {{ tag }}
+
+        - }
+        @Throws(java.io.IOException::class)
+        fun readFrom(stream: java.io.InputStream): {{ struc.name.camel_case(conv) }} {
+            - for field in &struc.fields {
+            var {{ field.name.mixed_case(conv) }}: {{ type_name(&field.schema) }}
+            {{ read_var(&field.name.mixed_case(conv), &field.schema) }}
+            - }
+            return {{ struc.name.camel_case(conv) }}(~
+                - for (index, field) in struc.fields.iter().enumerate() {
+                    - if index != 0 {
+                    ~, ~
+                    - }
+                    ~{{ field.name.mixed_case(conv) }}~
+                - }
+            ~)
+        }
+    }
+}

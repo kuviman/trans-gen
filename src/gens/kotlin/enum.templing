@@ -1,0 +1,9 @@
+package model
+
+import util.StreamUtil
+
+enum class {{ base_name.camel_case(conv) }} private constructor(var tag: Int) {
+    - for (index, variant) in variants.iter().enumerate() {
+    {{ variant.name.shouty_snake_case(conv) }}({{ index }}){{# if index + 1 < variants.len() { }},{{# } }}
+    - }
+}
