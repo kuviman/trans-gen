@@ -37,19 +37,6 @@ fn type_name(schema: &Schema) -> String {
     }
 }
 
-fn index_var_name(index_var: &mut usize) -> String {
-    let result = "ijk".chars().nth(*index_var).unwrap();
-    *index_var += 1;
-    result.to_string()
-}
-
-fn var_name(name: &str) -> &str {
-    match name.rfind('.') {
-        Some(index) => &name[(index + 1)..],
-        None => name,
-    }
-}
-
 fn includes(schema: &Schema) -> String {
     let mut includes = BTreeSet::new();
     includes.insert("<string>".to_owned());
