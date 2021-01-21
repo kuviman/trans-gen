@@ -1,10 +1,10 @@
 {
   "name": "{{ project_name }}",
   "version": "{{ project_version }}",
-  "main": "index.js",
+  "main": "main.js",
   "scripts": {
     "build": "rimraf ./build && tsc",
-    "start": "npm run build && node build/index.js"
+    "start": "npm run build && node build/main.js"
   },
   "devDependencies": {
     "@types/node": "^14.14.20",
