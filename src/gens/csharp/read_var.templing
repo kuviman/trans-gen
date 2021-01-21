@@ -54,15 +54,6 @@ for (int {{ index_var }} = 0; {{ index_var }} < {{ size_var }}; {{ index_var }}+
 }
 - }
 - Schema::Enum { base_name, variants, .. } => {
-switch (reader.ReadInt32())
-{
-    - for (tag, variant) in variants.iter().enumerate() {
-    case {{ tag }}:
-        {{ var }} = Model.{{ base_name.camel_case(conv) }}.{{ variant.name.camel_case(conv) }};
-        break;
-    - }
-    default:
-        throw new System.Exception("Unexpected tag value");
-}
+{{ var }} = {{ base_name.camel_case(conv) }}Helper.ReadFrom(reader);
 - }
 - }
