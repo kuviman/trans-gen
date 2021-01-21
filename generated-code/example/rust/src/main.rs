@@ -13,7 +13,7 @@ fn main() -> anyhow::Result<()> {
         .next()
         .context("Provide output file path as second arg")?;
 
-    let input: model::Structure = trans::Trans::read_from(&mut std::io::BufReader::new(
+    let input: model::Example = trans::Trans::read_from(&mut std::io::BufReader::new(
         std::fs::File::open(&input_file).context("Failed to open input file")?,
     ))
     .context("Failed to read input")?;

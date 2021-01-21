@@ -29,7 +29,7 @@ output_file = ARGV[1]
 input = nil
 open(input_file, "rb") { |file|
     stream = StreamWrapper.new(FileWrapper.new(file))
-    input = Structure.read_from(stream)
+    input = Example.read_from(stream)
 }
 
 open(output_file, "wb") { |file|

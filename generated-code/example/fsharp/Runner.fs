@@ -14,7 +14,7 @@ module Runner =
 
         use inputStream = new FileStream(inputFile, FileMode.Open)
         use reader = new BinaryReader(inputStream)
-        let input = Model.Structure.readFrom(reader)
+        let input = Model.Example.readFrom(reader)
 
         use outputStream = new FileStream(outputFile, FileMode.Create)
         use writer = new BinaryWriter(outputStream)

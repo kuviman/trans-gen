@@ -27,13 +27,24 @@ Variants:
 
 ## `Structure`
 
-Example model
+Example structure
 
 Fields:
 
-* `one_of_one`: `OneOf` &mdash; First oneof
-* `one_of_two`: `OneOf` &mdash; Second oneof
-* `hash_map`: `Map<Enumeration -> int32>` &mdash; Dictionary
 * `text`: `string` &mdash; Text
 * `float_number`: `float32` &mdash; 32-bit float
 * `double_number`: `float64` &mdash; 64-bit float
+
+## `Example`
+
+Example
+
+Fields:
+
+* `one_of`: `OneOf` &mdash; OneOf
+* `hash_map`: `Map<Enumeration -> int32>` &mdash; Dictionary
+* `optional_int`: `Option<int32>` &mdash; Optional int
+* `optional_bool`: `Option<boolean>` &mdash; Optional boolean
+* `optional_one_of`: `Option<OneOf>` &mdash; Optional OneOf
+* `optional_struct`: `Option<Structure>` &mdash; Optional struct
+* `optional_enum`: `Option<Enumeration>` &mdash; Optional enum

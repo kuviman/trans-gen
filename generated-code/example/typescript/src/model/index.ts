@@ -4,3 +4,5 @@ import { Enumeration } from './enumeration';
 export { Enumeration };
 import { Structure } from './structure';
 export { Structure };
+import { Example } from './example';
+export { Example };

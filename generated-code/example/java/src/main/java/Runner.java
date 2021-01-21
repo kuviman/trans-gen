@@ -11,7 +11,7 @@ public class Runner {
         String outputFile = args[1];
 
         InputStream inputStream = new BufferedInputStream(new FileInputStream(inputFile));
-        model.Structure input = model.Structure.readFrom(inputStream);
+        model.Example input = model.Example.readFrom(inputStream);
 
         OutputStream outputStream = new BufferedOutputStream(new FileOutputStream(outputFile));
         input.writeTo(outputStream);

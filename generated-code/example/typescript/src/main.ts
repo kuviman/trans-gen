@@ -31,7 +31,7 @@ async function run() {
     const inputFile = process.argv[2];
     const outputFile = process.argv[3];
 
-    const input = await model.Structure.readFrom(new StreamWrapper(new FileWrapper(inputFile, 'r')));
+    const input = await model.Example.readFrom(new StreamWrapper(new FileWrapper(inputFile, 'r')));
     const outputStream = new StreamWrapper(new FileWrapper(outputFile, 'w'));
     input.writeTo(outputStream);
     outputStream.flush();

@@ -8,7 +8,7 @@ fun main(args: Array<String>) {
     val outputFile = args[1]
 
     val inputStream: InputStream = BufferedInputStream(FileInputStream(inputFile))
-    val input: model.Structure = model.Structure.readFrom(inputStream)
+    val input: model.Example = model.Example.readFrom(inputStream)
 
     val outputStream: OutputStream = BufferedOutputStream(FileOutputStream(outputFile))
     input.writeTo(outputStream)

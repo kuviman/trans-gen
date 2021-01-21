@@ -14,12 +14,12 @@ namespace TransGenTest
             string inputFile = args[0];
             string outputFile = args[1]; 
 
-            Model.Structure input;
+            Model.Example input;
             using (var stream = new FileStream(inputFile, FileMode.Open))
             {
                 using (var reader = new BinaryReader(stream))
                 {
-                    input = Model.Structure.ReadFrom(reader);
+                    input = Model.Example.ReadFrom(reader);
                 }
             }
             using (var stream = new FileStream(outputFile, FileMode.Create))

@@ -10,6 +10,7 @@
         <Compile Include="Model/OneOf.fs" />
         <Compile Include="Model/Enumeration.fs" />
         <Compile Include="Model/Structure.fs" />
+        <Compile Include="Model/Example.fs" />
         <Compile Include="Runner.fs" />
     </ItemGroup>
 

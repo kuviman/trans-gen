@@ -40,6 +40,6 @@ void main(string[] args)
     string inputFile = args[1];
     string outputFile = args[2];
 
-    Structure input = Structure.readFrom(new FileStream(File(inputFile, "rb")));
+    Example input = Example.readFrom(new FileStream(File(inputFile, "rb")));
     input.writeTo(new FileStream(File(outputFile, "wb")));
 }

@@ -4,5 +4,6 @@
 #include "OneOf.hpp"
 #include "Enumeration.hpp"
 #include "Structure.hpp"
+#include "Example.hpp"
 
 #endif

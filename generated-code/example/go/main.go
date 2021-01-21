@@ -18,7 +18,7 @@ func main() {
 		panic(err)
 	}
 	reader := bufio.NewReader(inputFile)
-	input := ReadStructure(reader)
+	input := ReadExample(reader)
 
 	outputFile, err := os.Create(outputFilePath)
 	if err != nil {

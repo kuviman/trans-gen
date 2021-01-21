@@ -9,7 +9,7 @@ object Runner extends App {
     val outputFile = args(1)
 
     val inputStream: InputStream = new BufferedInputStream(new FileInputStream(inputFile))
-    val input: model.Structure = model.Structure.readFrom(inputStream)
+    val input: model.Example = model.Example.readFrom(inputStream)
 
     val outputStream: OutputStream = new BufferedOutputStream(new FileOutputStream(outputFile))
     input.writeTo(outputStream)
