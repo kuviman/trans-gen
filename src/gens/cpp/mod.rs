@@ -68,13 +68,13 @@ fn collect_includes(result: &mut BTreeSet<String>, schema: &Schema, current: boo
             | Schema::Float64
             | Schema::String => {}
             Schema::Option(_) => {
-                result.insert("<memory>".to_string());
+                result.insert("<memory>".to_owned());
             }
             Schema::Map(_, _) => {
-                result.insert("<unordered_map>".to_string());
+                result.insert("<unordered_map>".to_owned());
             }
             Schema::Vec(_) => {
-                result.insert("<vector>".to_string());
+                result.insert("<vector>".to_owned());
             }
             Schema::Struct(Struct { name, .. })
             | Schema::OneOf {
@@ -83,7 +83,7 @@ fn collect_includes(result: &mut BTreeSet<String>, schema: &Schema, current: boo
             | Schema::Enum {
                 base_name: name, ..
             } => {
-                result.insert("<stdexcept>".to_string());
+                result.insert("<stdexcept>".to_owned());
                 result.insert(format!("\"{}.hpp\"", name.camel_case(conv)));
             }
         }
@@ -112,6 +112,7 @@ fn collect_includes(result: &mut BTreeSet<String>, schema: &Schema, current: boo
             }
         }
         Schema::OneOf { variants, .. } => {
+            result.insert("<memory>".to_owned());
             for variant in variants {
                 for field in &variant.fields {
                     collect_includes(result, &field.schema, true);

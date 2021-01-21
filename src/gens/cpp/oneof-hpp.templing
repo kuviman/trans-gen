@@ -1,7 +1,6 @@
 #ifndef __MODEL_{{ base_name.shouty_snake_case(conv) }}_HPP__
 #define __MODEL_{{ base_name.shouty_snake_case(conv) }}_HPP__
 
-#include <memory>
 {{ includes(schema) }}
 
 class {{ base_name.camel_case(conv) }} {
