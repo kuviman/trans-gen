@@ -53,14 +53,6 @@ for (int {{ index_var }} = 0; {{ index_var }} < {{ size_var }}; {{ index_var }}+
 }
 - }
 - Schema::Enum { base_name, variants, .. } => {
-switch (reader.readInt()) {
-    - for (tag, variant) in variants.iter().enumerate() {
-    case {{ tag }}:
-        {{ var }} = {{ base_name.camel_case(conv) }}.{{ variant.name.camel_case(conv) }};
-        break;
-    - }
-    default:
-        throw new Exception("Unexpected tag value");
-}
+{{ var }} = read{{ base_name.camel_case(conv) }}(reader);
 - }
 - }

@@ -1,5 +1,18 @@
+import stream;
+
 enum {{ base_name.camel_case(conv) }} : int {
     - for (tag, variant) in variants.iter().enumerate() {
     {{ variant.name.camel_case(conv) }} = {{ tag }},
     - }
+}
+
+{{ base_name.camel_case(conv) }} read{{ base_name.camel_case(conv) }}(Stream reader) {
+    switch (reader.readInt()) {
+        - for (tag, variant) in variants.iter().enumerate() {
+        case {{ base_name.camel_case(conv) }}.{{ variant.name.camel_case(conv) }}:
+            return {{ base_name.camel_case(conv) }}.{{ variant.name.camel_case(conv) }};
+        - }
+        default:
+            throw new Exception("Unexpected tag value");
+    }
 }
