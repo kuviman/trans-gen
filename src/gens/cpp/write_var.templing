@@ -16,12 +16,12 @@ stream.Write({{ data_var }});
 - }
 - Schema::Option(inner) => {
 if ({{ var }}) {
-    stream.write(false);
-} else {
     stream.write(true);
     - let value_var = format!("{}Value", var); let value_var = &value_var;
     const {{ type_name(inner) }}& {{ value_var }} = *{{ var }};
     {{ write_var(value_var, inner) }}
+} else {
+    stream.write(false);
 }
 - }
 - Schema::Vec(inner) => {
