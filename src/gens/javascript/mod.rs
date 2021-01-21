@@ -20,6 +20,9 @@ fn imports(schema: &Schema) -> String {
                 Schema::Struct(Struct { name, .. })
                 | Schema::OneOf {
                     base_name: name, ..
+                }
+                | Schema::Enum {
+                    base_name: name, ..
                 } => {
                     imports.insert(name.clone());
                 }
@@ -33,7 +36,6 @@ fn imports(schema: &Schema) -> String {
                     add_imports(key_type, imports);
                     add_imports(value_type, imports);
                 }
-                Schema::Enum { .. } => {}
                 Schema::Bool
                 | Schema::Int32
                 | Schema::Int64

@@ -17,7 +17,7 @@
 - Schema::String => {
 {{ var }} = await stream.readString();
 - }
-- Schema::Struct(Struct { name, .. }) | Schema::OneOf { base_name: name, .. } => {
+- Schema::Struct(Struct { name, .. }) | Schema::OneOf { base_name: name, .. } | Schema::Enum { base_name: name, .. }=> {
 {{ var }} = await {{ name.camel_case(conv) }}.readFrom(stream);
 - }
 - Schema::Option(inner) => {
@@ -49,8 +49,5 @@ for (let {{ count_var }} = await stream.readInt(); {{ count_var }} > 0; {{ count
     {{ read_var(value_var, value_type) }}
     {{ var }}.set({{ key_var }}, {{ value_var }})
 }
-- }
-- Schema::Enum { .. } => {
-{{ var }} = await stream.readInt();
 - }
 - }

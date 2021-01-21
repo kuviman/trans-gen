@@ -1,5 +1,12 @@
 module.exports = {
     - for (index, variant) in variants.iter().enumerate() {
-    {{ variant.name.camel_case(conv) }}: {{index}}{{#if index + 1 < variants.len() { }},{{# } }}
+    {{ variant.name.camel_case(conv) }}: {{index}},
     - }
+    readFrom: async function(stream) {
+        const result = stream.readInt();
+        if (result < 0 || result >= {{ variants.len() }}) {
+            throw new Error("Unexpected tag value");
+        }
+        return result;
+    }
 };
