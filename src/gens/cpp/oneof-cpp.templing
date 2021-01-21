@@ -1,0 +1,19 @@
+#include "{{ base_name.camel_case(conv) }}.hpp"
+#include <stdexcept>
+- for (tag, variant) in variants.iter().enumerate() {
+
+{{ struct_impl(variant, Some((base_name, tag))) }}
+- }
+
+std::shared_ptr<{{ base_name.camel_case(conv) }}> {{ base_name.camel_case(conv) }}::readFrom(InputStream& stream) {
+    switch (stream.readInt()) {
+    - for (tag, variant) in variants.iter().enumerate() {
+    - let variant_name = format!("{}::{}", base_name.camel_case(conv), variant.name.camel_case(conv));
+    - let variant_name = &variant_name;
+    case {{ tag }}:
+        return std::shared_ptr<{{ variant_name }}>(new {{ variant_name }}({{ variant_name }}::readFrom(stream)));
+    - }
+    default:
+        throw std::runtime_error("Unexpected tag value");
+    }
+}

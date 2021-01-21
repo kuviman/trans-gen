@@ -1,0 +1,49 @@
+- match schema {
+- Schema::Bool | Schema::Int32 | Schema::Int64 | Schema::Float32 | Schema::Float64 | Schema::String => {
+stream.write({{ var }});
+- }
+- Schema::String => {
+- let data_var = format!("{}Data", var); let data_var = &data_var;
+var {{ data_var }} = System.Text.Encoding.UTF8.GetBytes({{ var }});
+stream.Write({{ data_var }}.Length);
+stream.Write({{ data_var }});
+- }
+- Schema::Struct(_) => {
+{{ var }}.writeTo(stream);
+- }
+- Schema::OneOf { .. } => {
+{{ var }}->writeTo(stream);
+- }
+- Schema::Option(inner) => {
+if ({{ var }}) {
+    stream.write(false);
+} else {
+    stream.write(true);
+    - let value_var = format!("{}Value", var); let value_var = &value_var;
+    const {{ type_name(inner) }}& {{ value_var }} = *{{ var }};
+    {{ write_var(value_var, inner) }}
+}
+- }
+- Schema::Vec(inner) => {
+stream.write((int)({{ var }}.size()));
+- let element_var = format!("{}Element", var); let element_var = &element_var;
+for (const {{ type_name(inner) }}& {{ element_var }} : {{ var }}) {
+    {{ write_var(element_var, inner) }}
+}
+- }
+- Schema::Map(key_type, value_type) => {
+stream.write((int)({{ var }}.size()));
+- let entry_var = format!("{}Entry", var); let entry_var = &entry_var;
+for (const auto& {{ entry_var }} : {{ var }}) {
+    - let key_var = format!("{}Key", var); let key_var = &key_var;
+    - let value_var = format!("{}Value", var); let value_var = &value_var;
+    const {{ type_name(key_type) }}& {{ key_var }} = {{ entry_var }}.first;
+    const {{ type_name(value_type) }}& {{ value_var }} = {{ entry_var }}.second;
+    {{ write_var(key_var, key_type) }}
+    {{ write_var(value_var, value_type) }}
+}
+- }
+- Schema::Enum { .. } => {
+stream.write((int)({{ var }}));
+- }
+- }

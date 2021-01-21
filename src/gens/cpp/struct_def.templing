@@ -1,0 +1,54 @@
+- let full_name = if let Some((base_name, _)) = base {
+-     format!(
+-         "{}::{}",
+-         base_name.camel_case(conv),
+-         struc.name.camel_case(conv),
+-     )
+- } else {
+-     struc.name.camel_case(conv)
+- };
+- let full_name = &full_name;
+class {{ full_name }}~
+- if let Some((base_name, _)) = base {
+~ : public {{ base_name.camel_case(conv) }}~
+- }
+~ {
+public:
+    - if let Some((_, tag)) = base {
+    static const int TAG = {{ tag }};
+
+    - }
+    - for field in &struc.fields {
+    {{ type_name(&field.schema) }} {{ field.name.mixed_case(conv) }};
+    - }
+
+    - if !struc.fields.is_empty() {
+    {{ struc.name.camel_case(conv) }}();
+
+    - }
+    {{ struc.name.camel_case(conv) }}(~
+        - for (index, field) in struc.fields.iter().enumerate() {
+        - if index != 0 {
+        ~, ~
+        - }
+        ~{{ type_name(&field.schema) }} {{ field.name.mixed_case(conv) }}~
+        - }
+    ~);
+
+    static {{ struc.name.camel_case(conv) }} readFrom(InputStream& stream);
+
+    void writeTo(OutputStream& stream) const;
+    - if struc.hashable() {
+
+    bool operator ==(const {{ struc.name.camel_case(conv) }}& other) const;
+    - }
+};
+- if struc.hashable() {
+
+namespace std {
+    template<>
+    struct hash<{{ full_name }}> {
+        size_t operator ()(const {{ full_name }}& value) const;
+    };
+}
+- }

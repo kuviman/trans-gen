@@ -1,0 +1,3 @@
+#include "{{ struc.name.camel_case(conv) }}.hpp"
+
+{{ struct_impl(struc, None) }}

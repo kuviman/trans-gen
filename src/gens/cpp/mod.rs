@@ -50,18 +50,15 @@ fn var_name(name: &str) -> &str {
     }
 }
 
-fn write_includes(writer: &mut Writer, schema: &Schema, current: bool) -> std::fmt::Result {
-    let mut includes = vec!["<string>".to_string(), "\"../Stream.hpp\"".to_string()];
-    collect_includes(&mut includes, schema, current);
-    includes.sort();
-    includes.dedup();
-    for include in includes {
-        writeln!(writer, "#include {}", include)?;
-    }
-    Ok(())
+fn includes(schema: &Schema) -> String {
+    let mut includes = BTreeSet::new();
+    includes.insert("<string>".to_owned());
+    includes.insert("\"../Stream.hpp\"".to_owned());
+    collect_includes(&mut includes, schema, false);
+    include_templing!("src/gens/cpp/includes.templing")
 }
 
-fn collect_includes(result: &mut Vec<String>, schema: &Schema, current: bool) {
+fn collect_includes(result: &mut BTreeSet<String>, schema: &Schema, current: bool) {
     if current {
         match schema {
             Schema::Bool
@@ -71,13 +68,13 @@ fn collect_includes(result: &mut Vec<String>, schema: &Schema, current: bool) {
             | Schema::Float64
             | Schema::String => {}
             Schema::Option(_) => {
-                result.push("<memory>".to_string());
+                result.insert("<memory>".to_string());
             }
             Schema::Map(_, _) => {
-                result.push("<unordered_map>".to_string());
+                result.insert("<unordered_map>".to_string());
             }
             Schema::Vec(_) => {
-                result.push("<vector>".to_string());
+                result.insert("<vector>".to_string());
             }
             Schema::Struct(Struct { name, .. })
             | Schema::OneOf {
@@ -86,8 +83,8 @@ fn collect_includes(result: &mut Vec<String>, schema: &Schema, current: bool) {
             | Schema::Enum {
                 base_name: name, ..
             } => {
-                result.push("<stdexcept>".to_string());
-                result.push(format!("\"{}.hpp\"", name.camel_case(conv)));
+                result.insert("<stdexcept>".to_string());
+                result.insert(format!("\"{}.hpp\"", name.camel_case(conv)));
             }
         }
     }
@@ -124,468 +121,20 @@ fn collect_includes(result: &mut Vec<String>, schema: &Schema, current: bool) {
     }
 }
 
-fn write_struct_def(
-    writer: &mut Writer,
-    schema: &Schema,
-    struc: &Struct,
-    base: Option<(&Name, usize)>,
-) -> std::fmt::Result {
-    let full_name = if let Some((base_name, _)) = base {
-        format!(
-            "{}::{}",
-            base_name.camel_case(conv),
-            struc.name.camel_case(conv)
-        )
-    } else {
-        struc.name.camel_case(conv)
-    };
-
-    // Class
-    if let Some((base_name, _)) = base {
-        writeln!(
-            writer,
-            "class {}::{} : public {} {{",
-            base_name.camel_case(conv),
-            struc.name.camel_case(conv),
-            base_name.camel_case(conv),
-        )?;
-    } else {
-        writeln!(writer, "class {} {{", struc.name.camel_case(conv))?;
-    }
-    writer.inc_ident();
-    if let Some((_, tag)) = base {
-        writer.dec_ident();
-        writeln!(writer, "public:")?;
-        writer.inc_ident();
-        writeln!(writer, "static const int TAG = {};", tag)?;
-    }
-
-    // Fields
-    writer.dec_ident();
-    writeln!(writer, "public:")?;
-    writer.inc_ident();
-    for field in &struc.fields {
-        writeln!(
-            writer,
-            "{} {};",
-            type_name(&field.schema),
-            field.name.mixed_case(conv)
-        )?;
-    }
-
-    // Constructor
-    writeln!(writer, "{}();", struc.name.camel_case(conv))?;
-    if !struc.fields.is_empty() {
-        write!(writer, "{}(", struc.name.camel_case(conv))?;
-        for (index, field) in struc.fields.iter().enumerate() {
-            if index > 0 {
-                write!(writer, ", ")?;
-            }
-            write!(
-                writer,
-                "{} {}",
-                type_name(&field.schema),
-                field.name.mixed_case(conv)
-            )?;
-        }
-        writeln!(writer, ");")?;
-    }
-
-    // Read/write
-    writeln!(
-        writer,
-        "static {} readFrom(InputStream& stream);",
-        struc.name.camel_case(conv)
-    )?;
-    writeln!(
-        writer,
-        "void writeTo(OutputStream& stream) const{};",
-        if base.is_some() { " override" } else { "" }
-    )?;
-
-    // Eq
-    if schema.hashable() {
-        writeln!(
-            writer,
-            "bool operator ==(const {}& other) const;",
-            struc.name.camel_case(conv)
-        )?;
-    }
-
-    writer.dec_ident();
-    writeln!(writer, "}};").unwrap();
-
-    // Hash
-    if schema.hashable() {
-        writeln!(writer, "namespace std {{")?;
-        writer.inc_ident();
-        writeln!(writer, "template<>")?;
-        writeln!(writer, "struct hash<{}> {{", full_name)?;
-        writeln!(
-            writer,
-            "    size_t operator ()(const {}& value) const;",
-            full_name
-        )?;
-        writeln!(writer, "}};")?;
-        writer.dec_ident();
-        writeln!(writer, "}}")?;
-    }
-
-    Ok(())
+fn read_var(var: &str, schema: &Schema) -> String {
+    include_templing!("src/gens/cpp/read_var.templing")
 }
 
-fn write_struct_impl(
-    writer: &mut Writer,
-    schema: &Schema,
-    struc: &Struct,
-    base: Option<(&Name, usize)>,
-) -> std::fmt::Result {
-    let full_name = if let Some((base_name, _)) = base {
-        format!(
-            "{}::{}",
-            base_name.camel_case(conv),
-            struc.name.camel_case(conv)
-        )
-    } else {
-        struc.name.camel_case(conv)
-    };
+fn write_var(var: &str, schema: &Schema) -> String {
+    include_templing!("src/gens/cpp/write_var.templing")
+}
 
-    // Constructor
-    writeln!(
-        writer,
-        "{}::{}() {{ }}",
-        full_name,
-        struc.name.camel_case(conv)
-    )?;
-    if !struc.fields.is_empty() {
-        write!(writer, "{}::{}(", full_name, struc.name.camel_case(conv))?;
-        for (index, field) in struc.fields.iter().enumerate() {
-            if index > 0 {
-                write!(writer, ", ")?;
-            }
-            write!(
-                writer,
-                "{} {}",
-                type_name(&field.schema),
-                field.name.mixed_case(conv),
-            )?;
-        }
-        write!(writer, ") : ")?;
-        for (index, field) in struc.fields.iter().enumerate() {
-            write!(
-                writer,
-                "{}({})",
-                field.name.mixed_case(conv),
-                field.name.mixed_case(conv),
-            )?;
-            if index + 1 < struc.fields.len() {
-                write!(writer, ", ")?;
-            } else {
-                writeln!(writer, " {{ }}")?;
-            }
-        }
-    }
+fn struct_def(struc: &Struct, base: Option<(&Name, usize)>) -> String {
+    include_templing!("src/gens/cpp/struct_def.templing")
+}
 
-    // Read
-    writeln!(
-        writer,
-        "{} {}::readFrom(InputStream& stream) {{",
-        full_name, full_name,
-    )?;
-    writer.inc_ident();
-    writeln!(writer, "{} result;", full_name)?;
-    for field in &struc.fields {
-        fn assign(
-            writer: &mut Writer,
-            to: &str,
-            schema: &Schema,
-            index_var: &mut usize,
-        ) -> std::fmt::Result {
-            match schema {
-                Schema::Bool => {
-                    writeln!(writer, "{} = stream.readBool();", to)?;
-                }
-                Schema::Int32 => {
-                    writeln!(writer, "{} = stream.readInt();", to)?;
-                }
-                Schema::Int64 => {
-                    writeln!(writer, "{} = stream.readLongLong();", to)?;
-                }
-                Schema::Float32 => {
-                    writeln!(writer, "{} = stream.readFloat();", to)?;
-                }
-                Schema::Float64 => {
-                    writeln!(writer, "{} = stream.readDouble();", to)?;
-                }
-                Schema::String => {
-                    writeln!(writer, "{} = stream.readString();", to)?;
-                }
-                Schema::Struct(Struct { name, .. })
-                | Schema::OneOf {
-                    base_name: name, ..
-                } => {
-                    writeln!(
-                        writer,
-                        "{} = {}::readFrom(stream);",
-                        to,
-                        name.camel_case(conv)
-                    )?;
-                }
-                Schema::Option(inner) => {
-                    writeln!(writer, "if (stream.readBool()) {{")?;
-                    writer.inc_ident();
-                    writeln!(
-                        writer,
-                        "{} = std::shared_ptr<{}>(new {}());",
-                        to,
-                        type_name(inner),
-                        type_name(inner)
-                    )?;
-                    assign(writer, &format!("*{}", to), inner, index_var)?;
-                    writer.dec_ident();
-                    writeln!(writer, "}} else {{")?;
-                    writeln!(
-                        writer,
-                        "    {} = std::shared_ptr<{}>();",
-                        to,
-                        type_name(inner)
-                    )?;
-                    writeln!(writer, "}}")?;
-                }
-                Schema::Vec(inner) => {
-                    writeln!(
-                        writer,
-                        "{} = std::vector<{}>(stream.readInt());",
-                        to,
-                        type_name(inner),
-                    )?;
-                    let index_var_name = index_var_name(index_var);
-                    writeln!(
-                        writer,
-                        "for (size_t {} = 0; {} < {}.size(); {}++) {{",
-                        index_var_name, index_var_name, to, index_var_name
-                    )?;
-                    writer.inc_ident();
-                    assign(
-                        writer,
-                        &format!("{}[{}]", to, index_var_name),
-                        inner,
-                        index_var,
-                    )?;
-                    writer.dec_ident();
-                    writeln!(writer, "}}")?;
-                }
-                Schema::Map(key_type, value_type) => {
-                    let to_size = format!("{}Size", var_name(to));
-                    writeln!(writer, "size_t {} = stream.readInt();", to_size)?;
-                    writeln!(
-                        writer,
-                        "{} = std::unordered_map<{}, {}>();",
-                        to,
-                        type_name(key_type),
-                        type_name(value_type)
-                    )?;
-                    writeln!(writer, "{}.reserve({});", to, to_size)?;
-                    let index_var_name = index_var_name(index_var);
-                    writeln!(
-                        writer,
-                        "for (size_t {} = 0; {} < {}; {}++) {{",
-                        index_var_name, index_var_name, to_size, index_var_name
-                    )?;
-                    writer.inc_ident();
-                    writeln!(writer, "{} {}Key;", type_name(key_type), var_name(to))?;
-                    assign(writer, &format!("{}Key", var_name(to)), key_type, index_var)?;
-                    writeln!(writer, "{} {}Value;", type_name(value_type), var_name(to))?;
-                    assign(
-                        writer,
-                        &format!("{}Value", var_name(to)),
-                        value_type,
-                        index_var,
-                    )?;
-                    writeln!(
-                        writer,
-                        "{}.emplace(std::make_pair({}Key, {}Value));",
-                        to,
-                        var_name(to),
-                        var_name(to)
-                    )?;
-                    writer.dec_ident();
-                    writeln!(writer, "}}")?;
-                }
-                Schema::Enum {
-                    documentation: _,
-                    base_name,
-                    variants,
-                } => {
-                    writeln!(writer, "switch (stream.readInt()) {{")?;
-                    for (tag, variant) in variants.iter().enumerate() {
-                        writeln!(writer, "case {}:", tag)?;
-                        writeln!(
-                            writer,
-                            "    {} = {}::{};",
-                            to,
-                            base_name.camel_case(conv),
-                            variant.name.shouty_snake_case(conv)
-                        )?;
-                        writeln!(writer, "    break;")?;
-                    }
-                    writeln!(writer, "default:")?;
-                    writeln!(
-                        writer,
-                        "    throw std::runtime_error(\"Unexpected tag value\");"
-                    )?;
-                    writeln!(writer, "}}")?;
-                }
-            }
-            Ok(())
-        }
-        assign(
-            writer,
-            &format!("result.{}", field.name.mixed_case(conv)),
-            &field.schema,
-            &mut 0,
-        )?;
-    }
-    writeln!(writer, "return result;")?;
-    writer.dec_ident();
-    writeln!(writer, "}}")?;
-
-    // Writing
-    writeln!(
-        writer,
-        "void {}::writeTo(OutputStream& stream) const {{",
-        full_name,
-    )?;
-    writer.inc_ident();
-    if base.is_some() {
-        writeln!(writer, "stream.write(TAG);")?;
-    }
-    for field in &struc.fields {
-        fn write(writer: &mut Writer, value: &str, schema: &Schema) -> std::fmt::Result {
-            match schema {
-                Schema::Bool => {
-                    writeln!(writer, "stream.write({});", value)?;
-                }
-                Schema::Int32 => {
-                    writeln!(writer, "stream.write({});", value)?;
-                }
-                Schema::Int64 => {
-                    writeln!(writer, "stream.write({});", value)?;
-                }
-                Schema::Float32 => {
-                    writeln!(writer, "stream.write({});", value)?;
-                }
-                Schema::Float64 => {
-                    writeln!(writer, "stream.write({});", value)?;
-                }
-                Schema::String => {
-                    writeln!(writer, "stream.write({});", value)?;
-                }
-                Schema::Struct(_) => {
-                    writeln!(writer, "{}.writeTo(stream);", value)?;
-                }
-                Schema::OneOf { .. } => {
-                    writeln!(writer, "{}->writeTo(stream);", value)?;
-                }
-                Schema::Option(inner) => {
-                    writeln!(writer, "if ({}) {{", value)?;
-                    writer.inc_ident();
-                    writeln!(writer, "stream.write(true);")?;
-                    write(writer, &format!("(*{})", value), inner)?;
-                    writer.dec_ident();
-                    writeln!(writer, "}} else {{")?;
-                    writeln!(writer, "    stream.write(false);")?;
-                    writeln!(writer, "}}")?;
-                }
-                Schema::Vec(inner) => {
-                    writeln!(writer, "stream.write((int)({}.size()));", value)?;
-                    writeln!(
-                        writer,
-                        "for (const {}& {}Element : {}) {{",
-                        type_name(inner),
-                        var_name(value),
-                        value
-                    )?;
-                    writer.inc_ident();
-                    write(writer, &format!("{}Element", var_name(value)), inner)?;
-                    writer.dec_ident();
-                    writeln!(writer, "}}")?;
-                }
-                Schema::Map(key_type, value_type) => {
-                    writeln!(writer, "stream.write((int)({}.size()));", value)?;
-                    writeln!(
-                        writer,
-                        "for (const auto& {}Entry : {}) {{",
-                        var_name(value),
-                        value
-                    )?;
-                    writer.inc_ident();
-                    write(writer, &format!("{}Entry.first", var_name(value)), key_type)?;
-                    write(
-                        writer,
-                        &format!("{}Entry.second", var_name(value)),
-                        value_type,
-                    )?;
-                    writer.dec_ident();
-                    writeln!(writer, "}}")?;
-                }
-                Schema::Enum { .. } => {
-                    writeln!(writer, "stream.write((int)({}));", value)?;
-                }
-            }
-            Ok(())
-        }
-        write(writer, &field.name.mixed_case(conv), &field.schema)?;
-    }
-    writer.dec_ident();
-    writeln!(writer, "}}")?;
-
-    // Eq
-    if schema.hashable() {
-        writeln!(
-            writer,
-            "bool {}::operator ==(const {}& other) const {{",
-            full_name, full_name,
-        )?;
-        write!(writer, "    return ")?;
-        for (index, field) in struc.fields.iter().enumerate() {
-            if index > 0 {
-                write!(writer, " && ")?;
-            }
-            write!(
-                writer,
-                "{} == other.{}",
-                field.name.mixed_case(conv),
-                field.name.mixed_case(conv),
-            )?;
-        }
-        writeln!(writer, ";")?;
-        writeln!(writer, "}}")?;
-    }
-
-    // Hash
-    if schema.hashable() {
-        writeln!(
-            writer,
-            "size_t std::hash<{}>::operator ()(const {}& value) const {{",
-            full_name, full_name,
-        )?;
-        writer.inc_ident();
-        writeln!(writer, "size_t result = 0;")?;
-        for field in &struc.fields {
-            writeln!(
-                writer,
-                "result ^= std::hash<{}>{{}}(value.{}) + 0x9e3779b9 + (result<<6) + (result>>2);",
-                type_name(&field.schema),
-                field.name.mixed_case(conv),
-            )?;
-        }
-        writeln!(writer, "return result;")?;
-        writer.dec_ident();
-        writeln!(writer, "}}")?;
-    }
-
-    Ok(())
+fn struct_impl(struc: &Struct, base: Option<(&Name, usize)>) -> String {
+    include_templing!("src/gens/cpp/struct_impl.templing")
 }
 
 impl crate::Generator for Generator {
@@ -631,179 +180,46 @@ impl crate::Generator for Generator {
                 base_name,
                 variants,
             } => {
-                let file_name = format!("model/{}.hpp", base_name.camel_case(conv));
                 self.model_include.push_str(&format!(
                     "#include \"{}.hpp\"\n",
                     base_name.camel_case(conv)
                 ));
-                let mut writer = Writer::new();
-                writeln!(
-                    writer,
-                    "#ifndef _MODEL_{}_HPP_",
-                    base_name.shouty_snake_case(conv)
-                )
-                .unwrap();
-                writeln!(
-                    writer,
-                    "#define _MODEL_{}_HPP_",
-                    base_name.shouty_snake_case(conv)
-                )
-                .unwrap();
-                writeln!(writer).unwrap();
-                writeln!(writer, "#include \"../Stream.hpp\"").unwrap();
-                writeln!(writer).unwrap();
-                writeln!(writer, "enum {} {{", base_name.camel_case(conv)).unwrap();
-                writer.inc_ident();
-                for (index, variant) in variants.iter().enumerate() {
-                    writeln!(
-                        writer,
-                        "{} = {}{}",
-                        variant.name.shouty_snake_case(conv),
-                        index,
-                        if index + 1 < variants.len() { "," } else { "" }
-                    )
-                    .unwrap();
-                }
-                writer.dec_ident();
-                writeln!(writer, "}};").unwrap();
-                writeln!(writer).unwrap();
-                writeln!(writer, "#endif").unwrap();
-                self.files.insert(file_name, writer.get());
+                self.files.insert(
+                    format!("model/{}.hpp", base_name.camel_case(conv)),
+                    include_templing!("src/gens/cpp/enum-hpp.templing"),
+                );
             }
             Schema::Struct(struc) => {
-                let file_name = format!("model/{}.hpp", struc.name.camel_case(conv));
                 self.model_include.push_str(&format!(
                     "#include \"{}.hpp\"\n",
                     struc.name.camel_case(conv)
                 ));
-                let mut writer = Writer::new();
-                writeln!(
-                    writer,
-                    "#ifndef _MODEL_{}_HPP_",
-                    struc.name.shouty_snake_case(conv)
-                )
-                .unwrap();
-                writeln!(
-                    writer,
-                    "#define _MODEL_{}_HPP_",
-                    struc.name.shouty_snake_case(conv)
-                )
-                .unwrap();
-                writeln!(writer).unwrap();
-                write_includes(&mut writer, schema, false).unwrap();
-                writeln!(writer).unwrap();
-                write_struct_def(&mut writer, schema, struc, None).unwrap();
-                writeln!(writer).unwrap();
-                writeln!(writer, "#endif").unwrap();
-                self.files.insert(file_name, writer.get());
-
-                let file_name = format!("model/{}.cpp", struc.name.camel_case(conv));
-                let mut writer = Writer::new();
-                writeln!(writer, "#include \"{}.hpp\"", struc.name.camel_case(conv)).unwrap();
-                writeln!(writer).unwrap();
-                write_struct_impl(&mut writer, schema, struc, None).unwrap();
-                self.files.insert(file_name, writer.get());
+                self.files.insert(
+                    format!("model/{}.hpp", struc.name.camel_case(conv)),
+                    include_templing!("src/gens/cpp/struct-hpp.templing"),
+                );
+                self.files.insert(
+                    format!("model/{}.cpp", struc.name.camel_case(conv)),
+                    include_templing!("src/gens/cpp/struct-cpp.templing"),
+                );
             }
             Schema::OneOf {
                 documentation: _,
                 base_name,
                 variants,
             } => {
-                let file_name = format!("model/{}.hpp", base_name.camel_case(conv));
                 self.model_include.push_str(&format!(
                     "#include \"{}.hpp\"\n",
                     base_name.camel_case(conv)
                 ));
-                let mut writer = Writer::new();
-                writeln!(
-                    writer,
-                    "#ifndef _MODEL_{}_HPP_",
-                    base_name.shouty_snake_case(conv)
-                )
-                .unwrap();
-                writeln!(
-                    writer,
-                    "#define _MODEL_{}_HPP_",
-                    base_name.shouty_snake_case(conv)
-                )
-                .unwrap();
-                writeln!(writer).unwrap();
-                writeln!(writer, "#include <memory>").unwrap();
-                write_includes(&mut writer, schema, false).unwrap();
-                writeln!(writer).unwrap();
-                writeln!(writer, "class {} {{", base_name.camel_case(conv)).unwrap();
-                writeln!(writer, "public:").unwrap();
-                writer.inc_ident();
-                for variant in variants {
-                    writeln!(writer, "class {};", variant.name.camel_case(conv)).unwrap();
-                }
-                writeln!(writer).unwrap();
-                writeln!(
-                    writer,
-                    "static std::shared_ptr<{}> readFrom(InputStream& stream);",
-                    base_name.camel_case(conv)
-                )
-                .unwrap();
-                writeln!(
-                    writer,
-                    "virtual void writeTo(OutputStream& stream) const = 0;",
-                )
-                .unwrap();
-                writer.dec_ident();
-                writeln!(writer, "}};").unwrap();
-                for (tag, variant) in variants.iter().enumerate() {
-                    writeln!(writer).unwrap();
-                    write_struct_def(&mut writer, schema, variant, Some((base_name, tag))).unwrap();
-                }
-                writeln!(writer).unwrap();
-                writeln!(writer, "#endif").unwrap();
-                self.files.insert(file_name, writer.get());
-
-                let file_name = format!("model/{}.cpp", base_name.camel_case(conv));
-                let mut writer = Writer::new();
-                writeln!(writer, "#include \"{}.hpp\"", base_name.camel_case(conv)).unwrap();
-                writeln!(writer, "#include <stdexcept>").unwrap();
-                for (tag, variant) in variants.iter().enumerate() {
-                    writeln!(writer).unwrap();
-                    write_struct_impl(&mut writer, schema, variant, Some((base_name, tag)))
-                        .unwrap();
-                }
-
-                // Reading
-                writeln!(
-                    writer,
-                    "std::shared_ptr<{}> {}::readFrom(InputStream& stream) {{",
-                    base_name.camel_case(conv),
-                    base_name.camel_case(conv),
-                )
-                .unwrap();
-                writer.inc_ident();
-                writeln!(writer, "switch (stream.readInt()) {{").unwrap();
-                for (tag, variant) in variants.iter().enumerate() {
-                    writeln!(writer, "case {}:", tag).unwrap();
-                    let variant_name = format!(
-                        "{}::{}",
-                        base_name.camel_case(conv),
-                        variant.name.camel_case(conv)
-                    );
-                    writeln!(
-                        writer,
-                        "    return std::shared_ptr<{}>(new {}({}::readFrom(stream)));",
-                        variant_name, variant_name, variant_name,
-                    )
-                    .unwrap();
-                }
-                writeln!(writer, "default:").unwrap();
-                writeln!(
-                    writer,
-                    "    throw std::runtime_error(\"Unexpected tag value\");"
-                )
-                .unwrap();
-                writeln!(writer, "}}").unwrap();
-                writer.dec_ident();
-                writeln!(writer, "}};").unwrap();
-
-                self.files.insert(file_name, writer.get());
+                self.files.insert(
+                    format!("model/{}.hpp", base_name.camel_case(conv)),
+                    include_templing!("src/gens/cpp/oneof-hpp.templing"),
+                );
+                self.files.insert(
+                    format!("model/{}.cpp", base_name.camel_case(conv)),
+                    include_templing!("src/gens/cpp/oneof-cpp.templing"),
+                );
             }
             Schema::Bool
             | Schema::Int32

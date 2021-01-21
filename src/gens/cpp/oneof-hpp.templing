@@ -1,0 +1,21 @@
+#ifndef __MODEL_{{ base_name.shouty_snake_case(conv) }}_HPP__
+#define __MODEL_{{ base_name.shouty_snake_case(conv) }}_HPP__
+
+#include <memory>
+{{ includes(schema) }}
+
+class {{ base_name.camel_case(conv) }} {
+public:
+    - for variant in variants {
+    class {{ variant.name.camel_case(conv) }};
+    - }
+
+    static std::shared_ptr<{{ base_name.camel_case(conv) }}> readFrom(InputStream& stream);
+    virtual void writeTo(OutputStream& stream) const = 0;
+};
+- for (tag, variant) in variants.iter().enumerate() {
+
+{{ struct_def(variant, Some((base_name, tag))) }}
+- }
+
+#endif

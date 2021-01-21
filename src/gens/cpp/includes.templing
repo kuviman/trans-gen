@@ -1,0 +1,4 @@
+#include <iostream>
+- for path in &includes {
+#include {{ path }}
+- }

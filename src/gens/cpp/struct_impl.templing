@@ -1,0 +1,76 @@
+- let full_name = if let Some((base_name, _)) = base {
+-     format!(
+-         "{}::{}",
+-         base_name.camel_case(conv),
+-         struc.name.camel_case(conv),
+-     )
+- } else {
+-     struc.name.camel_case(conv)
+- };
+- let full_name = &full_name;
+- if !struc.fields.is_empty() {
+{{ full_name }}::{{ struc.name.camel_case(conv) }}() { }
+
+- }
+{{ full_name }}::{{ struc.name.camel_case(conv) }}(~
+    - for (index, field) in struc.fields.iter().enumerate() {
+        - if index != 0 {
+            ~, ~
+        - }
+        ~{{ type_name(&field.schema) }} {{ field.name.mixed_case(conv) }}~
+    - }
+~) : ~
+    - for (index, field) in struc.fields.iter().enumerate() {
+        - if index != 0 {
+            ~, ~
+        - }
+        ~{{ field.name.mixed_case(conv) }}({{ field.name.mixed_case(conv) }})~
+    - }
+~ { }
+
+{{ full_name }} {{ full_name }}::readFrom(InputStream& stream) {
+    - for field in &struc.fields {
+    {{ type_name(&field.schema) }} {{ field.name.mixed_case(conv) }};
+    {{ read_var(&field.name.mixed_case(conv), &field.schema) }}
+    - }
+    return {{ full_name }}(~ 
+        - for (index, field) in struc.fields.iter().enumerate() {
+            - if index != 0 {
+                ~, ~
+            - }
+            ~{{ field.name.mixed_case(conv) }}~
+        - }
+    ~);
+}
+
+void {{ full_name }}::writeTo(OutputStream& stream) const {
+    - if base.is_some() {
+    stream.write(TAG);
+    - }
+    - for field in &struc.fields {
+    {{ write_var(&field.name.mixed_case(conv), &field.schema) }}
+    - }
+}
+- if struc.hashable() {
+
+bool {{ full_name }}::operator ==(const {{ full_name }}& other) const {
+    return ~
+    - for (index, field) in struc.fields.iter().enumerate() {
+        - if index != 0 {
+            ~ && ~
+        - }
+        ~{{ field.name.mixed_case(conv) }} == other.{{ field.name.mixed_case(conv) }}~
+    - }
+    ~;
+}
+- }
+- if struc.hashable() {
+
+size_t std::hash<{{ full_name }}>::operator ()(const {{ full_name }}& value) const {
+    size_t result = 0;
+    - for field in &struc.fields {
+    result ^= std::hash<{{ type_name(&field.schema) }}>{}(value.{{ field.name.mixed_case(conv) }}) + 0x9e3779b9 + (result << 6) + (result >> 2);
+    - }
+    return result;
+}
+- }
