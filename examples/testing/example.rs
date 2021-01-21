@@ -40,19 +40,10 @@ pub enum OneOf {
     },
 }
 
-/// Example model
+/// Example structure
 #[trans_doc = "ru:Пример структуры"]
 #[derive(PartialEq, Debug, Serialize, Deserialize, Trans)]
 pub struct Structure {
-    /// First oneof
-    #[trans_doc = "ru:Первый oneof"]
-    one_of_one: OneOf,
-    /// Second oneof
-    #[trans_doc = "ru:Второй oneof"]
-    one_of_two: OneOf,
-    /// Dictionary
-    #[trans_doc = "ru:Таблица"]
-    hash_map: HashMap<Enumeration, NewTypeInt32>,
     /// Text
     #[trans_doc = "ru:Текст"]
     text: String,
@@ -64,4 +55,31 @@ pub struct Structure {
     double_number: f64,
 }
 
-pub type Model = Structure;
+/// Example
+#[trans_doc = "ru:Пример"]
+#[derive(PartialEq, Debug, Serialize, Deserialize, Trans)]
+pub struct Example {
+    /// OneOf
+    #[trans_doc = "ru:OneOf"]
+    one_of: OneOf,
+    /// Dictionary
+    #[trans_doc = "ru:Таблица"]
+    hash_map: HashMap<Enumeration, NewTypeInt32>,
+    /// Optional int
+    #[trans_doc = "ru:Опциональное целое число"]
+    optional_int: Option<i32>,
+    /// Optional boolean
+    #[trans_doc = "ru:Опциональный boolean"]
+    optional_bool: Option<bool>,
+    /// Optional OneOf
+    #[trans_doc = "ru:Опциональный OneOf"]
+    optional_one_of: Option<OneOf>,
+    /// Optional struct
+    #[trans_doc = "ru:Опциональная структура"]
+    optional_struct: Option<Structure>,
+    /// Optional enum
+    #[trans_doc = "ru:Опциональное перечисление"]
+    optional_enum: Option<Enumeration>,
+}
+
+pub type Model = Example;

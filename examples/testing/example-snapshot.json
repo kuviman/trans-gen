@@ -1,5 +1,5 @@
 {
-    "one_of_one": {
+    "one_of": {
         "OptionOne": {
             "vec_int32": [
                 1,
@@ -9,16 +9,21 @@
             "long_int": 4611686018427387904
         }
     },
-    "one_of_two": {
-        "OptionTwo": {
-            "value": 123
-        }
-    },
     "hash_map": {
         "ValueOne": 5,
         "ValueTwo": 6
     },
-    "text": "Hello, world!",
-    "float_number": -50.234,
-    "double_number": 123.456
+    "optional_int": 100500,
+    "optional_bool": null,
+    "optional_one_of": {
+        "OptionTwo": {
+            "value": 123
+        }
+    },
+    "optional_struct": {
+        "text": "Hello, world!",
+        "float_number": -50.234,
+        "double_number": 123.456
+    },
+    "optional_enum": "ValueTwo"
 }
