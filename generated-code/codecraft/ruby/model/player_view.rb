@@ -32,10 +32,7 @@ class PlayerView
         fog_of_war = stream.read_bool()
         entity_properties = Hash.new
         stream.read_int().times do |_|
-            entity_properties_key = stream.read_int()
-            if entity_properties_key < 0 || entity_properties_key >= 10
-                raise "Unexpected tag value"
-            end
+            entity_properties_key = EntityType.read_from(stream)
             entity_properties_value = EntityProperties.read_from(stream)
             entity_properties[entity_properties_key] = entity_properties_value
         end

@@ -1,3 +1,4 @@
+const EntityType = require('./entity-type');
 class BuildProperties {
     constructor(options, initHealth) {
         this.options = options;
@@ -9,7 +10,7 @@ class BuildProperties {
         options = [];
         for (let optionsCount = await stream.readInt(); optionsCount > 0; optionsCount--) {
             let optionsElement;
-            optionsElement = await stream.readInt();
+            optionsElement = await EntityType.readFrom(stream);
             options.push(optionsElement);
         }
         let initHealth;

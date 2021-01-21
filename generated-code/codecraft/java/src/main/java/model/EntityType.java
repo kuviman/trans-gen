@@ -19,4 +19,31 @@ public enum EntityType {
     EntityType(int tag) {
         this.tag = tag;
     }
+
+    public static EntityType readFrom(java.io.InputStream stream) throws java.io.IOException {
+        switch (StreamUtil.readInt(stream)) {
+        case 0:
+            return WALL;
+        case 1:
+            return HOUSE;
+        case 2:
+            return BUILDER_BASE;
+        case 3:
+            return BUILDER_UNIT;
+        case 4:
+            return MELEE_BASE;
+        case 5:
+            return MELEE_UNIT;
+        case 6:
+            return RANGED_BASE;
+        case 7:
+            return RANGED_UNIT;
+        case 8:
+            return RESOURCE;
+        case 9:
+            return TURRET;
+        default:
+            throw new java.io.IOException("Unexpected tag value");
+        }
+    }
 }

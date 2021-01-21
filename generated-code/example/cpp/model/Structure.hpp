@@ -4,6 +4,7 @@
 #include "../Stream.hpp"
 #include "Enumeration.hpp"
 #include "OneOf.hpp"
+#include <memory>
 #include <stdexcept>
 #include <string>
 #include <unordered_map>

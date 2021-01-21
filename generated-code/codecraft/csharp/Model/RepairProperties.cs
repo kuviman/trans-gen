@@ -17,41 +17,7 @@ namespace TransGenTest.Model
             result.ValidTargets = new Model.EntityType[reader.ReadInt32()];
             for (int validTargetsIndex = 0; validTargetsIndex < result.ValidTargets.Length; validTargetsIndex++)
             {
-                switch (reader.ReadInt32())
-                {
-                    case 0:
-                        result.ValidTargets[validTargetsIndex] = Model.EntityType.Wall;
-                        break;
-                    case 1:
-                        result.ValidTargets[validTargetsIndex] = Model.EntityType.House;
-                        break;
-                    case 2:
-                        result.ValidTargets[validTargetsIndex] = Model.EntityType.BuilderBase;
-                        break;
-                    case 3:
-                        result.ValidTargets[validTargetsIndex] = Model.EntityType.BuilderUnit;
-                        break;
-                    case 4:
-                        result.ValidTargets[validTargetsIndex] = Model.EntityType.MeleeBase;
-                        break;
-                    case 5:
-                        result.ValidTargets[validTargetsIndex] = Model.EntityType.MeleeUnit;
-                        break;
-                    case 6:
-                        result.ValidTargets[validTargetsIndex] = Model.EntityType.RangedBase;
-                        break;
-                    case 7:
-                        result.ValidTargets[validTargetsIndex] = Model.EntityType.RangedUnit;
-                        break;
-                    case 8:
-                        result.ValidTargets[validTargetsIndex] = Model.EntityType.Resource;
-                        break;
-                    case 9:
-                        result.ValidTargets[validTargetsIndex] = Model.EntityType.Turret;
-                        break;
-                    default:
-                        throw new System.Exception("Unexpected tag value");
-                }
+                result.ValidTargets[validTargetsIndex] = EntityTypeHelper.ReadFrom(reader);
             }
             result.Power = reader.ReadInt32();
             return result;

@@ -3,9 +3,11 @@
 
 #include "../Stream.hpp"
 
-enum Enumeration {
+enum class Enumeration {
         VALUE_ONE = 0,
         VALUE_TWO = 1
 };
+
+Enumeration readEnumeration(InputStream& stream);
 
 #endif

@@ -18,40 +18,7 @@ PlayerView PlayerView::readFrom(InputStream& stream) {
     for (size_t entityPropertiesIndex = 0; entityPropertiesIndex < entityPropertiesSize; entityPropertiesIndex++) {
         EntityType entityPropertiesKey;
         EntityProperties entityPropertiesValue;
-        switch (stream.readInt()) {
-        case 0:
-            entityPropertiesKey = EntityType::WALL;
-            break;
-        case 1:
-            entityPropertiesKey = EntityType::HOUSE;
-            break;
-        case 2:
-            entityPropertiesKey = EntityType::BUILDER_BASE;
-            break;
-        case 3:
-            entityPropertiesKey = EntityType::BUILDER_UNIT;
-            break;
-        case 4:
-            entityPropertiesKey = EntityType::MELEE_BASE;
-            break;
-        case 5:
-            entityPropertiesKey = EntityType::MELEE_UNIT;
-            break;
-        case 6:
-            entityPropertiesKey = EntityType::RANGED_BASE;
-            break;
-        case 7:
-            entityPropertiesKey = EntityType::RANGED_UNIT;
-            break;
-        case 8:
-            entityPropertiesKey = EntityType::RESOURCE;
-            break;
-        case 9:
-            entityPropertiesKey = EntityType::TURRET;
-            break;
-        default:
-            throw std::runtime_error("Unexpected tag value");
-        }
+        entityPropertiesKey = readEntityType(stream);
         entityPropertiesValue = EntityProperties::readFrom(stream);
         entityProperties.emplace(std::make_pair(entityPropertiesKey, entityPropertiesValue));
     }

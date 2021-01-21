@@ -109,40 +109,7 @@ public class PlayerView {
         entityProperties = new java.util.HashMap<>(entityPropertiesSize);
         for (int entityPropertiesIndex = 0; entityPropertiesIndex < entityPropertiesSize; entityPropertiesIndex++) {
             model.EntityType entityPropertiesKey;
-            switch (StreamUtil.readInt(stream)) {
-            case 0:
-                entityPropertiesKey = model.EntityType.WALL;
-                break;
-            case 1:
-                entityPropertiesKey = model.EntityType.HOUSE;
-                break;
-            case 2:
-                entityPropertiesKey = model.EntityType.BUILDER_BASE;
-                break;
-            case 3:
-                entityPropertiesKey = model.EntityType.BUILDER_UNIT;
-                break;
-            case 4:
-                entityPropertiesKey = model.EntityType.MELEE_BASE;
-                break;
-            case 5:
-                entityPropertiesKey = model.EntityType.MELEE_UNIT;
-                break;
-            case 6:
-                entityPropertiesKey = model.EntityType.RANGED_BASE;
-                break;
-            case 7:
-                entityPropertiesKey = model.EntityType.RANGED_UNIT;
-                break;
-            case 8:
-                entityPropertiesKey = model.EntityType.RESOURCE;
-                break;
-            case 9:
-                entityPropertiesKey = model.EntityType.TURRET;
-                break;
-            default:
-                throw new java.io.IOException("Unexpected tag value");
-            }
+            entityPropertiesKey = model.EntityType.readFrom(stream);
             model.EntityProperties entityPropertiesValue;
             entityPropertiesValue = model.EntityProperties.readFrom(stream);
             entityProperties.put(entityPropertiesKey, entityPropertiesValue);

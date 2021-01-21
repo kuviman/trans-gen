@@ -16,16 +16,7 @@ Structure Structure::readFrom(InputStream& stream) {
     for (size_t hashMapIndex = 0; hashMapIndex < hashMapSize; hashMapIndex++) {
         Enumeration hashMapKey;
         int hashMapValue;
-        switch (stream.readInt()) {
-        case 0:
-            hashMapKey = Enumeration::VALUE_ONE;
-            break;
-        case 1:
-            hashMapKey = Enumeration::VALUE_TWO;
-            break;
-        default:
-            throw std::runtime_error("Unexpected tag value");
-        }
+        hashMapKey = readEnumeration(stream);
         hashMapValue = stream.readInt();
         hashMap.emplace(std::make_pair(hashMapKey, hashMapValue));
     }

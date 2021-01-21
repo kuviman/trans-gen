@@ -1,8 +1,8 @@
 #ifndef __MODEL_ONE_OF_HPP__
 #define __MODEL_ONE_OF_HPP__
 
-#include <memory>
 #include "../Stream.hpp"
+#include <memory>
 #include <string>
 #include <vector>
 

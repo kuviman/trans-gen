@@ -37,41 +37,7 @@ namespace TransGenTest.Model
             {
                 Model.EntityType entityPropertiesKey;
                 Model.EntityProperties entityPropertiesValue;
-                switch (reader.ReadInt32())
-                {
-                    case 0:
-                        entityPropertiesKey = Model.EntityType.Wall;
-                        break;
-                    case 1:
-                        entityPropertiesKey = Model.EntityType.House;
-                        break;
-                    case 2:
-                        entityPropertiesKey = Model.EntityType.BuilderBase;
-                        break;
-                    case 3:
-                        entityPropertiesKey = Model.EntityType.BuilderUnit;
-                        break;
-                    case 4:
-                        entityPropertiesKey = Model.EntityType.MeleeBase;
-                        break;
-                    case 5:
-                        entityPropertiesKey = Model.EntityType.MeleeUnit;
-                        break;
-                    case 6:
-                        entityPropertiesKey = Model.EntityType.RangedBase;
-                        break;
-                    case 7:
-                        entityPropertiesKey = Model.EntityType.RangedUnit;
-                        break;
-                    case 8:
-                        entityPropertiesKey = Model.EntityType.Resource;
-                        break;
-                    case 9:
-                        entityPropertiesKey = Model.EntityType.Turret;
-                        break;
-                    default:
-                        throw new System.Exception("Unexpected tag value");
-                }
+                entityPropertiesKey = EntityTypeHelper.ReadFrom(reader);
                 entityPropertiesValue = Model.EntityProperties.ReadFrom(reader);
                 result.EntityProperties.Add(entityPropertiesKey, entityPropertiesValue);
             }

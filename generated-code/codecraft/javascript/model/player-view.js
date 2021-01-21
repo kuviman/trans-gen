@@ -1,5 +1,6 @@
 const Entity = require('./entity');
 const EntityProperties = require('./entity-properties');
+const EntityType = require('./entity-type');
 const Player = require('./player');
 class PlayerView {
     constructor(myId, mapSize, fogOfWar, entityProperties, maxTickCount, maxPathfindNodes, currentTick, players, entities) {
@@ -26,7 +27,7 @@ class PlayerView {
         for (let entityPropertiesCount = await stream.readInt(); entityPropertiesCount > 0; entityPropertiesCount--) {
             let entityPropertiesKey;
             let entityPropertiesValue;
-            entityPropertiesKey = await stream.readInt();
+            entityPropertiesKey = await EntityType.readFrom(stream);
             entityPropertiesValue = await EntityProperties.readFrom(stream);
             entityProperties.set(entityPropertiesKey, entityPropertiesValue)
         }

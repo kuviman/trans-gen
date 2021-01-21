@@ -17,40 +17,7 @@ struct BuildProperties {
         options = new EntityType[reader.readInt()];
         for (int optionsIndex = 0; optionsIndex < options.length; optionsIndex++) {
             EntityType optionsKey;
-            switch (reader.readInt()) {
-                case 0:
-                    optionsKey = EntityType.Wall;
-                    break;
-                case 1:
-                    optionsKey = EntityType.House;
-                    break;
-                case 2:
-                    optionsKey = EntityType.BuilderBase;
-                    break;
-                case 3:
-                    optionsKey = EntityType.BuilderUnit;
-                    break;
-                case 4:
-                    optionsKey = EntityType.MeleeBase;
-                    break;
-                case 5:
-                    optionsKey = EntityType.MeleeUnit;
-                    break;
-                case 6:
-                    optionsKey = EntityType.RangedBase;
-                    break;
-                case 7:
-                    optionsKey = EntityType.RangedUnit;
-                    break;
-                case 8:
-                    optionsKey = EntityType.Resource;
-                    break;
-                case 9:
-                    optionsKey = EntityType.Turret;
-                    break;
-                default:
-                    throw new Exception("Unexpected tag value");
-            }
+            optionsKey = readEntityType(reader);
             options[optionsIndex] = optionsKey;
         }
         Nullable!(int) initHealth;

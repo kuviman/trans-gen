@@ -30,40 +30,7 @@ struct Entity {
             playerId.nullify();
         }
         EntityType entityType;
-        switch (reader.readInt()) {
-            case 0:
-                entityType = EntityType.Wall;
-                break;
-            case 1:
-                entityType = EntityType.House;
-                break;
-            case 2:
-                entityType = EntityType.BuilderBase;
-                break;
-            case 3:
-                entityType = EntityType.BuilderUnit;
-                break;
-            case 4:
-                entityType = EntityType.MeleeBase;
-                break;
-            case 5:
-                entityType = EntityType.MeleeUnit;
-                break;
-            case 6:
-                entityType = EntityType.RangedBase;
-                break;
-            case 7:
-                entityType = EntityType.RangedUnit;
-                break;
-            case 8:
-                entityType = EntityType.Resource;
-                break;
-            case 9:
-                entityType = EntityType.Turret;
-                break;
-            default:
-                throw new Exception("Unexpected tag value");
-        }
+        entityType = readEntityType(reader);
         Vec2Int position;
         position = Vec2Int.readFrom(reader);
         int health;

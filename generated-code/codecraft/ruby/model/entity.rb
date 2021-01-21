@@ -25,10 +25,7 @@ class Entity
         else
             player_id = nil
         end
-        entity_type = stream.read_int()
-        if entity_type < 0 || entity_type >= 10
-            raise "Unexpected tag value"
-        end
+        entity_type = EntityType.read_from(stream)
         position = Vec2Int.read_from(stream)
         health = stream.read_int()
         active = stream.read_bool()

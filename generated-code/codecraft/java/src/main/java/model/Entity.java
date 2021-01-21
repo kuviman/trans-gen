@@ -77,40 +77,7 @@ public class Entity {
             playerId = null;
         }
         model.EntityType entityType;
-        switch (StreamUtil.readInt(stream)) {
-        case 0:
-            entityType = model.EntityType.WALL;
-            break;
-        case 1:
-            entityType = model.EntityType.HOUSE;
-            break;
-        case 2:
-            entityType = model.EntityType.BUILDER_BASE;
-            break;
-        case 3:
-            entityType = model.EntityType.BUILDER_UNIT;
-            break;
-        case 4:
-            entityType = model.EntityType.MELEE_BASE;
-            break;
-        case 5:
-            entityType = model.EntityType.MELEE_UNIT;
-            break;
-        case 6:
-            entityType = model.EntityType.RANGED_BASE;
-            break;
-        case 7:
-            entityType = model.EntityType.RANGED_UNIT;
-            break;
-        case 8:
-            entityType = model.EntityType.RESOURCE;
-            break;
-        case 9:
-            entityType = model.EntityType.TURRET;
-            break;
-        default:
-            throw new java.io.IOException("Unexpected tag value");
-        }
+        entityType = model.EntityType.readFrom(stream);
         model.Vec2Int position;
         position = model.Vec2Int.readFrom(stream);
         int health;

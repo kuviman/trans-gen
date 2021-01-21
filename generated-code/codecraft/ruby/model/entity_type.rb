@@ -9,4 +9,12 @@ module EntityType
     RANGED_UNIT = 7
     RESOURCE = 8
     TURRET = 9
+
+    def self.read_from(stream)
+        result = stream.read_int()
+        if result < 0 || result >= 10
+            raise "Unexpected tag value"
+        end
+        result
+    end
 end

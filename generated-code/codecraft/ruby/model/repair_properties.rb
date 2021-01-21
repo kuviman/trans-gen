@@ -12,10 +12,7 @@ class RepairProperties
     def self.read_from(stream)
         valid_targets = []
         stream.read_int().times do |_|
-            valid_targets_element = stream.read_int()
-            if valid_targets_element < 0 || valid_targets_element >= 10
-                raise "Unexpected tag value"
-            end
+            valid_targets_element = EntityType.read_from(stream)
             valid_targets.push(valid_targets_element)
         end
         power = stream.read_int()

@@ -30,17 +30,7 @@ namespace TransGenTest.Model
             {
                 Model.Enumeration hashMapKey;
                 int hashMapValue;
-                switch (reader.ReadInt32())
-                {
-                    case 0:
-                        hashMapKey = Model.Enumeration.ValueOne;
-                        break;
-                    case 1:
-                        hashMapKey = Model.Enumeration.ValueTwo;
-                        break;
-                    default:
-                        throw new System.Exception("Unexpected tag value");
-                }
+                hashMapKey = EnumerationHelper.ReadFrom(reader);
                 hashMapValue = reader.ReadInt32();
                 result.HashMap.Add(hashMapKey, hashMapValue);
             }

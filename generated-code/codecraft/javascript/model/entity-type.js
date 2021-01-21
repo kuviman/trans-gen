@@ -8,5 +8,12 @@ module.exports = {
     RangedBase: 6,
     RangedUnit: 7,
     Resource: 8,
-    Turret: 9
+    Turret: 9,
+    readFrom: async function(stream) {
+        const result = stream.readInt();
+        if (result < 0 || result >= 10) {
+            throw new Error("Unexpected tag value");
+        }
+        return result;
+    }
 };

@@ -17,41 +17,7 @@ namespace TransGenTest.Model
             result.Options = new Model.EntityType[reader.ReadInt32()];
             for (int optionsIndex = 0; optionsIndex < result.Options.Length; optionsIndex++)
             {
-                switch (reader.ReadInt32())
-                {
-                    case 0:
-                        result.Options[optionsIndex] = Model.EntityType.Wall;
-                        break;
-                    case 1:
-                        result.Options[optionsIndex] = Model.EntityType.House;
-                        break;
-                    case 2:
-                        result.Options[optionsIndex] = Model.EntityType.BuilderBase;
-                        break;
-                    case 3:
-                        result.Options[optionsIndex] = Model.EntityType.BuilderUnit;
-                        break;
-                    case 4:
-                        result.Options[optionsIndex] = Model.EntityType.MeleeBase;
-                        break;
-                    case 5:
-                        result.Options[optionsIndex] = Model.EntityType.MeleeUnit;
-                        break;
-                    case 6:
-                        result.Options[optionsIndex] = Model.EntityType.RangedBase;
-                        break;
-                    case 7:
-                        result.Options[optionsIndex] = Model.EntityType.RangedUnit;
-                        break;
-                    case 8:
-                        result.Options[optionsIndex] = Model.EntityType.Resource;
-                        break;
-                    case 9:
-                        result.Options[optionsIndex] = Model.EntityType.Turret;
-                        break;
-                    default:
-                        throw new System.Exception("Unexpected tag value");
-                }
+                result.Options[optionsIndex] = EntityTypeHelper.ReadFrom(reader);
             }
             if (reader.ReadBoolean())
             {

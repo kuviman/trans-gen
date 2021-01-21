@@ -1,3 +1,4 @@
+const EntityType = require('./entity-type');
 class RepairProperties {
     constructor(validTargets, power) {
         this.validTargets = validTargets;
@@ -9,7 +10,7 @@ class RepairProperties {
         validTargets = [];
         for (let validTargetsCount = await stream.readInt(); validTargetsCount > 0; validTargetsCount--) {
             let validTargetsElement;
-            validTargetsElement = await stream.readInt();
+            validTargetsElement = await EntityType.readFrom(stream);
             validTargets.push(validTargetsElement);
         }
         let power;

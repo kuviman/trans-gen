@@ -31,16 +31,7 @@ struct Structure {
         for (int hashMapIndex = 0; hashMapIndex < hashMapSize; hashMapIndex++) {
             Enumeration hashMapKey;
             int hashMapValue;
-            switch (reader.readInt()) {
-                case 0:
-                    hashMapKey = Enumeration.ValueOne;
-                    break;
-                case 1:
-                    hashMapKey = Enumeration.ValueTwo;
-                    break;
-                default:
-                    throw new Exception("Unexpected tag value");
-            }
+            hashMapKey = readEnumeration(reader);
             hashMapValue = reader.readInt();
             hashMap[hashMapKey] = hashMapValue;
         }

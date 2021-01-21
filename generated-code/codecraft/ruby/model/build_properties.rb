@@ -12,10 +12,7 @@ class BuildProperties
     def self.read_from(stream)
         options = []
         stream.read_int().times do |_|
-            options_element = stream.read_int()
-            if options_element < 0 || options_element >= 10
-                raise "Unexpected tag value"
-            end
+            options_element = EntityType.read_from(stream)
             options.push(options_element)
         end
         if stream.read_bool()

@@ -23,10 +23,7 @@ class Structure
         one_of_two = OneOf.read_from(stream)
         hash_map = Hash.new
         stream.read_int().times do |_|
-            hash_map_key = stream.read_int()
-            if hash_map_key < 0 || hash_map_key >= 2
-                raise "Unexpected tag value"
-            end
+            hash_map_key = Enumeration.read_from(stream)
             hash_map_value = stream.read_int()
             hash_map[hash_map_key] = hash_map_value
         end

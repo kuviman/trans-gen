@@ -32,40 +32,7 @@ public class BuildProperties {
         options = new model.EntityType[StreamUtil.readInt(stream)];
         for (int optionsIndex = 0; optionsIndex < options.length; optionsIndex++) {
             model.EntityType optionsElement;
-            switch (StreamUtil.readInt(stream)) {
-            case 0:
-                optionsElement = model.EntityType.WALL;
-                break;
-            case 1:
-                optionsElement = model.EntityType.HOUSE;
-                break;
-            case 2:
-                optionsElement = model.EntityType.BUILDER_BASE;
-                break;
-            case 3:
-                optionsElement = model.EntityType.BUILDER_UNIT;
-                break;
-            case 4:
-                optionsElement = model.EntityType.MELEE_BASE;
-                break;
-            case 5:
-                optionsElement = model.EntityType.MELEE_UNIT;
-                break;
-            case 6:
-                optionsElement = model.EntityType.RANGED_BASE;
-                break;
-            case 7:
-                optionsElement = model.EntityType.RANGED_UNIT;
-                break;
-            case 8:
-                optionsElement = model.EntityType.RESOURCE;
-                break;
-            case 9:
-                optionsElement = model.EntityType.TURRET;
-                break;
-            default:
-                throw new java.io.IOException("Unexpected tag value");
-            }
+            optionsElement = model.EntityType.readFrom(stream);
             options[optionsIndex] = optionsElement;
         }
         Integer initHealth;

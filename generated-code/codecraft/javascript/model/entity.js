@@ -1,3 +1,4 @@
+const EntityType = require('./entity-type');
 const Vec2Int = require('./vec2-int');
 class Entity {
     constructor(id, playerId, entityType, position, health, active) {
@@ -19,7 +20,7 @@ class Entity {
             playerId = null;
         }
         let entityType;
-        entityType = await stream.readInt();
+        entityType = await EntityType.readFrom(stream);
         let position;
         position = await Vec2Int.readFrom(stream);
         let health;

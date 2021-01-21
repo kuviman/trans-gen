@@ -39,40 +39,7 @@ struct PlayerView {
         for (int entityPropertiesIndex = 0; entityPropertiesIndex < entityPropertiesSize; entityPropertiesIndex++) {
             EntityType entityPropertiesKey;
             EntityProperties entityPropertiesValue;
-            switch (reader.readInt()) {
-                case 0:
-                    entityPropertiesKey = EntityType.Wall;
-                    break;
-                case 1:
-                    entityPropertiesKey = EntityType.House;
-                    break;
-                case 2:
-                    entityPropertiesKey = EntityType.BuilderBase;
-                    break;
-                case 3:
-                    entityPropertiesKey = EntityType.BuilderUnit;
-                    break;
-                case 4:
-                    entityPropertiesKey = EntityType.MeleeBase;
-                    break;
-                case 5:
-                    entityPropertiesKey = EntityType.MeleeUnit;
-                    break;
-                case 6:
-                    entityPropertiesKey = EntityType.RangedBase;
-                    break;
-                case 7:
-                    entityPropertiesKey = EntityType.RangedUnit;
-                    break;
-                case 8:
-                    entityPropertiesKey = EntityType.Resource;
-                    break;
-                case 9:
-                    entityPropertiesKey = EntityType.Turret;
-                    break;
-                default:
-                    throw new Exception("Unexpected tag value");
-            }
+            entityPropertiesKey = readEntityType(reader);
             entityPropertiesValue = EntityProperties.readFrom(reader);
             entityProperties[entityPropertiesKey] = entityPropertiesValue;
         }

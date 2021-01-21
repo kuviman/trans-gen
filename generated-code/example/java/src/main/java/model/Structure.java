@@ -77,16 +77,7 @@ public class Structure {
         hashMap = new java.util.HashMap<>(hashMapSize);
         for (int hashMapIndex = 0; hashMapIndex < hashMapSize; hashMapIndex++) {
             model.Enumeration hashMapKey;
-            switch (StreamUtil.readInt(stream)) {
-            case 0:
-                hashMapKey = model.Enumeration.VALUE_ONE;
-                break;
-            case 1:
-                hashMapKey = model.Enumeration.VALUE_TWO;
-                break;
-            default:
-                throw new java.io.IOException("Unexpected tag value");
-            }
+            hashMapKey = model.Enumeration.readFrom(stream);
             int hashMapValue;
             hashMapValue = StreamUtil.readInt(stream);
             hashMap.put(hashMapKey, hashMapValue);

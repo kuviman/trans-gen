@@ -1,3 +1,4 @@
+const Enumeration = require('./enumeration');
 const OneOf = require('./one-of');
 class Structure {
     constructor(oneOfOne, oneOfTwo, hashMap, text, floatNumber, doubleNumber) {
@@ -19,7 +20,7 @@ class Structure {
         for (let hashMapCount = await stream.readInt(); hashMapCount > 0; hashMapCount--) {
             let hashMapKey;
             let hashMapValue;
-            hashMapKey = await stream.readInt();
+            hashMapKey = await Enumeration.readFrom(stream);
             hashMapValue = await stream.readInt();
             hashMap.set(hashMapKey, hashMapValue)
         }
