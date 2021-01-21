@@ -1,39 +1,54 @@
 #include "EntityProperties.hpp"
 
 EntityProperties::EntityProperties() { }
+
 EntityProperties::EntityProperties(int size, int buildScore, int destroyScore, bool canMove, int populationProvide, int populationUse, int maxHealth, int initialCost, int sightRange, int resourcePerHealth, std::shared_ptr<BuildProperties> build, std::shared_ptr<AttackProperties> attack, std::shared_ptr<RepairProperties> repair) : size(size), buildScore(buildScore), destroyScore(destroyScore), canMove(canMove), populationProvide(populationProvide), populationUse(populationUse), maxHealth(maxHealth), initialCost(initialCost), sightRange(sightRange), resourcePerHealth(resourcePerHealth), build(build), attack(attack), repair(repair) { }
+
 EntityProperties EntityProperties::readFrom(InputStream& stream) {
-    EntityProperties result;
-    result.size = stream.readInt();
-    result.buildScore = stream.readInt();
-    result.destroyScore = stream.readInt();
-    result.canMove = stream.readBool();
-    result.populationProvide = stream.readInt();
-    result.populationUse = stream.readInt();
-    result.maxHealth = stream.readInt();
-    result.initialCost = stream.readInt();
-    result.sightRange = stream.readInt();
-    result.resourcePerHealth = stream.readInt();
+    int size;
+    size = stream.readInt();
+    int buildScore;
+    buildScore = stream.readInt();
+    int destroyScore;
+    destroyScore = stream.readInt();
+    bool canMove;
+    canMove = stream.readBool();
+    int populationProvide;
+    populationProvide = stream.readInt();
+    int populationUse;
+    populationUse = stream.readInt();
+    int maxHealth;
+    maxHealth = stream.readInt();
+    int initialCost;
+    initialCost = stream.readInt();
+    int sightRange;
+    sightRange = stream.readInt();
+    int resourcePerHealth;
+    resourcePerHealth = stream.readInt();
+    std::shared_ptr<BuildProperties> build;
     if (stream.readBool()) {
-        result.build = std::shared_ptr<BuildProperties>(new BuildProperties());
-        *result.build = BuildProperties::readFrom(stream);
+        build = std::shared_ptr<BuildProperties>(new BuildProperties());
+        *build = BuildProperties::readFrom(stream);
     } else {
-        result.build = std::shared_ptr<BuildProperties>();
+        build = std::shared_ptr<BuildProperties>();
     }
+    std::shared_ptr<AttackProperties> attack;
     if (stream.readBool()) {
-        result.attack = std::shared_ptr<AttackProperties>(new AttackProperties());
-        *result.attack = AttackProperties::readFrom(stream);
+        attack = std::shared_ptr<AttackProperties>(new AttackProperties());
+        *attack = AttackProperties::readFrom(stream);
     } else {
-        result.attack = std::shared_ptr<AttackProperties>();
+        attack = std::shared_ptr<AttackProperties>();
     }
+    std::shared_ptr<RepairProperties> repair;
     if (stream.readBool()) {
-        result.repair = std::shared_ptr<RepairProperties>(new RepairProperties());
-        *result.repair = RepairProperties::readFrom(stream);
+        repair = std::shared_ptr<RepairProperties>(new RepairProperties());
+        *repair = RepairProperties::readFrom(stream);
     } else {
-        result.repair = std::shared_ptr<RepairProperties>();
+        repair = std::shared_ptr<RepairProperties>();
     }
-    return result;
+    return EntityProperties(size, buildScore, destroyScore, canMove, populationProvide, populationUse, maxHealth, initialCost, sightRange, resourcePerHealth, build, attack, repair);
 }
+
 void EntityProperties::writeTo(OutputStream& stream) const {
     stream.write(size);
     stream.write(buildScore);
@@ -47,19 +62,22 @@ void EntityProperties::writeTo(OutputStream& stream) const {
     stream.write(resourcePerHealth);
     if (build) {
         stream.write(true);
-        (*build).writeTo(stream);
+        const BuildProperties& buildValue = *build;
+        buildValue.writeTo(stream);
     } else {
         stream.write(false);
     }
     if (attack) {
         stream.write(true);
-        (*attack).writeTo(stream);
+        const AttackProperties& attackValue = *attack;
+        attackValue.writeTo(stream);
     } else {
         stream.write(false);
     }
     if (repair) {
         stream.write(true);
-        (*repair).writeTo(stream);
+        const RepairProperties& repairValue = *repair;
+        repairValue.writeTo(stream);
     } else {
         stream.write(false);
     }

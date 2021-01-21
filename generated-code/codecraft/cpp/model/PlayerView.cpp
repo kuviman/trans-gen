@@ -1,17 +1,23 @@
 #include "PlayerView.hpp"
 
 PlayerView::PlayerView() { }
+
 PlayerView::PlayerView(int myId, int mapSize, bool fogOfWar, std::unordered_map<EntityType, EntityProperties> entityProperties, int maxTickCount, int maxPathfindNodes, int currentTick, std::vector<Player> players, std::vector<Entity> entities) : myId(myId), mapSize(mapSize), fogOfWar(fogOfWar), entityProperties(entityProperties), maxTickCount(maxTickCount), maxPathfindNodes(maxPathfindNodes), currentTick(currentTick), players(players), entities(entities) { }
+
 PlayerView PlayerView::readFrom(InputStream& stream) {
-    PlayerView result;
-    result.myId = stream.readInt();
-    result.mapSize = stream.readInt();
-    result.fogOfWar = stream.readBool();
+    int myId;
+    myId = stream.readInt();
+    int mapSize;
+    mapSize = stream.readInt();
+    bool fogOfWar;
+    fogOfWar = stream.readBool();
+    std::unordered_map<EntityType, EntityProperties> entityProperties;
     size_t entityPropertiesSize = stream.readInt();
-    result.entityProperties = std::unordered_map<EntityType, EntityProperties>();
-    result.entityProperties.reserve(entityPropertiesSize);
-    for (size_t i = 0; i < entityPropertiesSize; i++) {
+    entityProperties = std::unordered_map<EntityType, EntityProperties>();
+    entityProperties.reserve(entityPropertiesSize);
+    for (size_t entityPropertiesIndex = 0; entityPropertiesIndex < entityPropertiesSize; entityPropertiesIndex++) {
         EntityType entityPropertiesKey;
+        EntityProperties entityPropertiesValue;
         switch (stream.readInt()) {
         case 0:
             entityPropertiesKey = EntityType::WALL;
@@ -46,31 +52,38 @@ PlayerView PlayerView::readFrom(InputStream& stream) {
         default:
             throw std::runtime_error("Unexpected tag value");
         }
-        EntityProperties entityPropertiesValue;
         entityPropertiesValue = EntityProperties::readFrom(stream);
-        result.entityProperties.emplace(std::make_pair(entityPropertiesKey, entityPropertiesValue));
+        entityProperties.emplace(std::make_pair(entityPropertiesKey, entityPropertiesValue));
     }
-    result.maxTickCount = stream.readInt();
-    result.maxPathfindNodes = stream.readInt();
-    result.currentTick = stream.readInt();
-    result.players = std::vector<Player>(stream.readInt());
-    for (size_t i = 0; i < result.players.size(); i++) {
-        result.players[i] = Player::readFrom(stream);
+    int maxTickCount;
+    maxTickCount = stream.readInt();
+    int maxPathfindNodes;
+    maxPathfindNodes = stream.readInt();
+    int currentTick;
+    currentTick = stream.readInt();
+    std::vector<Player> players;
+    players = std::vector<Player>(stream.readInt());
+    for (size_t playersIndex = 0; playersIndex < players.size(); playersIndex++) {
+        players[playersIndex] = Player::readFrom(stream);
     }
-    result.entities = std::vector<Entity>(stream.readInt());
-    for (size_t i = 0; i < result.entities.size(); i++) {
-        result.entities[i] = Entity::readFrom(stream);
+    std::vector<Entity> entities;
+    entities = std::vector<Entity>(stream.readInt());
+    for (size_t entitiesIndex = 0; entitiesIndex < entities.size(); entitiesIndex++) {
+        entities[entitiesIndex] = Entity::readFrom(stream);
     }
-    return result;
+    return PlayerView(myId, mapSize, fogOfWar, entityProperties, maxTickCount, maxPathfindNodes, currentTick, players, entities);
 }
+
 void PlayerView::writeTo(OutputStream& stream) const {
     stream.write(myId);
     stream.write(mapSize);
     stream.write(fogOfWar);
     stream.write((int)(entityProperties.size()));
     for (const auto& entityPropertiesEntry : entityProperties) {
-        stream.write((int)(entityPropertiesEntry.first));
-        entityPropertiesEntry.second.writeTo(stream);
+        const EntityType& entityPropertiesKey = entityPropertiesEntry.first;
+        const EntityProperties& entityPropertiesValue = entityPropertiesEntry.second;
+        stream.write((int)(entityPropertiesKey));
+        entityPropertiesValue.writeTo(stream);
     }
     stream.write(maxTickCount);
     stream.write(maxPathfindNodes);

@@ -1,54 +1,58 @@
 #include "BuildProperties.hpp"
 
 BuildProperties::BuildProperties() { }
+
 BuildProperties::BuildProperties(std::vector<EntityType> options, std::shared_ptr<int> initHealth) : options(options), initHealth(initHealth) { }
+
 BuildProperties BuildProperties::readFrom(InputStream& stream) {
-    BuildProperties result;
-    result.options = std::vector<EntityType>(stream.readInt());
-    for (size_t i = 0; i < result.options.size(); i++) {
+    std::vector<EntityType> options;
+    options = std::vector<EntityType>(stream.readInt());
+    for (size_t optionsIndex = 0; optionsIndex < options.size(); optionsIndex++) {
         switch (stream.readInt()) {
         case 0:
-            result.options[i] = EntityType::WALL;
+            options[optionsIndex] = EntityType::WALL;
             break;
         case 1:
-            result.options[i] = EntityType::HOUSE;
+            options[optionsIndex] = EntityType::HOUSE;
             break;
         case 2:
-            result.options[i] = EntityType::BUILDER_BASE;
+            options[optionsIndex] = EntityType::BUILDER_BASE;
             break;
         case 3:
-            result.options[i] = EntityType::BUILDER_UNIT;
+            options[optionsIndex] = EntityType::BUILDER_UNIT;
             break;
         case 4:
-            result.options[i] = EntityType::MELEE_BASE;
+            options[optionsIndex] = EntityType::MELEE_BASE;
             break;
         case 5:
-            result.options[i] = EntityType::MELEE_UNIT;
+            options[optionsIndex] = EntityType::MELEE_UNIT;
             break;
         case 6:
-            result.options[i] = EntityType::RANGED_BASE;
+            options[optionsIndex] = EntityType::RANGED_BASE;
             break;
         case 7:
-            result.options[i] = EntityType::RANGED_UNIT;
+            options[optionsIndex] = EntityType::RANGED_UNIT;
             break;
         case 8:
-            result.options[i] = EntityType::RESOURCE;
+            options[optionsIndex] = EntityType::RESOURCE;
             break;
         case 9:
-            result.options[i] = EntityType::TURRET;
+            options[optionsIndex] = EntityType::TURRET;
             break;
         default:
             throw std::runtime_error("Unexpected tag value");
         }
     }
+    std::shared_ptr<int> initHealth;
     if (stream.readBool()) {
-        result.initHealth = std::shared_ptr<int>(new int());
-        *result.initHealth = stream.readInt();
+        initHealth = std::shared_ptr<int>(new int());
+        *initHealth = stream.readInt();
     } else {
-        result.initHealth = std::shared_ptr<int>();
+        initHealth = std::shared_ptr<int>();
     }
-    return result;
+    return BuildProperties(options, initHealth);
 }
+
 void BuildProperties::writeTo(OutputStream& stream) const {
     stream.write((int)(options.size()));
     for (const EntityType& optionsElement : options) {
@@ -56,7 +60,8 @@ void BuildProperties::writeTo(OutputStream& stream) const {
     }
     if (initHealth) {
         stream.write(true);
-        stream.write((*initHealth));
+        const int& initHealthValue = *initHealth;
+        stream.write(initHealthValue);
     } else {
         stream.write(false);
     }

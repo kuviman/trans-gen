@@ -1,5 +1,5 @@
-#ifndef _MODEL_PLAYER_HPP_
-#define _MODEL_PLAYER_HPP_
+#ifndef __MODEL_PLAYER_HPP__
+#define __MODEL_PLAYER_HPP__
 
 #include "../Stream.hpp"
 #include <string>
@@ -9,12 +9,18 @@ public:
     int id;
     int score;
     int resource;
+
     Player();
+
     Player(int id, int score, int resource);
+
     static Player readFrom(InputStream& stream);
+
     void writeTo(OutputStream& stream) const;
+
     bool operator ==(const Player& other) const;
 };
+
 namespace std {
     template<>
     struct hash<Player> {

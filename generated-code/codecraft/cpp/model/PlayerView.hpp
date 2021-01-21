@@ -1,5 +1,5 @@
-#ifndef _MODEL_PLAYER_VIEW_HPP_
-#define _MODEL_PLAYER_VIEW_HPP_
+#ifndef __MODEL_PLAYER_VIEW_HPP__
+#define __MODEL_PLAYER_VIEW_HPP__
 
 #include "../Stream.hpp"
 #include "AttackProperties.hpp"
@@ -27,9 +27,13 @@ public:
     int currentTick;
     std::vector<Player> players;
     std::vector<Entity> entities;
+
     PlayerView();
+
     PlayerView(int myId, int mapSize, bool fogOfWar, std::unordered_map<EntityType, EntityProperties> entityProperties, int maxTickCount, int maxPathfindNodes, int currentTick, std::vector<Player> players, std::vector<Entity> entities);
+
     static PlayerView readFrom(InputStream& stream);
+
     void writeTo(OutputStream& stream) const;
 };
 

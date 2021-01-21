@@ -1,5 +1,5 @@
-#ifndef _MODEL_REPAIR_PROPERTIES_HPP_
-#define _MODEL_REPAIR_PROPERTIES_HPP_
+#ifndef __MODEL_REPAIR_PROPERTIES_HPP__
+#define __MODEL_REPAIR_PROPERTIES_HPP__
 
 #include "../Stream.hpp"
 #include "EntityType.hpp"
@@ -11,9 +11,13 @@ class RepairProperties {
 public:
     std::vector<EntityType> validTargets;
     int power;
+
     RepairProperties();
+
     RepairProperties(std::vector<EntityType> validTargets, int power);
+
     static RepairProperties readFrom(InputStream& stream);
+
     void writeTo(OutputStream& stream) const;
 };
 

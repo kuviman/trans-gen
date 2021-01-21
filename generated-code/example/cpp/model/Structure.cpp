@@ -1,16 +1,21 @@
 #include "Structure.hpp"
 
 Structure::Structure() { }
+
 Structure::Structure(std::shared_ptr<OneOf> oneOfOne, std::shared_ptr<OneOf> oneOfTwo, std::unordered_map<Enumeration, int> hashMap, std::string text, float floatNumber, double doubleNumber) : oneOfOne(oneOfOne), oneOfTwo(oneOfTwo), hashMap(hashMap), text(text), floatNumber(floatNumber), doubleNumber(doubleNumber) { }
+
 Structure Structure::readFrom(InputStream& stream) {
-    Structure result;
-    result.oneOfOne = OneOf::readFrom(stream);
-    result.oneOfTwo = OneOf::readFrom(stream);
+    std::shared_ptr<OneOf> oneOfOne;
+    oneOfOne = OneOf::readFrom(stream);
+    std::shared_ptr<OneOf> oneOfTwo;
+    oneOfTwo = OneOf::readFrom(stream);
+    std::unordered_map<Enumeration, int> hashMap;
     size_t hashMapSize = stream.readInt();
-    result.hashMap = std::unordered_map<Enumeration, int>();
-    result.hashMap.reserve(hashMapSize);
-    for (size_t i = 0; i < hashMapSize; i++) {
+    hashMap = std::unordered_map<Enumeration, int>();
+    hashMap.reserve(hashMapSize);
+    for (size_t hashMapIndex = 0; hashMapIndex < hashMapSize; hashMapIndex++) {
         Enumeration hashMapKey;
+        int hashMapValue;
         switch (stream.readInt()) {
         case 0:
             hashMapKey = Enumeration::VALUE_ONE;
@@ -21,22 +26,27 @@ Structure Structure::readFrom(InputStream& stream) {
         default:
             throw std::runtime_error("Unexpected tag value");
         }
-        int hashMapValue;
         hashMapValue = stream.readInt();
-        result.hashMap.emplace(std::make_pair(hashMapKey, hashMapValue));
+        hashMap.emplace(std::make_pair(hashMapKey, hashMapValue));
     }
-    result.text = stream.readString();
-    result.floatNumber = stream.readFloat();
-    result.doubleNumber = stream.readDouble();
-    return result;
+    std::string text;
+    text = stream.readString();
+    float floatNumber;
+    floatNumber = stream.readFloat();
+    double doubleNumber;
+    doubleNumber = stream.readDouble();
+    return Structure(oneOfOne, oneOfTwo, hashMap, text, floatNumber, doubleNumber);
 }
+
 void Structure::writeTo(OutputStream& stream) const {
     oneOfOne->writeTo(stream);
     oneOfTwo->writeTo(stream);
     stream.write((int)(hashMap.size()));
     for (const auto& hashMapEntry : hashMap) {
-        stream.write((int)(hashMapEntry.first));
-        stream.write(hashMapEntry.second);
+        const Enumeration& hashMapKey = hashMapEntry.first;
+        const int& hashMapValue = hashMapEntry.second;
+        stream.write((int)(hashMapKey));
+        stream.write(hashMapValue);
     }
     stream.write(text);
     stream.write(floatNumber);

@@ -1,5 +1,5 @@
-#ifndef _MODEL_ONE_OF_HPP_
-#define _MODEL_ONE_OF_HPP_
+#ifndef __MODEL_ONE_OF_HPP__
+#define __MODEL_ONE_OF_HPP__
 
 #include <memory>
 #include "../Stream.hpp"
@@ -18,24 +18,41 @@ public:
 class OneOf::OptionOne : public OneOf {
 public:
     static const int TAG = 0;
-public:
+
     std::vector<int> vecInt;
     long long longInt;
+
     OptionOne();
+
     OptionOne(std::vector<int> vecInt, long long longInt);
+
     static OptionOne readFrom(InputStream& stream);
-    void writeTo(OutputStream& stream) const override;
+
+    void writeTo(OutputStream& stream) const;
 };
 
 class OneOf::OptionTwo : public OneOf {
 public:
     static const int TAG = 1;
-public:
+
     int value;
+
     OptionTwo();
+
     OptionTwo(int value);
+
     static OptionTwo readFrom(InputStream& stream);
-    void writeTo(OutputStream& stream) const override;
+
+    void writeTo(OutputStream& stream) const;
+
+    bool operator ==(const OptionTwo& other) const;
 };
+
+namespace std {
+    template<>
+    struct hash<OneOf::OptionTwo> {
+        size_t operator ()(const OneOf::OptionTwo& value) const;
+    };
+}
 
 #endif

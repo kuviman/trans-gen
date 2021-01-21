@@ -1,5 +1,5 @@
-#ifndef _MODEL_STRUCTURE_HPP_
-#define _MODEL_STRUCTURE_HPP_
+#ifndef __MODEL_STRUCTURE_HPP__
+#define __MODEL_STRUCTURE_HPP__
 
 #include "../Stream.hpp"
 #include "Enumeration.hpp"
@@ -17,9 +17,13 @@ public:
     std::string text;
     float floatNumber;
     double doubleNumber;
+
     Structure();
+
     Structure(std::shared_ptr<OneOf> oneOfOne, std::shared_ptr<OneOf> oneOfTwo, std::unordered_map<Enumeration, int> hashMap, std::string text, float floatNumber, double doubleNumber);
+
     static Structure readFrom(InputStream& stream);
+
     void writeTo(OutputStream& stream) const;
 };
 

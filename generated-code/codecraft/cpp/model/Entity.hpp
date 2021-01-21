@@ -1,5 +1,5 @@
-#ifndef _MODEL_ENTITY_HPP_
-#define _MODEL_ENTITY_HPP_
+#ifndef __MODEL_ENTITY_HPP__
+#define __MODEL_ENTITY_HPP__
 
 #include "../Stream.hpp"
 #include "EntityType.hpp"
@@ -16,9 +16,13 @@ public:
     Vec2Int position;
     int health;
     bool active;
+
     Entity();
+
     Entity(int id, std::shared_ptr<int> playerId, EntityType entityType, Vec2Int position, int health, bool active);
+
     static Entity readFrom(InputStream& stream);
+
     void writeTo(OutputStream& stream) const;
 };
 
