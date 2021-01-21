@@ -17,7 +17,7 @@
 - Schema::String => {
 {{ var }} = StreamUtil.readString(stream)
 - }
-- Schema::Struct(Struct { name, .. }) | Schema::OneOf { base_name: name, .. } => {
+- Schema::Struct(Struct { name, .. }) | Schema::OneOf { base_name: name, .. } | Schema::Enum { base_name: name, .. } => {
 {{ var }} = model.{{ name.camel_case(conv) }}.readFrom(stream)
 - }
 - Schema::Option(inner) => {
@@ -48,14 +48,6 @@ for ({{ index_var }} in 0 until {{ size_var }}) {
     var {{ value_var }}: {{ type_name(value_type) }}
     {{ read_var(value_var, value_type) }}
     {{ var }}.put({{ key_var }}, {{ value_var }})
-}
-- }
-- Schema::Enum { base_name, variants, .. } => {
-when (StreamUtil.readInt(stream)) {
-- for (tag, variant) in variants.iter().enumerate() {
-{{ tag }} -> {{ var }} = model.{{ base_name.camel_case(conv) }}.{{ variant.name.shouty_snake_case(conv) }}
-- }
-else -> throw java.io.IOException("Unexpected tag value")
 }
 - }
 - }
