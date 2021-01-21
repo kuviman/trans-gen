@@ -17,4 +17,15 @@ public enum {{ base_name.camel_case(conv) }} {
     {{ base_name.camel_case(conv) }}(int tag) {
         this.tag = tag;
     }
+
+    public static {{ base_name.camel_case(conv) }} readFrom(java.io.InputStream stream) throws java.io.IOException {
+        switch (StreamUtil.readInt(stream)) {
+        - for (tag, variant) in variants.iter().enumerate() {
+        case {{ tag }}:
+            return {{ variant.name.shouty_snake_case(conv) }};
+        - }
+        default:
+            throw new java.io.IOException("Unexpected tag value");
+        }
+    }
 }
