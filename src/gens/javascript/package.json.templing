@@ -1,0 +1,5 @@
+{
+  "name": "{{ project_name }}",
+  "version": "{{ project_version }}",
+  "main": "main.js"
+}

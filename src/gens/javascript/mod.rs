@@ -145,11 +145,19 @@ impl Generator {
 impl crate::Generator for Generator {
     const NAME: &'static str = "JavaScript";
     type Options = ();
-    fn new(_name: &str, _version: &str, _: ()) -> Self {
+    fn new(name: &str, version: &str, _: ()) -> Self {
+        let project_name = Name::new(name.to_owned())
+            .snake_case(conv)
+            .replace('_', "-");
+        let project_version = version;
         let mut files = HashMap::new();
         files.insert(
             "stream-wrapper.js".to_owned(),
             include_str!("stream-wrapper.js").to_owned(),
+        );
+        files.insert(
+            "package.json".to_owned(),
+            include_templing!("src/gens/javascript/package.json.templing").to_owned(),
         );
         Self {
             files,
@@ -171,7 +179,7 @@ impl crate::Generator for Generator {
 
 impl RunnableGenerator for Generator {
     fn build_local(path: &Path) -> anyhow::Result<()> {
-        Ok(())
+        command("npm").arg("install").current_dir(path).run()
     }
     fn run_local(path: &Path) -> anyhow::Result<Command> {
         let mut command = command("node");
