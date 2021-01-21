@@ -64,19 +64,7 @@ class PlayerView {
             entityProperties = mutableMapOf();
             for (entityPropertiesIndex in 0 until entityPropertiesSize) {
                 var entityPropertiesKey: model.EntityType
-                when (StreamUtil.readInt(stream)) {
-                0 -> entityPropertiesKey = model.EntityType.WALL
-                1 -> entityPropertiesKey = model.EntityType.HOUSE
-                2 -> entityPropertiesKey = model.EntityType.BUILDER_BASE
-                3 -> entityPropertiesKey = model.EntityType.BUILDER_UNIT
-                4 -> entityPropertiesKey = model.EntityType.MELEE_BASE
-                5 -> entityPropertiesKey = model.EntityType.MELEE_UNIT
-                6 -> entityPropertiesKey = model.EntityType.RANGED_BASE
-                7 -> entityPropertiesKey = model.EntityType.RANGED_UNIT
-                8 -> entityPropertiesKey = model.EntityType.RESOURCE
-                9 -> entityPropertiesKey = model.EntityType.TURRET
-                else -> throw java.io.IOException("Unexpected tag value")
-                }
+                entityPropertiesKey = model.EntityType.readFrom(stream)
                 var entityPropertiesValue: model.EntityProperties
                 entityPropertiesValue = model.EntityProperties.readFrom(stream)
                 entityProperties.put(entityPropertiesKey, entityPropertiesValue)

@@ -47,11 +47,7 @@ class Structure {
             hashMap = mutableMapOf();
             for (hashMapIndex in 0 until hashMapSize) {
                 var hashMapKey: model.Enumeration
-                when (StreamUtil.readInt(stream)) {
-                0 -> hashMapKey = model.Enumeration.VALUE_ONE
-                1 -> hashMapKey = model.Enumeration.VALUE_TWO
-                else -> throw java.io.IOException("Unexpected tag value")
-                }
+                hashMapKey = model.Enumeration.readFrom(stream)
                 var hashMapValue: Int
                 hashMapValue = StreamUtil.readInt(stream)
                 hashMap.put(hashMapKey, hashMapValue)

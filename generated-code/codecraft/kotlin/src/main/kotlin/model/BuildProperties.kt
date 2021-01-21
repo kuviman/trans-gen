@@ -32,19 +32,7 @@ class BuildProperties {
             var options: Array<model.EntityType>
             options = Array(StreamUtil.readInt(stream), {
                 var optionsElement: model.EntityType
-                when (StreamUtil.readInt(stream)) {
-                0 -> optionsElement = model.EntityType.WALL
-                1 -> optionsElement = model.EntityType.HOUSE
-                2 -> optionsElement = model.EntityType.BUILDER_BASE
-                3 -> optionsElement = model.EntityType.BUILDER_UNIT
-                4 -> optionsElement = model.EntityType.MELEE_BASE
-                5 -> optionsElement = model.EntityType.MELEE_UNIT
-                6 -> optionsElement = model.EntityType.RANGED_BASE
-                7 -> optionsElement = model.EntityType.RANGED_UNIT
-                8 -> optionsElement = model.EntityType.RESOURCE
-                9 -> optionsElement = model.EntityType.TURRET
-                else -> throw java.io.IOException("Unexpected tag value")
-                }
+                optionsElement = model.EntityType.readFrom(stream)
                 optionsElement
             })
             var initHealth: Int?

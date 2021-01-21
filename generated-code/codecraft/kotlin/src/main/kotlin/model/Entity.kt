@@ -47,19 +47,7 @@ class Entity {
                 playerId = null
             }
             var entityType: model.EntityType
-            when (StreamUtil.readInt(stream)) {
-            0 -> entityType = model.EntityType.WALL
-            1 -> entityType = model.EntityType.HOUSE
-            2 -> entityType = model.EntityType.BUILDER_BASE
-            3 -> entityType = model.EntityType.BUILDER_UNIT
-            4 -> entityType = model.EntityType.MELEE_BASE
-            5 -> entityType = model.EntityType.MELEE_UNIT
-            6 -> entityType = model.EntityType.RANGED_BASE
-            7 -> entityType = model.EntityType.RANGED_UNIT
-            8 -> entityType = model.EntityType.RESOURCE
-            9 -> entityType = model.EntityType.TURRET
-            else -> throw java.io.IOException("Unexpected tag value")
-            }
+            entityType = model.EntityType.readFrom(stream)
             var position: model.Vec2Int
             position = model.Vec2Int.readFrom(stream)
             var health: Int
