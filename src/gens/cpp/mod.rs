@@ -188,6 +188,10 @@ impl crate::Generator for Generator {
                     format!("model/{}.hpp", base_name.camel_case(conv)),
                     include_templing!("src/gens/cpp/enum-hpp.templing"),
                 );
+                self.files.insert(
+                    format!("model/{}.cpp", base_name.camel_case(conv)),
+                    include_templing!("src/gens/cpp/enum-cpp.templing"),
+                );
             }
             Schema::Struct(struc) => {
                 self.model_include.push_str(&format!(

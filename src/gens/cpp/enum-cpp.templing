@@ -1,0 +1,13 @@
+#include "{{ base_name.camel_case(conv) }}.hpp"
+#include <stdexcept>
+
+{{ base_name.camel_case(conv) }} read{{ base_name.camel_case(conv) }}(InputStream& stream) {
+    switch (stream.readInt()) {
+    - for (tag, variant) in variants.iter().enumerate() {
+    case {{ tag }}:
+        return {{ base_name.camel_case(conv) }}::{{ variant.name.shouty_snake_case(conv) }};
+    - }
+    default:
+        throw std::runtime_error("Unexpected tag value");
+    }
+}

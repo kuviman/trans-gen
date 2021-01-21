@@ -52,14 +52,6 @@ for (size_t {{ index_var }} = 0; {{ index_var }} < {{ size_var }}; {{ index_var 
 }
 - }
 - Schema::Enum { base_name, variants, .. } => {
-switch (stream.readInt()) {
-- for (tag, variant) in variants.iter().enumerate() {
-case {{ tag }}:
-    {{ var }} = {{ base_name.camel_case(conv) }}::{{ variant.name.shouty_snake_case(conv) }};
-    break;
-- }
-default:
-    throw std::runtime_error("Unexpected tag value");
-}
+{{ var }} = read{{ base_name.camel_case(conv) }}(stream);
 - }
 - }
