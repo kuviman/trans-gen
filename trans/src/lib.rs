@@ -94,6 +94,12 @@ pub struct Struct {
     pub fields: Vec<Field>,
 }
 
+impl Struct {
+    pub fn hashable(&self) -> bool {
+        self.fields.iter().all(|field| field.schema.hashable())
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Hash, Clone)]
 pub struct EnumVariant {
     pub documentation: Documentation,
@@ -148,9 +154,7 @@ impl Schema {
             Self::Bool | Self::Int32 | Self::Int64 | Self::String => true,
             Self::Float32 | Self::Float64 => false,
             Self::Option(_) => false,
-            Self::Struct(Struct { fields, .. }) => {
-                fields.iter().all(|field| field.schema.hashable())
-            }
+            Self::Struct(struc) => struc.hashable(),
             Self::OneOf { .. } => false,
             Self::Vec(_) => false,
             Self::Map(_, _) => false,
