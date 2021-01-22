@@ -11,3 +11,14 @@ Enumeration readEnumeration(InputStream& stream) {
         throw std::runtime_error("Unexpected tag value");
     }
 }
+
+std::string enumerationToString(Enumeration value) {
+    switch (value) {
+    case Enumeration::VALUE_ONE:
+        return "VALUE_ONE";
+    case Enumeration::VALUE_TWO:
+        return "VALUE_TWO";
+    default:
+        throw std::runtime_error("Impossible happened");
+    }
+}

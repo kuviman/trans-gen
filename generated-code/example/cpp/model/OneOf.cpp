@@ -25,6 +25,26 @@ void OneOf::OptionOne::writeTo(OutputStream& stream) const {
     stream.write(longInt);
 }
 
+std::string OneOf::OptionOne::toString() const {
+    std::stringstream ss;
+    ss << "OneOf::OptionOne { ";
+    ss << "vecInt: ";
+    ss << "[ ";
+    for (size_t vecIntIndex = 0; vecIntIndex < vecInt.size(); vecIntIndex++) {
+        const int& vecIntElement = vecInt[vecIntIndex];
+        if (vecIntIndex != 0) {
+            ss << ", ";
+        }
+        ss << vecIntElement;
+    }
+    ss << " ]";
+    ss << ", ";
+    ss << "longInt: ";
+    ss << longInt;
+    ss << " }";
+    return ss.str();
+}
+
 OneOf::OptionTwo::OptionTwo() { }
 
 OneOf::OptionTwo::OptionTwo(int value) : value(value) { }
@@ -38,6 +58,15 @@ OneOf::OptionTwo OneOf::OptionTwo::readFrom(InputStream& stream) {
 void OneOf::OptionTwo::writeTo(OutputStream& stream) const {
     stream.write(TAG);
     stream.write(value);
+}
+
+std::string OneOf::OptionTwo::toString() const {
+    std::stringstream ss;
+    ss << "OneOf::OptionTwo { ";
+    ss << "value: ";
+    ss << value;
+    ss << " }";
+    return ss.str();
 }
 
 bool OneOf::OptionTwo::operator ==(const OneOf::OptionTwo& other) const {

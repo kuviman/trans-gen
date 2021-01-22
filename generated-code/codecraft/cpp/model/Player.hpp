@@ -2,6 +2,7 @@
 #define __MODEL_PLAYER_HPP__
 
 #include "../Stream.hpp"
+#include <sstream>
 #include <string>
 
 class Player {
@@ -17,6 +18,8 @@ public:
     static Player readFrom(InputStream& stream);
 
     void writeTo(OutputStream& stream) const;
+
+    std::string toString() const;
 
     bool operator ==(const Player& other) const;
 };

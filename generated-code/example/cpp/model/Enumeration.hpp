@@ -9,5 +9,6 @@ enum class Enumeration {
 };
 
 Enumeration readEnumeration(InputStream& stream);
+std::string enumerationToString(Enumeration value);
 
 #endif

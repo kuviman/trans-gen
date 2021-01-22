@@ -20,6 +20,21 @@ void AttackProperties::writeTo(OutputStream& stream) const {
     stream.write(collectResource);
 }
 
+std::string AttackProperties::toString() const {
+    std::stringstream ss;
+    ss << "AttackProperties { ";
+    ss << "attackRange: ";
+    ss << attackRange;
+    ss << ", ";
+    ss << "damage: ";
+    ss << damage;
+    ss << ", ";
+    ss << "collectResource: ";
+    ss << collectResource;
+    ss << " }";
+    return ss.str();
+}
+
 bool AttackProperties::operator ==(const AttackProperties& other) const {
     return attackRange == other.attackRange && damage == other.damage && collectResource == other.collectResource;
 }

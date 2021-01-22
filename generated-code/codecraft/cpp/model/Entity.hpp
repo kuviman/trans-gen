@@ -5,6 +5,7 @@
 #include "EntityType.hpp"
 #include "Vec2Int.hpp"
 #include <memory>
+#include <sstream>
 #include <stdexcept>
 #include <string>
 
@@ -24,6 +25,8 @@ public:
     static Entity readFrom(InputStream& stream);
 
     void writeTo(OutputStream& stream) const;
+
+    std::string toString() const;
 };
 
 #endif

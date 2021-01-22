@@ -20,6 +20,21 @@ void Player::writeTo(OutputStream& stream) const {
     stream.write(resource);
 }
 
+std::string Player::toString() const {
+    std::stringstream ss;
+    ss << "Player { ";
+    ss << "id: ";
+    ss << id;
+    ss << ", ";
+    ss << "score: ";
+    ss << score;
+    ss << ", ";
+    ss << "resource: ";
+    ss << resource;
+    ss << " }";
+    return ss.str();
+}
+
 bool Player::operator ==(const Player& other) const {
     return id == other.id && score == other.score && resource == other.resource;
 }

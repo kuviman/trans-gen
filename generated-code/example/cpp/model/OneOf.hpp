@@ -3,6 +3,7 @@
 
 #include "../Stream.hpp"
 #include <memory>
+#include <sstream>
 #include <string>
 #include <vector>
 
@@ -13,6 +14,7 @@ public:
 
     static std::shared_ptr<OneOf> readFrom(InputStream& stream);
     virtual void writeTo(OutputStream& stream) const = 0;
+    virtual std::string toString() const = 0;
 };
 
 class OneOf::OptionOne : public OneOf {
@@ -29,6 +31,8 @@ public:
     static OptionOne readFrom(InputStream& stream);
 
     void writeTo(OutputStream& stream) const;
+
+    std::string toString() const;
 };
 
 class OneOf::OptionTwo : public OneOf {
@@ -44,6 +48,8 @@ public:
     static OptionTwo readFrom(InputStream& stream);
 
     void writeTo(OutputStream& stream) const;
+
+    std::string toString() const;
 
     bool operator ==(const OptionTwo& other) const;
 };

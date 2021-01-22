@@ -33,3 +33,28 @@ void BuildProperties::writeTo(OutputStream& stream) const {
         stream.write(false);
     }
 }
+
+std::string BuildProperties::toString() const {
+    std::stringstream ss;
+    ss << "BuildProperties { ";
+    ss << "options: ";
+    ss << "[ ";
+    for (size_t optionsIndex = 0; optionsIndex < options.size(); optionsIndex++) {
+        const EntityType& optionsElement = options[optionsIndex];
+        if (optionsIndex != 0) {
+            ss << ", ";
+        }
+        ss << entityTypeToString(optionsElement);
+    }
+    ss << " ]";
+    ss << ", ";
+    ss << "initHealth: ";
+    if (initHealth) {
+        const int& initHealthValue = *initHealth;
+        ss << initHealthValue;
+    } else {
+        ss << "none";
+    }
+    ss << " }";
+    return ss.str();
+}

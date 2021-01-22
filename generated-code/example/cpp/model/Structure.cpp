@@ -19,3 +19,18 @@ void Structure::writeTo(OutputStream& stream) const {
     stream.write(floatNumber);
     stream.write(doubleNumber);
 }
+
+std::string Structure::toString() const {
+    std::stringstream ss;
+    ss << "Structure { ";
+    ss << "text: ";
+    ss << '"' << text << '"';
+    ss << ", ";
+    ss << "floatNumber: ";
+    ss << floatNumber;
+    ss << ", ";
+    ss << "doubleNumber: ";
+    ss << doubleNumber;
+    ss << " }";
+    return ss.str();
+}

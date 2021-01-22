@@ -6,6 +6,7 @@
 #include "OneOf.hpp"
 #include "Structure.hpp"
 #include <memory>
+#include <sstream>
 #include <stdexcept>
 #include <string>
 #include <unordered_map>
@@ -28,6 +29,8 @@ public:
     static Example readFrom(InputStream& stream);
 
     void writeTo(OutputStream& stream) const;
+
+    std::string toString() const;
 };
 
 #endif

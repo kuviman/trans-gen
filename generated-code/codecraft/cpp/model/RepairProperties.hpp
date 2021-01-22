@@ -3,6 +3,7 @@
 
 #include "../Stream.hpp"
 #include "EntityType.hpp"
+#include <sstream>
 #include <stdexcept>
 #include <string>
 #include <vector>
@@ -19,6 +20,8 @@ public:
     static RepairProperties readFrom(InputStream& stream);
 
     void writeTo(OutputStream& stream) const;
+
+    std::string toString() const;
 };
 
 #endif

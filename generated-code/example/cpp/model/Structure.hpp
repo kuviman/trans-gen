@@ -2,6 +2,7 @@
 #define __MODEL_STRUCTURE_HPP__
 
 #include "../Stream.hpp"
+#include <sstream>
 #include <string>
 
 class Structure {
@@ -17,6 +18,8 @@ public:
     static Structure readFrom(InputStream& stream);
 
     void writeTo(OutputStream& stream) const;
+
+    std::string toString() const;
 };
 
 #endif

@@ -2,6 +2,7 @@
 #define __MODEL_ATTACK_PROPERTIES_HPP__
 
 #include "../Stream.hpp"
+#include <sstream>
 #include <string>
 
 class AttackProperties {
@@ -17,6 +18,8 @@ public:
     static AttackProperties readFrom(InputStream& stream);
 
     void writeTo(OutputStream& stream) const;
+
+    std::string toString() const;
 
     bool operator ==(const AttackProperties& other) const;
 };

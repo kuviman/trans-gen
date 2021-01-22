@@ -82,3 +82,63 @@ void EntityProperties::writeTo(OutputStream& stream) const {
         stream.write(false);
     }
 }
+
+std::string EntityProperties::toString() const {
+    std::stringstream ss;
+    ss << "EntityProperties { ";
+    ss << "size: ";
+    ss << size;
+    ss << ", ";
+    ss << "buildScore: ";
+    ss << buildScore;
+    ss << ", ";
+    ss << "destroyScore: ";
+    ss << destroyScore;
+    ss << ", ";
+    ss << "canMove: ";
+    ss << canMove;
+    ss << ", ";
+    ss << "populationProvide: ";
+    ss << populationProvide;
+    ss << ", ";
+    ss << "populationUse: ";
+    ss << populationUse;
+    ss << ", ";
+    ss << "maxHealth: ";
+    ss << maxHealth;
+    ss << ", ";
+    ss << "initialCost: ";
+    ss << initialCost;
+    ss << ", ";
+    ss << "sightRange: ";
+    ss << sightRange;
+    ss << ", ";
+    ss << "resourcePerHealth: ";
+    ss << resourcePerHealth;
+    ss << ", ";
+    ss << "build: ";
+    if (build) {
+        const BuildProperties& buildValue = *build;
+        ss << buildValue.toString();
+    } else {
+        ss << "none";
+    }
+    ss << ", ";
+    ss << "attack: ";
+    if (attack) {
+        const AttackProperties& attackValue = *attack;
+        ss << attackValue.toString();
+    } else {
+        ss << "none";
+    }
+    ss << ", ";
+    ss << "repair: ";
+    if (repair) {
+        const RepairProperties& repairValue = *repair;
+        ss << repairValue.toString();
+    } else {
+        ss << "none";
+    }
+    ss << " }";
+    return ss.str();
+}

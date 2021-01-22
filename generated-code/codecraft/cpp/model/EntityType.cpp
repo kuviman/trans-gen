@@ -27,3 +27,30 @@ EntityType readEntityType(InputStream& stream) {
         throw std::runtime_error("Unexpected tag value");
     }
 }
+
+std::string entityTypeToString(EntityType value) {
+    switch (value) {
+    case EntityType::WALL:
+        return "WALL";
+    case EntityType::HOUSE:
+        return "HOUSE";
+    case EntityType::BUILDER_BASE:
+        return "BUILDER_BASE";
+    case EntityType::BUILDER_UNIT:
+        return "BUILDER_UNIT";
+    case EntityType::MELEE_BASE:
+        return "MELEE_BASE";
+    case EntityType::MELEE_UNIT:
+        return "MELEE_UNIT";
+    case EntityType::RANGED_BASE:
+        return "RANGED_BASE";
+    case EntityType::RANGED_UNIT:
+        return "RANGED_UNIT";
+    case EntityType::RESOURCE:
+        return "RESOURCE";
+    case EntityType::TURRET:
+        return "TURRET";
+    default:
+        throw std::runtime_error("Impossible happened");
+    }
+}

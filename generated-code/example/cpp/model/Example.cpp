@@ -101,3 +101,68 @@ void Example::writeTo(OutputStream& stream) const {
         stream.write(false);
     }
 }
+
+std::string Example::toString() const {
+    std::stringstream ss;
+    ss << "Example { ";
+    ss << "oneOf: ";
+    ss << oneOf->toString();
+    ss << ", ";
+    ss << "hashMap: ";
+    ss << "{ ";
+    size_t hashMapIndex = 0;
+    for (const auto& hashMapEntry : hashMap) {
+        if (hashMapIndex != 0) {
+            ss << ", ";
+        }
+        const Enumeration& hashMapKey = hashMapEntry.first;
+        const int& hashMapValue = hashMapEntry.second;
+        ss << enumerationToString(hashMapKey);
+        ss << ": ";
+        ss << hashMapValue;
+        hashMapIndex++;
+    }
+    ss << " }";
+    ss << ", ";
+    ss << "optionalInt: ";
+    if (optionalInt) {
+        const int& optionalIntValue = *optionalInt;
+        ss << optionalIntValue;
+    } else {
+        ss << "none";
+    }
+    ss << ", ";
+    ss << "optionalBool: ";
+    if (optionalBool) {
+        const bool& optionalBoolValue = *optionalBool;
+        ss << optionalBoolValue;
+    } else {
+        ss << "none";
+    }
+    ss << ", ";
+    ss << "optionalOneOf: ";
+    if (optionalOneOf) {
+        const std::shared_ptr<OneOf>& optionalOneOfValue = *optionalOneOf;
+        ss << optionalOneOfValue->toString();
+    } else {
+        ss << "none";
+    }
+    ss << ", ";
+    ss << "optionalStruct: ";
+    if (optionalStruct) {
+        const Structure& optionalStructValue = *optionalStruct;
+        ss << optionalStructValue.toString();
+    } else {
+        ss << "none";
+    }
+    ss << ", ";
+    ss << "optionalEnum: ";
+    if (optionalEnum) {
+        const Enumeration& optionalEnumValue = *optionalEnum;
+        ss << enumerationToString(optionalEnumValue);
+    } else {
+        ss << "none";
+    }
+    ss << " }";
+    return ss.str();
+}

@@ -39,3 +39,32 @@ void Entity::writeTo(OutputStream& stream) const {
     stream.write(health);
     stream.write(active);
 }
+
+std::string Entity::toString() const {
+    std::stringstream ss;
+    ss << "Entity { ";
+    ss << "id: ";
+    ss << id;
+    ss << ", ";
+    ss << "playerId: ";
+    if (playerId) {
+        const int& playerIdValue = *playerId;
+        ss << playerIdValue;
+    } else {
+        ss << "none";
+    }
+    ss << ", ";
+    ss << "entityType: ";
+    ss << entityTypeToString(entityType);
+    ss << ", ";
+    ss << "position: ";
+    ss << position.toString();
+    ss << ", ";
+    ss << "health: ";
+    ss << health;
+    ss << ", ";
+    ss << "active: ";
+    ss << active;
+    ss << " }";
+    return ss.str();
+}

@@ -22,3 +22,23 @@ void RepairProperties::writeTo(OutputStream& stream) const {
     }
     stream.write(power);
 }
+
+std::string RepairProperties::toString() const {
+    std::stringstream ss;
+    ss << "RepairProperties { ";
+    ss << "validTargets: ";
+    ss << "[ ";
+    for (size_t validTargetsIndex = 0; validTargetsIndex < validTargets.size(); validTargetsIndex++) {
+        const EntityType& validTargetsElement = validTargets[validTargetsIndex];
+        if (validTargetsIndex != 0) {
+            ss << ", ";
+        }
+        ss << entityTypeToString(validTargetsElement);
+    }
+    ss << " ]";
+    ss << ", ";
+    ss << "power: ";
+    ss << power;
+    ss << " }";
+    return ss.str();
+}

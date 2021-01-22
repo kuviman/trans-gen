@@ -7,6 +7,7 @@
 #include "EntityType.hpp"
 #include "RepairProperties.hpp"
 #include <memory>
+#include <sstream>
 #include <stdexcept>
 #include <string>
 #include <vector>
@@ -34,6 +35,8 @@ public:
     static EntityProperties readFrom(InputStream& stream);
 
     void writeTo(OutputStream& stream) const;
+
+    std::string toString() const;
 };
 
 #endif

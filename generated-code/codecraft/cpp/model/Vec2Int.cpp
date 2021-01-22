@@ -17,6 +17,18 @@ void Vec2Int::writeTo(OutputStream& stream) const {
     stream.write(y);
 }
 
+std::string Vec2Int::toString() const {
+    std::stringstream ss;
+    ss << "Vec2Int { ";
+    ss << "x: ";
+    ss << x;
+    ss << ", ";
+    ss << "y: ";
+    ss << y;
+    ss << " }";
+    return ss.str();
+}
+
 bool Vec2Int::operator ==(const Vec2Int& other) const {
     return x == other.x && y == other.y;
 }

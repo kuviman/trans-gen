@@ -64,3 +64,65 @@ void PlayerView::writeTo(OutputStream& stream) const {
         entitiesElement.writeTo(stream);
     }
 }
+
+std::string PlayerView::toString() const {
+    std::stringstream ss;
+    ss << "PlayerView { ";
+    ss << "myId: ";
+    ss << myId;
+    ss << ", ";
+    ss << "mapSize: ";
+    ss << mapSize;
+    ss << ", ";
+    ss << "fogOfWar: ";
+    ss << fogOfWar;
+    ss << ", ";
+    ss << "entityProperties: ";
+    ss << "{ ";
+    size_t entityPropertiesIndex = 0;
+    for (const auto& entityPropertiesEntry : entityProperties) {
+        if (entityPropertiesIndex != 0) {
+            ss << ", ";
+        }
+        const EntityType& entityPropertiesKey = entityPropertiesEntry.first;
+        const EntityProperties& entityPropertiesValue = entityPropertiesEntry.second;
+        ss << entityTypeToString(entityPropertiesKey);
+        ss << ": ";
+        ss << entityPropertiesValue.toString();
+        entityPropertiesIndex++;
+    }
+    ss << " }";
+    ss << ", ";
+    ss << "maxTickCount: ";
+    ss << maxTickCount;
+    ss << ", ";
+    ss << "maxPathfindNodes: ";
+    ss << maxPathfindNodes;
+    ss << ", ";
+    ss << "currentTick: ";
+    ss << currentTick;
+    ss << ", ";
+    ss << "players: ";
+    ss << "[ ";
+    for (size_t playersIndex = 0; playersIndex < players.size(); playersIndex++) {
+        const Player& playersElement = players[playersIndex];
+        if (playersIndex != 0) {
+            ss << ", ";
+        }
+        ss << playersElement.toString();
+    }
+    ss << " ]";
+    ss << ", ";
+    ss << "entities: ";
+    ss << "[ ";
+    for (size_t entitiesIndex = 0; entitiesIndex < entities.size(); entitiesIndex++) {
+        const Entity& entitiesElement = entities[entitiesIndex];
+        if (entitiesIndex != 0) {
+            ss << ", ";
+        }
+        ss << entitiesElement.toString();
+    }
+    ss << " ]";
+    ss << " }";
+    return ss.str();
+}

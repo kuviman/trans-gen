@@ -17,5 +17,6 @@ enum class EntityType {
 };
 
 EntityType readEntityType(InputStream& stream);
+std::string entityTypeToString(EntityType value);
 
 #endif

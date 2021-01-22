@@ -11,6 +11,7 @@
 #include "RepairProperties.hpp"
 #include "Vec2Int.hpp"
 #include <memory>
+#include <sstream>
 #include <stdexcept>
 #include <string>
 #include <unordered_map>
@@ -35,6 +36,8 @@ public:
     static PlayerView readFrom(InputStream& stream);
 
     void writeTo(OutputStream& stream) const;
+
+    std::string toString() const;
 };
 
 #endif

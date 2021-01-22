@@ -2,6 +2,7 @@
 #define __MODEL_VEC2_INT_HPP__
 
 #include "../Stream.hpp"
+#include <sstream>
 #include <string>
 
 class Vec2Int {
@@ -16,6 +17,8 @@ public:
     static Vec2Int readFrom(InputStream& stream);
 
     void writeTo(OutputStream& stream) const;
+
+    std::string toString() const;
 
     bool operator ==(const Vec2Int& other) const;
 };

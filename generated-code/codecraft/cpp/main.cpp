@@ -48,6 +48,7 @@ int main(int argc, char* argv[])
 
     FileInputStream fileInputStream(input_file);
     PlayerView input = PlayerView::readFrom(fileInputStream);
+    std::cout << input.toString() << std::endl;
     FileOutputStream fileOutputStream(output_file);
     input.writeTo(fileOutputStream);
 
