@@ -35,6 +35,29 @@ class Entity {
         StreamUtil.writeBoolean(stream, active)
     }
 
+    override fun toString(): String {
+        var stringBuilder = StringBuilder("Entity { ")
+        stringBuilder.append("id: ")
+        stringBuilder.append(id)
+        stringBuilder.append(", ")
+        stringBuilder.append("playerId: ")
+        stringBuilder.append(playerId)
+        stringBuilder.append(", ")
+        stringBuilder.append("entityType: ")
+        stringBuilder.append(entityType)
+        stringBuilder.append(", ")
+        stringBuilder.append("position: ")
+        stringBuilder.append(position)
+        stringBuilder.append(", ")
+        stringBuilder.append("health: ")
+        stringBuilder.append(health)
+        stringBuilder.append(", ")
+        stringBuilder.append("active: ")
+        stringBuilder.append(active)
+        stringBuilder.append(" }")
+        return stringBuilder.toString()
+    }
+
     companion object {
         @Throws(java.io.IOException::class)
         fun readFrom(stream: java.io.InputStream): Entity {

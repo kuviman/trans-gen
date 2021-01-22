@@ -10,6 +10,8 @@ fun main(args: Array<String>) {
     val inputStream: InputStream = BufferedInputStream(FileInputStream(inputFile))
     val input: model.PlayerView = model.PlayerView.readFrom(inputStream)
 
+    println(input)
+
     val outputStream: OutputStream = BufferedOutputStream(FileOutputStream(outputFile))
     input.writeTo(outputStream)
     outputStream.flush()

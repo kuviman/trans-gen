@@ -20,6 +20,20 @@ class Player {
         StreamUtil.writeInt(stream, resource)
     }
 
+    override fun toString(): String {
+        var stringBuilder = StringBuilder("Player { ")
+        stringBuilder.append("id: ")
+        stringBuilder.append(id)
+        stringBuilder.append(", ")
+        stringBuilder.append("score: ")
+        stringBuilder.append(score)
+        stringBuilder.append(", ")
+        stringBuilder.append("resource: ")
+        stringBuilder.append(resource)
+        stringBuilder.append(" }")
+        return stringBuilder.toString()
+    }
+
     companion object {
         @Throws(java.io.IOException::class)
         fun readFrom(stream: java.io.InputStream): Player {

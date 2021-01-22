@@ -50,6 +50,56 @@ class PlayerView {
         }
     }
 
+    override fun toString(): String {
+        var stringBuilder = StringBuilder("PlayerView { ")
+        stringBuilder.append("myId: ")
+        stringBuilder.append(myId)
+        stringBuilder.append(", ")
+        stringBuilder.append("mapSize: ")
+        stringBuilder.append(mapSize)
+        stringBuilder.append(", ")
+        stringBuilder.append("fogOfWar: ")
+        stringBuilder.append(fogOfWar)
+        stringBuilder.append(", ")
+        stringBuilder.append("entityProperties: ")
+        stringBuilder.append(entityProperties)
+        stringBuilder.append(", ")
+        stringBuilder.append("maxTickCount: ")
+        stringBuilder.append(maxTickCount)
+        stringBuilder.append(", ")
+        stringBuilder.append("maxPathfindNodes: ")
+        stringBuilder.append(maxPathfindNodes)
+        stringBuilder.append(", ")
+        stringBuilder.append("currentTick: ")
+        stringBuilder.append(currentTick)
+        stringBuilder.append(", ")
+        stringBuilder.append("players: ")
+        stringBuilder.append("[ ")
+        var playersIndex = 0
+        for (playersElement in players) {
+            if (playersIndex != 0) {
+                stringBuilder.append(", ")
+            }
+            stringBuilder.append(playersElement)
+            playersIndex++
+        }
+        stringBuilder.append(" ]")
+        stringBuilder.append(", ")
+        stringBuilder.append("entities: ")
+        stringBuilder.append("[ ")
+        var entitiesIndex = 0
+        for (entitiesElement in entities) {
+            if (entitiesIndex != 0) {
+                stringBuilder.append(", ")
+            }
+            stringBuilder.append(entitiesElement)
+            entitiesIndex++
+        }
+        stringBuilder.append(" ]")
+        stringBuilder.append(" }")
+        return stringBuilder.toString()
+    }
+
     companion object {
         @Throws(java.io.IOException::class)
         fun readFrom(stream: java.io.InputStream): PlayerView {

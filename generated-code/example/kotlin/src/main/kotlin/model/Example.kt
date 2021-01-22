@@ -68,6 +68,32 @@ class Example {
         }
     }
 
+    override fun toString(): String {
+        var stringBuilder = StringBuilder("Example { ")
+        stringBuilder.append("oneOf: ")
+        stringBuilder.append(oneOf)
+        stringBuilder.append(", ")
+        stringBuilder.append("hashMap: ")
+        stringBuilder.append(hashMap)
+        stringBuilder.append(", ")
+        stringBuilder.append("optionalInt: ")
+        stringBuilder.append(optionalInt)
+        stringBuilder.append(", ")
+        stringBuilder.append("optionalBoolean: ")
+        stringBuilder.append(optionalBoolean)
+        stringBuilder.append(", ")
+        stringBuilder.append("optionalOneOf: ")
+        stringBuilder.append(optionalOneOf)
+        stringBuilder.append(", ")
+        stringBuilder.append("optionalStruct: ")
+        stringBuilder.append(optionalStruct)
+        stringBuilder.append(", ")
+        stringBuilder.append("optionalEnum: ")
+        stringBuilder.append(optionalEnum)
+        stringBuilder.append(" }")
+        return stringBuilder.toString()
+    }
+
     companion object {
         @Throws(java.io.IOException::class)
         fun readFrom(stream: java.io.InputStream): Example {

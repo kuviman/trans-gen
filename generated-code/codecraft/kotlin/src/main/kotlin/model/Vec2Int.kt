@@ -17,6 +17,17 @@ class Vec2Int {
         StreamUtil.writeInt(stream, y)
     }
 
+    override fun toString(): String {
+        var stringBuilder = StringBuilder("Vec2Int { ")
+        stringBuilder.append("x: ")
+        stringBuilder.append(x)
+        stringBuilder.append(", ")
+        stringBuilder.append("y: ")
+        stringBuilder.append(y)
+        stringBuilder.append(" }")
+        return stringBuilder.toString()
+    }
+
     companion object {
         @Throws(java.io.IOException::class)
         fun readFrom(stream: java.io.InputStream): Vec2Int {

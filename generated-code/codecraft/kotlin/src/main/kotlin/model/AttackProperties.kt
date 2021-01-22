@@ -20,6 +20,20 @@ class AttackProperties {
         StreamUtil.writeBoolean(stream, collectResource)
     }
 
+    override fun toString(): String {
+        var stringBuilder = StringBuilder("AttackProperties { ")
+        stringBuilder.append("attackRange: ")
+        stringBuilder.append(attackRange)
+        stringBuilder.append(", ")
+        stringBuilder.append("damage: ")
+        stringBuilder.append(damage)
+        stringBuilder.append(", ")
+        stringBuilder.append("collectResource: ")
+        stringBuilder.append(collectResource)
+        stringBuilder.append(" }")
+        return stringBuilder.toString()
+    }
+
     companion object {
         @Throws(java.io.IOException::class)
         fun readFrom(stream: java.io.InputStream): AttackProperties {

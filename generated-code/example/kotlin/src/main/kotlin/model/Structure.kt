@@ -20,6 +20,20 @@ class Structure {
         StreamUtil.writeDouble(stream, doubleNumber)
     }
 
+    override fun toString(): String {
+        var stringBuilder = StringBuilder("Structure { ")
+        stringBuilder.append("text: ")
+        stringBuilder.append('"' + text + '"')
+        stringBuilder.append(", ")
+        stringBuilder.append("floatNumber: ")
+        stringBuilder.append(floatNumber)
+        stringBuilder.append(", ")
+        stringBuilder.append("doubleNumber: ")
+        stringBuilder.append(doubleNumber)
+        stringBuilder.append(" }")
+        return stringBuilder.toString()
+    }
+
     companion object {
         @Throws(java.io.IOException::class)
         fun readFrom(stream: java.io.InputStream): Structure {

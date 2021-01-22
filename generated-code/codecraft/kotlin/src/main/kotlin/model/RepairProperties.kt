@@ -20,6 +20,26 @@ class RepairProperties {
         StreamUtil.writeInt(stream, power)
     }
 
+    override fun toString(): String {
+        var stringBuilder = StringBuilder("RepairProperties { ")
+        stringBuilder.append("validTargets: ")
+        stringBuilder.append("[ ")
+        var validTargetsIndex = 0
+        for (validTargetsElement in validTargets) {
+            if (validTargetsIndex != 0) {
+                stringBuilder.append(", ")
+            }
+            stringBuilder.append(validTargetsElement)
+            validTargetsIndex++
+        }
+        stringBuilder.append(" ]")
+        stringBuilder.append(", ")
+        stringBuilder.append("power: ")
+        stringBuilder.append(power)
+        stringBuilder.append(" }")
+        return stringBuilder.toString()
+    }
+
     companion object {
         @Throws(java.io.IOException::class)
         fun readFrom(stream: java.io.InputStream): RepairProperties {

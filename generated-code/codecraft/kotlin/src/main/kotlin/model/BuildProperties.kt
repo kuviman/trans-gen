@@ -26,6 +26,26 @@ class BuildProperties {
         }
     }
 
+    override fun toString(): String {
+        var stringBuilder = StringBuilder("BuildProperties { ")
+        stringBuilder.append("options: ")
+        stringBuilder.append("[ ")
+        var optionsIndex = 0
+        for (optionsElement in options) {
+            if (optionsIndex != 0) {
+                stringBuilder.append(", ")
+            }
+            stringBuilder.append(optionsElement)
+            optionsIndex++
+        }
+        stringBuilder.append(" ]")
+        stringBuilder.append(", ")
+        stringBuilder.append("initHealth: ")
+        stringBuilder.append(initHealth)
+        stringBuilder.append(" }")
+        return stringBuilder.toString()
+    }
+
     companion object {
         @Throws(java.io.IOException::class)
         fun readFrom(stream: java.io.InputStream): BuildProperties {

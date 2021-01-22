@@ -36,6 +36,26 @@ abstract class OneOf {
             StreamUtil.writeLong(stream, longInt)
         }
     
+        override fun toString(): String {
+            var stringBuilder = StringBuilder("OptionOne { ")
+            stringBuilder.append("vecInt: ")
+            stringBuilder.append("[ ")
+            var vecIntIndex = 0
+            for (vecIntElement in vecInt) {
+                if (vecIntIndex != 0) {
+                    stringBuilder.append(", ")
+                }
+                stringBuilder.append(vecIntElement)
+                vecIntIndex++
+            }
+            stringBuilder.append(" ]")
+            stringBuilder.append(", ")
+            stringBuilder.append("longInt: ")
+            stringBuilder.append(longInt)
+            stringBuilder.append(" }")
+            return stringBuilder.toString()
+        }
+    
         companion object {
             val TAG = 0
     
@@ -65,6 +85,14 @@ abstract class OneOf {
         override fun writeTo(stream: java.io.OutputStream) {
             StreamUtil.writeInt(stream, TAG)
             StreamUtil.writeInt(stream, value)
+        }
+    
+        override fun toString(): String {
+            var stringBuilder = StringBuilder("OptionTwo { ")
+            stringBuilder.append("value: ")
+            stringBuilder.append(value)
+            stringBuilder.append(" }")
+            return stringBuilder.toString()
         }
     
         companion object {
