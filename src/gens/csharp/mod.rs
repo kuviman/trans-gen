@@ -118,6 +118,10 @@ fn write_var(var: &str, schema: &Schema) -> String {
     include_templing!("src/gens/csharp/write_var.templing")
 }
 
+fn var_to_string(var: &str, schema: &Schema) -> String {
+    include_templing!("src/gens/csharp/var_to_string.templing")
+}
+
 fn struct_impl(struc: &Struct, base: Option<(&Name, usize)>) -> String {
     include_templing!("src/gens/csharp/struct_impl.templing")
 }
