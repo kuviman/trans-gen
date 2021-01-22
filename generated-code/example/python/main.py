@@ -11,4 +11,5 @@ if __name__ == "__main__":
     output_file = sys.argv[2]
 
     input = model.Example.read_from(StreamWrapper(open(input_file, 'rb')))
+    print(repr(input))
     input.write_to(StreamWrapper(open(output_file, 'wb')))

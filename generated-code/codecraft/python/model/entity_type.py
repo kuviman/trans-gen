@@ -11,3 +11,6 @@ class EntityType(IntEnum):
     RANGED_UNIT = 7
     RESOURCE = 8
     TURRET = 9
+
+    def __repr__(self):
+        return str(self)
