@@ -19,3 +19,13 @@ func ReadEnumeration(reader io.Reader) Enumeration {
     }
     panic("Unexpected tag value")
 }
+
+func EnumerationToString(enumeration Enumeration) string {
+    switch enumeration {
+    case EnumerationValueOne:
+        return "ValueOne"
+    case EnumerationValueTwo:
+        return "ValueTwo"
+    }
+    panic("Impossible happened")
+}

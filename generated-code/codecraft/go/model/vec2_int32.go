@@ -2,6 +2,7 @@ package model
 
 import "io"
 import . "trans_gen_test/stream"
+import "fmt"
 
 type Vec2Int32 struct {
     X int32
@@ -31,4 +32,17 @@ func (vec2Int32 Vec2Int32) Write(writer io.Writer) {
     WriteInt32(writer, x)
     y := vec2Int32.Y
     WriteInt32(writer, y)
+}
+
+func (vec2Int32 Vec2Int32) String() string {
+    stringResult := "{ "
+    stringResult += "X: "
+    x := vec2Int32.X
+    stringResult += fmt.Sprint(x)
+    stringResult += ", "
+    stringResult += "Y: "
+    y := vec2Int32.Y
+    stringResult += fmt.Sprint(y)
+    stringResult += " }"
+    return stringResult
 }

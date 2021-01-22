@@ -2,6 +2,7 @@ package model
 
 import "io"
 import . "trans_gen_test/stream"
+import "fmt"
 
 type EntityProperties struct {
     Size int32
@@ -144,4 +145,76 @@ func (entityProperties EntityProperties) Write(writer io.Writer) {
         repairValue := *repair
         repairValue.Write(writer)
     }
+}
+
+func (entityProperties EntityProperties) String() string {
+    stringResult := "{ "
+    stringResult += "Size: "
+    size := entityProperties.Size
+    stringResult += fmt.Sprint(size)
+    stringResult += ", "
+    stringResult += "BuildScore: "
+    buildScore := entityProperties.BuildScore
+    stringResult += fmt.Sprint(buildScore)
+    stringResult += ", "
+    stringResult += "DestroyScore: "
+    destroyScore := entityProperties.DestroyScore
+    stringResult += fmt.Sprint(destroyScore)
+    stringResult += ", "
+    stringResult += "CanMove: "
+    canMove := entityProperties.CanMove
+    stringResult += fmt.Sprint(canMove)
+    stringResult += ", "
+    stringResult += "PopulationProvide: "
+    populationProvide := entityProperties.PopulationProvide
+    stringResult += fmt.Sprint(populationProvide)
+    stringResult += ", "
+    stringResult += "PopulationUse: "
+    populationUse := entityProperties.PopulationUse
+    stringResult += fmt.Sprint(populationUse)
+    stringResult += ", "
+    stringResult += "MaxHealth: "
+    maxHealth := entityProperties.MaxHealth
+    stringResult += fmt.Sprint(maxHealth)
+    stringResult += ", "
+    stringResult += "InitialCost: "
+    initialCost := entityProperties.InitialCost
+    stringResult += fmt.Sprint(initialCost)
+    stringResult += ", "
+    stringResult += "SightRange: "
+    sightRange := entityProperties.SightRange
+    stringResult += fmt.Sprint(sightRange)
+    stringResult += ", "
+    stringResult += "ResourcePerHealth: "
+    resourcePerHealth := entityProperties.ResourcePerHealth
+    stringResult += fmt.Sprint(resourcePerHealth)
+    stringResult += ", "
+    stringResult += "Build: "
+    build := entityProperties.Build
+    if build == nil {
+        stringResult += "nil"
+    } else {
+        buildValue := *build
+        stringResult += buildValue.String()
+    }
+    stringResult += ", "
+    stringResult += "Attack: "
+    attack := entityProperties.Attack
+    if attack == nil {
+        stringResult += "nil"
+    } else {
+        attackValue := *attack
+        stringResult += attackValue.String()
+    }
+    stringResult += ", "
+    stringResult += "Repair: "
+    repair := entityProperties.Repair
+    if repair == nil {
+        stringResult += "nil"
+    } else {
+        repairValue := *repair
+        stringResult += repairValue.String()
+    }
+    stringResult += " }"
+    return stringResult
 }

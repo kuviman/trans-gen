@@ -43,3 +43,29 @@ func ReadEntityType(reader io.Reader) EntityType {
     }
     panic("Unexpected tag value")
 }
+
+func EntityTypeToString(entityType EntityType) string {
+    switch entityType {
+    case EntityTypeWall:
+        return "Wall"
+    case EntityTypeHouse:
+        return "House"
+    case EntityTypeBuilderBase:
+        return "BuilderBase"
+    case EntityTypeBuilderUnit:
+        return "BuilderUnit"
+    case EntityTypeMeleeBase:
+        return "MeleeBase"
+    case EntityTypeMeleeUnit:
+        return "MeleeUnit"
+    case EntityTypeRangedBase:
+        return "RangedBase"
+    case EntityTypeRangedUnit:
+        return "RangedUnit"
+    case EntityTypeResource:
+        return "Resource"
+    case EntityTypeTurret:
+        return "Turret"
+    }
+    panic("Impossible happened")
+}

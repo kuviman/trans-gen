@@ -2,9 +2,11 @@ package model
 
 import "io"
 import . "trans_gen_test/stream"
+import "fmt"
 
 type OneOf interface {
     Write(writer io.Writer)
+    String() string
 }
 
 func ReadOneOf(reader io.Reader) OneOf {
@@ -56,6 +58,26 @@ func (oneOfOptionOne OneOfOptionOne) Write(writer io.Writer) {
     WriteInt64(writer, longInt)
 }
 
+func (oneOfOptionOne OneOfOptionOne) String() string {
+    stringResult := "{ "
+    stringResult += "VecInt32: "
+    vecInt32 := oneOfOptionOne.VecInt32
+    stringResult += "[ "
+    for vecInt32Index, vecInt32Element := range vecInt32 {
+        if vecInt32Index != 0 {
+            stringResult += ", "
+        }
+        stringResult += fmt.Sprint(vecInt32Element)
+    }
+    stringResult += " ]"
+    stringResult += ", "
+    stringResult += "LongInt: "
+    longInt := oneOfOptionOne.LongInt
+    stringResult += fmt.Sprint(longInt)
+    stringResult += " }"
+    return stringResult
+}
+
 type OneOfOptionTwo struct {
     Value int32
 }
@@ -78,4 +100,13 @@ func (oneOfOptionTwo OneOfOptionTwo) Write(writer io.Writer) {
     WriteInt32(writer, 1)
     value := oneOfOptionTwo.Value
     WriteInt32(writer, value)
+}
+
+func (oneOfOptionTwo OneOfOptionTwo) String() string {
+    stringResult := "{ "
+    stringResult += "Value: "
+    value := oneOfOptionTwo.Value
+    stringResult += fmt.Sprint(value)
+    stringResult += " }"
+    return stringResult
 }

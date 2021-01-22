@@ -2,6 +2,7 @@ package model
 
 import "io"
 import . "trans_gen_test/stream"
+import "fmt"
 
 type AttackProperties struct {
     AttackRange int32
@@ -38,4 +39,21 @@ func (attackProperties AttackProperties) Write(writer io.Writer) {
     WriteInt32(writer, damage)
     collectResource := attackProperties.CollectResource
     WriteBool(writer, collectResource)
+}
+
+func (attackProperties AttackProperties) String() string {
+    stringResult := "{ "
+    stringResult += "AttackRange: "
+    attackRange := attackProperties.AttackRange
+    stringResult += fmt.Sprint(attackRange)
+    stringResult += ", "
+    stringResult += "Damage: "
+    damage := attackProperties.Damage
+    stringResult += fmt.Sprint(damage)
+    stringResult += ", "
+    stringResult += "CollectResource: "
+    collectResource := attackProperties.CollectResource
+    stringResult += fmt.Sprint(collectResource)
+    stringResult += " }"
+    return stringResult
 }

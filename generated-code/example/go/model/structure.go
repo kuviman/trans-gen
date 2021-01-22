@@ -2,6 +2,7 @@ package model
 
 import "io"
 import . "trans_gen_test/stream"
+import "fmt"
 
 type Structure struct {
     Text string
@@ -38,4 +39,21 @@ func (structure Structure) Write(writer io.Writer) {
     WriteFloat32(writer, floatNumber)
     doubleNumber := structure.DoubleNumber
     WriteFloat64(writer, doubleNumber)
+}
+
+func (structure Structure) String() string {
+    stringResult := "{ "
+    stringResult += "Text: "
+    text := structure.Text
+    stringResult += "\"" + text + "\""
+    stringResult += ", "
+    stringResult += "FloatNumber: "
+    floatNumber := structure.FloatNumber
+    stringResult += fmt.Sprint(floatNumber)
+    stringResult += ", "
+    stringResult += "DoubleNumber: "
+    doubleNumber := structure.DoubleNumber
+    stringResult += fmt.Sprint(doubleNumber)
+    stringResult += " }"
+    return stringResult
 }

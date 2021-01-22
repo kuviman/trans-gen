@@ -2,6 +2,7 @@ package model
 
 import "io"
 import . "trans_gen_test/stream"
+import "fmt"
 
 type Player struct {
     Id int32
@@ -38,4 +39,21 @@ func (player Player) Write(writer io.Writer) {
     WriteInt32(writer, score)
     resource := player.Resource
     WriteInt32(writer, resource)
+}
+
+func (player Player) String() string {
+    stringResult := "{ "
+    stringResult += "Id: "
+    id := player.Id
+    stringResult += fmt.Sprint(id)
+    stringResult += ", "
+    stringResult += "Score: "
+    score := player.Score
+    stringResult += fmt.Sprint(score)
+    stringResult += ", "
+    stringResult += "Resource: "
+    resource := player.Resource
+    stringResult += fmt.Sprint(resource)
+    stringResult += " }"
+    return stringResult
 }

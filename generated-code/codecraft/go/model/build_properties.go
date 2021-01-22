@@ -2,6 +2,7 @@ package model
 
 import "io"
 import . "trans_gen_test/stream"
+import "fmt"
 
 type BuildProperties struct {
     Options []EntityType
@@ -51,4 +52,29 @@ func (buildProperties BuildProperties) Write(writer io.Writer) {
         initHealthValue := *initHealth
         WriteInt32(writer, initHealthValue)
     }
+}
+
+func (buildProperties BuildProperties) String() string {
+    stringResult := "{ "
+    stringResult += "Options: "
+    options := buildProperties.Options
+    stringResult += "[ "
+    for optionsIndex, optionsElement := range options {
+        if optionsIndex != 0 {
+            stringResult += ", "
+        }
+        stringResult += EntityTypeToString(optionsElement)
+    }
+    stringResult += " ]"
+    stringResult += ", "
+    stringResult += "InitHealth: "
+    initHealth := buildProperties.InitHealth
+    if initHealth == nil {
+        stringResult += "nil"
+    } else {
+        initHealthValue := *initHealth
+        stringResult += fmt.Sprint(initHealthValue)
+    }
+    stringResult += " }"
+    return stringResult
 }

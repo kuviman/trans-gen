@@ -2,6 +2,7 @@ package model
 
 import "io"
 import . "trans_gen_test/stream"
+import "fmt"
 
 type Example struct {
     OneOf OneOf
@@ -138,4 +139,73 @@ func (example Example) Write(writer io.Writer) {
         optionalEnumValue := *optionalEnum
         WriteInt32(writer, int32(optionalEnumValue))
     }
+}
+
+func (example Example) String() string {
+    stringResult := "{ "
+    stringResult += "OneOf: "
+    oneOf := example.OneOf
+    stringResult += oneOf.String()
+    stringResult += ", "
+    stringResult += "HashMap: "
+    hashMap := example.HashMap
+    stringResult += "map[ "
+    hashMapIndex := 0
+    for hashMapKey, hashMapValue := range hashMap {
+        if hashMapIndex != 0 {
+            stringResult += ", "
+        }
+        stringResult += EnumerationToString(hashMapKey)
+        stringResult += ": "
+        stringResult += fmt.Sprint(hashMapValue)
+        hashMapIndex++
+    }
+    stringResult += " ]"
+    stringResult += ", "
+    stringResult += "OptionalInt: "
+    optionalInt := example.OptionalInt
+    if optionalInt == nil {
+        stringResult += "nil"
+    } else {
+        optionalIntValue := *optionalInt
+        stringResult += fmt.Sprint(optionalIntValue)
+    }
+    stringResult += ", "
+    stringResult += "OptionalBool: "
+    optionalBool := example.OptionalBool
+    if optionalBool == nil {
+        stringResult += "nil"
+    } else {
+        optionalBoolValue := *optionalBool
+        stringResult += fmt.Sprint(optionalBoolValue)
+    }
+    stringResult += ", "
+    stringResult += "OptionalOneOf: "
+    optionalOneOf := example.OptionalOneOf
+    if optionalOneOf == nil {
+        stringResult += "nil"
+    } else {
+        optionalOneOfValue := *optionalOneOf
+        stringResult += optionalOneOfValue.String()
+    }
+    stringResult += ", "
+    stringResult += "OptionalStruct: "
+    optionalStruct := example.OptionalStruct
+    if optionalStruct == nil {
+        stringResult += "nil"
+    } else {
+        optionalStructValue := *optionalStruct
+        stringResult += optionalStructValue.String()
+    }
+    stringResult += ", "
+    stringResult += "OptionalEnum: "
+    optionalEnum := example.OptionalEnum
+    if optionalEnum == nil {
+        stringResult += "nil"
+    } else {
+        optionalEnumValue := *optionalEnum
+        stringResult += EnumerationToString(optionalEnumValue)
+    }
+    stringResult += " }"
+    return stringResult
 }

@@ -2,6 +2,7 @@ package model
 
 import "io"
 import . "trans_gen_test/stream"
+import "fmt"
 
 type PlayerView struct {
     MyId int32
@@ -108,4 +109,70 @@ func (playerView PlayerView) Write(writer io.Writer) {
     for _, entitiesElement := range entities {
         entitiesElement.Write(writer)
     }
+}
+
+func (playerView PlayerView) String() string {
+    stringResult := "{ "
+    stringResult += "MyId: "
+    myId := playerView.MyId
+    stringResult += fmt.Sprint(myId)
+    stringResult += ", "
+    stringResult += "MapSize: "
+    mapSize := playerView.MapSize
+    stringResult += fmt.Sprint(mapSize)
+    stringResult += ", "
+    stringResult += "FogOfWar: "
+    fogOfWar := playerView.FogOfWar
+    stringResult += fmt.Sprint(fogOfWar)
+    stringResult += ", "
+    stringResult += "EntityProperties: "
+    entityProperties := playerView.EntityProperties
+    stringResult += "map[ "
+    entityPropertiesIndex := 0
+    for entityPropertiesKey, entityPropertiesValue := range entityProperties {
+        if entityPropertiesIndex != 0 {
+            stringResult += ", "
+        }
+        stringResult += EntityTypeToString(entityPropertiesKey)
+        stringResult += ": "
+        stringResult += entityPropertiesValue.String()
+        entityPropertiesIndex++
+    }
+    stringResult += " ]"
+    stringResult += ", "
+    stringResult += "MaxTickCount: "
+    maxTickCount := playerView.MaxTickCount
+    stringResult += fmt.Sprint(maxTickCount)
+    stringResult += ", "
+    stringResult += "MaxPathfindNodes: "
+    maxPathfindNodes := playerView.MaxPathfindNodes
+    stringResult += fmt.Sprint(maxPathfindNodes)
+    stringResult += ", "
+    stringResult += "CurrentTick: "
+    currentTick := playerView.CurrentTick
+    stringResult += fmt.Sprint(currentTick)
+    stringResult += ", "
+    stringResult += "Players: "
+    players := playerView.Players
+    stringResult += "[ "
+    for playersIndex, playersElement := range players {
+        if playersIndex != 0 {
+            stringResult += ", "
+        }
+        stringResult += playersElement.String()
+    }
+    stringResult += " ]"
+    stringResult += ", "
+    stringResult += "Entities: "
+    entities := playerView.Entities
+    stringResult += "[ "
+    for entitiesIndex, entitiesElement := range entities {
+        if entitiesIndex != 0 {
+            stringResult += ", "
+        }
+        stringResult += entitiesElement.String()
+    }
+    stringResult += " ]"
+    stringResult += " }"
+    return stringResult
 }

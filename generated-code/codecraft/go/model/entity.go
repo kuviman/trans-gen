@@ -2,6 +2,7 @@ package model
 
 import "io"
 import . "trans_gen_test/stream"
+import "fmt"
 
 type Entity struct {
     Id int32
@@ -71,4 +72,38 @@ func (entity Entity) Write(writer io.Writer) {
     WriteInt32(writer, health)
     active := entity.Active
     WriteBool(writer, active)
+}
+
+func (entity Entity) String() string {
+    stringResult := "{ "
+    stringResult += "Id: "
+    id := entity.Id
+    stringResult += fmt.Sprint(id)
+    stringResult += ", "
+    stringResult += "PlayerId: "
+    playerId := entity.PlayerId
+    if playerId == nil {
+        stringResult += "nil"
+    } else {
+        playerIdValue := *playerId
+        stringResult += fmt.Sprint(playerIdValue)
+    }
+    stringResult += ", "
+    stringResult += "EntityType: "
+    entityType := entity.EntityType
+    stringResult += EntityTypeToString(entityType)
+    stringResult += ", "
+    stringResult += "Position: "
+    position := entity.Position
+    stringResult += position.String()
+    stringResult += ", "
+    stringResult += "Health: "
+    health := entity.Health
+    stringResult += fmt.Sprint(health)
+    stringResult += ", "
+    stringResult += "Active: "
+    active := entity.Active
+    stringResult += fmt.Sprint(active)
+    stringResult += " }"
+    return stringResult
 }
