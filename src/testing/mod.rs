@@ -1,8 +1,18 @@
 use super::*;
 
 mod file_read_write;
+mod to_string;
 
 pub use file_read_write::FileReadWrite;
+pub use to_string::ToString;
+
+#[macro_export]
+macro_rules! all_tests {
+    ($macro:ident) => {
+        $macro!(ToString);
+        $macro!(FileReadWrite);
+    };
+}
 
 pub trait Test {
     fn schemas(&self) -> Vec<Arc<Schema>>;

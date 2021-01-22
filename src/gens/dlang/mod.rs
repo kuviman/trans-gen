@@ -177,3 +177,14 @@ impl<D: Trans + PartialEq> TestableGenerator<testing::FileReadWrite<D>> for Gene
         }]
     }
 }
+
+impl<D: Trans + Debug> TestableGenerator<testing::ToString<D>> for Generator {
+    fn extra_files(_: &testing::ToString<D>) -> Vec<File> {
+        let schema = Schema::of::<D>();
+        let schema: &Schema = &schema;
+        vec![File {
+            path: "source/app.d".to_owned(),
+            content: include_templing!("src/gens/dlang/file_read_write.d.templing"),
+        }]
+    }
+}

@@ -1,0 +1,21 @@
+use anyhow::Context;
+
+mod model;
+mod trans;
+
+fn main() -> anyhow::Result<()> {
+    let mut args = std::env::args();
+    args.next().unwrap();
+    let input_file = args
+        .next()
+        .context("Provide input file path as first arg")?;
+
+    let input: model::{{ type_name(schema) }} = trans::Trans::read_from(&mut std::io::BufReader::new(
+        std::fs::File::open(&input_file).context("Failed to open input file")?,
+    ))
+    .context("Failed to read input")?;
+
+    println!("{:#?}", input);
+
+    Ok(())
+}
