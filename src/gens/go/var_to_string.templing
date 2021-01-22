@@ -1,0 +1,52 @@
+- match schema {
+- Schema::Bool | Schema::Int32 | Schema::Int64 | Schema::Float32 | Schema::Float64 => {
+stringResult += fmt.Sprint({{ var }})
+- }
+- Schema::String => {
+stringResult += "\"" + {{ var }} + "\""
+- }
+- Schema::Struct(_) | Schema::OneOf { .. } => {
+stringResult += {{ var }}.String()
+- }
+- Schema::Option(inner) => {
+if {{ var }} == nil {
+    stringResult += "nil"
+} else {
+    - let value_var = format!("{}Value", var); let value_var = &value_var;
+    {{ value_var }} := *{{ var }}
+    {{ var_to_string(value_var, inner) }}
+}
+- }
+- Schema::Vec(inner) => {
+stringResult += "[ "
+- let element_var = format!("{}Element", var); let element_var = &element_var;
+- let index_var = format!("{}Index", var); let index_var = &index_var;
+for {{ index_var }}, {{ element_var }} := range {{ var }} {
+    if {{ index_var }} != 0 {
+        stringResult += ", "
+    }
+    {{ var_to_string(element_var, inner) }}
+}
+stringResult += " ]"
+- }
+- Schema::Map(key_type, value_type) => {
+stringResult += "map[ "
+- let index_var = format!("{}Index", var); let index_var = &index_var;
+- let key_var = format!("{}Key", var); let key_var = &key_var;
+- let value_var = format!("{}Value", var); let value_var = &value_var;
+{{ index_var }} := 0
+for {{ key_var }}, {{ value_var }} := range {{ var }} {
+    if {{ index_var }} != 0 {
+        stringResult += ", "
+    }
+    {{ var_to_string(key_var, key_type) }}
+    stringResult += ": "
+    {{ var_to_string(value_var, value_type) }}
+    {{ index_var }}++
+}
+stringResult += " ]"
+- }
+- Schema::Enum { base_name, .. } => {
+stringResult += {{ base_name.camel_case(conv) }}ToString({{ var }})
+- }
+- }

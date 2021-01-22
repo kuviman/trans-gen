@@ -4,6 +4,7 @@ import (
 	"bufio"
 	. "trans_gen_test/model"
 	"os"
+	"fmt"
 )
 
 func main() {
@@ -19,6 +20,8 @@ func main() {
 	}
 	reader := bufio.NewReader(inputFile)
 	input := Read{{ type_name(schema) }}(reader)
+
+	fmt.Println(input)
 
 	outputFile, err := os.Create(outputFilePath)
 	if err != nil {

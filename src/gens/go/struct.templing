@@ -4,5 +4,6 @@ import "io"
 - if needs_stream(schema) {
 import . "{{ &self.mod_name }}/stream"
 - }
+import "fmt"
 
 {{ struct_impl(struc, None) }}

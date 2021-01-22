@@ -20,3 +20,13 @@ func Read{{ base_name.camel_case(conv) }}(reader io.Reader) {{ base_name.camel_c
     }
     panic("Unexpected tag value")
 }
+
+func {{ base_name.camel_case(conv) }}ToString({{ base_name.mixed_case(conv) }} {{ base_name.camel_case(conv) }}) string {
+    switch {{ base_name.mixed_case(conv) }} {
+    - for (tag, variant) in variants.iter().enumerate() {
+    case {{ base_name.camel_case(conv) }}{{ variant.name.camel_case(conv) }}:
+        return "{{ variant.name.camel_case(conv) }}"
+    - }
+    }
+    panic("Impossible happened")
+}

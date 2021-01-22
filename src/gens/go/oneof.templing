@@ -4,9 +4,11 @@ import "io"
 - if needs_stream(schema) {
 import . "{{ &self.mod_name }}/stream"
 - }
+import "fmt"
 
 type {{ base_name.camel_case(conv) }} interface {
     Write(writer io.Writer)
+    String() string
 }
 
 func Read{{ base_name.camel_case(conv) }}(reader io.Reader) {{ base_name.camel_case(conv) }} {

@@ -44,3 +44,17 @@ func ({{ struct_name.mixed_case(conv) }} {{ struct_name.camel_case(conv) }}) Wri
     {{ write_var(&field.name.mixed_case(conv), &field.schema) }}
     - }
 }
+
+func ({{ struct_name.mixed_case(conv) }} {{ struct_name.camel_case(conv) }}) String() string {
+    stringResult := "{ "
+    - for (index, field) in struc.fields.iter().enumerate() {
+    - if index != 0 {
+    stringResult += ", "
+    - }
+    stringResult += "{{ field.name.camel_case(conv) }}: "
+    {{ field.name.mixed_case(conv) }} := {{ struct_name.mixed_case(conv) }}.{{ field.name.camel_case(conv) }}
+    {{ var_to_string(&field.name.mixed_case(conv), &field.schema) }}
+    - }
+    stringResult += " }"
+    return stringResult
+}
