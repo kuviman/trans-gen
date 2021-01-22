@@ -45,5 +45,32 @@ namespace TransGenTest.Model
                 writer.Write(InitHealth.Value);
             }
         }
+    
+        public override string ToString() {
+            string stringResult = "BuildProperties { ";
+            stringResult += "Options: ";
+            stringResult += "[ ";
+            int optionsIndex = 0;
+            foreach (var optionsElement in Options)
+            {
+                if (optionsIndex != 0) {
+                    stringResult += ", ";
+                }
+                stringResult += optionsElement.ToString();
+                optionsIndex++;
+            }
+            stringResult += " ]";
+            stringResult += ", ";
+            stringResult += "InitHealth: ";
+            if (!InitHealth.HasValue)
+            {
+                stringResult += "null";
+            } else
+            {
+                stringResult += InitHealth.Value.ToString();
+            }
+            stringResult += " }";
+            return stringResult;
+        }
     }
 }

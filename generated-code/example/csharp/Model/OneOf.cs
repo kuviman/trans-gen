@@ -53,6 +53,27 @@ namespace TransGenTest.Model
                 }
                 writer.Write(LongInt);
             }
+        
+            public override string ToString() {
+                string stringResult = "OptionOne { ";
+                stringResult += "VecInt: ";
+                stringResult += "[ ";
+                int vecIntIndex = 0;
+                foreach (var vecIntElement in VecInt)
+                {
+                    if (vecIntIndex != 0) {
+                        stringResult += ", ";
+                    }
+                    stringResult += vecIntElement.ToString();
+                    vecIntIndex++;
+                }
+                stringResult += " ]";
+                stringResult += ", ";
+                stringResult += "LongInt: ";
+                stringResult += LongInt.ToString();
+                stringResult += " }";
+                return stringResult;
+            }
         }
 
         public class OptionTwo : OneOf
@@ -79,6 +100,14 @@ namespace TransGenTest.Model
             {
                 writer.Write(TAG);
                 writer.Write(Value);
+            }
+        
+            public override string ToString() {
+                string stringResult = "OptionTwo { ";
+                stringResult += "Value: ";
+                stringResult += Value.ToString();
+                stringResult += " }";
+                return stringResult;
             }
         }
     }

@@ -41,5 +41,6 @@ void main(string[] args)
     string outputFile = args[2];
 
     Example input = Example.readFrom(new FileStream(File(inputFile, "rb")));
+    writeln(input);
     input.writeTo(new FileStream(File(outputFile, "wb")));
 }

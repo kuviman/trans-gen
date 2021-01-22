@@ -125,5 +125,75 @@ namespace TransGenTest.Model
                 writer.Write((int) (OptionalEnum.Value));
             }
         }
+    
+        public override string ToString() {
+            string stringResult = "Example { ";
+            stringResult += "OneOf: ";
+            stringResult += OneOf.ToString();
+            stringResult += ", ";
+            stringResult += "HashMap: ";
+            stringResult += "{ ";
+            int hashMapIndex = 0;
+            foreach (var hashMapEntry in HashMap)
+            {
+                if (hashMapIndex != 0) {
+                    stringResult += ", ";
+                }
+                var hashMapKey = hashMapEntry.Key;
+                stringResult += hashMapKey.ToString();
+                stringResult += ": ";
+                var hashMapValue = hashMapEntry.Value;
+                stringResult += hashMapValue.ToString();
+                hashMapIndex++;
+            }
+            stringResult += " }";
+            stringResult += ", ";
+            stringResult += "OptionalInt: ";
+            if (!OptionalInt.HasValue)
+            {
+                stringResult += "null";
+            } else
+            {
+                stringResult += OptionalInt.Value.ToString();
+            }
+            stringResult += ", ";
+            stringResult += "OptionalBool: ";
+            if (!OptionalBool.HasValue)
+            {
+                stringResult += "null";
+            } else
+            {
+                stringResult += OptionalBool.Value.ToString();
+            }
+            stringResult += ", ";
+            stringResult += "OptionalOneOf: ";
+            if (OptionalOneOf == null)
+            {
+                stringResult += "null";
+            } else
+            {
+                stringResult += OptionalOneOf.ToString();
+            }
+            stringResult += ", ";
+            stringResult += "OptionalStruct: ";
+            if (!OptionalStruct.HasValue)
+            {
+                stringResult += "null";
+            } else
+            {
+                stringResult += OptionalStruct.Value.ToString();
+            }
+            stringResult += ", ";
+            stringResult += "OptionalEnum: ";
+            if (!OptionalEnum.HasValue)
+            {
+                stringResult += "null";
+            } else
+            {
+                stringResult += OptionalEnum.Value.ToString();
+            }
+            stringResult += " }";
+            return stringResult;
+        }
     }
 }

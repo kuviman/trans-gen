@@ -30,5 +30,19 @@ namespace TransGenTest.Model
             writer.Write(FloatNumber);
             writer.Write(DoubleNumber);
         }
+    
+        public override string ToString() {
+            string stringResult = "Structure { ";
+            stringResult += "Text: ";
+            stringResult += "\"" + Text + "\"";
+            stringResult += ", ";
+            stringResult += "FloatNumber: ";
+            stringResult += FloatNumber.ToString();
+            stringResult += ", ";
+            stringResult += "DoubleNumber: ";
+            stringResult += DoubleNumber.ToString();
+            stringResult += " }";
+            return stringResult;
+        }
     }
 }

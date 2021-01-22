@@ -32,5 +32,26 @@ namespace TransGenTest.Model
             }
             writer.Write(Power);
         }
+    
+        public override string ToString() {
+            string stringResult = "RepairProperties { ";
+            stringResult += "ValidTargets: ";
+            stringResult += "[ ";
+            int validTargetsIndex = 0;
+            foreach (var validTargetsElement in ValidTargets)
+            {
+                if (validTargetsIndex != 0) {
+                    stringResult += ", ";
+                }
+                stringResult += validTargetsElement.ToString();
+                validTargetsIndex++;
+            }
+            stringResult += " ]";
+            stringResult += ", ";
+            stringResult += "Power: ";
+            stringResult += Power.ToString();
+            stringResult += " }";
+            return stringResult;
+        }
     }
 }

@@ -107,5 +107,67 @@ namespace TransGenTest.Model
                 Repair.Value.WriteTo(writer);
             }
         }
+    
+        public override string ToString() {
+            string stringResult = "EntityProperties { ";
+            stringResult += "Size: ";
+            stringResult += Size.ToString();
+            stringResult += ", ";
+            stringResult += "BuildScore: ";
+            stringResult += BuildScore.ToString();
+            stringResult += ", ";
+            stringResult += "DestroyScore: ";
+            stringResult += DestroyScore.ToString();
+            stringResult += ", ";
+            stringResult += "CanMove: ";
+            stringResult += CanMove.ToString();
+            stringResult += ", ";
+            stringResult += "PopulationProvide: ";
+            stringResult += PopulationProvide.ToString();
+            stringResult += ", ";
+            stringResult += "PopulationUse: ";
+            stringResult += PopulationUse.ToString();
+            stringResult += ", ";
+            stringResult += "MaxHealth: ";
+            stringResult += MaxHealth.ToString();
+            stringResult += ", ";
+            stringResult += "InitialCost: ";
+            stringResult += InitialCost.ToString();
+            stringResult += ", ";
+            stringResult += "SightRange: ";
+            stringResult += SightRange.ToString();
+            stringResult += ", ";
+            stringResult += "ResourcePerHealth: ";
+            stringResult += ResourcePerHealth.ToString();
+            stringResult += ", ";
+            stringResult += "Build: ";
+            if (!Build.HasValue)
+            {
+                stringResult += "null";
+            } else
+            {
+                stringResult += Build.Value.ToString();
+            }
+            stringResult += ", ";
+            stringResult += "Attack: ";
+            if (!Attack.HasValue)
+            {
+                stringResult += "null";
+            } else
+            {
+                stringResult += Attack.Value.ToString();
+            }
+            stringResult += ", ";
+            stringResult += "Repair: ";
+            if (!Repair.HasValue)
+            {
+                stringResult += "null";
+            } else
+            {
+                stringResult += Repair.Value.ToString();
+            }
+            stringResult += " }";
+            return stringResult;
+        }
     }
 }

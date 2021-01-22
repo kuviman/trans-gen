@@ -28,5 +28,19 @@ namespace TransGenTest.Model
             writer.Write(Damage);
             writer.Write(CollectResource);
         }
+    
+        public override string ToString() {
+            string stringResult = "AttackProperties { ";
+            stringResult += "AttackRange: ";
+            stringResult += AttackRange.ToString();
+            stringResult += ", ";
+            stringResult += "Damage: ";
+            stringResult += Damage.ToString();
+            stringResult += ", ";
+            stringResult += "CollectResource: ";
+            stringResult += CollectResource.ToString();
+            stringResult += " }";
+            return stringResult;
+        }
     }
 }

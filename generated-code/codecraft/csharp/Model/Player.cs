@@ -28,5 +28,19 @@ namespace TransGenTest.Model
             writer.Write(Score);
             writer.Write(Resource);
         }
+    
+        public override string ToString() {
+            string stringResult = "Player { ";
+            stringResult += "Id: ";
+            stringResult += Id.ToString();
+            stringResult += ", ";
+            stringResult += "Score: ";
+            stringResult += Score.ToString();
+            stringResult += ", ";
+            stringResult += "Resource: ";
+            stringResult += Resource.ToString();
+            stringResult += " }";
+            return stringResult;
+        }
     }
 }

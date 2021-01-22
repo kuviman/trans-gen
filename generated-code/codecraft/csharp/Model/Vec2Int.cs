@@ -24,5 +24,16 @@ namespace TransGenTest.Model
             writer.Write(X);
             writer.Write(Y);
         }
+    
+        public override string ToString() {
+            string stringResult = "Vec2Int { ";
+            stringResult += "X: ";
+            stringResult += X.ToString();
+            stringResult += ", ";
+            stringResult += "Y: ";
+            stringResult += Y.ToString();
+            stringResult += " }";
+            return stringResult;
+        }
     }
 }

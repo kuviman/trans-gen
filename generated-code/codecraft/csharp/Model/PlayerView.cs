@@ -84,5 +84,71 @@ namespace TransGenTest.Model
                 entitiesElement.WriteTo(writer);
             }
         }
+    
+        public override string ToString() {
+            string stringResult = "PlayerView { ";
+            stringResult += "MyId: ";
+            stringResult += MyId.ToString();
+            stringResult += ", ";
+            stringResult += "MapSize: ";
+            stringResult += MapSize.ToString();
+            stringResult += ", ";
+            stringResult += "FogOfWar: ";
+            stringResult += FogOfWar.ToString();
+            stringResult += ", ";
+            stringResult += "EntityProperties: ";
+            stringResult += "{ ";
+            int entityPropertiesIndex = 0;
+            foreach (var entityPropertiesEntry in EntityProperties)
+            {
+                if (entityPropertiesIndex != 0) {
+                    stringResult += ", ";
+                }
+                var entityPropertiesKey = entityPropertiesEntry.Key;
+                stringResult += entityPropertiesKey.ToString();
+                stringResult += ": ";
+                var entityPropertiesValue = entityPropertiesEntry.Value;
+                stringResult += entityPropertiesValue.ToString();
+                entityPropertiesIndex++;
+            }
+            stringResult += " }";
+            stringResult += ", ";
+            stringResult += "MaxTickCount: ";
+            stringResult += MaxTickCount.ToString();
+            stringResult += ", ";
+            stringResult += "MaxPathfindNodes: ";
+            stringResult += MaxPathfindNodes.ToString();
+            stringResult += ", ";
+            stringResult += "CurrentTick: ";
+            stringResult += CurrentTick.ToString();
+            stringResult += ", ";
+            stringResult += "Players: ";
+            stringResult += "[ ";
+            int playersIndex = 0;
+            foreach (var playersElement in Players)
+            {
+                if (playersIndex != 0) {
+                    stringResult += ", ";
+                }
+                stringResult += playersElement.ToString();
+                playersIndex++;
+            }
+            stringResult += " ]";
+            stringResult += ", ";
+            stringResult += "Entities: ";
+            stringResult += "[ ";
+            int entitiesIndex = 0;
+            foreach (var entitiesElement in Entities)
+            {
+                if (entitiesIndex != 0) {
+                    stringResult += ", ";
+                }
+                stringResult += entitiesElement.ToString();
+                entitiesIndex++;
+            }
+            stringResult += " ]";
+            stringResult += " }";
+            return stringResult;
+        }
     }
 }

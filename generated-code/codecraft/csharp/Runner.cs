@@ -22,6 +22,7 @@ namespace TransGenTest
                     input = Model.PlayerView.ReadFrom(reader);
                 }
             }
+            Console.WriteLine(input.ToString());
             using (var stream = new FileStream(outputFile, FileMode.Create))
             {
                 using (var writer = new BinaryWriter(stream)) {

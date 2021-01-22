@@ -53,5 +53,34 @@ namespace TransGenTest.Model
             writer.Write(Health);
             writer.Write(Active);
         }
+    
+        public override string ToString() {
+            string stringResult = "Entity { ";
+            stringResult += "Id: ";
+            stringResult += Id.ToString();
+            stringResult += ", ";
+            stringResult += "PlayerId: ";
+            if (!PlayerId.HasValue)
+            {
+                stringResult += "null";
+            } else
+            {
+                stringResult += PlayerId.Value.ToString();
+            }
+            stringResult += ", ";
+            stringResult += "EntityType: ";
+            stringResult += EntityType.ToString();
+            stringResult += ", ";
+            stringResult += "Position: ";
+            stringResult += Position.ToString();
+            stringResult += ", ";
+            stringResult += "Health: ";
+            stringResult += Health.ToString();
+            stringResult += ", ";
+            stringResult += "Active: ";
+            stringResult += Active.ToString();
+            stringResult += " }";
+            return stringResult;
+        }
     }
 }
