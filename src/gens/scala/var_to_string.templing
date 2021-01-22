@@ -1,0 +1,23 @@
+- match schema {
+- Schema::Bool | Schema::Int32 | Schema::Int64 | Schema::Float32 | Schema::Float64 => {
+stringBuilder.append({{ var }})
+- }
+- Schema::String => {
+stringBuilder.append('"' + {{ var }} + '"')
+- }
+- Schema::Struct(_) | Schema::OneOf { .. } => {
+stringBuilder.append({{ var }})
+- }
+- Schema::Option(inner) => {
+stringBuilder.append({{ var }})
+- }
+- Schema::Vec(inner) => {
+stringBuilder.append({{ var }})
+- }
+- Schema::Map(key_type, value_type) => {
+stringBuilder.append({{ var }})
+- }
+- Schema::Enum { .. } => {
+stringBuilder.append({{ var }})
+- }
+- }

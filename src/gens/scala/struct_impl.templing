@@ -18,6 +18,19 @@ case class {{ struc.name.camel_case(conv) }}(~
         {{ write_var(&field.name.mixed_case(conv), &field.schema) }}
         - }
     }
+
+    override def toString(): String = {
+        var stringBuilder = new StringBuilder("{{ struc.name.camel_case(conv) }} { ")
+        - for (index, field) in struc.fields.iter().enumerate() {
+        - if index != 0 {
+        stringBuilder.append(", ")
+        - }
+        stringBuilder.append("{{ field.name.mixed_case(conv) }}: ")
+        {{ var_to_string(&field.name.mixed_case(conv), &field.schema) }}
+        - }
+        stringBuilder.append(" }")
+        stringBuilder.toString()
+    }
 }
 
 object {{ struc.name.camel_case(conv) }} {
