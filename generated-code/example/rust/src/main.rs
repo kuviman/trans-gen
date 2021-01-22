@@ -17,6 +17,7 @@ fn main() -> anyhow::Result<()> {
         std::fs::File::open(&input_file).context("Failed to open input file")?,
     ))
     .context("Failed to read input")?;
+    println!("{:?}", input);
     trans::Trans::write_to(
         &input,
         &mut std::io::BufWriter::new(
