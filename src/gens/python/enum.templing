@@ -4,3 +4,6 @@ class {{ base_name.camel_case(conv) }}(IntEnum):
     - for (tag, variant) in variants.iter().enumerate() {
     {{ variant.name.shouty_snake_case(conv) }} = {{ tag }}
     - }
+
+    def __repr__(self):
+        return str(self)
