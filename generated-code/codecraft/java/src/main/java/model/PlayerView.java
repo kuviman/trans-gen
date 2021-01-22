@@ -160,4 +160,53 @@ public class PlayerView {
             entitiesElement.writeTo(stream);
         }
     }
+
+    @Override
+    public String toString() {
+        StringBuilder stringBuilder = new StringBuilder("PlayerView { ");
+        stringBuilder.append("myId: ");
+        stringBuilder.append(String.valueOf(myId));
+        stringBuilder.append(", ");
+        stringBuilder.append("mapSize: ");
+        stringBuilder.append(String.valueOf(mapSize));
+        stringBuilder.append(", ");
+        stringBuilder.append("fogOfWar: ");
+        stringBuilder.append(String.valueOf(fogOfWar));
+        stringBuilder.append(", ");
+        stringBuilder.append("entityProperties: ");
+        stringBuilder.append(String.valueOf(entityProperties));
+        stringBuilder.append(", ");
+        stringBuilder.append("maxTickCount: ");
+        stringBuilder.append(String.valueOf(maxTickCount));
+        stringBuilder.append(", ");
+        stringBuilder.append("maxPathfindNodes: ");
+        stringBuilder.append(String.valueOf(maxPathfindNodes));
+        stringBuilder.append(", ");
+        stringBuilder.append("currentTick: ");
+        stringBuilder.append(String.valueOf(currentTick));
+        stringBuilder.append(", ");
+        stringBuilder.append("players: ");
+        stringBuilder.append("[ ");
+        for (int playersIndex = 0; playersIndex < players.length; playersIndex++) {
+            if (playersIndex != 0) {
+                stringBuilder.append(", ");
+            }
+            model.Player playersElement = players[playersIndex];
+            stringBuilder.append(String.valueOf(playersElement));
+        }
+        stringBuilder.append(" ]");
+        stringBuilder.append(", ");
+        stringBuilder.append("entities: ");
+        stringBuilder.append("[ ");
+        for (int entitiesIndex = 0; entitiesIndex < entities.length; entitiesIndex++) {
+            if (entitiesIndex != 0) {
+                stringBuilder.append(", ");
+            }
+            model.Entity entitiesElement = entities[entitiesIndex];
+            stringBuilder.append(String.valueOf(entitiesElement));
+        }
+        stringBuilder.append(" ]");
+        stringBuilder.append(" }");
+        return stringBuilder.toString();
+    }
 }

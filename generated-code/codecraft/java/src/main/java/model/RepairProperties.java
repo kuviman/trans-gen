@@ -47,4 +47,24 @@ public class RepairProperties {
         }
         StreamUtil.writeInt(stream, power);
     }
+
+    @Override
+    public String toString() {
+        StringBuilder stringBuilder = new StringBuilder("RepairProperties { ");
+        stringBuilder.append("validTargets: ");
+        stringBuilder.append("[ ");
+        for (int validTargetsIndex = 0; validTargetsIndex < validTargets.length; validTargetsIndex++) {
+            if (validTargetsIndex != 0) {
+                stringBuilder.append(", ");
+            }
+            model.EntityType validTargetsElement = validTargets[validTargetsIndex];
+            stringBuilder.append(String.valueOf(validTargetsElement));
+        }
+        stringBuilder.append(" ]");
+        stringBuilder.append(", ");
+        stringBuilder.append("power: ");
+        stringBuilder.append(String.valueOf(power));
+        stringBuilder.append(" }");
+        return stringBuilder.toString();
+    }
 }

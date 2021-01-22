@@ -56,4 +56,24 @@ public class BuildProperties {
             StreamUtil.writeInt(stream, initHealth);
         }
     }
+
+    @Override
+    public String toString() {
+        StringBuilder stringBuilder = new StringBuilder("BuildProperties { ");
+        stringBuilder.append("options: ");
+        stringBuilder.append("[ ");
+        for (int optionsIndex = 0; optionsIndex < options.length; optionsIndex++) {
+            if (optionsIndex != 0) {
+                stringBuilder.append(", ");
+            }
+            model.EntityType optionsElement = options[optionsIndex];
+            stringBuilder.append(String.valueOf(optionsElement));
+        }
+        stringBuilder.append(" ]");
+        stringBuilder.append(", ");
+        stringBuilder.append("initHealth: ");
+        stringBuilder.append(String.valueOf(initHealth));
+        stringBuilder.append(" }");
+        return stringBuilder.toString();
+    }
 }

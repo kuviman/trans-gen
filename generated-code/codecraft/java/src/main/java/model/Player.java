@@ -52,4 +52,19 @@ public class Player {
         StreamUtil.writeInt(stream, score);
         StreamUtil.writeInt(stream, resource);
     }
+
+    @Override
+    public String toString() {
+        StringBuilder stringBuilder = new StringBuilder("Player { ");
+        stringBuilder.append("id: ");
+        stringBuilder.append(String.valueOf(id));
+        stringBuilder.append(", ");
+        stringBuilder.append("score: ");
+        stringBuilder.append(String.valueOf(score));
+        stringBuilder.append(", ");
+        stringBuilder.append("resource: ");
+        stringBuilder.append(String.valueOf(resource));
+        stringBuilder.append(" }");
+        return stringBuilder.toString();
+    }
 }

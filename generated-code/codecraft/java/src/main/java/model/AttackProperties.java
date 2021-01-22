@@ -52,4 +52,19 @@ public class AttackProperties {
         StreamUtil.writeInt(stream, damage);
         StreamUtil.writeBoolean(stream, collectResource);
     }
+
+    @Override
+    public String toString() {
+        StringBuilder stringBuilder = new StringBuilder("AttackProperties { ");
+        stringBuilder.append("attackRange: ");
+        stringBuilder.append(String.valueOf(attackRange));
+        stringBuilder.append(", ");
+        stringBuilder.append("damage: ");
+        stringBuilder.append(String.valueOf(damage));
+        stringBuilder.append(", ");
+        stringBuilder.append("collectResource: ");
+        stringBuilder.append(String.valueOf(collectResource));
+        stringBuilder.append(" }");
+        return stringBuilder.toString();
+    }
 }

@@ -209,4 +209,49 @@ public class EntityProperties {
             repair.writeTo(stream);
         }
     }
+
+    @Override
+    public String toString() {
+        StringBuilder stringBuilder = new StringBuilder("EntityProperties { ");
+        stringBuilder.append("size: ");
+        stringBuilder.append(String.valueOf(size));
+        stringBuilder.append(", ");
+        stringBuilder.append("buildScore: ");
+        stringBuilder.append(String.valueOf(buildScore));
+        stringBuilder.append(", ");
+        stringBuilder.append("destroyScore: ");
+        stringBuilder.append(String.valueOf(destroyScore));
+        stringBuilder.append(", ");
+        stringBuilder.append("canMove: ");
+        stringBuilder.append(String.valueOf(canMove));
+        stringBuilder.append(", ");
+        stringBuilder.append("populationProvide: ");
+        stringBuilder.append(String.valueOf(populationProvide));
+        stringBuilder.append(", ");
+        stringBuilder.append("populationUse: ");
+        stringBuilder.append(String.valueOf(populationUse));
+        stringBuilder.append(", ");
+        stringBuilder.append("maxHealth: ");
+        stringBuilder.append(String.valueOf(maxHealth));
+        stringBuilder.append(", ");
+        stringBuilder.append("initialCost: ");
+        stringBuilder.append(String.valueOf(initialCost));
+        stringBuilder.append(", ");
+        stringBuilder.append("sightRange: ");
+        stringBuilder.append(String.valueOf(sightRange));
+        stringBuilder.append(", ");
+        stringBuilder.append("resourcePerHealth: ");
+        stringBuilder.append(String.valueOf(resourcePerHealth));
+        stringBuilder.append(", ");
+        stringBuilder.append("build: ");
+        stringBuilder.append(String.valueOf(build));
+        stringBuilder.append(", ");
+        stringBuilder.append("attack: ");
+        stringBuilder.append(String.valueOf(attack));
+        stringBuilder.append(", ");
+        stringBuilder.append("repair: ");
+        stringBuilder.append(String.valueOf(repair));
+        stringBuilder.append(" }");
+        return stringBuilder.toString();
+    }
 }

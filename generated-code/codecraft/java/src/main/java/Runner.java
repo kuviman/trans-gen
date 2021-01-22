@@ -13,6 +13,8 @@ public class Runner {
         InputStream inputStream = new BufferedInputStream(new FileInputStream(inputFile));
         model.PlayerView input = model.PlayerView.readFrom(inputStream);
 
+        System.out.println(input);
+
         OutputStream outputStream = new BufferedOutputStream(new FileOutputStream(outputFile));
         input.writeTo(outputStream);
         outputStream.flush();

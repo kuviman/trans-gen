@@ -65,6 +65,26 @@ public abstract class OneOf {
             }
             StreamUtil.writeLong(stream, longInt);
         }
+    
+        @Override
+        public String toString() {
+            StringBuilder stringBuilder = new StringBuilder("OptionOne { ");
+            stringBuilder.append("vecInt: ");
+            stringBuilder.append("[ ");
+            for (int vecIntIndex = 0; vecIntIndex < vecInt.length; vecIntIndex++) {
+                if (vecIntIndex != 0) {
+                    stringBuilder.append(", ");
+                }
+                int vecIntElement = vecInt[vecIntIndex];
+                stringBuilder.append(String.valueOf(vecIntElement));
+            }
+            stringBuilder.append(" ]");
+            stringBuilder.append(", ");
+            stringBuilder.append("longInt: ");
+            stringBuilder.append(String.valueOf(longInt));
+            stringBuilder.append(" }");
+            return stringBuilder.toString();
+        }
     }
 
     public static class OptionTwo extends OneOf {
@@ -94,6 +114,15 @@ public abstract class OneOf {
         public void writeTo(java.io.OutputStream stream) throws java.io.IOException {
             StreamUtil.writeInt(stream, TAG);
             StreamUtil.writeInt(stream, value);
+        }
+    
+        @Override
+        public String toString() {
+            StringBuilder stringBuilder = new StringBuilder("OptionTwo { ");
+            stringBuilder.append("value: ");
+            stringBuilder.append(String.valueOf(value));
+            stringBuilder.append(" }");
+            return stringBuilder.toString();
         }
     }
 }

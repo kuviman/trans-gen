@@ -163,4 +163,31 @@ public class Example {
             StreamUtil.writeInt(stream, optionalEnum.tag);
         }
     }
+
+    @Override
+    public String toString() {
+        StringBuilder stringBuilder = new StringBuilder("Example { ");
+        stringBuilder.append("oneOf: ");
+        stringBuilder.append(String.valueOf(oneOf));
+        stringBuilder.append(", ");
+        stringBuilder.append("hashMap: ");
+        stringBuilder.append(String.valueOf(hashMap));
+        stringBuilder.append(", ");
+        stringBuilder.append("optionalInt: ");
+        stringBuilder.append(String.valueOf(optionalInt));
+        stringBuilder.append(", ");
+        stringBuilder.append("optionalBoolean: ");
+        stringBuilder.append(String.valueOf(optionalBoolean));
+        stringBuilder.append(", ");
+        stringBuilder.append("optionalOneOf: ");
+        stringBuilder.append(String.valueOf(optionalOneOf));
+        stringBuilder.append(", ");
+        stringBuilder.append("optionalStruct: ");
+        stringBuilder.append(String.valueOf(optionalStruct));
+        stringBuilder.append(", ");
+        stringBuilder.append("optionalEnum: ");
+        stringBuilder.append(String.valueOf(optionalEnum));
+        stringBuilder.append(" }");
+        return stringBuilder.toString();
+    }
 }

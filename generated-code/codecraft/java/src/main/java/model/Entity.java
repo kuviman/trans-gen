@@ -100,4 +100,28 @@ public class Entity {
         StreamUtil.writeInt(stream, health);
         StreamUtil.writeBoolean(stream, active);
     }
+
+    @Override
+    public String toString() {
+        StringBuilder stringBuilder = new StringBuilder("Entity { ");
+        stringBuilder.append("id: ");
+        stringBuilder.append(String.valueOf(id));
+        stringBuilder.append(", ");
+        stringBuilder.append("playerId: ");
+        stringBuilder.append(String.valueOf(playerId));
+        stringBuilder.append(", ");
+        stringBuilder.append("entityType: ");
+        stringBuilder.append(String.valueOf(entityType));
+        stringBuilder.append(", ");
+        stringBuilder.append("position: ");
+        stringBuilder.append(String.valueOf(position));
+        stringBuilder.append(", ");
+        stringBuilder.append("health: ");
+        stringBuilder.append(String.valueOf(health));
+        stringBuilder.append(", ");
+        stringBuilder.append("active: ");
+        stringBuilder.append(String.valueOf(active));
+        stringBuilder.append(" }");
+        return stringBuilder.toString();
+    }
 }

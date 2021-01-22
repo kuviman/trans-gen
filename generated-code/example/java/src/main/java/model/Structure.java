@@ -52,4 +52,19 @@ public class Structure {
         StreamUtil.writeFloat(stream, floatNumber);
         StreamUtil.writeDouble(stream, doubleNumber);
     }
+
+    @Override
+    public String toString() {
+        StringBuilder stringBuilder = new StringBuilder("Structure { ");
+        stringBuilder.append("text: ");
+        stringBuilder.append('"' + text + '"');
+        stringBuilder.append(", ");
+        stringBuilder.append("floatNumber: ");
+        stringBuilder.append(String.valueOf(floatNumber));
+        stringBuilder.append(", ");
+        stringBuilder.append("doubleNumber: ");
+        stringBuilder.append(String.valueOf(doubleNumber));
+        stringBuilder.append(" }");
+        return stringBuilder.toString();
+    }
 }

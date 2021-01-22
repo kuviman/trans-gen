@@ -39,4 +39,16 @@ public class Vec2Int {
         StreamUtil.writeInt(stream, x);
         StreamUtil.writeInt(stream, y);
     }
+
+    @Override
+    public String toString() {
+        StringBuilder stringBuilder = new StringBuilder("Vec2Int { ");
+        stringBuilder.append("x: ");
+        stringBuilder.append(String.valueOf(x));
+        stringBuilder.append(", ");
+        stringBuilder.append("y: ");
+        stringBuilder.append(String.valueOf(y));
+        stringBuilder.append(" }");
+        return stringBuilder.toString();
+    }
 }
