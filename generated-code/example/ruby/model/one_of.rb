@@ -39,6 +39,30 @@ class OneOf
             end
             stream.write_long(@long_int)
         end
+    
+        def to_s
+            string_result = "OptionOne { "
+            string_result += "vec_int: "
+            string_result += "[ "
+            vec_int_index = 0
+            @vec_int.each do |vec_int_element|
+                if vec_int_index != 0
+                    string_result += ", "
+                end
+                string_result += vec_int_element.to_s
+                vec_int_index += 1
+            end
+            string_result += " ]"
+            string_result += ", "
+            string_result += "long_int: "
+            string_result += @long_int.to_s
+            string_result += " }"
+            string_result
+        end
+    
+        def to_str
+            to_s
+        end
     end
     class OptionTwo
         TAG = 1
@@ -57,6 +81,18 @@ class OneOf
         def write_to(stream)
             stream.write_int(TAG)
             stream.write_int(@value)
+        end
+    
+        def to_s
+            string_result = "OptionTwo { "
+            string_result += "value: "
+            string_result += @value.to_s
+            string_result += " }"
+            string_result
+        end
+    
+        def to_str
+            to_s
         end
     end
 end

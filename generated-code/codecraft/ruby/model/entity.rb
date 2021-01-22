@@ -45,4 +45,35 @@ class Entity
         stream.write_int(@health)
         stream.write_bool(@active)
     end
+
+    def to_s
+        string_result = "Entity { "
+        string_result += "id: "
+        string_result += @id.to_s
+        string_result += ", "
+        string_result += "player_id: "
+        if @player_id.nil?
+            string_result += "nil"
+        else
+            string_result += @player_id.to_s
+        end
+        string_result += ", "
+        string_result += "entity_type: "
+        string_result += EntityType.to_s(@entity_type)
+        string_result += ", "
+        string_result += "position: "
+        string_result += @position.to_s
+        string_result += ", "
+        string_result += "health: "
+        string_result += @health.to_s
+        string_result += ", "
+        string_result += "active: "
+        string_result += @active.to_s
+        string_result += " }"
+        string_result
+    end
+
+    def to_str
+        to_s
+    end
 end

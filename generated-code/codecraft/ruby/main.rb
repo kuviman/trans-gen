@@ -32,6 +32,8 @@ open(input_file, "rb") { |file|
     input = PlayerView.read_from(stream)
 }
 
+puts input
+
 open(output_file, "wb") { |file|
     stream = StreamWrapper.new(FileWrapper.new(file))
     input.write_to(stream)

@@ -73,4 +73,69 @@ class PlayerView
             entities_element.write_to(stream)
         end
     end
+
+    def to_s
+        string_result = "PlayerView { "
+        string_result += "my_id: "
+        string_result += @my_id.to_s
+        string_result += ", "
+        string_result += "map_size: "
+        string_result += @map_size.to_s
+        string_result += ", "
+        string_result += "fog_of_war: "
+        string_result += @fog_of_war.to_s
+        string_result += ", "
+        string_result += "entity_properties: "
+        string_result += "{ "
+        entity_properties_index = 0
+        @entity_properties.each do |entity_properties_key, entity_properties_value|
+            if entity_properties_index != 0
+                string_result += ", "
+            end
+            string_result += EntityType.to_s(entity_properties_key)
+            string_result += " => "
+            string_result += entity_properties_value.to_s
+            entity_properties_index += 1
+        end
+        string_result += " }"
+        string_result += ", "
+        string_result += "max_tick_count: "
+        string_result += @max_tick_count.to_s
+        string_result += ", "
+        string_result += "max_pathfind_nodes: "
+        string_result += @max_pathfind_nodes.to_s
+        string_result += ", "
+        string_result += "current_tick: "
+        string_result += @current_tick.to_s
+        string_result += ", "
+        string_result += "players: "
+        string_result += "[ "
+        players_index = 0
+        @players.each do |players_element|
+            if players_index != 0
+                string_result += ", "
+            end
+            string_result += players_element.to_s
+            players_index += 1
+        end
+        string_result += " ]"
+        string_result += ", "
+        string_result += "entities: "
+        string_result += "[ "
+        entities_index = 0
+        @entities.each do |entities_element|
+            if entities_index != 0
+                string_result += ", "
+            end
+            string_result += entities_element.to_s
+            entities_index += 1
+        end
+        string_result += " ]"
+        string_result += " }"
+        string_result
+    end
+
+    def to_str
+        to_s
+    end
 end

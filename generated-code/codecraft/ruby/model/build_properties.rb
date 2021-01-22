@@ -35,4 +35,32 @@ class BuildProperties
             stream.write_int(@init_health)
         end
     end
+
+    def to_s
+        string_result = "BuildProperties { "
+        string_result += "options: "
+        string_result += "[ "
+        options_index = 0
+        @options.each do |options_element|
+            if options_index != 0
+                string_result += ", "
+            end
+            string_result += EntityType.to_s(options_element)
+            options_index += 1
+        end
+        string_result += " ]"
+        string_result += ", "
+        string_result += "init_health: "
+        if @init_health.nil?
+            string_result += "nil"
+        else
+            string_result += @init_health.to_s
+        end
+        string_result += " }"
+        string_result
+    end
+
+    def to_str
+        to_s
+    end
 end

@@ -92,4 +92,64 @@ class EntityProperties
             @repair.write_to(stream)
         end
     end
+
+    def to_s
+        string_result = "EntityProperties { "
+        string_result += "size: "
+        string_result += @size.to_s
+        string_result += ", "
+        string_result += "build_score: "
+        string_result += @build_score.to_s
+        string_result += ", "
+        string_result += "destroy_score: "
+        string_result += @destroy_score.to_s
+        string_result += ", "
+        string_result += "can_move: "
+        string_result += @can_move.to_s
+        string_result += ", "
+        string_result += "population_provide: "
+        string_result += @population_provide.to_s
+        string_result += ", "
+        string_result += "population_use: "
+        string_result += @population_use.to_s
+        string_result += ", "
+        string_result += "max_health: "
+        string_result += @max_health.to_s
+        string_result += ", "
+        string_result += "initial_cost: "
+        string_result += @initial_cost.to_s
+        string_result += ", "
+        string_result += "sight_range: "
+        string_result += @sight_range.to_s
+        string_result += ", "
+        string_result += "resource_per_health: "
+        string_result += @resource_per_health.to_s
+        string_result += ", "
+        string_result += "build: "
+        if @build.nil?
+            string_result += "nil"
+        else
+            string_result += @build.to_s
+        end
+        string_result += ", "
+        string_result += "attack: "
+        if @attack.nil?
+            string_result += "nil"
+        else
+            string_result += @attack.to_s
+        end
+        string_result += ", "
+        string_result += "repair: "
+        if @repair.nil?
+            string_result += "nil"
+        else
+            string_result += @repair.to_s
+        end
+        string_result += " }"
+        string_result
+    end
+
+    def to_str
+        to_s
+    end
 end

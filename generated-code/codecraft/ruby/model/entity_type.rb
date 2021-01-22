@@ -17,4 +17,42 @@ module EntityType
         end
         result
     end
+
+    def self.to_s(value)
+        if value == WALL
+            return "WALL"
+        end
+        if value == HOUSE
+            return "HOUSE"
+        end
+        if value == BUILDER_BASE
+            return "BUILDER_BASE"
+        end
+        if value == BUILDER_UNIT
+            return "BUILDER_UNIT"
+        end
+        if value == MELEE_BASE
+            return "MELEE_BASE"
+        end
+        if value == MELEE_UNIT
+            return "MELEE_UNIT"
+        end
+        if value == RANGED_BASE
+            return "RANGED_BASE"
+        end
+        if value == RANGED_UNIT
+            return "RANGED_UNIT"
+        end
+        if value == RESOURCE
+            return "RESOURCE"
+        end
+        if value == TURRET
+            return "TURRET"
+        end
+        raise "Impossible happened"
+    end
+
+    def self.to_str(value)
+        self.to_s(value)
+    end
 end

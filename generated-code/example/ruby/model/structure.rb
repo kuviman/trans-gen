@@ -21,4 +21,22 @@ class Structure
         stream.write_float(@float_number)
         stream.write_double(@double_number)
     end
+
+    def to_s
+        string_result = "Structure { "
+        string_result += "text: "
+        string_result += @text.dump
+        string_result += ", "
+        string_result += "float_number: "
+        string_result += @float_number.to_s
+        string_result += ", "
+        string_result += "double_number: "
+        string_result += @double_number.to_s
+        string_result += " }"
+        string_result
+    end
+
+    def to_str
+        to_s
+    end
 end

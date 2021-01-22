@@ -9,4 +9,18 @@ module Enumeration
         end
         result
     end
+
+    def self.to_s(value)
+        if value == VALUE_ONE
+            return "VALUE_ONE"
+        end
+        if value == VALUE_TWO
+            return "VALUE_TWO"
+        end
+        raise "Impossible happened"
+    end
+
+    def self.to_str(value)
+        self.to_s(value)
+    end
 end

@@ -95,4 +95,65 @@ class Example
             stream.write_int(@optional_enum)
         end
     end
+
+    def to_s
+        string_result = "Example { "
+        string_result += "one_of: "
+        string_result += @one_of.to_s
+        string_result += ", "
+        string_result += "hash_map: "
+        string_result += "{ "
+        hash_map_index = 0
+        @hash_map.each do |hash_map_key, hash_map_value|
+            if hash_map_index != 0
+                string_result += ", "
+            end
+            string_result += Enumeration.to_s(hash_map_key)
+            string_result += " => "
+            string_result += hash_map_value.to_s
+            hash_map_index += 1
+        end
+        string_result += " }"
+        string_result += ", "
+        string_result += "optional_int: "
+        if @optional_int.nil?
+            string_result += "nil"
+        else
+            string_result += @optional_int.to_s
+        end
+        string_result += ", "
+        string_result += "optional_bool: "
+        if @optional_bool.nil?
+            string_result += "nil"
+        else
+            string_result += @optional_bool.to_s
+        end
+        string_result += ", "
+        string_result += "optional_one_of: "
+        if @optional_one_of.nil?
+            string_result += "nil"
+        else
+            string_result += @optional_one_of.to_s
+        end
+        string_result += ", "
+        string_result += "optional_struct: "
+        if @optional_struct.nil?
+            string_result += "nil"
+        else
+            string_result += @optional_struct.to_s
+        end
+        string_result += ", "
+        string_result += "optional_enum: "
+        if @optional_enum.nil?
+            string_result += "nil"
+        else
+            string_result += Enumeration.to_s(@optional_enum)
+        end
+        string_result += " }"
+        string_result
+    end
+
+    def to_str
+        to_s
+    end
 end

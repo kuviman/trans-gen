@@ -21,4 +21,22 @@ class Player
         stream.write_int(@score)
         stream.write_int(@resource)
     end
+
+    def to_s
+        string_result = "Player { "
+        string_result += "id: "
+        string_result += @id.to_s
+        string_result += ", "
+        string_result += "score: "
+        string_result += @score.to_s
+        string_result += ", "
+        string_result += "resource: "
+        string_result += @resource.to_s
+        string_result += " }"
+        string_result
+    end
+
+    def to_str
+        to_s
+    end
 end

@@ -17,4 +17,19 @@ class Vec2Int
         stream.write_int(@x)
         stream.write_int(@y)
     end
+
+    def to_s
+        string_result = "Vec2Int { "
+        string_result += "x: "
+        string_result += @x.to_s
+        string_result += ", "
+        string_result += "y: "
+        string_result += @y.to_s
+        string_result += " }"
+        string_result
+    end
+
+    def to_str
+        to_s
+    end
 end
