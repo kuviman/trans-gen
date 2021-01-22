@@ -1,11 +1,6 @@
 use anyhow::Context as _;
 use std::path::PathBuf;
-
-#[derive(structopt::StructOpt)]
-enum Sub {
-    Generate { path: PathBuf },
-    Test {},
-}
+use trans_gen::TestExt as _;
 
 #[derive(structopt::StructOpt)]
 struct Opt {
@@ -13,8 +8,8 @@ struct Opt {
     models: Vec<String>,
     #[structopt(long = "lang")]
     langs: Vec<String>,
-    #[structopt(subcommand)]
-    sub: Sub,
+    #[structopt(long)]
+    generate: Option<PathBuf>,
 }
 
 macro_rules! all_models {
@@ -33,98 +28,55 @@ all_models!(declare_mod);
 
 fn main() -> anyhow::Result<()> {
     let opt: Opt = structopt::StructOpt::from_args();
-
-    match opt {
-        Opt {
-            langs,
-            models,
-            sub: Sub::Generate { path },
-        } => {
-            std::fs::remove_dir_all(&path).context("Failed to clear target directory")?;
-            macro_rules! generate_model {
-                ($model:ident) => {
-                    if models.is_empty() || models.contains(&stringify!($model).to_owned()) {
-                        let path = if models.len() == 1 {
-                            path.clone()
-                        } else {
-                            path.join(stringify!($model))
-                        };
-                        macro_rules! generate_runnable {
-                            ($lang:ident) => {
-                                if langs.is_empty() || langs.contains(&stringify!($lang).to_owned())
-                                {
-                                    let path = if langs.len() == 1 {
-                                        path.clone()
-                                    } else {
-                                        path.join(stringify!($lang))
-                                    };
-                                    trans_gen::testing::generate_file_read_write::<
-                                        $model::Model,
-                                        trans_gen::gens::$lang::Generator,
-                                    >(&path)
-                                    .context(format!("Failed to generate {}", stringify!($lang)))?;
-                                }
-                            };
-                        }
-                        macro_rules! generate {
-                            ($lang:ident) => {
-                                if langs.is_empty() || langs.contains(&stringify!($lang).to_owned())
-                                {
-                                    let path = if langs.len() == 1 {
-                                        path.clone()
-                                    } else {
-                                        path.join(stringify!($lang))
-                                    };
-                                    trans_gen::generate::<trans_gen::gens::$lang::Generator>(
-                                        "trans-gen-test",
-                                        env!("CARGO_PKG_VERSION"),
-                                        Default::default(),
-                                        &[trans::Schema::of::<$model::Model>()],
-                                        vec![],
-                                    )
-                                    .write_to(path)
-                                    .context(format!("Failed to generate {}", stringify!($lang)))?;
-                                }
-                            };
-                        }
-                        trans_gen::all_runnable_gens!(generate_runnable);
-                        generate!(markdown);
-                    }
-                };
-            }
-            all_models!(generate_model);
+    if let Some(path) = &opt.generate {
+        if path.is_dir() {
+            std::fs::remove_dir_all(path).context("Failed to clear target directory")?;
         }
-        Opt {
-            langs,
-            models,
-            sub: Sub::Test {},
-        } => {
-            macro_rules! test_model {
-                ($model:ident) => {
-                    if models.is_empty() || models.contains(&stringify!($model).to_owned()) {
-                        let snapshot: $model::Model = serde_json::from_str(include_str!(concat!(
-                            stringify!($model),
-                            "-snapshot.json"
-                        )))
-                        .expect("Failed to read snapshot");
-                        macro_rules! test {
-                            ($lang:ident) => {
-                                if langs.is_empty() || langs.contains(&stringify!($lang).to_owned())
-                                {
-                                    trans_gen::testing::test_file_read_write::<
-                                        $model::Model,
-                                        trans_gen::gens::$lang::Generator,
-                                    >(&snapshot)
-                                    .context(format!("Failed to test {}", stringify!($lang)))?;
-                                }
-                            };
-                        }
-                        trans_gen::all_runnable_gens!(test);
-                    }
-                };
-            }
-            all_models!(test_model);
-        }
+        std::fs::create_dir_all(path).context("Failed to create target directory")?;
     }
+    macro_rules! test_model {
+        ($model:ident) => {
+            if opt.models.is_empty() || opt.models.contains(&stringify!($model).to_owned()) {
+                let generate = opt.generate.as_ref().map(|path| {
+                    if opt.models.len() == 1 {
+                        path.to_owned()
+                    } else {
+                        path.join(stringify!($model))
+                    }
+                });
+                let snapshot: $model::Model = serde_json::from_str(include_str!(concat!(
+                    stringify!($model),
+                    "-snapshot.json"
+                )))
+                .expect("Failed to read snapshot");
+                macro_rules! test {
+                    ($lang:ident) => {
+                        if opt.langs.is_empty() || opt.langs.contains(&stringify!($lang).to_owned())
+                        {
+                            let generate = generate.as_ref().map(|path| {
+                                if opt.langs.len() == 1 {
+                                    path.to_owned()
+                                } else {
+                                    path.join(stringify!($lang))
+                                }
+                            });
+                            let test = trans_gen::testing::FileReadWrite {
+                                snapshot: snapshot.clone(),
+                            };
+                            if let Some(path) = generate {
+                                test.generate::<trans_gen::gens::$lang::Generator>(&path)
+                                    .context(format!("Failed to generate {}", stringify!($lang)))?;
+                            } else {
+                                test.test::<trans_gen::gens::$lang::Generator>()
+                                    .context(format!("Failed to test {}", stringify!($lang)))?;
+                            }
+                        }
+                    };
+                }
+                trans_gen::all_runnable_gens!(test);
+            }
+        };
+    }
+    all_models!(test_model);
     Ok(())
 }

@@ -1,0 +1,41 @@
+use super::*;
+
+pub struct FileReadWrite<D> {
+    pub snapshot: D,
+}
+
+impl<D: Trans + PartialEq> Test for FileReadWrite<D> {
+    fn schemas(&self) -> Vec<Arc<Schema>> {
+        vec![Schema::of::<D>()]
+    }
+    fn run_test(&self, mut run_code: Command) -> anyhow::Result<()> {
+        let tempdir = tempfile::tempdir().context("Failed to create temp dir")?;
+        let path = tempdir.as_ref();
+        let input_file = path.join("input.trans");
+        trans::Trans::write_to(
+            &self.snapshot,
+            &mut std::io::BufWriter::new(
+                std::fs::File::create(&input_file).context("Failed to create input file")?,
+            ),
+        )
+        .context("Failed to write input")?;
+        let output_file = path.join("output.trans");
+        let start_time = std::time::Instant::now();
+        run_code
+            .arg(&input_file)
+            .arg(&output_file)
+            .run()
+            .context("Failed to run code")?;
+        let running_duration = std::time::Instant::now().duration_since(start_time);
+        println!("Run duration: {}", format_duration(running_duration));
+        let output: D = trans::Trans::read_from(&mut std::io::BufReader::new(
+            std::fs::File::open(&output_file).context("Failed to open output file")?,
+        ))
+        .context("Failed to read output")?;
+        if self.snapshot != output {
+            anyhow::bail!("Input and output differ");
+        }
+        println!("Test finished successfully");
+        Ok(())
+    }
+}

@@ -220,8 +220,10 @@ impl RunnableGenerator for Generator {
     }
 }
 
-impl testing::FileReadWrite for Generator {
-    fn extra_files(schema: &Schema) -> Vec<File> {
+impl<D: Trans + PartialEq> TestableGenerator<testing::FileReadWrite<D>> for Generator {
+    fn extra_files(_: &testing::FileReadWrite<D>) -> Vec<File> {
+        let schema = Schema::of::<D>();
+        let schema: &Schema = &schema;
         vec![File {
             path: "src/main.ts".to_owned(),
             content: include_templing!("src/gens/typescript/file-read-write.ts.templing"),

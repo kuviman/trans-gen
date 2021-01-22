@@ -167,8 +167,10 @@ impl RunnableGenerator for Generator {
     }
 }
 
-impl testing::FileReadWrite for Generator {
-    fn extra_files(schema: &Schema) -> Vec<File> {
+impl<D: Trans + PartialEq> TestableGenerator<testing::FileReadWrite<D>> for Generator {
+    fn extra_files(_: &testing::FileReadWrite<D>) -> Vec<File> {
+        let schema = Schema::of::<D>();
+        let schema: &Schema = &schema;
         fn type_name(schema: &Schema) -> String {
             match schema {
                 Schema::Struct(Struct { name, .. })

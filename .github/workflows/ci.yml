@@ -99,7 +99,7 @@ jobs:
       - name: Run tests
         run: |
           ${{ matrix.setup }}
-          ./testing --lang=${{ matrix.lang }} test
+          ./testing --lang=${{ matrix.lang }}
 
   update-testing-branch:
     name: Update testing branch
@@ -124,7 +124,7 @@ jobs:
           git fetch origin testing
           git worktree add testing-branch testing
           chmod +x testing
-          ./testing generate testing-branch/generated-code
+          ./testing --generate=testing-branch/generated-code
           pushd testing-branch
           git add .
           git diff --cached --exit-code || git commit -m "Update generated code (run ${{ github.run_id }})"

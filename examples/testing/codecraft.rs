@@ -20,7 +20,7 @@ pub struct Id(usize);
 
 /// Game entity
 #[trans_doc = "ru:Игровая сущность"]
-#[derive(PartialEq, Debug, Serialize, Deserialize, Trans)]
+#[derive(PartialEq, Debug, Serialize, Deserialize, Trans, Clone)]
 pub struct Entity {
     /// Entity's ID. Unique for each entity
     #[trans_doc = "ru:ID сущности. Уникально для каждой сущности"]
@@ -44,7 +44,7 @@ pub struct Entity {
 
 /// Move action
 #[trans_doc = "ru:Действие перемещения"]
-#[derive(PartialEq, Debug, Serialize, Deserialize, Trans)]
+#[derive(PartialEq, Debug, Serialize, Deserialize, Trans, Clone)]
 pub struct MoveAction {
     /// Target position
     #[trans_doc = "ru:Целевая позиция"]
@@ -59,7 +59,7 @@ pub struct MoveAction {
 
 /// Build action
 #[trans_doc = "ru:Действие постройки"]
-#[derive(PartialEq, Debug, Serialize, Deserialize, Trans)]
+#[derive(PartialEq, Debug, Serialize, Deserialize, Trans, Clone)]
 pub struct BuildAction {
     /// Type of an entity to build
     #[trans_doc = "ru:Тип сущности для постройки"]
@@ -71,7 +71,7 @@ pub struct BuildAction {
 
 /// Repair action
 #[trans_doc = "ru:Действие починки"]
-#[derive(PartialEq, Debug, Serialize, Deserialize, Trans)]
+#[derive(PartialEq, Debug, Serialize, Deserialize, Trans, Clone)]
 pub struct RepairAction {
     /// Target entity's ID
     #[trans_doc = "ru:ID цели"]
@@ -80,7 +80,7 @@ pub struct RepairAction {
 
 /// Auto attack options
 #[trans_doc = "ru:Настройки автоматической атаки"]
-#[derive(PartialEq, Debug, Serialize, Deserialize, Trans)]
+#[derive(PartialEq, Debug, Serialize, Deserialize, Trans, Clone)]
 pub struct AutoAttack {
     /// Maximum distance to pathfind
     #[trans_doc = "ru:Максимальное расстояние для поиска пути"]
@@ -92,7 +92,7 @@ pub struct AutoAttack {
 
 /// Attack action
 #[trans_doc = "ru:Действие атаки"]
-#[derive(PartialEq, Debug, Serialize, Deserialize, Trans)]
+#[derive(PartialEq, Debug, Serialize, Deserialize, Trans, Clone)]
 pub struct AttackAction {
     /// If specified, target entity's ID
     #[trans_doc = "ru:ID цели, если применимо"]
@@ -104,7 +104,7 @@ pub struct AttackAction {
 
 /// Entity's action
 #[trans_doc = "ru:Действие сущности"]
-#[derive(PartialEq, Debug, Serialize, Deserialize, Trans)]
+#[derive(PartialEq, Debug, Serialize, Deserialize, Trans, Clone)]
 pub struct EntityAction {
     /// Move action
     #[trans_doc = "ru:Действие перемещения"]
@@ -122,7 +122,7 @@ pub struct EntityAction {
 
 /// Entity's attack properties
 #[trans_doc = "ru:Свойства атаки сущности"]
-#[derive(PartialEq, Debug, Serialize, Deserialize, Trans)]
+#[derive(PartialEq, Debug, Serialize, Deserialize, Trans, Clone)]
 pub struct AttackProperties {
     /// Maximum attack range
     #[trans_doc = "ru:Максимальное расстояние атаки"]
@@ -139,7 +139,7 @@ pub struct AttackProperties {
 
 /// Entity's build properties
 #[trans_doc = "ru:Свойства строительства сущности"]
-#[derive(PartialEq, Debug, Serialize, Deserialize, Trans)]
+#[derive(PartialEq, Debug, Serialize, Deserialize, Trans, Clone)]
 pub struct BuildProperties {
     /// Valid new entity types
     #[trans_doc = "ru:Возможные типы новой сущности"]
@@ -151,7 +151,7 @@ pub struct BuildProperties {
 
 /// Entity's repair properties
 #[trans_doc = "ru:Свойства ремонта сущности"]
-#[derive(PartialEq, Debug, Serialize, Deserialize, Trans)]
+#[derive(PartialEq, Debug, Serialize, Deserialize, Trans, Clone)]
 pub struct RepairProperties {
     /// Valid target entity types
     #[trans_doc = "ru:Типы сущностей, которые возможно ремонтировать"]
@@ -163,7 +163,7 @@ pub struct RepairProperties {
 
 /// Entity properties
 #[trans_doc = "ru:Свойства сущности"]
-#[derive(PartialEq, Debug, Serialize, Deserialize, Trans)]
+#[derive(PartialEq, Debug, Serialize, Deserialize, Trans, Clone)]
 pub struct EntityProperties {
     /// Size. Entity has a form of a square with side of this length
     #[trans_doc = "ru:Размер. Сущности имеют форму квадрата со стороной заданной длины"]
@@ -208,7 +208,7 @@ pub struct EntityProperties {
 
 /// Entity type
 #[trans_doc = "ru:Тип сущности"]
-#[derive(Debug, Serialize, Deserialize, PartialEq, Eq, Hash, Copy, Clone, Trans)]
+#[derive(PartialEq, Debug, Serialize, Deserialize, Trans, Eq, Hash, Copy, Clone)]
 pub enum EntityType {
     /// Wall, can be used to prevent enemy from moving through
     #[trans_doc = "ru:Стена, может использоваться для блокировки пути противнику"]
@@ -244,7 +244,7 @@ pub enum EntityType {
 
 /// Player (strategy, client)
 #[trans_doc = "ru:Игрок (стратегия, клиент)"]
-#[derive(PartialEq, Debug, Serialize, Deserialize, Trans)]
+#[derive(PartialEq, Debug, Serialize, Deserialize, Trans, Clone)]
 pub struct Player {
     /// Player's ID
     #[trans_doc = "ru:ID игрока"]
@@ -258,7 +258,7 @@ pub struct Player {
 }
 
 /// Information available to the player
-#[derive(PartialEq, Debug, Serialize, Deserialize, Trans)]
+#[derive(PartialEq, Debug, Serialize, Deserialize, Trans, Clone)]
 #[trans_doc = "ru:Доступная игроку информация"]
 pub struct PlayerView {
     /// Your player's ID

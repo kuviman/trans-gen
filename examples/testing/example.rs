@@ -4,7 +4,7 @@ use trans::Trans;
 
 /// Example enumeration
 #[trans_doc = "ru:Пример enum"]
-#[derive(Debug, Serialize, Deserialize, PartialEq, Eq, Hash, Copy, Clone, Trans)]
+#[derive(PartialEq, Debug, Serialize, Deserialize, Trans, Eq, Hash, Copy, Clone)]
 pub enum Enumeration {
     /// First option
     #[trans_doc = "ru:Первый вариант"]
@@ -14,12 +14,12 @@ pub enum Enumeration {
     ValueTwo,
 }
 
-#[derive(Debug, Serialize, Deserialize, PartialEq, Eq, Hash, Copy, Clone, Trans)]
+#[derive(PartialEq, Debug, Serialize, Deserialize, Trans, Eq, Hash, Copy, Clone)]
 pub struct NewTypeInt32(i32);
 
 /// Oneof example
 #[trans_doc = "ru:Пример one of"]
-#[derive(PartialEq, Debug, Serialize, Deserialize, Trans)]
+#[derive(PartialEq, Debug, Serialize, Deserialize, Trans, Clone)]
 pub enum OneOf {
     /// First option
     #[trans_doc = "ru:Первый вариант"]
@@ -42,7 +42,7 @@ pub enum OneOf {
 
 /// Example structure
 #[trans_doc = "ru:Пример структуры"]
-#[derive(PartialEq, Debug, Serialize, Deserialize, Trans)]
+#[derive(PartialEq, Debug, Serialize, Deserialize, Trans, Clone)]
 pub struct Structure {
     /// Text
     #[trans_doc = "ru:Текст"]
@@ -57,7 +57,7 @@ pub struct Structure {
 
 /// Example
 #[trans_doc = "ru:Пример"]
-#[derive(PartialEq, Debug, Serialize, Deserialize, Trans)]
+#[derive(PartialEq, Debug, Serialize, Deserialize, Trans, Clone)]
 pub struct Example {
     /// OneOf
     #[trans_doc = "ru:OneOf"]

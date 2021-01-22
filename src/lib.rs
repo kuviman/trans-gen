@@ -6,6 +6,7 @@ use std::collections::{BTreeMap, BTreeSet, HashMap};
 use std::fmt::Write;
 use std::path::{Path, PathBuf};
 use std::process::Command;
+use std::sync::Arc;
 use templing::*;
 use trans::*;
 
@@ -14,6 +15,8 @@ use util::*;
 
 pub mod gens;
 pub mod testing;
+
+pub use testing::{Test, TestExt, TestableGenerator};
 
 #[derive(Debug)]
 pub struct File {
