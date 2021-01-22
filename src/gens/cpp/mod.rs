@@ -40,6 +40,7 @@ fn type_name(schema: &Schema) -> String {
 fn includes(schema: &Schema) -> String {
     let mut includes = BTreeSet::new();
     includes.insert("<string>".to_owned());
+    includes.insert("<sstream>".to_owned());
     includes.insert("\"../Stream.hpp\"".to_owned());
     collect_includes(&mut includes, schema, false);
     include_templing!("src/gens/cpp/includes.templing")
@@ -115,6 +116,10 @@ fn read_var(var: &str, schema: &Schema) -> String {
 
 fn write_var(var: &str, schema: &Schema) -> String {
     include_templing!("src/gens/cpp/write_var.templing")
+}
+
+fn var_to_string(var: &str, schema: &Schema) -> String {
+    include_templing!("src/gens/cpp/var_to_string.templing")
 }
 
 fn struct_def(struc: &Struct, base: Option<(&Name, usize)>) -> String {

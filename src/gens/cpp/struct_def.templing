@@ -38,6 +38,8 @@ public:
     static {{ struc.name.camel_case(conv) }} readFrom(InputStream& stream);
 
     void writeTo(OutputStream& stream) const;
+
+    std::string toString() const;
     - if struc.hashable() {
 
     bool operator ==(const {{ struc.name.camel_case(conv) }}& other) const;

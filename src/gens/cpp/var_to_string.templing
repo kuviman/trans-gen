@@ -1,0 +1,59 @@
+- match schema {
+- Schema::Bool | Schema::Int32 | Schema::Int64 | Schema::Float32 | Schema::Float64 => {
+ss << {{ var }};
+- }
+- Schema::String => {
+ss << '"' << {{ var }} << '"';
+- }
+- Schema::Struct(_) => {
+ss << {{ var }}.toString();
+- }
+- Schema::OneOf { .. } => {
+ss << {{ var }}->toString();
+- }
+- Schema::Option(inner) => {
+if ({{ var }}) {
+    - let value_var = format!("{}Value", var); let value_var = &value_var;
+    const {{ type_name(inner) }}& {{ value_var }} = *{{ var }};
+    {{ var_to_string(value_var, inner) }}
+} else {
+    ss << "none";
+}
+- }
+- Schema::Vec(inner) => {
+ss << "[ ";
+- let index_var = format!("{}Index", var); let index_var = &index_var;
+- let element_var = format!("{}Element", var); let element_var = &element_var;
+for (size_t {{ index_var }} = 0; {{ index_var }} < {{ var }}.size(); {{ index_var }}++) {
+    const {{ type_name(inner) }}& {{ element_var }} = {{ var }}[{{ index_var }}];
+    if ({{ index_var }} != 0) {
+        ss << ", ";
+    }
+    {{ var_to_string(element_var, inner) }}
+}
+ss << " ]";
+- }
+- Schema::Map(key_type, value_type) => {
+ss << "{ ";
+- let index_var = format!("{}Index", var); let index_var = &index_var;
+- let entry_var = format!("{}Entry", var); let entry_var = &entry_var;
+size_t {{ index_var }} = 0;
+for (const auto& {{ entry_var }} : {{ var }}) {
+    if ({{ index_var }} != 0) {
+        ss << ", ";
+    }
+    - let key_var = format!("{}Key", var); let key_var = &key_var;
+    - let value_var = format!("{}Value", var); let value_var = &value_var;
+    const {{ type_name(key_type) }}& {{ key_var }} = {{ entry_var }}.first;
+    const {{ type_name(value_type) }}& {{ value_var }} = {{ entry_var }}.second;
+    {{ var_to_string(key_var, key_type) }}
+    ss << ": ";
+    {{ var_to_string(value_var, value_type) }}
+    {{ index_var }}++;
+}
+ss << " }";
+- }
+- Schema::Enum { base_name, .. } => {
+ss << {{ base_name.mixed_case(conv) }}ToString({{ var }});
+- }
+- }

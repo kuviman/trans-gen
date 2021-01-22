@@ -51,6 +51,20 @@ void {{ full_name }}::writeTo(OutputStream& stream) const {
     {{ write_var(&field.name.mixed_case(conv), &field.schema) }}
     - }
 }
+
+std::string {{ full_name }}::toString() const {
+    std::stringstream ss;
+    ss << "{{ full_name }} { ";
+    - for (index, field) in struc.fields.iter().enumerate() {
+    - if index != 0 {
+    ss << ", ";
+    - }
+    ss << "{{ field.name.mixed_case(conv) }}: ";
+    {{ var_to_string(&field.name.mixed_case(conv), &field.schema) }}
+    - }
+    ss << " }";
+    return ss.str();
+}
 - if struc.hashable() {
 
 bool {{ full_name }}::operator ==(const {{ full_name }}& other) const {

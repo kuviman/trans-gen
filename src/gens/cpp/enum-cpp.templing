@@ -11,3 +11,14 @@
         throw std::runtime_error("Unexpected tag value");
     }
 }
+
+std::string {{ base_name.mixed_case(conv) }}ToString({{ base_name.camel_case(conv) }} value) {
+    switch (value) {
+    - for variant in variants {
+    case {{ base_name.camel_case(conv) }}::{{ variant.name.shouty_snake_case(conv) }}:
+        return "{{ variant.name.shouty_snake_case(conv) }}";
+    - }
+    default:
+        throw std::runtime_error("Impossible happened");
+    }
+}
