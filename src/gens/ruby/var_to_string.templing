@@ -1,0 +1,53 @@
+- let raw_var = var.trim_start_matches('@');
+- match schema {
+- Schema::Bool | Schema::Int32 | Schema::Int64 | Schema::Float32 | Schema::Float64 => {
+string_result += {{ var }}.to_s
+- }
+- Schema::String => {
+string_result += {{ var }}.dump
+- }
+- Schema::Struct(_) | Schema::OneOf { .. } => {
+string_result += {{ var }}.to_s
+- }
+- Schema::Option(inner) => {
+if {{ var }}.nil?
+    string_result += "nil"
+else
+    {{ var_to_string(var, inner) }}
+end
+- }
+- Schema::Vec(inner) => {
+string_result += "[ "
+- let element_var = format!("{}_element", raw_var); let element_var = &element_var;
+- let index_var = format!("{}_index", raw_var); let index_var = &index_var;
+{{ index_var }} = 0
+{{ var }}.each do |{{ element_var }}|
+    if {{ index_var }} != 0
+        string_result += ", "
+    end
+    {{ var_to_string(element_var, inner) }}
+    {{ index_var }} += 1
+end
+string_result += " ]"
+- }
+- Schema::Map(key_type, value_type) => {
+string_result += "{ "
+- let index_var = format!("{}_index", raw_var); let index_var = &index_var;
+- let key_var = format!("{}_key", raw_var); let key_var = &key_var;
+- let value_var = format!("{}_value", raw_var); let value_var = &value_var;
+{{ index_var }} = 0
+{{ var }}.each do |{{ key_var }}, {{ value_var }}|
+    if {{ index_var }} != 0
+        string_result += ", "
+    end
+    {{ var_to_string(key_var, key_type) }}
+    string_result += " => "
+    {{ var_to_string(value_var, value_type) }}
+    {{ index_var }} += 1
+end
+string_result += " }"
+- }
+- Schema::Enum { base_name, .. } => {
+string_result += {{ base_name.camel_case(conv) }}.to_s({{ var }})
+- }
+- }

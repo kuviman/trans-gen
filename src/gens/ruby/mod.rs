@@ -70,6 +70,10 @@ fn write_var(var: &str, schema: &Schema) -> String {
     include_templing!("src/gens/ruby/write_var.templing")
 }
 
+fn var_to_string(var: &str, schema: &Schema) -> String {
+    include_templing!("src/gens/ruby/var_to_string.templing")
+}
+
 fn struct_impl(struc: &Struct, base: Option<(&Name, usize)>) -> String {
     include_templing!("src/gens/ruby/struct_impl.templing")
 }

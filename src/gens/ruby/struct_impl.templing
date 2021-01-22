@@ -42,4 +42,21 @@ class {{ struc.name.camel_case(conv) }}
         {{ write_var(&format!("@{}", field.name.snake_case(conv)), &field.schema) }}
         - }
     end
+
+    def to_s
+        string_result = "{{ struc.name.camel_case(conv) }} { "
+        - for (index, field) in struc.fields.iter().enumerate() {
+        - if index != 0 {
+        string_result += ", "
+        - }
+        string_result += "{{ field.name.snake_case(conv) }}: "
+        {{ var_to_string(&format!("@{}", field.name.snake_case(conv)), &field.schema) }}
+        - }
+        string_result += " }"
+        string_result
+    end
+
+    def to_str
+        to_s
+    end
 end

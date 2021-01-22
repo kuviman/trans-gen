@@ -10,4 +10,17 @@ module {{ base_name.camel_case(conv) }}
         end
         result
     end
+
+    def self.to_s(value)
+        - for variant in variants {
+        if value == {{ variant.name.shouty_snake_case(conv) }}
+            return "{{ variant.name.shouty_snake_case(conv) }}"
+        end
+        - }
+        raise "Impossible happened"
+    end
+
+    def self.to_str(value)
+        self.to_s(value)
+    end
 end
