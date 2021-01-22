@@ -83,3 +83,4 @@ pub struct Example {
 }
 
 pub type Model = Example;
+pub const SHOW_STDOUT: bool = true;

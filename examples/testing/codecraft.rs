@@ -291,3 +291,4 @@ pub struct PlayerView {
 }
 
 pub type Model = PlayerView;
+pub const SHOW_STDOUT: bool = false;

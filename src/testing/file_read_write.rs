@@ -2,6 +2,7 @@ use super::*;
 
 pub struct FileReadWrite<D> {
     pub snapshot: D,
+    pub show_stdout: bool,
 }
 
 impl<D: Trans + PartialEq> Test for FileReadWrite<D> {
@@ -21,6 +22,9 @@ impl<D: Trans + PartialEq> Test for FileReadWrite<D> {
         .context("Failed to write input")?;
         let output_file = path.join("output.trans");
         let start_time = std::time::Instant::now();
+        if !self.show_stdout {
+            run_code.stdout(std::process::Stdio::null());
+        }
         run_code
             .arg(&input_file)
             .arg(&output_file)

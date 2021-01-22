@@ -62,6 +62,7 @@ fn main() -> anyhow::Result<()> {
                             });
                             let test = trans_gen::testing::FileReadWrite {
                                 snapshot: snapshot.clone(),
+                                show_stdout: $model::SHOW_STDOUT,
                             };
                             if let Some(path) = generate {
                                 test.generate::<trans_gen::gens::$lang::Generator>(&path)
