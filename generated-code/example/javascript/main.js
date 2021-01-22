@@ -31,6 +31,7 @@ async function run() {
     const outputFile = process.argv[3];
 
     const input = await model.Example.readFrom(new StreamWrapper(new FileWrapper(inputFile, 'r')));
+    console.log(input);
     const outputStream = new StreamWrapper(new FileWrapper(outputFile, 'w'));
     input.writeTo(outputStream);
     outputStream.flush();
