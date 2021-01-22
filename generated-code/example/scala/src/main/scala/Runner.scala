@@ -11,6 +11,8 @@ object Runner extends App {
     val inputStream: InputStream = new BufferedInputStream(new FileInputStream(inputFile))
     val input: model.Example = model.Example.readFrom(inputStream)
 
+    println(input)
+
     val outputStream: OutputStream = new BufferedOutputStream(new FileOutputStream(outputFile))
     input.writeTo(outputStream)
     outputStream.flush()

@@ -17,6 +17,29 @@ case class Entity(id: Int, playerId: Option[Int], entityType: model.EntityType, 
         StreamUtil.writeInt(stream, health)
         StreamUtil.writeBoolean(stream, active)
     }
+
+    override def toString(): String = {
+        var stringBuilder = new StringBuilder("Entity { ")
+        stringBuilder.append("id: ")
+        stringBuilder.append(id)
+        stringBuilder.append(", ")
+        stringBuilder.append("playerId: ")
+        stringBuilder.append(playerId)
+        stringBuilder.append(", ")
+        stringBuilder.append("entityType: ")
+        stringBuilder.append(entityType)
+        stringBuilder.append(", ")
+        stringBuilder.append("position: ")
+        stringBuilder.append(position)
+        stringBuilder.append(", ")
+        stringBuilder.append("health: ")
+        stringBuilder.append(health)
+        stringBuilder.append(", ")
+        stringBuilder.append("active: ")
+        stringBuilder.append(active)
+        stringBuilder.append(" }")
+        stringBuilder.toString()
+    }
 }
 
 object Entity {

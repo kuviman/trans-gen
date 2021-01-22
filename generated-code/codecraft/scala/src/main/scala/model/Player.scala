@@ -8,6 +8,20 @@ case class Player(id: Int, score: Int, resource: Int) {
         StreamUtil.writeInt(stream, score)
         StreamUtil.writeInt(stream, resource)
     }
+
+    override def toString(): String = {
+        var stringBuilder = new StringBuilder("Player { ")
+        stringBuilder.append("id: ")
+        stringBuilder.append(id)
+        stringBuilder.append(", ")
+        stringBuilder.append("score: ")
+        stringBuilder.append(score)
+        stringBuilder.append(", ")
+        stringBuilder.append("resource: ")
+        stringBuilder.append(resource)
+        stringBuilder.append(" }")
+        stringBuilder.toString()
+    }
 }
 
 object Player {

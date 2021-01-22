@@ -10,6 +10,17 @@ case class RepairProperties(validTargets: Seq[model.EntityType], power: Int) {
         }
         StreamUtil.writeInt(stream, power)
     }
+
+    override def toString(): String = {
+        var stringBuilder = new StringBuilder("RepairProperties { ")
+        stringBuilder.append("validTargets: ")
+        stringBuilder.append(validTargets)
+        stringBuilder.append(", ")
+        stringBuilder.append("power: ")
+        stringBuilder.append(power)
+        stringBuilder.append(" }")
+        stringBuilder.toString()
+    }
 }
 
 object RepairProperties {

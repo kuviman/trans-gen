@@ -8,6 +8,20 @@ case class AttackProperties(attackRange: Int, damage: Int, collectResource: Bool
         StreamUtil.writeInt(stream, damage)
         StreamUtil.writeBoolean(stream, collectResource)
     }
+
+    override def toString(): String = {
+        var stringBuilder = new StringBuilder("AttackProperties { ")
+        stringBuilder.append("attackRange: ")
+        stringBuilder.append(attackRange)
+        stringBuilder.append(", ")
+        stringBuilder.append("damage: ")
+        stringBuilder.append(damage)
+        stringBuilder.append(", ")
+        stringBuilder.append("collectResource: ")
+        stringBuilder.append(collectResource)
+        stringBuilder.append(" }")
+        stringBuilder.toString()
+    }
 }
 
 object AttackProperties {

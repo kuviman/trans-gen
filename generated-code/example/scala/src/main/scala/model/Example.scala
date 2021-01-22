@@ -46,6 +46,32 @@ case class Example(oneOf: model.OneOf, hashMap: Map[model.Enumeration, Int], opt
             }
         }
     }
+
+    override def toString(): String = {
+        var stringBuilder = new StringBuilder("Example { ")
+        stringBuilder.append("oneOf: ")
+        stringBuilder.append(oneOf)
+        stringBuilder.append(", ")
+        stringBuilder.append("hashMap: ")
+        stringBuilder.append(hashMap)
+        stringBuilder.append(", ")
+        stringBuilder.append("optionalInt: ")
+        stringBuilder.append(optionalInt)
+        stringBuilder.append(", ")
+        stringBuilder.append("optionalBoolean: ")
+        stringBuilder.append(optionalBoolean)
+        stringBuilder.append(", ")
+        stringBuilder.append("optionalOneOf: ")
+        stringBuilder.append(optionalOneOf)
+        stringBuilder.append(", ")
+        stringBuilder.append("optionalStruct: ")
+        stringBuilder.append(optionalStruct)
+        stringBuilder.append(", ")
+        stringBuilder.append("optionalEnum: ")
+        stringBuilder.append(optionalEnum)
+        stringBuilder.append(" }")
+        stringBuilder.toString()
+    }
 }
 
 object Example {

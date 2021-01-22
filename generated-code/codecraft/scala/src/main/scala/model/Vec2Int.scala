@@ -7,6 +7,17 @@ case class Vec2Int(x: Int, y: Int) {
         StreamUtil.writeInt(stream, x)
         StreamUtil.writeInt(stream, y)
     }
+
+    override def toString(): String = {
+        var stringBuilder = new StringBuilder("Vec2Int { ")
+        stringBuilder.append("x: ")
+        stringBuilder.append(x)
+        stringBuilder.append(", ")
+        stringBuilder.append("y: ")
+        stringBuilder.append(y)
+        stringBuilder.append(" }")
+        stringBuilder.toString()
+    }
 }
 
 object Vec2Int {

@@ -36,6 +36,50 @@ case class EntityProperties(size: Int, buildScore: Int, destroyScore: Int, canMo
             }
         }
     }
+
+    override def toString(): String = {
+        var stringBuilder = new StringBuilder("EntityProperties { ")
+        stringBuilder.append("size: ")
+        stringBuilder.append(size)
+        stringBuilder.append(", ")
+        stringBuilder.append("buildScore: ")
+        stringBuilder.append(buildScore)
+        stringBuilder.append(", ")
+        stringBuilder.append("destroyScore: ")
+        stringBuilder.append(destroyScore)
+        stringBuilder.append(", ")
+        stringBuilder.append("canMove: ")
+        stringBuilder.append(canMove)
+        stringBuilder.append(", ")
+        stringBuilder.append("populationProvide: ")
+        stringBuilder.append(populationProvide)
+        stringBuilder.append(", ")
+        stringBuilder.append("populationUse: ")
+        stringBuilder.append(populationUse)
+        stringBuilder.append(", ")
+        stringBuilder.append("maxHealth: ")
+        stringBuilder.append(maxHealth)
+        stringBuilder.append(", ")
+        stringBuilder.append("initialCost: ")
+        stringBuilder.append(initialCost)
+        stringBuilder.append(", ")
+        stringBuilder.append("sightRange: ")
+        stringBuilder.append(sightRange)
+        stringBuilder.append(", ")
+        stringBuilder.append("resourcePerHealth: ")
+        stringBuilder.append(resourcePerHealth)
+        stringBuilder.append(", ")
+        stringBuilder.append("build: ")
+        stringBuilder.append(build)
+        stringBuilder.append(", ")
+        stringBuilder.append("attack: ")
+        stringBuilder.append(attack)
+        stringBuilder.append(", ")
+        stringBuilder.append("repair: ")
+        stringBuilder.append(repair)
+        stringBuilder.append(" }")
+        stringBuilder.toString()
+    }
 }
 
 object EntityProperties {

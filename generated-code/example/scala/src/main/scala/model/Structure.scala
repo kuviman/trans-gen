@@ -8,6 +8,20 @@ case class Structure(text: String, floatNumber: Float, doubleNumber: Double) {
         StreamUtil.writeFloat(stream, floatNumber)
         StreamUtil.writeDouble(stream, doubleNumber)
     }
+
+    override def toString(): String = {
+        var stringBuilder = new StringBuilder("Structure { ")
+        stringBuilder.append("text: ")
+        stringBuilder.append('"' + text + '"')
+        stringBuilder.append(", ")
+        stringBuilder.append("floatNumber: ")
+        stringBuilder.append(floatNumber)
+        stringBuilder.append(", ")
+        stringBuilder.append("doubleNumber: ")
+        stringBuilder.append(doubleNumber)
+        stringBuilder.append(" }")
+        stringBuilder.toString()
+    }
 }
 
 object Structure {

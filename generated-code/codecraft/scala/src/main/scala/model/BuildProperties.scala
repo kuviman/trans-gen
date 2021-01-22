@@ -16,6 +16,17 @@ case class BuildProperties(options: Seq[model.EntityType], initHealth: Option[In
             }
         }
     }
+
+    override def toString(): String = {
+        var stringBuilder = new StringBuilder("BuildProperties { ")
+        stringBuilder.append("options: ")
+        stringBuilder.append(options)
+        stringBuilder.append(", ")
+        stringBuilder.append("initHealth: ")
+        stringBuilder.append(initHealth)
+        stringBuilder.append(" }")
+        stringBuilder.toString()
+    }
 }
 
 object BuildProperties {

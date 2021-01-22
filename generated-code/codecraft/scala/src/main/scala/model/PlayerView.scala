@@ -24,6 +24,38 @@ case class PlayerView(myId: Int, mapSize: Int, fogOfWar: Boolean, entityProperti
             value.writeTo(stream)
         }
     }
+
+    override def toString(): String = {
+        var stringBuilder = new StringBuilder("PlayerView { ")
+        stringBuilder.append("myId: ")
+        stringBuilder.append(myId)
+        stringBuilder.append(", ")
+        stringBuilder.append("mapSize: ")
+        stringBuilder.append(mapSize)
+        stringBuilder.append(", ")
+        stringBuilder.append("fogOfWar: ")
+        stringBuilder.append(fogOfWar)
+        stringBuilder.append(", ")
+        stringBuilder.append("entityProperties: ")
+        stringBuilder.append(entityProperties)
+        stringBuilder.append(", ")
+        stringBuilder.append("maxTickCount: ")
+        stringBuilder.append(maxTickCount)
+        stringBuilder.append(", ")
+        stringBuilder.append("maxPathfindNodes: ")
+        stringBuilder.append(maxPathfindNodes)
+        stringBuilder.append(", ")
+        stringBuilder.append("currentTick: ")
+        stringBuilder.append(currentTick)
+        stringBuilder.append(", ")
+        stringBuilder.append("players: ")
+        stringBuilder.append(players)
+        stringBuilder.append(", ")
+        stringBuilder.append("entities: ")
+        stringBuilder.append(entities)
+        stringBuilder.append(" }")
+        stringBuilder.toString()
+    }
 }
 
 object PlayerView {

@@ -16,6 +16,17 @@ object OneOf {
             }
             StreamUtil.writeLong(stream, longInt)
         }
+    
+        override def toString(): String = {
+            var stringBuilder = new StringBuilder("OptionOne { ")
+            stringBuilder.append("vecInt: ")
+            stringBuilder.append(vecInt)
+            stringBuilder.append(", ")
+            stringBuilder.append("longInt: ")
+            stringBuilder.append(longInt)
+            stringBuilder.append(" }")
+            stringBuilder.toString()
+        }
     }
     
     object OptionOne {
@@ -33,6 +44,14 @@ object OneOf {
         override def writeTo(stream: java.io.OutputStream) {
             StreamUtil.writeInt(stream, OptionTwo.TAG)
             StreamUtil.writeInt(stream, value)
+        }
+    
+        override def toString(): String = {
+            var stringBuilder = new StringBuilder("OptionTwo { ")
+            stringBuilder.append("value: ")
+            stringBuilder.append(value)
+            stringBuilder.append(" }")
+            stringBuilder.toString()
         }
     }
     
