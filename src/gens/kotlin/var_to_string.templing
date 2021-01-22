@@ -1,0 +1,34 @@
+- match schema {
+- Schema::Bool | Schema::Int32 | Schema::Int64 | Schema::Float32 | Schema::Float64 => {
+stringBuilder.append({{ var }})
+- }
+- Schema::String => {
+stringBuilder.append('"' + {{ var }} + '"')
+- }
+- Schema::Struct(_) | Schema::OneOf { .. } => {
+stringBuilder.append({{ var }})
+- }
+- Schema::Option(inner) => {
+stringBuilder.append({{ var }})
+- }
+- Schema::Vec(inner) => {
+stringBuilder.append("[ ")
+- let element_var = format!("{}Element", var); let element_var = &element_var;
+- let index_var = format!("{}Index", var); let index_var = &index_var;
+var {{ index_var }} = 0
+for ({{ element_var }} in {{ var }}) {
+    if ({{ index_var }} != 0) {
+        stringBuilder.append(", ")
+    }
+    {{ var_to_string(element_var, inner) }}
+    {{ index_var }}++
+}
+stringBuilder.append(" ]")
+- }
+- Schema::Map(key_type, value_type) => {
+stringBuilder.append({{ var }})
+- }
+- Schema::Enum { .. } => {
+stringBuilder.append({{ var }})
+- }
+- }
