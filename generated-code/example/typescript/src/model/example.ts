@@ -30,7 +30,7 @@ export class Example {
         for (let hashMapCount = await stream.readInt(); hashMapCount > 0; hashMapCount--) {
             let hashMapKey;
             let hashMapValue;
-            hashMapKey = await stream.readInt();
+            hashMapKey = await Enumeration.readFrom(stream);
             hashMapValue = await stream.readInt();
             hashMap.set(hashMapKey, hashMapValue)
         }
@@ -60,7 +60,7 @@ export class Example {
         }
         let optionalEnum;
         if (await stream.readBool()) {
-            optionalEnum = await stream.readInt();
+            optionalEnum = await Enumeration.readFrom(stream);
         } else {
             optionalEnum = null;
         }
@@ -73,7 +73,7 @@ export class Example {
         let hashMap = this.hashMap;
         await stream.writeInt(hashMap.size);
         for (let [hashMapKey, hashMapValue] of hashMap) {
-            await stream.writeInt(hashMapKey);
+            await hashMapKey.writeTo(stream);
             await stream.writeInt(hashMapValue);
         }
         let optionalInt = this.optionalInt;
@@ -109,7 +109,7 @@ export class Example {
             await stream.writeBool(false);
         } else {
             await stream.writeBool(true);
-            await stream.writeInt(optionalEnum);
+            await optionalEnum.writeTo(stream);
         }
     }
 }

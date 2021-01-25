@@ -15,7 +15,7 @@ export class BuildProperties {
         options = [];
         for (let optionsCount = await stream.readInt(); optionsCount > 0; optionsCount--) {
             let optionsElement;
-            optionsElement = await stream.readInt();
+            optionsElement = await EntityType.readFrom(stream);
             options.push(optionsElement);
         }
         let initHealth;
@@ -31,7 +31,7 @@ export class BuildProperties {
         let options = this.options;
         await stream.writeInt(options.length);
         for (let optionsElement of options) {
-            await stream.writeInt(optionsElement);
+            await optionsElement.writeTo(stream);
         }
         let initHealth = this.initHealth;
         if (initHealth === null) {

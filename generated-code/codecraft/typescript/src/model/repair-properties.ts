@@ -15,7 +15,7 @@ export class RepairProperties {
         validTargets = [];
         for (let validTargetsCount = await stream.readInt(); validTargetsCount > 0; validTargetsCount--) {
             let validTargetsElement;
-            validTargetsElement = await stream.readInt();
+            validTargetsElement = await EntityType.readFrom(stream);
             validTargets.push(validTargetsElement);
         }
         let power;
@@ -27,7 +27,7 @@ export class RepairProperties {
         let validTargets = this.validTargets;
         await stream.writeInt(validTargets.length);
         for (let validTargetsElement of validTargets) {
-            await stream.writeInt(validTargetsElement);
+            await validTargetsElement.writeTo(stream);
         }
         let power = this.power;
         await stream.writeInt(power);

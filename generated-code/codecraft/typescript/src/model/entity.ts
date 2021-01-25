@@ -29,7 +29,7 @@ export class Entity {
             playerId = null;
         }
         let entityType;
-        entityType = await stream.readInt();
+        entityType = await EntityType.readFrom(stream);
         let position;
         position = await Vec2Int.readFrom(stream);
         let health;
@@ -50,7 +50,7 @@ export class Entity {
             await stream.writeInt(playerId);
         }
         let entityType = this.entityType;
-        await stream.writeInt(entityType);
+        await entityType.writeTo(stream);
         let position = this.position;
         await position.writeTo(stream);
         let health = this.health;
