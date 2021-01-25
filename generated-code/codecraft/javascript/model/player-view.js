@@ -64,7 +64,7 @@ class PlayerView {
         let entityProperties = this.entityProperties;
         await stream.writeInt(entityProperties.size);
         for (let [entityPropertiesKey, entityPropertiesValue] of entityProperties) {
-            await stream.writeInt(entityPropertiesKey);
+            await entityPropertiesKey.writeTo(stream);
             await entityPropertiesValue.writeTo(stream);
         }
         let maxTickCount = this.maxTickCount;

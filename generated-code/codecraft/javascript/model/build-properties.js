@@ -26,7 +26,7 @@ class BuildProperties {
         let options = this.options;
         await stream.writeInt(options.length);
         for (let optionsElement of options) {
-            await stream.writeInt(optionsElement);
+            await optionsElement.writeTo(stream);
         }
         let initHealth = this.initHealth;
         if (initHealth === null) {

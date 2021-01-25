@@ -63,7 +63,7 @@ class Example {
         let hashMap = this.hashMap;
         await stream.writeInt(hashMap.size);
         for (let [hashMapKey, hashMapValue] of hashMap) {
-            await stream.writeInt(hashMapKey);
+            await hashMapKey.writeTo(stream);
             await stream.writeInt(hashMapValue);
         }
         let optionalInt = this.optionalInt;
@@ -99,7 +99,7 @@ class Example {
             await stream.writeBool(false);
         } else {
             await stream.writeBool(true);
-            await stream.writeInt(optionalEnum);
+            await optionalEnum.writeTo(stream);
         }
     }
 }

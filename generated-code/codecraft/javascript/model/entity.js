@@ -41,7 +41,7 @@ class Entity {
             await stream.writeInt(playerId);
         }
         let entityType = this.entityType;
-        await stream.writeInt(entityType);
+        await entityType.writeTo(stream);
         let position = this.position;
         await position.writeTo(stream);
         let health = this.health;
