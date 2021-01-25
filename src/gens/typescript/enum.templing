@@ -1,5 +1,33 @@
-export enum {{ base_name.camel_case(conv) }} {
-    - for (index, variant) in variants.iter().enumerate() {
-    {{ variant.name.camel_case(conv) }} = {{index}},
+import { StreamWrapper } from "../stream-wrapper";
+
+export class {{ base_name.camel_case(conv) }} {
+    readonly name: string;
+    readonly tag: number;
+
+    constructor(name: string, tag: number) {
+        this.name = name;
+        this.tag = tag;
+    }
+
+    - for (tag, variant) in variants.iter().enumerate() {
+    static readonly {{ variant.name.shouty_snake_case(conv) }} = new {{ base_name.camel_case(conv) }}("{{ variant.name.shouty_snake_case(conv) }}", {{ tag }});
     - }
+
+    static async readFrom(stream: StreamWrapper): Promise<{{ base_name.camel_case(conv) }}> {
+        const tag = await stream.readInt();
+        - for variant in variants {
+        if (tag == {{ base_name.camel_case(conv) }}.{{ variant.name.shouty_snake_case(conv) }}.tag) {
+            return {{ base_name.camel_case(conv) }}.{{ variant.name.shouty_snake_case(conv) }};
+        }
+        - }
+        throw new Error("Unexpected tag value");
+    }
+
+    async writeTo(stream: StreamWrapper) {
+        await stream.writeInt(this.tag);
+    }
+
+    [Symbol.for('nodejs.util.inspect.custom')]() {
+        return this.name;
+    }
 }

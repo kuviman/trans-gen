@@ -17,7 +17,7 @@ await stream.writeDouble({{ var }});
 - Schema::String => {
 await stream.writeString({{ var }});
 - }
-- Schema::Struct(_) | Schema::OneOf { .. } => {
+- Schema::Struct(_) | Schema::OneOf { .. } | Schema::Enum { .. } => {
 await {{ var }}.writeTo(stream);
 - }
 - Schema::Option(inner) => {
@@ -43,8 +43,5 @@ for (let [{{ key_var }}, {{ value_var }}] of {{ var }}) {
     {{ write_var(key_var, key_type) }}
     {{ write_var(value_var, value_type) }}
 }
-- }
-- Schema::Enum { .. } => {
-await stream.writeInt({{ var }});
 - }
 - }
