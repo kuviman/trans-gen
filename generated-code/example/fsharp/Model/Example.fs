@@ -2,16 +2,25 @@
 
 namespace TransGenTest.Model
 
+/// Example
 type Example = {
+    /// OneOf
     OneOf: OneOf;
+    /// Dictionary
     HashMap: Map<Enumeration, int>;
+    /// Optional int
     OptionalInt: option<int>;
+    /// Optional boolean
     OptionalBool: option<bool>;
+    /// Optional OneOf
     OptionalOneOf: option<OneOf>;
+    /// Optional struct
     OptionalStruct: option<Structure>;
+    /// Optional enum
     OptionalEnum: option<Enumeration>;
 } with
 
+    /// Write Example to writer
     member this.writeTo(writer: System.IO.BinaryWriter) =
         this.OneOf.writeTo writer
         writer.Write this.HashMap.Count
@@ -44,6 +53,7 @@ type Example = {
                 writer.Write (int value)
             | None -> writer.Write false
 
+    /// Read Example from reader
     static member readFrom(reader: System.IO.BinaryReader) = {
         OneOf = OneOf.readFrom reader;
         HashMap = [for _ in 1 .. reader.ReadInt32() do

@@ -2,6 +2,7 @@
 
 namespace TransGenTest.Model
 
+/// Entity type
 type EntityType =
     | Wall = 0
     | House = 1

@@ -2,22 +2,37 @@
 
 namespace TransGenTest.Model
 
+/// Entity properties
 type EntityProperties = {
+    /// Size. Entity has a form of a square with side of this length
     Size: int;
+    /// Score for building this entity
     BuildScore: int;
+    /// Score for destroying this entity
     DestroyScore: int;
+    /// Whether this entity can move
     CanMove: bool;
+    /// Number of population points this entity provides, if active
     PopulationProvide: int;
+    /// Number of population points this entity uses
     PopulationUse: int;
+    /// Maximum health points
     MaxHealth: int;
+    /// Cost to build this first entity of this type. If this is a unit (entity can move), the cost is increased by 1 for each existing unit of this type
     InitialCost: int;
+    /// If fog of war is enabled, maximum distance at which other entities are considered visible
     SightRange: int;
+    /// Amount of resource added to enemy able to collect resource on dealing damage for 1 health point
     ResourcePerHealth: int;
+    /// Build properties, if entity can build
     Build: option<BuildProperties>;
+    /// Attack properties, if entity can attack
     Attack: option<AttackProperties>;
+    /// Repair properties, if entity can repair
     Repair: option<RepairProperties>;
 } with
 
+    /// Write EntityProperties to writer
     member this.writeTo(writer: System.IO.BinaryWriter) =
         writer.Write this.Size
         writer.Write this.BuildScore
@@ -45,6 +60,7 @@ type EntityProperties = {
                 value.writeTo writer
             | None -> writer.Write false
 
+    /// Read EntityProperties from reader
     static member readFrom(reader: System.IO.BinaryReader) = {
         Size = reader.ReadInt32()
         BuildScore = reader.ReadInt32()

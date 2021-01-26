@@ -2,18 +2,29 @@
 
 namespace TransGenTest.Model
 
+/// Information available to the player
 type PlayerView = {
+    /// Your player's ID
     MyId: int;
+    /// Size of the map
     MapSize: int;
+    /// Whether fog of war is enabled
     FogOfWar: bool;
+    /// Entity properties for each entity type
     EntityProperties: Map<EntityType, EntityProperties>;
+    /// Max tick count for the game
     MaxTickCount: int;
+    /// Max pathfind nodes when performing pathfinding in the game simulator
     MaxPathfindNodes: int;
+    /// Current tick
     CurrentTick: int;
+    /// List of players
     Players: Player[];
+    /// List of entities
     Entities: Entity[];
 } with
 
+    /// Write PlayerView to writer
     member this.writeTo(writer: System.IO.BinaryWriter) =
         writer.Write this.MyId
         writer.Write this.MapSize
@@ -32,6 +43,7 @@ type PlayerView = {
         this.Entities |> Array.iter (fun value ->
             value.writeTo writer )
 
+    /// Read PlayerView from reader
     static member readFrom(reader: System.IO.BinaryReader) = {
         MyId = reader.ReadInt32()
         MapSize = reader.ReadInt32()
