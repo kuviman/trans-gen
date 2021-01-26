@@ -4,6 +4,7 @@ AttackProperties::AttackProperties() { }
 
 AttackProperties::AttackProperties(int attackRange, int damage, bool collectResource) : attackRange(attackRange), damage(damage), collectResource(collectResource) { }
 
+// Read AttackProperties from input stream
 AttackProperties AttackProperties::readFrom(InputStream& stream) {
     int attackRange;
     attackRange = stream.readInt();
@@ -14,12 +15,14 @@ AttackProperties AttackProperties::readFrom(InputStream& stream) {
     return AttackProperties(attackRange, damage, collectResource);
 }
 
+// Write AttackProperties to output stream
 void AttackProperties::writeTo(OutputStream& stream) const {
     stream.write(attackRange);
     stream.write(damage);
     stream.write(collectResource);
 }
 
+// Get string representation of AttackProperties
 std::string AttackProperties::toString() const {
     std::stringstream ss;
     ss << "AttackProperties { ";

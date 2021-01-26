@@ -4,6 +4,7 @@ EntityProperties::EntityProperties() { }
 
 EntityProperties::EntityProperties(int size, int buildScore, int destroyScore, bool canMove, int populationProvide, int populationUse, int maxHealth, int initialCost, int sightRange, int resourcePerHealth, std::shared_ptr<BuildProperties> build, std::shared_ptr<AttackProperties> attack, std::shared_ptr<RepairProperties> repair) : size(size), buildScore(buildScore), destroyScore(destroyScore), canMove(canMove), populationProvide(populationProvide), populationUse(populationUse), maxHealth(maxHealth), initialCost(initialCost), sightRange(sightRange), resourcePerHealth(resourcePerHealth), build(build), attack(attack), repair(repair) { }
 
+// Read EntityProperties from input stream
 EntityProperties EntityProperties::readFrom(InputStream& stream) {
     int size;
     size = stream.readInt();
@@ -49,6 +50,7 @@ EntityProperties EntityProperties::readFrom(InputStream& stream) {
     return EntityProperties(size, buildScore, destroyScore, canMove, populationProvide, populationUse, maxHealth, initialCost, sightRange, resourcePerHealth, build, attack, repair);
 }
 
+// Write EntityProperties to output stream
 void EntityProperties::writeTo(OutputStream& stream) const {
     stream.write(size);
     stream.write(buildScore);
@@ -83,6 +85,7 @@ void EntityProperties::writeTo(OutputStream& stream) const {
     }
 }
 
+// Get string representation of EntityProperties
 std::string EntityProperties::toString() const {
     std::stringstream ss;
     ss << "EntityProperties { ";

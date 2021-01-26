@@ -4,6 +4,7 @@ BuildProperties::BuildProperties() { }
 
 BuildProperties::BuildProperties(std::vector<EntityType> options, std::shared_ptr<int> initHealth) : options(options), initHealth(initHealth) { }
 
+// Read BuildProperties from input stream
 BuildProperties BuildProperties::readFrom(InputStream& stream) {
     std::vector<EntityType> options;
     options = std::vector<EntityType>(stream.readInt());
@@ -20,6 +21,7 @@ BuildProperties BuildProperties::readFrom(InputStream& stream) {
     return BuildProperties(options, initHealth);
 }
 
+// Write BuildProperties to output stream
 void BuildProperties::writeTo(OutputStream& stream) const {
     stream.write((int)(options.size()));
     for (const EntityType& optionsElement : options) {
@@ -34,6 +36,7 @@ void BuildProperties::writeTo(OutputStream& stream) const {
     }
 }
 
+// Get string representation of BuildProperties
 std::string BuildProperties::toString() const {
     std::stringstream ss;
     ss << "BuildProperties { ";

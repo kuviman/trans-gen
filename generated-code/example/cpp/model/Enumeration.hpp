@@ -3,12 +3,18 @@
 
 #include "../Stream.hpp"
 
+// Example enumeration
 enum class Enumeration {
-        VALUE_ONE = 0,
-        VALUE_TWO = 1
+    // First option
+    VALUE_ONE = 0,
+    // Second option
+    VALUE_TWO = 1
 };
 
+// Read Enumeration from input stream
 Enumeration readEnumeration(InputStream& stream);
+
+// Get string representation of Enumeration
 std::string enumerationToString(Enumeration value);
 
 #endif

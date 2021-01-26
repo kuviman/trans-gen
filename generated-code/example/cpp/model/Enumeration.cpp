@@ -1,6 +1,7 @@
 #include "Enumeration.hpp"
 #include <stdexcept>
 
+// Read Enumeration from input stream
 Enumeration readEnumeration(InputStream& stream) {
     switch (stream.readInt()) {
     case 0:
@@ -12,6 +13,7 @@ Enumeration readEnumeration(InputStream& stream) {
     }
 }
 
+// Get string representation of Enumeration
 std::string enumerationToString(Enumeration value) {
     switch (value) {
     case Enumeration::VALUE_ONE:

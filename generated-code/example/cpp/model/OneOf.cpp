@@ -5,6 +5,7 @@ OneOf::OptionOne::OptionOne() { }
 
 OneOf::OptionOne::OptionOne(std::vector<int> vecInt, long long longInt) : vecInt(vecInt), longInt(longInt) { }
 
+// Read OptionOne from input stream
 OneOf::OptionOne OneOf::OptionOne::readFrom(InputStream& stream) {
     std::vector<int> vecInt;
     vecInt = std::vector<int>(stream.readInt());
@@ -16,6 +17,7 @@ OneOf::OptionOne OneOf::OptionOne::readFrom(InputStream& stream) {
     return OneOf::OptionOne(vecInt, longInt);
 }
 
+// Write OptionOne to output stream
 void OneOf::OptionOne::writeTo(OutputStream& stream) const {
     stream.write(TAG);
     stream.write((int)(vecInt.size()));
@@ -25,6 +27,7 @@ void OneOf::OptionOne::writeTo(OutputStream& stream) const {
     stream.write(longInt);
 }
 
+// Get string representation of OptionOne
 std::string OneOf::OptionOne::toString() const {
     std::stringstream ss;
     ss << "OneOf::OptionOne { ";
@@ -49,17 +52,20 @@ OneOf::OptionTwo::OptionTwo() { }
 
 OneOf::OptionTwo::OptionTwo(int value) : value(value) { }
 
+// Read OptionTwo from input stream
 OneOf::OptionTwo OneOf::OptionTwo::readFrom(InputStream& stream) {
     int value;
     value = stream.readInt();
     return OneOf::OptionTwo(value);
 }
 
+// Write OptionTwo to output stream
 void OneOf::OptionTwo::writeTo(OutputStream& stream) const {
     stream.write(TAG);
     stream.write(value);
 }
 
+// Get string representation of OptionTwo
 std::string OneOf::OptionTwo::toString() const {
     std::stringstream ss;
     ss << "OneOf::OptionTwo { ";
@@ -79,6 +85,7 @@ size_t std::hash<OneOf::OptionTwo>::operator ()(const OneOf::OptionTwo& value) c
     return result;
 }
 
+// Read OneOf from input stream
 std::shared_ptr<OneOf> OneOf::readFrom(InputStream& stream) {
     switch (stream.readInt()) {
     case 0:

@@ -4,6 +4,7 @@ Vec2Int::Vec2Int() { }
 
 Vec2Int::Vec2Int(int x, int y) : x(x), y(y) { }
 
+// Read Vec2Int from input stream
 Vec2Int Vec2Int::readFrom(InputStream& stream) {
     int x;
     x = stream.readInt();
@@ -12,11 +13,13 @@ Vec2Int Vec2Int::readFrom(InputStream& stream) {
     return Vec2Int(x, y);
 }
 
+// Write Vec2Int to output stream
 void Vec2Int::writeTo(OutputStream& stream) const {
     stream.write(x);
     stream.write(y);
 }
 
+// Get string representation of Vec2Int
 std::string Vec2Int::toString() const {
     std::stringstream ss;
     ss << "Vec2Int { ";

@@ -4,6 +4,7 @@ PlayerView::PlayerView() { }
 
 PlayerView::PlayerView(int myId, int mapSize, bool fogOfWar, std::unordered_map<EntityType, EntityProperties> entityProperties, int maxTickCount, int maxPathfindNodes, int currentTick, std::vector<Player> players, std::vector<Entity> entities) : myId(myId), mapSize(mapSize), fogOfWar(fogOfWar), entityProperties(entityProperties), maxTickCount(maxTickCount), maxPathfindNodes(maxPathfindNodes), currentTick(currentTick), players(players), entities(entities) { }
 
+// Read PlayerView from input stream
 PlayerView PlayerView::readFrom(InputStream& stream) {
     int myId;
     myId = stream.readInt();
@@ -41,6 +42,7 @@ PlayerView PlayerView::readFrom(InputStream& stream) {
     return PlayerView(myId, mapSize, fogOfWar, entityProperties, maxTickCount, maxPathfindNodes, currentTick, players, entities);
 }
 
+// Write PlayerView to output stream
 void PlayerView::writeTo(OutputStream& stream) const {
     stream.write(myId);
     stream.write(mapSize);
@@ -65,6 +67,7 @@ void PlayerView::writeTo(OutputStream& stream) const {
     }
 }
 
+// Get string representation of PlayerView
 std::string PlayerView::toString() const {
     std::stringstream ss;
     ss << "PlayerView { ";

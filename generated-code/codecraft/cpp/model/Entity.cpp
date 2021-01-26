@@ -4,6 +4,7 @@ Entity::Entity() { }
 
 Entity::Entity(int id, std::shared_ptr<int> playerId, EntityType entityType, Vec2Int position, int health, bool active) : id(id), playerId(playerId), entityType(entityType), position(position), health(health), active(active) { }
 
+// Read Entity from input stream
 Entity Entity::readFrom(InputStream& stream) {
     int id;
     id = stream.readInt();
@@ -25,6 +26,7 @@ Entity Entity::readFrom(InputStream& stream) {
     return Entity(id, playerId, entityType, position, health, active);
 }
 
+// Write Entity to output stream
 void Entity::writeTo(OutputStream& stream) const {
     stream.write(id);
     if (playerId) {
@@ -40,6 +42,7 @@ void Entity::writeTo(OutputStream& stream) const {
     stream.write(active);
 }
 
+// Get string representation of Entity
 std::string Entity::toString() const {
     std::stringstream ss;
     ss << "Entity { ";

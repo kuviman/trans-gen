@@ -4,6 +4,7 @@ RepairProperties::RepairProperties() { }
 
 RepairProperties::RepairProperties(std::vector<EntityType> validTargets, int power) : validTargets(validTargets), power(power) { }
 
+// Read RepairProperties from input stream
 RepairProperties RepairProperties::readFrom(InputStream& stream) {
     std::vector<EntityType> validTargets;
     validTargets = std::vector<EntityType>(stream.readInt());
@@ -15,6 +16,7 @@ RepairProperties RepairProperties::readFrom(InputStream& stream) {
     return RepairProperties(validTargets, power);
 }
 
+// Write RepairProperties to output stream
 void RepairProperties::writeTo(OutputStream& stream) const {
     stream.write((int)(validTargets.size()));
     for (const EntityType& validTargetsElement : validTargets) {
@@ -23,6 +25,7 @@ void RepairProperties::writeTo(OutputStream& stream) const {
     stream.write(power);
 }
 
+// Get string representation of RepairProperties
 std::string RepairProperties::toString() const {
     std::stringstream ss;
     ss << "RepairProperties { ";

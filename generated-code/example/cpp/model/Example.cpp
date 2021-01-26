@@ -4,6 +4,7 @@ Example::Example() { }
 
 Example::Example(std::shared_ptr<OneOf> oneOf, std::unordered_map<Enumeration, int> hashMap, std::shared_ptr<int> optionalInt, std::shared_ptr<bool> optionalBool, std::shared_ptr<std::shared_ptr<OneOf>> optionalOneOf, std::shared_ptr<Structure> optionalStruct, std::shared_ptr<Enumeration> optionalEnum) : oneOf(oneOf), hashMap(hashMap), optionalInt(optionalInt), optionalBool(optionalBool), optionalOneOf(optionalOneOf), optionalStruct(optionalStruct), optionalEnum(optionalEnum) { }
 
+// Read Example from input stream
 Example Example::readFrom(InputStream& stream) {
     std::shared_ptr<OneOf> oneOf;
     oneOf = OneOf::readFrom(stream);
@@ -56,6 +57,7 @@ Example Example::readFrom(InputStream& stream) {
     return Example(oneOf, hashMap, optionalInt, optionalBool, optionalOneOf, optionalStruct, optionalEnum);
 }
 
+// Write Example to output stream
 void Example::writeTo(OutputStream& stream) const {
     oneOf->writeTo(stream);
     stream.write((int)(hashMap.size()));
@@ -102,6 +104,7 @@ void Example::writeTo(OutputStream& stream) const {
     }
 }
 
+// Get string representation of Example
 std::string Example::toString() const {
     std::stringstream ss;
     ss << "Example { ";

@@ -4,6 +4,7 @@ Player::Player() { }
 
 Player::Player(int id, int score, int resource) : id(id), score(score), resource(resource) { }
 
+// Read Player from input stream
 Player Player::readFrom(InputStream& stream) {
     int id;
     id = stream.readInt();
@@ -14,12 +15,14 @@ Player Player::readFrom(InputStream& stream) {
     return Player(id, score, resource);
 }
 
+// Write Player to output stream
 void Player::writeTo(OutputStream& stream) const {
     stream.write(id);
     stream.write(score);
     stream.write(resource);
 }
 
+// Get string representation of Player
 std::string Player::toString() const {
     std::stringstream ss;
     ss << "Player { ";

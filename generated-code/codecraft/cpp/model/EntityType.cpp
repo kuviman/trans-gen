@@ -1,6 +1,7 @@
 #include "EntityType.hpp"
 #include <stdexcept>
 
+// Read EntityType from input stream
 EntityType readEntityType(InputStream& stream) {
     switch (stream.readInt()) {
     case 0:
@@ -28,6 +29,7 @@ EntityType readEntityType(InputStream& stream) {
     }
 }
 
+// Get string representation of EntityType
 std::string entityTypeToString(EntityType value) {
     switch (value) {
     case EntityType::WALL:
