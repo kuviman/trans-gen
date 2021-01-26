@@ -6,17 +6,22 @@ namespace {{ &self.main_namespace }}.Model
 {{ struct_impl(variant, Some((base_name, tag))) }}
 
 - }
+{{ doc_comment(documentation) }}
 type {{ base_name.camel_case(conv) }} =
     - for variant in variants {
+    {{ doc_comment(&variant.documentation) }}
     | {{ variant.name.camel_case(conv) }} of {{ base_name.camel_case(conv) }}{{ variant.name.camel_case(conv) }}
     - }
     with
+
+    {{ doc_write_to(&base_name.camel_case(conv)) }}
     member this.writeTo(writer: System.IO.BinaryWriter) =
         match this with
             - for variant in variants {
             | {{ variant.name.camel_case(conv) }} value -> value.writeTo writer
             - }
 
+    {{ doc_read_from(&base_name.camel_case(conv)) }}
     static member readFrom(reader: System.IO.BinaryReader) =
         match reader.ReadInt32() with
             - for (tag, variant) in variants.iter().enumerate() {

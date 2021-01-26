@@ -2,6 +2,7 @@
 
 namespace {{ &self.main_namespace }}.Model
 
+{{ doc_comment(documentation) }}
 type {{ base_name.camel_case(conv) }} =
     - for (tag, variant) in variants.iter().enumerate() {
     | {{ variant.name.camel_case(conv) }} = {{ tag }}
