@@ -42,7 +42,7 @@ fn write_var(var: &str, schema: &Schema) -> String {
 }
 
 impl crate::Generator for Generator {
-    const NAME: &'static str = "C#";
+    const NAME: &'static str = "Swift";
     type Options = ();
     fn new(name: &str, _version: &str, _: ()) -> Self {
         let name = Name::new(name.to_owned());
