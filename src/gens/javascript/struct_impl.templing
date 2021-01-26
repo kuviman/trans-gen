@@ -1,9 +1,15 @@
+{{ doc_comment(&struc.documentation) }}
 class {{ struc.name.camel_case(conv) }}~
 - if let Some((base_name, _)) = base {
     ~ extends {{ base_name.camel_case(conv) }} {
 - } else {
     ~ {
 - }
+    - for field in &struc.fields {
+    {{ doc_comment(&field.documentation) }}
+    {{ field.name.mixed_case(conv) }};
+    - }
+
     constructor(~
     - for (index, field) in struc.fields.iter().enumerate() {
         ~{{field.name.mixed_case(conv)}}~
@@ -20,6 +26,7 @@ class {{ struc.name.camel_case(conv) }}~
         - }
     }
 
+    {{ doc_read_from(&struc.name.camel_case(conv)) }}
     static async readFrom(stream) {
         - for field in &struc.fields {
         let {{ field.name.mixed_case(conv) }};
@@ -35,6 +42,7 @@ class {{ struc.name.camel_case(conv) }}~
         ~);
     }
 
+    {{ doc_write_to(&struc.name.camel_case(conv)) }}
     async writeTo(stream) {
         - if base.is_some() {
         await stream.writeInt({{ struc.name.camel_case(conv) }}.TAG);

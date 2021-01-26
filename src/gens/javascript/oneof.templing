@@ -1,6 +1,8 @@
 {{ imports(schema) }}
 
+{{ doc_comment(documentation) }}
 class {{ base_name.camel_case(conv) }} {
+    {{ doc_read_from(&base_name.camel_case(conv)) }}
     static async readFrom(stream) {
         let tag = await stream.readInt();
         - for variant in variants {

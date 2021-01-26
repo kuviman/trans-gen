@@ -62,6 +62,26 @@ fn imports(schema: &Schema) -> String {
     include_templing!("src/gens/javascript/imports.templing")
 }
 
+fn doc_comment(documentation: &Documentation) -> String {
+    let mut result = String::new();
+    result.push_str("/**\n");
+    for line in documentation.get("en").unwrap().lines() {
+        result.push_str(" * ");
+        result.push_str(line);
+        result.push('\n');
+    }
+    result.push_str(" */\n");
+    result.trim().to_owned()
+}
+
+fn doc_read_from(name: &str) -> String {
+    format!("/**\n * Read {} from input stream\n */", name)
+}
+
+fn doc_write_to(name: &str) -> String {
+    format!("/**\n * Write {} to output stream\n */", name)
+}
+
 fn read_var(var: &str, schema: &Schema) -> String {
     include_templing!("src/gens/javascript/read_var.templing")
 }
@@ -82,7 +102,7 @@ impl Generator {
     fn add_only(&mut self, schema: &Schema) -> anyhow::Result<()> {
         match schema {
             Schema::Enum {
-                documentation: _,
+                documentation,
                 base_name,
                 variants,
             } => {
@@ -112,7 +132,7 @@ impl Generator {
                 );
             }
             Schema::OneOf {
-                documentation: _,
+                documentation,
                 base_name,
                 variants,
             } => {

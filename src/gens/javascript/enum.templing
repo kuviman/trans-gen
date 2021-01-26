@@ -1,3 +1,4 @@
+{{ doc_comment(documentation) }}
 class {{ base_name.camel_case(conv) }} {
     constructor(name, tag) {
         this.name = name;
@@ -5,9 +6,11 @@ class {{ base_name.camel_case(conv) }} {
     }
 
     - for (tag, variant) in variants.iter().enumerate() {
+    {{ doc_comment(&variant.documentation) }}
     static {{ variant.name.shouty_snake_case(conv) }} = new {{ base_name.camel_case(conv) }}("{{ variant.name.shouty_snake_case(conv) }}", {{ tag }});
     - }
 
+    {{ doc_read_from(&base_name.camel_case(conv)) }}
     static async readFrom(stream) {
         const tag = await stream.readInt();
         - for variant in variants {
@@ -18,6 +21,7 @@ class {{ base_name.camel_case(conv) }} {
         throw new Error("Unexpected tag value");
     }
 
+    {{ doc_write_to(&base_name.camel_case(conv)) }}
     async writeTo(stream) {
         await stream.writeInt(this.tag);
     }
