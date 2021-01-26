@@ -45,11 +45,11 @@ fn doc_comment(documentation: &Documentation) -> String {
 }
 
 fn doc_read_from(name: &str) -> String {
-    format!("/// Read {} from input stream", name)
+    format!("/// Read {} from reader", name)
 }
 
 fn doc_write_to(name: &str) -> String {
-    format!("/// Write {} to output stream", name)
+    format!("/// Write {} to writer", name)
 }
 
 fn read_var(var: &str, schema: &Schema) -> String {
