@@ -1,3 +1,4 @@
+{{ doc_comment(&struc.documentation) }}
 - if let Some((base_name, _)) = base {
 static class {{ struc.name.camel_case(conv) }} : {{ base_name.camel_case(conv) }} {
 - } else {
@@ -8,6 +9,7 @@ struct {{ struc.name.camel_case(conv) }} {
 
     - }
     - for field in &struc.fields {
+    {{ doc_comment(&field.documentation) }}
     {{ type_name(&field.schema) }} {{ field.name.mixed_case(conv) }};
     - }
     - if base.is_some() {
@@ -30,6 +32,7 @@ struct {{ struc.name.camel_case(conv) }} {
     }
     - }
 
+    {{ doc_read_from(&struc.name.camel_case(conv)) }}
     static {{ struc.name.camel_case(conv) }} readFrom(Stream reader) {
         - for field in &struc.fields {
         {{ type_name(&field.schema) }} {{ field.name.mixed_case(conv) }};
@@ -45,6 +48,7 @@ struct {{ struc.name.camel_case(conv) }} {
         ~);
     }
 
+    {{ doc_write_to(&struc.name.camel_case(conv)) }}
     {{# if base.is_some() { }}override {{# } }}void writeTo(Stream writer) const {
         - if base.is_some() {
         writer.write(TAG);

@@ -3,8 +3,12 @@ import stream;
 import std.conv;
 import std.typecons : Nullable;
 
+{{ doc_comment(documentation) }}
 abstract class {{ base_name.camel_case(conv) }} {
+    {{ doc_write_to(&base_name.camel_case(conv)) }}
     abstract void writeTo(Stream writer) const;
+
+    {{ doc_read_from(&base_name.camel_case(conv)) }}
     static {{ base_name.camel_case(conv) }} readFrom(Stream reader) {
         switch (reader.readInt()) {
             - for variant in variants {

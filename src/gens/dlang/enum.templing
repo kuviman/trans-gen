@@ -1,11 +1,14 @@
 import stream;
 
+{{ doc_comment(documentation) }}
 enum {{ base_name.camel_case(conv) }} : int {
     - for (tag, variant) in variants.iter().enumerate() {
+    {{ doc_comment(&variant.documentation) }}
     {{ variant.name.camel_case(conv) }} = {{ tag }},
     - }
 }
 
+{{ doc_read_from(&base_name.camel_case(conv)) }}
 {{ base_name.camel_case(conv) }} read{{ base_name.camel_case(conv) }}(Stream reader) {
     switch (reader.readInt()) {
         - for (tag, variant) in variants.iter().enumerate() {
