@@ -1,13 +1,16 @@
 namespace {{ &self.main_namespace }}.Model
 {
+    {{ doc_comment(documentation) }}
     public enum {{ base_name.camel_case(conv) }}
     {
         - for (tag, variant) in variants.iter().enumerate() {
+        {{ doc_comment(&variant.documentation) }}
         {{ variant.name.camel_case(conv) }} = {{ tag }},
         - }
     }
 
     public static class {{ base_name.camel_case(conv) }}Helper {
+        {{ doc_read_from(&base_name.camel_case(conv)) }}
         public static {{ base_name.camel_case(conv) }} ReadFrom(System.IO.BinaryReader reader) {
             switch (reader.ReadInt32())
             {

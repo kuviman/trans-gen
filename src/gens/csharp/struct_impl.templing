@@ -1,3 +1,4 @@
+{{ doc_comment(&struc.documentation) }}
 - if let Some((base_name, _)) = base {
 public class {{ struc.name.camel_case(conv) }} : {{ base_name.camel_case(conv) }}
 - } else {
@@ -9,6 +10,7 @@ public struct {{ struc.name.camel_case(conv) }}
 
     - }
     - for field in &struc.fields {
+    {{ doc_comment(&field.documentation) }}
     public {{ type_name(&field.schema) }} {{ field.name.camel_case(conv) }} { get; set; }
     - }
     - if base.is_some() {
@@ -32,6 +34,7 @@ public struct {{ struc.name.camel_case(conv) }}
     }
     - }
 
+    {{ doc_read_from(&struc.name.camel_case(conv)) }}
     public static~
     - if base.is_some() {
         ~ new~
@@ -45,6 +48,7 @@ public struct {{ struc.name.camel_case(conv) }}
         return result;
     }
 
+    {{ doc_write_to(&struc.name.camel_case(conv)) }}
     public~
     - if base.is_some() {
         ~ override~
@@ -59,6 +63,7 @@ public struct {{ struc.name.camel_case(conv) }}
         - }
     }
 
+    {{ doc_to_string(&struc.name.camel_case(conv)) }}
     public override string ToString() {
         string stringResult = "{{ struc.name.camel_case(conv) }} { ";
         - for (index, field) in struc.fields.iter().enumerate() {

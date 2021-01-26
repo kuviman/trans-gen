@@ -110,6 +110,33 @@ fn type_name_postarray(schema: &Schema) -> String {
     }
 }
 
+fn doc_comment(documentation: &Documentation) -> String {
+    let mut result = String::new();
+    result.push_str("/// <summary>\n");
+    for line in documentation.get("en").unwrap().lines() {
+        result.push_str("/// ");
+        result.push_str(line);
+        result.push('\n');
+    }
+    result.push_str("/// </summary>\n");
+    result.trim().to_owned()
+}
+
+fn doc_read_from(name: &str) -> String {
+    format!("/// <summary> Read {} from reader </summary>", name)
+}
+
+fn doc_write_to(name: &str) -> String {
+    format!("/// <summary> Write {} to writer </summary>", name)
+}
+
+fn doc_to_string(name: &str) -> String {
+    format!(
+        "/// <summary> Get string representation of {} </summary>",
+        name,
+    )
+}
+
 fn read_var(var: &str, schema: &Schema) -> String {
     include_templing!("src/gens/csharp/read_var.templing")
 }
@@ -150,7 +177,7 @@ impl crate::Generator for Generator {
     fn add_only(&mut self, schema: &Schema) {
         match schema {
             Schema::Enum {
-                documentation: _,
+                documentation,
                 base_name,
                 variants,
             } => {
@@ -166,7 +193,7 @@ impl crate::Generator for Generator {
                 );
             }
             Schema::OneOf {
-                documentation: _,
+                documentation,
                 base_name,
                 variants,
             } => {
