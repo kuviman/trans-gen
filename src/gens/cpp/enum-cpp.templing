@@ -1,6 +1,7 @@
 #include "{{ base_name.camel_case(conv) }}.hpp"
 #include <stdexcept>
 
+{{ doc_read_from(&base_name.camel_case(conv)) }}
 {{ base_name.camel_case(conv) }} read{{ base_name.camel_case(conv) }}(InputStream& stream) {
     switch (stream.readInt()) {
     - for (tag, variant) in variants.iter().enumerate() {
@@ -12,6 +13,7 @@
     }
 }
 
+{{ doc_to_string(&base_name.camel_case(conv)) }}
 std::string {{ base_name.mixed_case(conv) }}ToString({{ base_name.camel_case(conv) }} value) {
     switch (value) {
     - for variant in variants {

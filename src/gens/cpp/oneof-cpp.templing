@@ -5,6 +5,7 @@
 {{ struct_impl(variant, Some((base_name, tag))) }}
 - }
 
+{{ doc_read_from(&base_name.camel_case(conv)) }}
 std::shared_ptr<{{ base_name.camel_case(conv) }}> {{ base_name.camel_case(conv) }}::readFrom(InputStream& stream) {
     switch (stream.readInt()) {
     - for (tag, variant) in variants.iter().enumerate() {

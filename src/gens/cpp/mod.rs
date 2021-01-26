@@ -110,6 +110,28 @@ fn collect_includes(result: &mut BTreeSet<String>, schema: &Schema, current: boo
     }
 }
 
+fn doc_comment(documentation: &Documentation) -> String {
+    let mut result = String::new();
+    for line in documentation.get("en").unwrap().lines() {
+        result.push_str("// ");
+        result.push_str(line);
+        result.push('\n');
+    }
+    result.trim().to_owned()
+}
+
+fn doc_read_from(name: &str) -> String {
+    format!("// Read {} from input stream", name)
+}
+
+fn doc_write_to(name: &str) -> String {
+    format!("// Write {} to output stream", name)
+}
+
+fn doc_to_string(name: &str) -> String {
+    format!("// Get string representation of {}", name)
+}
+
 fn read_var(var: &str, schema: &Schema) -> String {
     include_templing!("src/gens/cpp/read_var.templing")
 }
@@ -169,7 +191,7 @@ impl crate::Generator for Generator {
     fn add_only(&mut self, schema: &Schema) {
         match schema {
             Schema::Enum {
-                documentation: _,
+                documentation,
                 base_name,
                 variants,
             } => {
@@ -201,7 +223,7 @@ impl crate::Generator for Generator {
                 );
             }
             Schema::OneOf {
-                documentation: _,
+                documentation,
                 base_name,
                 variants,
             } => {

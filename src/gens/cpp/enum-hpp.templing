@@ -3,13 +3,18 @@
 
 #include "../Stream.hpp"
 
+{{ doc_comment(documentation) }}
 enum class {{ base_name.camel_case(conv) }} {
     - for (index, variant) in variants.iter().enumerate() {
-        {{ variant.name.shouty_snake_case(conv) }} = {{ index }}{{# if index + 1 < variants.len() { }},{{# } }}
+    {{ doc_comment(&variant.documentation) }}
+    {{ variant.name.shouty_snake_case(conv) }} = {{ index }}{{# if index + 1 < variants.len() { }},{{# } }}
     - }
 };
 
+{{ doc_read_from(&base_name.camel_case(conv)) }}
 {{ base_name.camel_case(conv) }} read{{ base_name.camel_case(conv) }}(InputStream& stream);
+
+{{ doc_to_string(&base_name.camel_case(conv)) }}
 std::string {{ base_name.mixed_case(conv) }}ToString({{ base_name.camel_case(conv) }} value);
 
 #endif

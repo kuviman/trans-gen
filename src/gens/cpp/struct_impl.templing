@@ -28,6 +28,7 @@
     - }
 ~ { }
 
+{{ doc_read_from(&struc.name.camel_case(conv)) }}
 {{ full_name }} {{ full_name }}::readFrom(InputStream& stream) {
     - for field in &struc.fields {
     {{ type_name(&field.schema) }} {{ field.name.mixed_case(conv) }};
@@ -43,6 +44,7 @@
     ~);
 }
 
+{{ doc_write_to(&struc.name.camel_case(conv)) }}
 void {{ full_name }}::writeTo(OutputStream& stream) const {
     - if base.is_some() {
     stream.write(TAG);
@@ -52,6 +54,7 @@ void {{ full_name }}::writeTo(OutputStream& stream) const {
     - }
 }
 
+{{ doc_to_string(&struc.name.camel_case(conv)) }}
 std::string {{ full_name }}::toString() const {
     std::stringstream ss;
     ss << "{{ full_name }} { ";
