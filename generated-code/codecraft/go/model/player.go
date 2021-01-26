@@ -4,9 +4,13 @@ import "io"
 import . "trans_gen_test/stream"
 import "fmt"
 
+// Player (strategy, client)
 type Player struct {
+    // Player's ID
     Id int32
+    // Current score
     Score int32
+    // Current amount of resource
     Resource int32
 }
 
@@ -18,6 +22,7 @@ func NewPlayer(id int32, score int32, resource int32) Player {
     }
 }
 
+// Read Player from reader
 func ReadPlayer(reader io.Reader) Player {
     var id int32
     id = ReadInt32(reader)
@@ -32,6 +37,7 @@ func ReadPlayer(reader io.Reader) Player {
     }
 }
 
+// Write Player to writer
 func (player Player) Write(writer io.Writer) {
     id := player.Id
     WriteInt32(writer, id)
@@ -41,6 +47,7 @@ func (player Player) Write(writer io.Writer) {
     WriteInt32(writer, resource)
 }
 
+// Get string representation of Player
 func (player Player) String() string {
     stringResult := "{ "
     stringResult += "Id: "

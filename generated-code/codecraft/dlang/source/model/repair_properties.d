@@ -15,7 +15,7 @@ struct RepairProperties {
         this.power = power;
     }
 
-    /// Read RepairProperties from input stream
+    /// Read RepairProperties from reader
     static RepairProperties readFrom(Stream reader) {
         EntityType[] validTargets;
         validTargets = new EntityType[reader.readInt()];
@@ -29,7 +29,7 @@ struct RepairProperties {
         return RepairProperties(validTargets, power);
     }
 
-    /// Write RepairProperties to output stream
+    /// Write RepairProperties to writer
     void writeTo(Stream writer) const {
         writer.write(cast(int)(validTargets.length));
         foreach (validTargetsElement; validTargets) {

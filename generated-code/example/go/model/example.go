@@ -4,13 +4,21 @@ import "io"
 import . "trans_gen_test/stream"
 import "fmt"
 
+// Example
 type Example struct {
+    // OneOf
     OneOf OneOf
+    // Dictionary
     HashMap map[Enumeration]int32
+    // Optional int
     OptionalInt *int32
+    // Optional boolean
     OptionalBool *bool
+    // Optional OneOf
     OptionalOneOf *OneOf
+    // Optional struct
     OptionalStruct *Structure
+    // Optional enum
     OptionalEnum *Enumeration
 }
 
@@ -26,6 +34,7 @@ func NewExample(oneOf OneOf, hashMap map[Enumeration]int32, optionalInt *int32, 
     }
 }
 
+// Read Example from reader
 func ReadExample(reader io.Reader) Example {
     var oneOf OneOf
     oneOf = ReadOneOf(reader)
@@ -90,6 +99,7 @@ func ReadExample(reader io.Reader) Example {
     }
 }
 
+// Write Example to writer
 func (example Example) Write(writer io.Writer) {
     oneOf := example.OneOf
     oneOf.Write(writer)
@@ -141,6 +151,7 @@ func (example Example) Write(writer io.Writer) {
     }
 }
 
+// Get string representation of Example
 func (example Example) String() string {
     stringResult := "{ "
     stringResult += "OneOf: "

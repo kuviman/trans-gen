@@ -4,11 +4,16 @@ import "io"
 import . "trans_gen_test/stream"
 import "fmt"
 
+// Oneof example
 type OneOf interface {
+    // Write OneOf to writer
     Write(writer io.Writer)
+
+    // Get string representation of OneOf
     String() string
 }
 
+// Read OneOf from reader
 func ReadOneOf(reader io.Reader) OneOf {
     switch ReadInt32(reader) {
     case 0:
@@ -19,8 +24,11 @@ func ReadOneOf(reader io.Reader) OneOf {
     panic("Unexpected tag value")
 }
 
+// First option
 type OneOfOptionOne struct {
+    // List of integers
     VecInt32 []int32
+    // Long integer
     LongInt int64
 }
 
@@ -31,6 +39,7 @@ func NewOneOfOptionOne(vecInt32 []int32, longInt int64) OneOfOptionOne {
     }
 }
 
+// Read OptionOne from reader
 func ReadOneOfOptionOne(reader io.Reader) OneOfOptionOne {
     var vecInt32 []int32
     vecInt32 = make([]int32, ReadInt32(reader))
@@ -47,6 +56,7 @@ func ReadOneOfOptionOne(reader io.Reader) OneOfOptionOne {
     }
 }
 
+// Write OptionOne to writer
 func (oneOfOptionOne OneOfOptionOne) Write(writer io.Writer) {
     WriteInt32(writer, 0)
     vecInt32 := oneOfOptionOne.VecInt32
@@ -58,6 +68,7 @@ func (oneOfOptionOne OneOfOptionOne) Write(writer io.Writer) {
     WriteInt64(writer, longInt)
 }
 
+// Get string representation of OptionOne
 func (oneOfOptionOne OneOfOptionOne) String() string {
     stringResult := "{ "
     stringResult += "VecInt32: "
@@ -78,7 +89,9 @@ func (oneOfOptionOne OneOfOptionOne) String() string {
     return stringResult
 }
 
+// Second option
 type OneOfOptionTwo struct {
+    // usize
     Value int32
 }
 
@@ -88,6 +101,7 @@ func NewOneOfOptionTwo(value int32) OneOfOptionTwo {
     }
 }
 
+// Read OptionTwo from reader
 func ReadOneOfOptionTwo(reader io.Reader) OneOfOptionTwo {
     var value int32
     value = ReadInt32(reader)
@@ -96,12 +110,14 @@ func ReadOneOfOptionTwo(reader io.Reader) OneOfOptionTwo {
     }
 }
 
+// Write OptionTwo to writer
 func (oneOfOptionTwo OneOfOptionTwo) Write(writer io.Writer) {
     WriteInt32(writer, 1)
     value := oneOfOptionTwo.Value
     WriteInt32(writer, value)
 }
 
+// Get string representation of OptionTwo
 func (oneOfOptionTwo OneOfOptionTwo) String() string {
     stringResult := "{ "
     stringResult += "Value: "

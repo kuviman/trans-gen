@@ -4,9 +4,13 @@ import "io"
 import . "trans_gen_test/stream"
 import "fmt"
 
+// Example structure
 type Structure struct {
+    // Text
     Text string
+    // 32-bit float
     FloatNumber float32
+    // 64-bit float
     DoubleNumber float64
 }
 
@@ -18,6 +22,7 @@ func NewStructure(text string, floatNumber float32, doubleNumber float64) Struct
     }
 }
 
+// Read Structure from reader
 func ReadStructure(reader io.Reader) Structure {
     var text string
     text = ReadString(reader)
@@ -32,6 +37,7 @@ func ReadStructure(reader io.Reader) Structure {
     }
 }
 
+// Write Structure to writer
 func (structure Structure) Write(writer io.Writer) {
     text := structure.Text
     WriteString(writer, text)
@@ -41,6 +47,7 @@ func (structure Structure) Write(writer io.Writer) {
     WriteFloat64(writer, doubleNumber)
 }
 
+// Get string representation of Structure
 func (structure Structure) String() string {
     stringResult := "{ "
     stringResult += "Text: "

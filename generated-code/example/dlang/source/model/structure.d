@@ -18,7 +18,7 @@ struct Structure {
         this.doubleNumber = doubleNumber;
     }
 
-    /// Read Structure from input stream
+    /// Read Structure from reader
     static Structure readFrom(Stream reader) {
         string text;
         text = reader.readString();
@@ -29,7 +29,7 @@ struct Structure {
         return Structure(text, floatNumber, doubleNumber);
     }
 
-    /// Write Structure to output stream
+    /// Write Structure to writer
     void writeTo(Stream writer) const {
         writer.write(text);
         writer.write(floatNumber);

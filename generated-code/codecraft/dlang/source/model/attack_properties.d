@@ -18,7 +18,7 @@ struct AttackProperties {
         this.collectResource = collectResource;
     }
 
-    /// Read AttackProperties from input stream
+    /// Read AttackProperties from reader
     static AttackProperties readFrom(Stream reader) {
         int attackRange;
         attackRange = reader.readInt();
@@ -29,7 +29,7 @@ struct AttackProperties {
         return AttackProperties(attackRange, damage, collectResource);
     }
 
-    /// Write AttackProperties to output stream
+    /// Write AttackProperties to writer
     void writeTo(Stream writer) const {
         writer.write(attackRange);
         writer.write(damage);

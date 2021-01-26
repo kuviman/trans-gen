@@ -4,8 +4,11 @@ import "io"
 import . "trans_gen_test/stream"
 import "fmt"
 
+// Entity's repair properties
 type RepairProperties struct {
+    // Valid target entity types
     ValidTargets []EntityType
+    // Health restored in one tick
     Power int32
 }
 
@@ -16,6 +19,7 @@ func NewRepairProperties(validTargets []EntityType, power int32) RepairPropertie
     }
 }
 
+// Read RepairProperties from reader
 func ReadRepairProperties(reader io.Reader) RepairProperties {
     var validTargets []EntityType
     validTargets = make([]EntityType, ReadInt32(reader))
@@ -32,6 +36,7 @@ func ReadRepairProperties(reader io.Reader) RepairProperties {
     }
 }
 
+// Write RepairProperties to writer
 func (repairProperties RepairProperties) Write(writer io.Writer) {
     validTargets := repairProperties.ValidTargets
     WriteInt32(writer, int32(len(validTargets)))
@@ -42,6 +47,7 @@ func (repairProperties RepairProperties) Write(writer io.Writer) {
     WriteInt32(writer, power)
 }
 
+// Get string representation of RepairProperties
 func (repairProperties RepairProperties) String() string {
     stringResult := "{ "
     stringResult += "ValidTargets: "

@@ -27,7 +27,7 @@ struct Entity {
         this.active = active;
     }
 
-    /// Read Entity from input stream
+    /// Read Entity from reader
     static Entity readFrom(Stream reader) {
         int id;
         id = reader.readInt();
@@ -48,7 +48,7 @@ struct Entity {
         return Entity(id, playerId, entityType, position, health, active);
     }
 
-    /// Write Entity to output stream
+    /// Write Entity to writer
     void writeTo(Stream writer) const {
         writer.write(id);
         if (playerId.isNull()) {

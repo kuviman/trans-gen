@@ -48,7 +48,7 @@ struct EntityProperties {
         this.repair = repair;
     }
 
-    /// Read EntityProperties from input stream
+    /// Read EntityProperties from reader
     static EntityProperties readFrom(Stream reader) {
         int size;
         size = reader.readInt();
@@ -91,7 +91,7 @@ struct EntityProperties {
         return EntityProperties(size, buildScore, destroyScore, canMove, populationProvide, populationUse, maxHealth, initialCost, sightRange, resourcePerHealth, build, attack, repair);
     }
 
-    /// Write EntityProperties to output stream
+    /// Write EntityProperties to writer
     void writeTo(Stream writer) const {
         writer.write(size);
         writer.write(buildScore);

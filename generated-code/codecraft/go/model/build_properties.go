@@ -4,8 +4,11 @@ import "io"
 import . "trans_gen_test/stream"
 import "fmt"
 
+// Entity's build properties
 type BuildProperties struct {
+    // Valid new entity types
     Options []EntityType
+    // Initial health of new entity. If absent, it will have full health
     InitHealth *int32
 }
 
@@ -16,6 +19,7 @@ func NewBuildProperties(options []EntityType, initHealth *int32) BuildProperties
     }
 }
 
+// Read BuildProperties from reader
 func ReadBuildProperties(reader io.Reader) BuildProperties {
     var options []EntityType
     options = make([]EntityType, ReadInt32(reader))
@@ -38,6 +42,7 @@ func ReadBuildProperties(reader io.Reader) BuildProperties {
     }
 }
 
+// Write BuildProperties to writer
 func (buildProperties BuildProperties) Write(writer io.Writer) {
     options := buildProperties.Options
     WriteInt32(writer, int32(len(options)))
@@ -54,6 +59,7 @@ func (buildProperties BuildProperties) Write(writer io.Writer) {
     }
 }
 
+// Get string representation of BuildProperties
 func (buildProperties BuildProperties) String() string {
     stringResult := "{ "
     stringResult += "Options: "

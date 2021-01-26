@@ -4,12 +4,19 @@ import "io"
 import . "trans_gen_test/stream"
 import "fmt"
 
+// Game entity
 type Entity struct {
+    // Entity's ID. Unique for each entity
     Id int32
+    // Entity's owner player ID, if owned by a player
     PlayerId *int32
+    // Entity's type
     EntityType EntityType
+    // Entity's position (corner with minimal coordinates)
     Position Vec2Int32
+    // Current health
     Health int32
+    // If entity is active, it can perform actions
     Active bool
 }
 
@@ -24,6 +31,7 @@ func NewEntity(id int32, playerId *int32, entityType EntityType, position Vec2In
     }
 }
 
+// Read Entity from reader
 func ReadEntity(reader io.Reader) Entity {
     var id int32
     id = ReadInt32(reader)
@@ -53,6 +61,7 @@ func ReadEntity(reader io.Reader) Entity {
     }
 }
 
+// Write Entity to writer
 func (entity Entity) Write(writer io.Writer) {
     id := entity.Id
     WriteInt32(writer, id)
@@ -74,6 +83,7 @@ func (entity Entity) Write(writer io.Writer) {
     WriteBool(writer, active)
 }
 
+// Get string representation of Entity
 func (entity Entity) String() string {
     stringResult := "{ "
     stringResult += "Id: "

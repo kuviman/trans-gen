@@ -4,15 +4,25 @@ import "io"
 import . "trans_gen_test/stream"
 import "fmt"
 
+// Information available to the player
 type PlayerView struct {
+    // Your player's ID
     MyId int32
+    // Size of the map
     MapSize int32
+    // Whether fog of war is enabled
     FogOfWar bool
+    // Entity properties for each entity type
     EntityProperties map[EntityType]EntityProperties
+    // Max tick count for the game
     MaxTickCount int32
+    // Max pathfind nodes when performing pathfinding in the game simulator
     MaxPathfindNodes int32
+    // Current tick
     CurrentTick int32
+    // List of players
     Players []Player
+    // List of entities
     Entities []Entity
 }
 
@@ -30,6 +40,7 @@ func NewPlayerView(myId int32, mapSize int32, fogOfWar bool, entityProperties ma
     }
 }
 
+// Read PlayerView from reader
 func ReadPlayerView(reader io.Reader) PlayerView {
     var myId int32
     myId = ReadInt32(reader)
@@ -80,6 +91,7 @@ func ReadPlayerView(reader io.Reader) PlayerView {
     }
 }
 
+// Write PlayerView to writer
 func (playerView PlayerView) Write(writer io.Writer) {
     myId := playerView.MyId
     WriteInt32(writer, myId)
@@ -111,6 +123,7 @@ func (playerView PlayerView) Write(writer io.Writer) {
     }
 }
 
+// Get string representation of PlayerView
 func (playerView PlayerView) String() string {
     stringResult := "{ "
     stringResult += "MyId: "

@@ -15,7 +15,7 @@ struct Vec2Int {
         this.y = y;
     }
 
-    /// Read Vec2Int from input stream
+    /// Read Vec2Int from reader
     static Vec2Int readFrom(Stream reader) {
         int x;
         x = reader.readInt();
@@ -24,7 +24,7 @@ struct Vec2Int {
         return Vec2Int(x, y);
     }
 
-    /// Write Vec2Int to output stream
+    /// Write Vec2Int to writer
     void writeTo(Stream writer) const {
         writer.write(x);
         writer.write(y);

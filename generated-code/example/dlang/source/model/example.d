@@ -30,7 +30,7 @@ struct Example {
         this.optionalEnum = optionalEnum;
     }
 
-    /// Read Example from input stream
+    /// Read Example from reader
     static Example readFrom(Stream reader) {
         OneOf oneOf;
         oneOf = OneOf.readFrom(reader);
@@ -77,7 +77,7 @@ struct Example {
         return Example(oneOf, hashMap, optionalInt, optionalBool, optionalOneOf, optionalStruct, optionalEnum);
     }
 
-    /// Write Example to output stream
+    /// Write Example to writer
     void writeTo(Stream writer) const {
         oneOf.writeTo(writer);
         writer.write(cast(int)(hashMap.length));

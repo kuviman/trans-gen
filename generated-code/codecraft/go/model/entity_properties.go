@@ -4,19 +4,33 @@ import "io"
 import . "trans_gen_test/stream"
 import "fmt"
 
+// Entity properties
 type EntityProperties struct {
+    // Size. Entity has a form of a square with side of this length
     Size int32
+    // Score for building this entity
     BuildScore int32
+    // Score for destroying this entity
     DestroyScore int32
+    // Whether this entity can move
     CanMove bool
+    // Number of population points this entity provides, if active
     PopulationProvide int32
+    // Number of population points this entity uses
     PopulationUse int32
+    // Maximum health points
     MaxHealth int32
+    // Cost to build this first entity of this type. If this is a unit (entity can move), the cost is increased by 1 for each existing unit of this type
     InitialCost int32
+    // If fog of war is enabled, maximum distance at which other entities are considered visible
     SightRange int32
+    // Amount of resource added to enemy able to collect resource on dealing damage for 1 health point
     ResourcePerHealth int32
+    // Build properties, if entity can build
     Build *BuildProperties
+    // Attack properties, if entity can attack
     Attack *AttackProperties
+    // Repair properties, if entity can repair
     Repair *RepairProperties
 }
 
@@ -38,6 +52,7 @@ func NewEntityProperties(size int32, buildScore int32, destroyScore int32, canMo
     }
 }
 
+// Read EntityProperties from reader
 func ReadEntityProperties(reader io.Reader) EntityProperties {
     var size int32
     size = ReadInt32(reader)
@@ -100,6 +115,7 @@ func ReadEntityProperties(reader io.Reader) EntityProperties {
     }
 }
 
+// Write EntityProperties to writer
 func (entityProperties EntityProperties) Write(writer io.Writer) {
     size := entityProperties.Size
     WriteInt32(writer, size)
@@ -147,6 +163,7 @@ func (entityProperties EntityProperties) Write(writer io.Writer) {
     }
 }
 
+// Get string representation of EntityProperties
 func (entityProperties EntityProperties) String() string {
     stringResult := "{ "
     stringResult += "Size: "

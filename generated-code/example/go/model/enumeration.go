@@ -3,13 +3,17 @@ package model
 import "io"
 import . "trans_gen_test/stream"
 
+// Example enumeration
 type Enumeration int32
 
 const (
+    // First option
     EnumerationValueOne Enumeration = 0
+    // Second option
     EnumerationValueTwo Enumeration = 1
 )
 
+// Read Enumeration from reader
 func ReadEnumeration(reader io.Reader) Enumeration {
     switch ReadInt32(reader) {
     case 0:
@@ -20,6 +24,7 @@ func ReadEnumeration(reader io.Reader) Enumeration {
     panic("Unexpected tag value")
 }
 
+// Get string representation of Enumeration
 func EnumerationToString(enumeration Enumeration) string {
     switch enumeration {
     case EnumerationValueOne:

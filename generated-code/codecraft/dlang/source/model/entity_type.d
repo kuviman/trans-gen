@@ -24,7 +24,7 @@ enum EntityType : int {
     Turret = 9,
 }
 
-/// Read EntityType from input stream
+/// Read EntityType from reader
 EntityType readEntityType(Stream reader) {
     switch (reader.readInt()) {
         case EntityType.Wall:

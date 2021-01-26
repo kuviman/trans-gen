@@ -8,7 +8,7 @@ enum Enumeration : int {
     ValueTwo = 1,
 }
 
-/// Read Enumeration from input stream
+/// Read Enumeration from reader
 Enumeration readEnumeration(Stream reader) {
     switch (reader.readInt()) {
         case Enumeration.ValueOne:

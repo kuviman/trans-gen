@@ -4,9 +4,13 @@ import "io"
 import . "trans_gen_test/stream"
 import "fmt"
 
+// Entity's attack properties
 type AttackProperties struct {
+    // Maximum attack range
     AttackRange int32
+    // Damage dealt in one tick
     Damage int32
+    // If true, dealing damage will collect resource from target
     CollectResource bool
 }
 
@@ -18,6 +22,7 @@ func NewAttackProperties(attackRange int32, damage int32, collectResource bool) 
     }
 }
 
+// Read AttackProperties from reader
 func ReadAttackProperties(reader io.Reader) AttackProperties {
     var attackRange int32
     attackRange = ReadInt32(reader)
@@ -32,6 +37,7 @@ func ReadAttackProperties(reader io.Reader) AttackProperties {
     }
 }
 
+// Write AttackProperties to writer
 func (attackProperties AttackProperties) Write(writer io.Writer) {
     attackRange := attackProperties.AttackRange
     WriteInt32(writer, attackRange)
@@ -41,6 +47,7 @@ func (attackProperties AttackProperties) Write(writer io.Writer) {
     WriteBool(writer, collectResource)
 }
 
+// Get string representation of AttackProperties
 func (attackProperties AttackProperties) String() string {
     stringResult := "{ "
     stringResult += "AttackRange: "

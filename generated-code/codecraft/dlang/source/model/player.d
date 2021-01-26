@@ -18,7 +18,7 @@ struct Player {
         this.resource = resource;
     }
 
-    /// Read Player from input stream
+    /// Read Player from reader
     static Player readFrom(Stream reader) {
         int id;
         id = reader.readInt();
@@ -29,7 +29,7 @@ struct Player {
         return Player(id, score, resource);
     }
 
-    /// Write Player to output stream
+    /// Write Player to writer
     void writeTo(Stream writer) const {
         writer.write(id);
         writer.write(score);

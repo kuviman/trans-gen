@@ -15,7 +15,7 @@ struct BuildProperties {
         this.initHealth = initHealth;
     }
 
-    /// Read BuildProperties from input stream
+    /// Read BuildProperties from reader
     static BuildProperties readFrom(Stream reader) {
         EntityType[] options;
         options = new EntityType[reader.readInt()];
@@ -33,7 +33,7 @@ struct BuildProperties {
         return BuildProperties(options, initHealth);
     }
 
-    /// Write BuildProperties to output stream
+    /// Write BuildProperties to writer
     void writeTo(Stream writer) const {
         writer.write(cast(int)(options.length));
         foreach (optionsElement; options) {

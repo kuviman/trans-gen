@@ -36,7 +36,7 @@ struct PlayerView {
         this.entities = entities;
     }
 
-    /// Read PlayerView from input stream
+    /// Read PlayerView from reader
     static PlayerView readFrom(Stream reader) {
         int myId;
         myId = reader.readInt();
@@ -77,7 +77,7 @@ struct PlayerView {
         return PlayerView(myId, mapSize, fogOfWar, entityProperties, maxTickCount, maxPathfindNodes, currentTick, players, entities);
     }
 
-    /// Write PlayerView to output stream
+    /// Write PlayerView to writer
     void writeTo(Stream writer) const {
         writer.write(myId);
         writer.write(mapSize);
