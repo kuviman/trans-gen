@@ -53,8 +53,8 @@ jobs:
           name: testing-${{ matrix.os }}
           path: target/release/examples/testing.exe
 
-  test-languages-docker:
-    name: Test ${{ matrix.language }} (Docker)
+  test-languages-linux:
+    name: Test ${{ matrix.language }} (Linux)
     needs: build-test
     strategy:
       fail-fast: false
