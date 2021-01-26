@@ -2,8 +2,17 @@ package model
 
 import util.StreamUtil
 
+/**
+ * Entity's repair properties
+ */
 class RepairProperties {
+    /**
+     * Valid target entity types
+     */
     lateinit var validTargets: Array<model.EntityType>
+    /**
+     * Health restored in one tick
+     */
     var power: Int = 0
 
     constructor(validTargets: Array<model.EntityType>, power: Int) {
@@ -11,6 +20,9 @@ class RepairProperties {
         this.power = power
     }
 
+    /**
+     * Write RepairProperties to output stream
+     */
     @Throws(java.io.IOException::class)
     fun writeTo(stream: java.io.OutputStream) {
         StreamUtil.writeInt(stream, validTargets.size)
@@ -20,6 +32,9 @@ class RepairProperties {
         StreamUtil.writeInt(stream, power)
     }
 
+    /**
+     * Get string representation of RepairProperties
+     */
     override fun toString(): String {
         var stringBuilder = StringBuilder("RepairProperties { ")
         stringBuilder.append("validTargets: ")
@@ -41,6 +56,9 @@ class RepairProperties {
     }
 
     companion object {
+        /**
+         * Read RepairProperties from input stream
+         */
         @Throws(java.io.IOException::class)
         fun readFrom(stream: java.io.InputStream): RepairProperties {
             var validTargets: Array<model.EntityType>

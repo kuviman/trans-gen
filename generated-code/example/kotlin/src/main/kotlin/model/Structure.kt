@@ -2,9 +2,21 @@ package model
 
 import util.StreamUtil
 
+/**
+ * Example structure
+ */
 class Structure {
+    /**
+     * Text
+     */
     lateinit var text: String
+    /**
+     * 32-bit float
+     */
     var floatNumber: Float = 0.0f
+    /**
+     * 64-bit float
+     */
     var doubleNumber: Double = 0.0
 
     constructor(text: String, floatNumber: Float, doubleNumber: Double) {
@@ -13,6 +25,9 @@ class Structure {
         this.doubleNumber = doubleNumber
     }
 
+    /**
+     * Write Structure to output stream
+     */
     @Throws(java.io.IOException::class)
     fun writeTo(stream: java.io.OutputStream) {
         StreamUtil.writeString(stream, text)
@@ -20,6 +35,9 @@ class Structure {
         StreamUtil.writeDouble(stream, doubleNumber)
     }
 
+    /**
+     * Get string representation of Structure
+     */
     override fun toString(): String {
         var stringBuilder = StringBuilder("Structure { ")
         stringBuilder.append("text: ")
@@ -35,6 +53,9 @@ class Structure {
     }
 
     companion object {
+        /**
+         * Read Structure from input stream
+         */
         @Throws(java.io.IOException::class)
         fun readFrom(stream: java.io.InputStream): Structure {
             var text: String

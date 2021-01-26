@@ -2,9 +2,21 @@ package model
 
 import util.StreamUtil
 
+/**
+ * Entity's attack properties
+ */
 class AttackProperties {
+    /**
+     * Maximum attack range
+     */
     var attackRange: Int = 0
+    /**
+     * Damage dealt in one tick
+     */
     var damage: Int = 0
+    /**
+     * If true, dealing damage will collect resource from target
+     */
     var collectResource: Boolean = false
 
     constructor(attackRange: Int, damage: Int, collectResource: Boolean) {
@@ -13,6 +25,9 @@ class AttackProperties {
         this.collectResource = collectResource
     }
 
+    /**
+     * Write AttackProperties to output stream
+     */
     @Throws(java.io.IOException::class)
     fun writeTo(stream: java.io.OutputStream) {
         StreamUtil.writeInt(stream, attackRange)
@@ -20,6 +35,9 @@ class AttackProperties {
         StreamUtil.writeBoolean(stream, collectResource)
     }
 
+    /**
+     * Get string representation of AttackProperties
+     */
     override fun toString(): String {
         var stringBuilder = StringBuilder("AttackProperties { ")
         stringBuilder.append("attackRange: ")
@@ -35,6 +53,9 @@ class AttackProperties {
     }
 
     companion object {
+        /**
+         * Read AttackProperties from input stream
+         */
         @Throws(java.io.IOException::class)
         fun readFrom(stream: java.io.InputStream): AttackProperties {
             var attackRange: Int

@@ -2,11 +2,20 @@ package model
 
 import util.StreamUtil
 
+/**
+ * Oneof example
+ */
 abstract class OneOf {
+    /**
+     * Write OneOf to output stream
+     */
     @Throws(java.io.IOException::class)
     abstract fun writeTo(stream: java.io.OutputStream)
 
     companion object {
+        /**
+         * Read OneOf from input stream
+         */
         @Throws(java.io.IOException::class)
         fun readFrom(stream: java.io.InputStream): OneOf {
             when (StreamUtil.readInt(stream)) {
@@ -17,8 +26,17 @@ abstract class OneOf {
         }
     }
 
+    /**
+     * First option
+     */
     class OptionOne : OneOf {
+        /**
+         * List of integers
+         */
         lateinit var vecInt: Array<Int>
+        /**
+         * Long integer
+         */
         var longInt: Long = 0L
     
         constructor(vecInt: Array<Int>, longInt: Long) {
@@ -26,6 +44,9 @@ abstract class OneOf {
             this.longInt = longInt
         }
     
+        /**
+         * Write OptionOne to output stream
+         */
         @Throws(java.io.IOException::class)
         override fun writeTo(stream: java.io.OutputStream) {
             StreamUtil.writeInt(stream, TAG)
@@ -36,6 +57,9 @@ abstract class OneOf {
             StreamUtil.writeLong(stream, longInt)
         }
     
+        /**
+         * Get string representation of OptionOne
+         */
         override fun toString(): String {
             var stringBuilder = StringBuilder("OptionOne { ")
             stringBuilder.append("vecInt: ")
@@ -59,6 +83,9 @@ abstract class OneOf {
         companion object {
             val TAG = 0
     
+            /**
+             * Read OptionOne from input stream
+             */
             @Throws(java.io.IOException::class)
             fun readFrom(stream: java.io.InputStream): OptionOne {
                 var vecInt: Array<Int>
@@ -74,19 +101,31 @@ abstract class OneOf {
         }
     }
 
+    /**
+     * Second option
+     */
     class OptionTwo : OneOf {
+        /**
+         * usize
+         */
         var value: Int = 0
     
         constructor(value: Int) {
             this.value = value
         }
     
+        /**
+         * Write OptionTwo to output stream
+         */
         @Throws(java.io.IOException::class)
         override fun writeTo(stream: java.io.OutputStream) {
             StreamUtil.writeInt(stream, TAG)
             StreamUtil.writeInt(stream, value)
         }
     
+        /**
+         * Get string representation of OptionTwo
+         */
         override fun toString(): String {
             var stringBuilder = StringBuilder("OptionTwo { ")
             stringBuilder.append("value: ")
@@ -98,6 +137,9 @@ abstract class OneOf {
         companion object {
             val TAG = 1
     
+            /**
+             * Read OptionTwo from input stream
+             */
             @Throws(java.io.IOException::class)
             fun readFrom(stream: java.io.InputStream): OptionTwo {
                 var value: Int

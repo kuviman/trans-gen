@@ -2,8 +2,17 @@ package model
 
 import util.StreamUtil
 
+/**
+ * Entity's build properties
+ */
 class BuildProperties {
+    /**
+     * Valid new entity types
+     */
     lateinit var options: Array<model.EntityType>
+    /**
+     * Initial health of new entity. If absent, it will have full health
+     */
     var initHealth: Int? = null
 
     constructor(options: Array<model.EntityType>, initHealth: Int?) {
@@ -11,6 +20,9 @@ class BuildProperties {
         this.initHealth = initHealth
     }
 
+    /**
+     * Write BuildProperties to output stream
+     */
     @Throws(java.io.IOException::class)
     fun writeTo(stream: java.io.OutputStream) {
         StreamUtil.writeInt(stream, options.size)
@@ -26,6 +38,9 @@ class BuildProperties {
         }
     }
 
+    /**
+     * Get string representation of BuildProperties
+     */
     override fun toString(): String {
         var stringBuilder = StringBuilder("BuildProperties { ")
         stringBuilder.append("options: ")
@@ -47,6 +62,9 @@ class BuildProperties {
     }
 
     companion object {
+        /**
+         * Read BuildProperties from input stream
+         */
         @Throws(java.io.IOException::class)
         fun readFrom(stream: java.io.InputStream): BuildProperties {
             var options: Array<model.EntityType>

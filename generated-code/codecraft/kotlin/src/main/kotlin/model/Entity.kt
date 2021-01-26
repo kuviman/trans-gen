@@ -2,12 +2,33 @@ package model
 
 import util.StreamUtil
 
+/**
+ * Game entity
+ */
 class Entity {
+    /**
+     * Entity's ID. Unique for each entity
+     */
     var id: Int = 0
+    /**
+     * Entity's owner player ID, if owned by a player
+     */
     var playerId: Int? = null
+    /**
+     * Entity's type
+     */
     lateinit var entityType: model.EntityType
+    /**
+     * Entity's position (corner with minimal coordinates)
+     */
     lateinit var position: model.Vec2Int
+    /**
+     * Current health
+     */
     var health: Int = 0
+    /**
+     * If entity is active, it can perform actions
+     */
     var active: Boolean = false
 
     constructor(id: Int, playerId: Int?, entityType: model.EntityType, position: model.Vec2Int, health: Int, active: Boolean) {
@@ -19,6 +40,9 @@ class Entity {
         this.active = active
     }
 
+    /**
+     * Write Entity to output stream
+     */
     @Throws(java.io.IOException::class)
     fun writeTo(stream: java.io.OutputStream) {
         StreamUtil.writeInt(stream, id)
@@ -35,6 +59,9 @@ class Entity {
         StreamUtil.writeBoolean(stream, active)
     }
 
+    /**
+     * Get string representation of Entity
+     */
     override fun toString(): String {
         var stringBuilder = StringBuilder("Entity { ")
         stringBuilder.append("id: ")
@@ -59,6 +86,9 @@ class Entity {
     }
 
     companion object {
+        /**
+         * Read Entity from input stream
+         */
         @Throws(java.io.IOException::class)
         fun readFrom(stream: java.io.InputStream): Entity {
             var id: Int

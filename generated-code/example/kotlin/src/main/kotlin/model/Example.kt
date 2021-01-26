@@ -2,13 +2,37 @@ package model
 
 import util.StreamUtil
 
+/**
+ * Example
+ */
 class Example {
+    /**
+     * OneOf
+     */
     lateinit var oneOf: model.OneOf
+    /**
+     * Dictionary
+     */
     lateinit var hashMap: MutableMap<model.Enumeration, Int>
+    /**
+     * Optional int
+     */
     var optionalInt: Int? = null
+    /**
+     * Optional boolean
+     */
     var optionalBoolean: Boolean? = null
+    /**
+     * Optional OneOf
+     */
     var optionalOneOf: model.OneOf? = null
+    /**
+     * Optional struct
+     */
     var optionalStruct: model.Structure? = null
+    /**
+     * Optional enum
+     */
     var optionalEnum: model.Enumeration? = null
 
     constructor(oneOf: model.OneOf, hashMap: MutableMap<model.Enumeration, Int>, optionalInt: Int?, optionalBoolean: Boolean?, optionalOneOf: model.OneOf?, optionalStruct: model.Structure?, optionalEnum: model.Enumeration?) {
@@ -21,6 +45,9 @@ class Example {
         this.optionalEnum = optionalEnum
     }
 
+    /**
+     * Write Example to output stream
+     */
     @Throws(java.io.IOException::class)
     fun writeTo(stream: java.io.OutputStream) {
         oneOf.writeTo(stream)
@@ -68,6 +95,9 @@ class Example {
         }
     }
 
+    /**
+     * Get string representation of Example
+     */
     override fun toString(): String {
         var stringBuilder = StringBuilder("Example { ")
         stringBuilder.append("oneOf: ")
@@ -95,6 +125,9 @@ class Example {
     }
 
     companion object {
+        /**
+         * Read Example from input stream
+         */
         @Throws(java.io.IOException::class)
         fun readFrom(stream: java.io.InputStream): Example {
             var oneOf: model.OneOf

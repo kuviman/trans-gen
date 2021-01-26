@@ -2,19 +2,61 @@ package model
 
 import util.StreamUtil
 
+/**
+ * Entity properties
+ */
 class EntityProperties {
+    /**
+     * Size. Entity has a form of a square with side of this length
+     */
     var size: Int = 0
+    /**
+     * Score for building this entity
+     */
     var buildScore: Int = 0
+    /**
+     * Score for destroying this entity
+     */
     var destroyScore: Int = 0
+    /**
+     * Whether this entity can move
+     */
     var canMove: Boolean = false
+    /**
+     * Number of population points this entity provides, if active
+     */
     var populationProvide: Int = 0
+    /**
+     * Number of population points this entity uses
+     */
     var populationUse: Int = 0
+    /**
+     * Maximum health points
+     */
     var maxHealth: Int = 0
+    /**
+     * Cost to build this first entity of this type. If this is a unit (entity can move), the cost is increased by 1 for each existing unit of this type
+     */
     var initialCost: Int = 0
+    /**
+     * If fog of war is enabled, maximum distance at which other entities are considered visible
+     */
     var sightRange: Int = 0
+    /**
+     * Amount of resource added to enemy able to collect resource on dealing damage for 1 health point
+     */
     var resourcePerHealth: Int = 0
+    /**
+     * Build properties, if entity can build
+     */
     var build: model.BuildProperties? = null
+    /**
+     * Attack properties, if entity can attack
+     */
     var attack: model.AttackProperties? = null
+    /**
+     * Repair properties, if entity can repair
+     */
     var repair: model.RepairProperties? = null
 
     constructor(size: Int, buildScore: Int, destroyScore: Int, canMove: Boolean, populationProvide: Int, populationUse: Int, maxHealth: Int, initialCost: Int, sightRange: Int, resourcePerHealth: Int, build: model.BuildProperties?, attack: model.AttackProperties?, repair: model.RepairProperties?) {
@@ -33,6 +75,9 @@ class EntityProperties {
         this.repair = repair
     }
 
+    /**
+     * Write EntityProperties to output stream
+     */
     @Throws(java.io.IOException::class)
     fun writeTo(stream: java.io.OutputStream) {
         StreamUtil.writeInt(stream, size)
@@ -68,6 +113,9 @@ class EntityProperties {
         }
     }
 
+    /**
+     * Get string representation of EntityProperties
+     */
     override fun toString(): String {
         var stringBuilder = StringBuilder("EntityProperties { ")
         stringBuilder.append("size: ")
@@ -113,6 +161,9 @@ class EntityProperties {
     }
 
     companion object {
+        /**
+         * Read EntityProperties from input stream
+         */
         @Throws(java.io.IOException::class)
         fun readFrom(stream: java.io.InputStream): EntityProperties {
             var size: Int

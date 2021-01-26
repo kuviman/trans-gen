@@ -2,15 +2,45 @@ package model
 
 import util.StreamUtil
 
+/**
+ * Information available to the player
+ */
 class PlayerView {
+    /**
+     * Your player's ID
+     */
     var myId: Int = 0
+    /**
+     * Size of the map
+     */
     var mapSize: Int = 0
+    /**
+     * Whether fog of war is enabled
+     */
     var fogOfWar: Boolean = false
+    /**
+     * Entity properties for each entity type
+     */
     lateinit var entityProperties: MutableMap<model.EntityType, model.EntityProperties>
+    /**
+     * Max tick count for the game
+     */
     var maxTickCount: Int = 0
+    /**
+     * Max pathfind nodes when performing pathfinding in the game simulator
+     */
     var maxPathfindNodes: Int = 0
+    /**
+     * Current tick
+     */
     var currentTick: Int = 0
+    /**
+     * List of players
+     */
     lateinit var players: Array<model.Player>
+    /**
+     * List of entities
+     */
     lateinit var entities: Array<model.Entity>
 
     constructor(myId: Int, mapSize: Int, fogOfWar: Boolean, entityProperties: MutableMap<model.EntityType, model.EntityProperties>, maxTickCount: Int, maxPathfindNodes: Int, currentTick: Int, players: Array<model.Player>, entities: Array<model.Entity>) {
@@ -25,6 +55,9 @@ class PlayerView {
         this.entities = entities
     }
 
+    /**
+     * Write PlayerView to output stream
+     */
     @Throws(java.io.IOException::class)
     fun writeTo(stream: java.io.OutputStream) {
         StreamUtil.writeInt(stream, myId)
@@ -50,6 +83,9 @@ class PlayerView {
         }
     }
 
+    /**
+     * Get string representation of PlayerView
+     */
     override fun toString(): String {
         var stringBuilder = StringBuilder("PlayerView { ")
         stringBuilder.append("myId: ")
@@ -101,6 +137,9 @@ class PlayerView {
     }
 
     companion object {
+        /**
+         * Read PlayerView from input stream
+         */
         @Throws(java.io.IOException::class)
         fun readFrom(stream: java.io.InputStream): PlayerView {
             var myId: Int

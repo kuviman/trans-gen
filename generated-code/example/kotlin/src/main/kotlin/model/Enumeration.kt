@@ -2,11 +2,23 @@ package model
 
 import util.StreamUtil
 
+/**
+ * Example enumeration
+ */
 enum class Enumeration private constructor(val tag: Int) {
+    /**
+     * First option
+     */
     VALUE_ONE(0),
+    /**
+     * Second option
+     */
     VALUE_TWO(1);
 
     companion object {
+        /**
+         * Read Enumeration from input stream
+         */
         @Throws(java.io.IOException::class)
         fun readFrom(stream: java.io.InputStream): Enumeration {
             return when (StreamUtil.readInt(stream)) {

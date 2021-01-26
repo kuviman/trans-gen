@@ -2,9 +2,21 @@ package model
 
 import util.StreamUtil
 
+/**
+ * Player (strategy, client)
+ */
 class Player {
+    /**
+     * Player's ID
+     */
     var id: Int = 0
+    /**
+     * Current score
+     */
     var score: Int = 0
+    /**
+     * Current amount of resource
+     */
     var resource: Int = 0
 
     constructor(id: Int, score: Int, resource: Int) {
@@ -13,6 +25,9 @@ class Player {
         this.resource = resource
     }
 
+    /**
+     * Write Player to output stream
+     */
     @Throws(java.io.IOException::class)
     fun writeTo(stream: java.io.OutputStream) {
         StreamUtil.writeInt(stream, id)
@@ -20,6 +35,9 @@ class Player {
         StreamUtil.writeInt(stream, resource)
     }
 
+    /**
+     * Get string representation of Player
+     */
     override fun toString(): String {
         var stringBuilder = StringBuilder("Player { ")
         stringBuilder.append("id: ")
@@ -35,6 +53,9 @@ class Player {
     }
 
     companion object {
+        /**
+         * Read Player from input stream
+         */
         @Throws(java.io.IOException::class)
         fun readFrom(stream: java.io.InputStream): Player {
             var id: Int
