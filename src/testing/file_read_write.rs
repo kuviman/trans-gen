@@ -5,7 +5,7 @@ pub struct FileReadWrite<D> {
     pub show_stdout: bool,
 }
 
-impl<D: Trans + PartialEq> Test for FileReadWrite<D> {
+impl<D: Trans + PartialEq + Debug> Test for FileReadWrite<D> {
     fn schemas(&self) -> Vec<Arc<Schema>> {
         vec![Schema::of::<D>()]
     }
@@ -37,7 +37,11 @@ impl<D: Trans + PartialEq> Test for FileReadWrite<D> {
         ))
         .context("Failed to read output")?;
         if self.snapshot != output {
-            anyhow::bail!("Input and output differ");
+            anyhow::bail!(
+                "Input and output differ: expected {:?}, got {:?}",
+                self.snapshot,
+                output,
+            );
         }
         println!("Test finished successfully");
         Ok(())
