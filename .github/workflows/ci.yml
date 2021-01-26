@@ -23,4 +23,4 @@ jobs:
           cd swift
           swift build -c release
           find . | sed -e "s/[^-][^\/]*\//  |/g" -e "s/|\([^ ]\)/|-\1/"
-          .build/release/trans-gen-test
+          .build/release/TransGenTest
