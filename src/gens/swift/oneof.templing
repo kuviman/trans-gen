@@ -1,0 +1,53 @@
+enum {{ base_name.camel_case(conv) }} {
+    - for variant in variants {
+    case {{ variant.name.mixed_case(conv) }}(~
+        - for (index, field) in variant.fields.iter().enumerate() {
+        - if index != 0 {
+            ~, ~
+        - }
+        ~{{ field.name.mixed_case(conv) }}: {{ type_name(&field.schema) }}~
+        - }
+    ~)
+    - }
+
+    static func readFrom<S: InputStream>(_ stream: S) -> {{ base_name.camel_case(conv) }} {
+        switch stream.readInt32() {
+            - for (tag, variant) in variants.iter().enumerate() {
+            case {{ tag }}:
+                - for field in &variant.fields {
+                var {{ field.name.mixed_case(conv) }}: {{ type_name(&field.schema) }}
+                {{ read_var(&field.name.mixed_case(conv), &field.schema) }}
+                - }
+                return {{ base_name.camel_case(conv) }}.{{ variant.name.mixed_case(conv) }}(~
+                    - for (index, field) in variant.fields.iter().enumerate() {
+                    - if index != 0 {
+                        ~, ~
+                    - }
+                    ~{{ field.name.mixed_case(conv) }}: {{ field.name.mixed_case(conv) }}~
+                    - }
+                ~)
+            - }
+            default:
+                fatalError("Unexpected tag value")
+        }
+    }
+
+    func writeTo<S: OutputStream>(_ stream: S) {
+        switch self {
+            - for (tag, variant) in variants.iter().enumerate() {
+            case let .{{ variant.name.mixed_case(conv) }}(~
+                - for (index, field) in variant.fields.iter().enumerate() {
+                - if index != 0 {
+                    ~, ~
+                - }
+                ~{{ field.name.mixed_case(conv) }}~
+                - }
+            ~):
+                stream.writeInt32({{ tag }})
+                - for field in &variant.fields {
+                {{ write_var(&field.name.mixed_case(conv), &field.schema) }}
+                - }
+            - }
+        }
+    }
+}

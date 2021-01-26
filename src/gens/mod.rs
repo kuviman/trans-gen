@@ -16,6 +16,7 @@ macro_rules! all_runnable_gens {
         $macro!(fsharp);
         $macro!(javascript);
         $macro!(typescript);
+        $macro!(swift);
     };
 }
 

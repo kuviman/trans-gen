@@ -85,6 +85,9 @@ jobs:
           - language: TypeScript
             lang: typescript
             docker: node
+          - language: Swift
+            lang: swift
+            docker: swift
     runs-on: ubuntu-latest
     container: ${{ matrix.docker }}
     steps:

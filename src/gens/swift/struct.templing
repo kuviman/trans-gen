@@ -1,0 +1,26 @@
+public struct {{ struc.name.camel_case(conv) }} {
+    - for field in &struc.fields {
+    let {{ field.name.mixed_case(conv) }}: {{ type_name(&field.schema) }}
+    - }
+
+    static func readFrom<S: InputStream>(_ stream: S) -> {{ struc.name.camel_case(conv) }} {
+        - for field in &struc.fields {
+        var {{ field.name.mixed_case(conv) }}: {{ type_name(&field.schema) }}
+        {{ read_var(&field.name.mixed_case(conv), &field.schema) }}
+        - }
+        return {{ struc.name.camel_case(conv) }}(~
+            - for (index, field) in struc.fields.iter().enumerate() {
+            - if index != 0 {
+                ~, ~
+            - }
+            ~{{ field.name.mixed_case(conv) }}: {{ field.name.mixed_case(conv) }}~
+            - }
+        ~)
+    }
+
+    func writeTo<S: OutputStream>(_ stream: S) {
+        - for field in &struc.fields {
+        {{ write_var(&field.name.mixed_case(conv), &field.schema) }}
+        - }
+    }
+}
