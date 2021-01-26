@@ -40,18 +40,10 @@ jobs:
           args: --release --example testing
 
       - name: Upload artifacts
-        if: matrix.os != 'Windows'
         uses: actions/upload-artifact@v2
         with:
           name: testing-${{ matrix.os }}
-          path: target/release/examples/testing
-
-      - name: Upload artifacts
-        if: matrix.os == 'Windows'
-        uses: actions/upload-artifact@v2
-        with:
-          name: testing-${{ matrix.os }}
-          path: target/release/examples/testing.exe
+          path: target/release/examples/testing${{ fromJson('["", ".exe"]')[matrix.os == 'Windows'] }}
 
   test-languages-linux:
     name: Test ${{ matrix.language }} (Linux)
