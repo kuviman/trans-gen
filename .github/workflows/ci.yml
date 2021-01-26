@@ -3,7 +3,7 @@ on: [push, pull_request]
 name: Continuous integration
 
 jobs:
-  test-swift:
+  test-cpp:
     runs-on: macos-latest
     steps:
       - name: Checkout
@@ -12,8 +12,8 @@ jobs:
           cd cpp
           cmake -DCMAKE_CXX_STANDARD=17 -DCMAKE_BUILD_TYPE=RELEASE -DCMAKE_VERBOSE_MAKEFILE=ON .
           cmake --build . --config Release
-          tree
-  test-cpp:
+          ls -R | grep ":$" | sed -e 's/:$//' -e 's/[^-][^\/]*\//--/g' -e 's/^/   /' -e 's/-/|/'
+  test-swift:
     runs-on: macos-latest
     steps:
       - name: Checkout
@@ -21,4 +21,4 @@ jobs:
       - run: |
           cd swift
           swift build
-          tree
+          ls -R | grep ":$" | sed -e 's/:$//' -e 's/[^-][^\/]*\//--/g' -e 's/^/   /' -e 's/-/|/'
