@@ -2,11 +2,14 @@ package model
 
 import util.StreamUtil
 
+{{ doc_comment(documentation) }}
 abstract class {{ base_name.camel_case(conv) }} {
+    {{ doc_write_to(&base_name.camel_case(conv)) }}
     @Throws(java.io.IOException::class)
     abstract fun writeTo(stream: java.io.OutputStream)
 
     companion object {
+        {{ doc_read_from(&base_name.camel_case(conv)) }}
         @Throws(java.io.IOException::class)
         fun readFrom(stream: java.io.InputStream): {{ base_name.camel_case(conv) }} {
             when (StreamUtil.readInt(stream)) {

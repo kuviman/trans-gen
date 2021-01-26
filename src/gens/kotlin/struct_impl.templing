@@ -1,9 +1,11 @@
+{{ doc_comment(&struc.documentation) }}
 - if let Some((base_name, _)) = base {
 class {{ struc.name.camel_case(conv) }} : {{ base_name.camel_case(conv) }} {
 - } else {
 class {{ struc.name.camel_case(conv) }} {
 - }
     - for field in &struc.fields {
+    {{ doc_comment(&field.documentation) }}
     - if lateinit(&field.schema) {
     lateinit var {{ field.name.mixed_case(conv) }}: {{ type_name(&field.schema) }}
     - } else {
@@ -24,6 +26,7 @@ class {{ struc.name.camel_case(conv) }} {
         - }
     }
 
+    {{ doc_write_to(&struc.name.camel_case(conv)) }}
     @Throws(java.io.IOException::class)
     {{# if base.is_some() { }}override {{# } }}fun writeTo(stream: java.io.OutputStream) {
         - if base.is_some() {
@@ -34,6 +37,7 @@ class {{ struc.name.camel_case(conv) }} {
         - }
     }
 
+    {{ doc_to_string(&struc.name.camel_case(conv)) }}
     override fun toString(): String {
         var stringBuilder = StringBuilder("{{ struc.name.camel_case(conv) }} { ")
         - for (index, field) in struc.fields.iter().enumerate() {
@@ -52,6 +56,7 @@ class {{ struc.name.camel_case(conv) }} {
         val TAG = {{ tag }}
 
         - }
+        {{ doc_read_from(&struc.name.camel_case(conv)) }}
         @Throws(java.io.IOException::class)
         fun readFrom(stream: java.io.InputStream): {{ struc.name.camel_case(conv) }} {
             - for field in &struc.fields {

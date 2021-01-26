@@ -2,8 +2,10 @@ package model
 
 import util.StreamUtil
 
+{{ doc_comment(documentation) }}
 enum class {{ base_name.camel_case(conv) }} private constructor(val tag: Int) {
     - for (index, variant) in variants.iter().enumerate() {
+    {{ doc_comment(&variant.documentation) }}
     {{ variant.name.shouty_snake_case(conv) }}({{ index }})~
     - if index + 1 < variants.len() {
         ~,
@@ -13,6 +15,7 @@ enum class {{ base_name.camel_case(conv) }} private constructor(val tag: Int) {
     - }
 
     companion object {
+        {{ doc_read_from(&base_name.camel_case(conv)) }}
         @Throws(java.io.IOException::class)
         fun readFrom(stream: java.io.InputStream): {{ base_name.camel_case(conv) }} {
             return when (StreamUtil.readInt(stream)) {
