@@ -21,6 +21,6 @@ jobs:
         uses: actions/checkout@v2
       - run: |
           cd swift
-          swift build
+          swift build -c release
           find . | sed -e "s/[^-][^\/]*\//  |/g" -e "s/|\([^ ]\)/|-\1/"
           .build/release/trans-gen-test
