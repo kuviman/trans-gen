@@ -150,13 +150,14 @@ impl RunnableGenerator for Generator {
             }
             anyhow::bail!("Failed to determine project name")
         }
-        let mut command = command(
-            Path::new(".build")
-                .join("release")
-                .join(project_name(path)?)
-                .to_str()
-                .unwrap(),
-        );
+        let executable = Path::new(".build")
+            .join("release")
+            .join(project_name(path)?)
+            .to_str()
+            .unwrap()
+            .to_owned();
+        println!("Executable: {:?}", executable);
+        let mut command = command(&executable);
         command.current_dir(path);
         Ok(command)
     }

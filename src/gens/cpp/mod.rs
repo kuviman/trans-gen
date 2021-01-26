@@ -264,16 +264,17 @@ impl RunnableGenerator for Generator {
             anyhow::bail!("Failed to determine executable");
         };
         let executable = executable(path)?;
-        let mut command = command(
-            exe_dir
-                .join(format!(
-                    "{}{}",
-                    executable,
-                    if cfg!(windows) { ".exe" } else { "" }
-                ))
-                .to_str()
-                .unwrap(),
-        );
+        let executable = exe_dir
+            .join(format!(
+                "{}{}",
+                executable,
+                if cfg!(windows) { ".exe" } else { "" }
+            ))
+            .to_str()
+            .unwrap()
+            .to_owned();
+        println!("Executable: {:?}", executable);
+        let mut command = command(&executable);
         command.current_dir(path);
         Ok(command)
     }
