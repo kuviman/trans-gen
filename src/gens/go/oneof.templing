@@ -6,11 +6,16 @@ import . "{{ &self.mod_name }}/stream"
 - }
 import "fmt"
 
+{{ doc_comment(documentation) }}
 type {{ base_name.camel_case(conv) }} interface {
+    {{ doc_write_to(&base_name.camel_case(conv)) }}
     Write(writer io.Writer)
+
+    {{ doc_to_string(&base_name.camel_case(conv)) }}
     String() string
 }
 
+{{ doc_read_from(&base_name.camel_case(conv)) }}
 func Read{{ base_name.camel_case(conv) }}(reader io.Reader) {{ base_name.camel_case(conv) }} {
     switch ReadInt32(reader) {
     - for (tag, variant) in variants.iter().enumerate() {

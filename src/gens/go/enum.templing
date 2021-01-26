@@ -3,14 +3,17 @@ package model
 import "io"
 import . "{{ &self.mod_name }}/stream"
 
+{{ doc_comment(documentation) }}
 type {{ base_name.camel_case(conv) }} int32
 
 const (
     - for (tag, variant) in variants.iter().enumerate() {
+    {{ doc_comment(&variant.documentation) }}
     {{ base_name.camel_case(conv) }}{{ variant.name.camel_case(conv) }} {{ base_name.camel_case(conv) }} = {{ tag }}
     - }
 )
 
+{{ doc_read_from(&base_name.camel_case(conv)) }}
 func Read{{ base_name.camel_case(conv) }}(reader io.Reader) {{ base_name.camel_case(conv) }} {
     switch ReadInt32(reader) {
     - for (tag, variant) in variants.iter().enumerate() {
@@ -21,6 +24,7 @@ func Read{{ base_name.camel_case(conv) }}(reader io.Reader) {{ base_name.camel_c
     panic("Unexpected tag value")
 }
 
+{{ doc_to_string(&base_name.camel_case(conv)) }}
 func {{ base_name.camel_case(conv) }}ToString({{ base_name.mixed_case(conv) }} {{ base_name.camel_case(conv) }}) string {
     switch {{ base_name.mixed_case(conv) }} {
     - for (tag, variant) in variants.iter().enumerate() {
