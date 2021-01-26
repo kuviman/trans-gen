@@ -2,9 +2,12 @@ package model;
 
 import util.StreamUtil;
 
+{{ doc_comment(documentation) }}
 public abstract class {{ base_name.camel_case(conv) }} {
+    {{ doc_write_to(&base_name.camel_case(conv)) }}
     public abstract void writeTo(java.io.OutputStream stream) throws java.io.IOException;
 
+    {{ doc_read_from(&base_name.camel_case(conv)) }}
     public static {{ base_name.camel_case(conv) }} readFrom(java.io.InputStream stream) throws java.io.IOException {
         switch (StreamUtil.readInt(stream)) {
             - for variant in variants {

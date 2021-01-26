@@ -1,3 +1,4 @@
+{{ doc_comment(&struc.documentation) }}
 - if let Some((base_name, _)) = base {
 public static class {{ struc.name.camel_case(conv) }} extends {{ base_name.camel_case(conv) }} {
 - } else {
@@ -8,12 +9,15 @@ public class {{ struc.name.camel_case(conv) }} {
 
     - }
     - for field in &struc.fields {
+    {{ doc_comment(&field.documentation) }}
     private {{ type_name(&field.schema) }} {{ field.name.mixed_case(conv) }};
 
+    {{ doc_comment(&field.documentation) }}
     public {{ type_name(&field.schema) }} {{ getter_prefix(&field.schema) }}{{ field.name.camel_case(conv) }}() {
         return {{ field.name.mixed_case(conv) }};
     }
 
+    {{ doc_comment(&field.documentation) }}
     public void set{{ field.name.camel_case(conv) }}({{ type_name(&field.schema) }} value) {
         this.{{ field.name.mixed_case(conv) }} = value;
     }
@@ -32,6 +36,7 @@ public class {{ struc.name.camel_case(conv) }} {
         - }
     }
 
+    {{ doc_read_from(&struc.name.camel_case(conv)) }}
     public static {{ struc.name.camel_case(conv) }} readFrom(java.io.InputStream stream) throws java.io.IOException {
         - for field in &struc.fields {
         {{ type_name(&field.schema) }} {{ field.name.mixed_case(conv) }};
@@ -47,6 +52,7 @@ public class {{ struc.name.camel_case(conv) }} {
         ~);
     }
 
+    {{ doc_write_to(&struc.name.camel_case(conv)) }}
     - if base.is_some() {
     @Override
     - }
@@ -59,6 +65,7 @@ public class {{ struc.name.camel_case(conv) }} {
         - }
     }
 
+    {{ doc_to_string(&struc.name.camel_case(conv)) }}
     @Override
     public String toString() {
         StringBuilder stringBuilder = new StringBuilder("{{ struc.name.camel_case(conv) }} { ");

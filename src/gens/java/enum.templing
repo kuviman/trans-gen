@@ -2,8 +2,10 @@ package model;
 
 import util.StreamUtil;
 
+{{ doc_comment(documentation) }}
 public enum {{ base_name.camel_case(conv) }} {
     - for (index, variant) in variants.iter().enumerate() {
+    {{ doc_comment(&variant.documentation) }}
     {{ variant.name.shouty_snake_case(conv) }}({{ index }})~
         - if index + 1 < variants.len() {
             ~,
@@ -18,6 +20,7 @@ public enum {{ base_name.camel_case(conv) }} {
         this.tag = tag;
     }
 
+    {{ doc_read_from(&base_name.camel_case(conv)) }}
     public static {{ base_name.camel_case(conv) }} readFrom(java.io.InputStream stream) throws java.io.IOException {
         switch (StreamUtil.readInt(stream)) {
         - for (tag, variant) in variants.iter().enumerate() {
