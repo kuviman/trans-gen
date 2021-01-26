@@ -274,6 +274,12 @@ impl RunnableGenerator for Generator {
             .unwrap()
             .to_owned();
         println!("Executable: {:?}", executable);
+        if !cfg!(windows) {
+            command("ls")
+                .arg("-la")
+                .current_dir(path.join(Path::new(&executable).parent().unwrap()))
+                .run()?;
+        }
         let mut command = command(&executable);
         command.current_dir(path);
         Ok(command)
