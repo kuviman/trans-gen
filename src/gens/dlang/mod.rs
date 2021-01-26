@@ -52,10 +52,6 @@ fn doc_write_to(name: &str) -> String {
     format!("/// Write {} to output stream", name)
 }
 
-fn doc_to_string(name: &str) -> String {
-    format!("/// Get string representation of {}", name)
-}
-
 fn read_var(var: &str, schema: &Schema) -> String {
     include_templing!("src/gens/dlang/read_var.templing")
 }
