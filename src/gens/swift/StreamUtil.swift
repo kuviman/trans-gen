@@ -1,3 +1,5 @@
+import Foundation
+
 public typealias Byte = Int8
 
 extension String: Error {}
@@ -42,7 +44,7 @@ extension InputStream {
 	}
     func readString() -> String {
         let size = Int(readInt32())
-        return String(cString: readBytes(size).map{ UInt8(bitPattern: $0) })
+        return String(bytes: readBytes(size).map{ UInt8(bitPattern: $0) }, encoding: String.Encoding.utf8)!
     }
 }
 
