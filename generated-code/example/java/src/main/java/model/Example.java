@@ -2,67 +2,133 @@ package model;
 
 import util.StreamUtil;
 
+/**
+ * Example
+ */
 public class Example {
+    /**
+     * OneOf
+     */
     private model.OneOf oneOf;
 
+    /**
+     * OneOf
+     */
     public model.OneOf getOneOf() {
         return oneOf;
     }
 
+    /**
+     * OneOf
+     */
     public void setOneOf(model.OneOf value) {
         this.oneOf = value;
     }
+    /**
+     * Dictionary
+     */
     private java.util.Map<model.Enumeration, Integer> hashMap;
 
+    /**
+     * Dictionary
+     */
     public java.util.Map<model.Enumeration, Integer> getHashMap() {
         return hashMap;
     }
 
+    /**
+     * Dictionary
+     */
     public void setHashMap(java.util.Map<model.Enumeration, Integer> value) {
         this.hashMap = value;
     }
+    /**
+     * Optional int
+     */
     private Integer optionalInt;
 
+    /**
+     * Optional int
+     */
     public Integer getOptionalInt() {
         return optionalInt;
     }
 
+    /**
+     * Optional int
+     */
     public void setOptionalInt(Integer value) {
         this.optionalInt = value;
     }
+    /**
+     * Optional boolean
+     */
     private Boolean optionalBoolean;
 
+    /**
+     * Optional boolean
+     */
     public Boolean getOptionalBoolean() {
         return optionalBoolean;
     }
 
+    /**
+     * Optional boolean
+     */
     public void setOptionalBoolean(Boolean value) {
         this.optionalBoolean = value;
     }
+    /**
+     * Optional OneOf
+     */
     private model.OneOf optionalOneOf;
 
+    /**
+     * Optional OneOf
+     */
     public model.OneOf getOptionalOneOf() {
         return optionalOneOf;
     }
 
+    /**
+     * Optional OneOf
+     */
     public void setOptionalOneOf(model.OneOf value) {
         this.optionalOneOf = value;
     }
+    /**
+     * Optional struct
+     */
     private model.Structure optionalStruct;
 
+    /**
+     * Optional struct
+     */
     public model.Structure getOptionalStruct() {
         return optionalStruct;
     }
 
+    /**
+     * Optional struct
+     */
     public void setOptionalStruct(model.Structure value) {
         this.optionalStruct = value;
     }
+    /**
+     * Optional enum
+     */
     private model.Enumeration optionalEnum;
 
+    /**
+     * Optional enum
+     */
     public model.Enumeration getOptionalEnum() {
         return optionalEnum;
     }
 
+    /**
+     * Optional enum
+     */
     public void setOptionalEnum(model.Enumeration value) {
         this.optionalEnum = value;
     }
@@ -77,6 +143,9 @@ public class Example {
         this.optionalEnum = optionalEnum;
     }
 
+    /**
+     * Read Example from input stream
+     */
     public static Example readFrom(java.io.InputStream stream) throws java.io.IOException {
         model.OneOf oneOf;
         oneOf = model.OneOf.readFrom(stream);
@@ -123,6 +192,9 @@ public class Example {
         return new Example(oneOf, hashMap, optionalInt, optionalBoolean, optionalOneOf, optionalStruct, optionalEnum);
     }
 
+    /**
+     * Write Example to output stream
+     */
     public void writeTo(java.io.OutputStream stream) throws java.io.IOException {
         oneOf.writeTo(stream);
         StreamUtil.writeInt(stream, hashMap.size());
@@ -164,6 +236,9 @@ public class Example {
         }
     }
 
+    /**
+     * Get string representation of Example
+     */
     @Override
     public String toString() {
         StringBuilder stringBuilder = new StringBuilder("Example { ");

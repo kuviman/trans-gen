@@ -2,8 +2,17 @@ package model;
 
 import util.StreamUtil;
 
+/**
+ * Example enumeration
+ */
 public enum Enumeration {
+    /**
+     * First option
+     */
     VALUE_ONE(0),
+    /**
+     * Second option
+     */
     VALUE_TWO(1);
 
     public int tag;
@@ -12,6 +21,9 @@ public enum Enumeration {
         this.tag = tag;
     }
 
+    /**
+     * Read Enumeration from input stream
+     */
     public static Enumeration readFrom(java.io.InputStream stream) throws java.io.IOException {
         switch (StreamUtil.readInt(stream)) {
         case 0:

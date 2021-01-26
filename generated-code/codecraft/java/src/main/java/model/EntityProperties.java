@@ -2,121 +2,241 @@ package model;
 
 import util.StreamUtil;
 
+/**
+ * Entity properties
+ */
 public class EntityProperties {
+    /**
+     * Size. Entity has a form of a square with side of this length
+     */
     private int size;
 
+    /**
+     * Size. Entity has a form of a square with side of this length
+     */
     public int getSize() {
         return size;
     }
 
+    /**
+     * Size. Entity has a form of a square with side of this length
+     */
     public void setSize(int value) {
         this.size = value;
     }
+    /**
+     * Score for building this entity
+     */
     private int buildScore;
 
+    /**
+     * Score for building this entity
+     */
     public int getBuildScore() {
         return buildScore;
     }
 
+    /**
+     * Score for building this entity
+     */
     public void setBuildScore(int value) {
         this.buildScore = value;
     }
+    /**
+     * Score for destroying this entity
+     */
     private int destroyScore;
 
+    /**
+     * Score for destroying this entity
+     */
     public int getDestroyScore() {
         return destroyScore;
     }
 
+    /**
+     * Score for destroying this entity
+     */
     public void setDestroyScore(int value) {
         this.destroyScore = value;
     }
+    /**
+     * Whether this entity can move
+     */
     private boolean canMove;
 
+    /**
+     * Whether this entity can move
+     */
     public boolean isCanMove() {
         return canMove;
     }
 
+    /**
+     * Whether this entity can move
+     */
     public void setCanMove(boolean value) {
         this.canMove = value;
     }
+    /**
+     * Number of population points this entity provides, if active
+     */
     private int populationProvide;
 
+    /**
+     * Number of population points this entity provides, if active
+     */
     public int getPopulationProvide() {
         return populationProvide;
     }
 
+    /**
+     * Number of population points this entity provides, if active
+     */
     public void setPopulationProvide(int value) {
         this.populationProvide = value;
     }
+    /**
+     * Number of population points this entity uses
+     */
     private int populationUse;
 
+    /**
+     * Number of population points this entity uses
+     */
     public int getPopulationUse() {
         return populationUse;
     }
 
+    /**
+     * Number of population points this entity uses
+     */
     public void setPopulationUse(int value) {
         this.populationUse = value;
     }
+    /**
+     * Maximum health points
+     */
     private int maxHealth;
 
+    /**
+     * Maximum health points
+     */
     public int getMaxHealth() {
         return maxHealth;
     }
 
+    /**
+     * Maximum health points
+     */
     public void setMaxHealth(int value) {
         this.maxHealth = value;
     }
+    /**
+     * Cost to build this first entity of this type. If this is a unit (entity can move), the cost is increased by 1 for each existing unit of this type
+     */
     private int initialCost;
 
+    /**
+     * Cost to build this first entity of this type. If this is a unit (entity can move), the cost is increased by 1 for each existing unit of this type
+     */
     public int getInitialCost() {
         return initialCost;
     }
 
+    /**
+     * Cost to build this first entity of this type. If this is a unit (entity can move), the cost is increased by 1 for each existing unit of this type
+     */
     public void setInitialCost(int value) {
         this.initialCost = value;
     }
+    /**
+     * If fog of war is enabled, maximum distance at which other entities are considered visible
+     */
     private int sightRange;
 
+    /**
+     * If fog of war is enabled, maximum distance at which other entities are considered visible
+     */
     public int getSightRange() {
         return sightRange;
     }
 
+    /**
+     * If fog of war is enabled, maximum distance at which other entities are considered visible
+     */
     public void setSightRange(int value) {
         this.sightRange = value;
     }
+    /**
+     * Amount of resource added to enemy able to collect resource on dealing damage for 1 health point
+     */
     private int resourcePerHealth;
 
+    /**
+     * Amount of resource added to enemy able to collect resource on dealing damage for 1 health point
+     */
     public int getResourcePerHealth() {
         return resourcePerHealth;
     }
 
+    /**
+     * Amount of resource added to enemy able to collect resource on dealing damage for 1 health point
+     */
     public void setResourcePerHealth(int value) {
         this.resourcePerHealth = value;
     }
+    /**
+     * Build properties, if entity can build
+     */
     private model.BuildProperties build;
 
+    /**
+     * Build properties, if entity can build
+     */
     public model.BuildProperties getBuild() {
         return build;
     }
 
+    /**
+     * Build properties, if entity can build
+     */
     public void setBuild(model.BuildProperties value) {
         this.build = value;
     }
+    /**
+     * Attack properties, if entity can attack
+     */
     private model.AttackProperties attack;
 
+    /**
+     * Attack properties, if entity can attack
+     */
     public model.AttackProperties getAttack() {
         return attack;
     }
 
+    /**
+     * Attack properties, if entity can attack
+     */
     public void setAttack(model.AttackProperties value) {
         this.attack = value;
     }
+    /**
+     * Repair properties, if entity can repair
+     */
     private model.RepairProperties repair;
 
+    /**
+     * Repair properties, if entity can repair
+     */
     public model.RepairProperties getRepair() {
         return repair;
     }
 
+    /**
+     * Repair properties, if entity can repair
+     */
     public void setRepair(model.RepairProperties value) {
         this.repair = value;
     }
@@ -137,6 +257,9 @@ public class EntityProperties {
         this.repair = repair;
     }
 
+    /**
+     * Read EntityProperties from input stream
+     */
     public static EntityProperties readFrom(java.io.InputStream stream) throws java.io.IOException {
         int size;
         size = StreamUtil.readInt(stream);
@@ -179,6 +302,9 @@ public class EntityProperties {
         return new EntityProperties(size, buildScore, destroyScore, canMove, populationProvide, populationUse, maxHealth, initialCost, sightRange, resourcePerHealth, build, attack, repair);
     }
 
+    /**
+     * Write EntityProperties to output stream
+     */
     public void writeTo(java.io.OutputStream stream) throws java.io.IOException {
         StreamUtil.writeInt(stream, size);
         StreamUtil.writeInt(stream, buildScore);
@@ -210,6 +336,9 @@ public class EntityProperties {
         }
     }
 
+    /**
+     * Get string representation of EntityProperties
+     */
     @Override
     public String toString() {
         StringBuilder stringBuilder = new StringBuilder("EntityProperties { ");

@@ -2,22 +2,43 @@ package model;
 
 import util.StreamUtil;
 
+/**
+ * Entity's build properties
+ */
 public class BuildProperties {
+    /**
+     * Valid new entity types
+     */
     private model.EntityType[] options;
 
+    /**
+     * Valid new entity types
+     */
     public model.EntityType[] getOptions() {
         return options;
     }
 
+    /**
+     * Valid new entity types
+     */
     public void setOptions(model.EntityType[] value) {
         this.options = value;
     }
+    /**
+     * Initial health of new entity. If absent, it will have full health
+     */
     private Integer initHealth;
 
+    /**
+     * Initial health of new entity. If absent, it will have full health
+     */
     public Integer getInitHealth() {
         return initHealth;
     }
 
+    /**
+     * Initial health of new entity. If absent, it will have full health
+     */
     public void setInitHealth(Integer value) {
         this.initHealth = value;
     }
@@ -27,6 +48,9 @@ public class BuildProperties {
         this.initHealth = initHealth;
     }
 
+    /**
+     * Read BuildProperties from input stream
+     */
     public static BuildProperties readFrom(java.io.InputStream stream) throws java.io.IOException {
         model.EntityType[] options;
         options = new model.EntityType[StreamUtil.readInt(stream)];
@@ -44,6 +68,9 @@ public class BuildProperties {
         return new BuildProperties(options, initHealth);
     }
 
+    /**
+     * Write BuildProperties to output stream
+     */
     public void writeTo(java.io.OutputStream stream) throws java.io.IOException {
         StreamUtil.writeInt(stream, options.length);
         for (model.EntityType optionsElement : options) {
@@ -57,6 +84,9 @@ public class BuildProperties {
         }
     }
 
+    /**
+     * Get string representation of BuildProperties
+     */
     @Override
     public String toString() {
         StringBuilder stringBuilder = new StringBuilder("BuildProperties { ");

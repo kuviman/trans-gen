@@ -2,85 +2,169 @@ package model;
 
 import util.StreamUtil;
 
+/**
+ * Information available to the player
+ */
 public class PlayerView {
+    /**
+     * Your player's ID
+     */
     private int myId;
 
+    /**
+     * Your player's ID
+     */
     public int getMyId() {
         return myId;
     }
 
+    /**
+     * Your player's ID
+     */
     public void setMyId(int value) {
         this.myId = value;
     }
+    /**
+     * Size of the map
+     */
     private int mapSize;
 
+    /**
+     * Size of the map
+     */
     public int getMapSize() {
         return mapSize;
     }
 
+    /**
+     * Size of the map
+     */
     public void setMapSize(int value) {
         this.mapSize = value;
     }
+    /**
+     * Whether fog of war is enabled
+     */
     private boolean fogOfWar;
 
+    /**
+     * Whether fog of war is enabled
+     */
     public boolean isFogOfWar() {
         return fogOfWar;
     }
 
+    /**
+     * Whether fog of war is enabled
+     */
     public void setFogOfWar(boolean value) {
         this.fogOfWar = value;
     }
+    /**
+     * Entity properties for each entity type
+     */
     private java.util.Map<model.EntityType, model.EntityProperties> entityProperties;
 
+    /**
+     * Entity properties for each entity type
+     */
     public java.util.Map<model.EntityType, model.EntityProperties> getEntityProperties() {
         return entityProperties;
     }
 
+    /**
+     * Entity properties for each entity type
+     */
     public void setEntityProperties(java.util.Map<model.EntityType, model.EntityProperties> value) {
         this.entityProperties = value;
     }
+    /**
+     * Max tick count for the game
+     */
     private int maxTickCount;
 
+    /**
+     * Max tick count for the game
+     */
     public int getMaxTickCount() {
         return maxTickCount;
     }
 
+    /**
+     * Max tick count for the game
+     */
     public void setMaxTickCount(int value) {
         this.maxTickCount = value;
     }
+    /**
+     * Max pathfind nodes when performing pathfinding in the game simulator
+     */
     private int maxPathfindNodes;
 
+    /**
+     * Max pathfind nodes when performing pathfinding in the game simulator
+     */
     public int getMaxPathfindNodes() {
         return maxPathfindNodes;
     }
 
+    /**
+     * Max pathfind nodes when performing pathfinding in the game simulator
+     */
     public void setMaxPathfindNodes(int value) {
         this.maxPathfindNodes = value;
     }
+    /**
+     * Current tick
+     */
     private int currentTick;
 
+    /**
+     * Current tick
+     */
     public int getCurrentTick() {
         return currentTick;
     }
 
+    /**
+     * Current tick
+     */
     public void setCurrentTick(int value) {
         this.currentTick = value;
     }
+    /**
+     * List of players
+     */
     private model.Player[] players;
 
+    /**
+     * List of players
+     */
     public model.Player[] getPlayers() {
         return players;
     }
 
+    /**
+     * List of players
+     */
     public void setPlayers(model.Player[] value) {
         this.players = value;
     }
+    /**
+     * List of entities
+     */
     private model.Entity[] entities;
 
+    /**
+     * List of entities
+     */
     public model.Entity[] getEntities() {
         return entities;
     }
 
+    /**
+     * List of entities
+     */
     public void setEntities(model.Entity[] value) {
         this.entities = value;
     }
@@ -97,6 +181,9 @@ public class PlayerView {
         this.entities = entities;
     }
 
+    /**
+     * Read PlayerView from input stream
+     */
     public static PlayerView readFrom(java.io.InputStream stream) throws java.io.IOException {
         int myId;
         myId = StreamUtil.readInt(stream);
@@ -137,6 +224,9 @@ public class PlayerView {
         return new PlayerView(myId, mapSize, fogOfWar, entityProperties, maxTickCount, maxPathfindNodes, currentTick, players, entities);
     }
 
+    /**
+     * Write PlayerView to output stream
+     */
     public void writeTo(java.io.OutputStream stream) throws java.io.IOException {
         StreamUtil.writeInt(stream, myId);
         StreamUtil.writeInt(stream, mapSize);
@@ -161,6 +251,9 @@ public class PlayerView {
         }
     }
 
+    /**
+     * Get string representation of PlayerView
+     */
     @Override
     public String toString() {
         StringBuilder stringBuilder = new StringBuilder("PlayerView { ");
