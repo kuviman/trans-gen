@@ -216,9 +216,6 @@ jobs:
         with:
           name: testing-Windows
 
-      - name: Prepare testing binary
-        run: chmod +x testing
-
       - if: matrix.lang == 'dlang'
         name: Setup D
         uses: dlang-community/setup-dlang@v1
@@ -226,6 +223,8 @@ jobs:
       - name: Run tests
         run: |
           ${{ matrix.setup }}
+          ls -la
+          dir
           testing.exe --lang=${{ matrix.lang }}
 
   update-testing-branch:
