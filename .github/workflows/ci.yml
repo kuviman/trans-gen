@@ -12,7 +12,7 @@ jobs:
           cd cpp
           cmake -DCMAKE_CXX_STANDARD=17 -DCMAKE_BUILD_TYPE=RELEASE -DCMAKE_VERBOSE_MAKEFILE=ON .
           cmake --build . --config Release
-          ls -R | grep ":$" | sed -e 's/:$//' -e 's/[^-][^\/]*\//--/g' -e 's/^/   /' -e 's/-/|/'
+          find . | sed -e "s/[^-][^\/]*\//  |/g" -e "s/|\([^ ]\)/|-\1/"
   test-swift:
     runs-on: macos-latest
     steps:
@@ -21,4 +21,4 @@ jobs:
       - run: |
           cd swift
           swift build
-          ls -R | grep ":$" | sed -e 's/:$//' -e 's/[^-][^\/]*\//--/g' -e 's/^/   /' -e 's/-/|/'
+          find . | sed -e "s/[^-][^\/]*\//  |/g" -e "s/|\([^ ]\)/|-\1/"
