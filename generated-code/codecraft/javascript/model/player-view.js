@@ -2,7 +2,47 @@ const Entity = require('./entity');
 const EntityProperties = require('./entity-properties');
 const EntityType = require('./entity-type');
 const Player = require('./player');
+/**
+ * Information available to the player
+ */
 class PlayerView {
+    /**
+     * Your player's ID
+     */
+    myId;
+    /**
+     * Size of the map
+     */
+    mapSize;
+    /**
+     * Whether fog of war is enabled
+     */
+    fogOfWar;
+    /**
+     * Entity properties for each entity type
+     */
+    entityProperties;
+    /**
+     * Max tick count for the game
+     */
+    maxTickCount;
+    /**
+     * Max pathfind nodes when performing pathfinding in the game simulator
+     */
+    maxPathfindNodes;
+    /**
+     * Current tick
+     */
+    currentTick;
+    /**
+     * List of players
+     */
+    players;
+    /**
+     * List of entities
+     */
+    entities;
+
     constructor(myId, mapSize, fogOfWar, entityProperties, maxTickCount, maxPathfindNodes, currentTick, players, entities) {
         this.myId = myId;
         this.mapSize = mapSize;
@@ -15,6 +55,9 @@ class PlayerView {
         this.entities = entities;
     }
 
+    /**
+     * Read PlayerView from input stream
+     */
     static async readFrom(stream) {
         let myId;
         myId = await stream.readInt();
@@ -54,6 +97,9 @@ class PlayerView {
         return new PlayerView(myId, mapSize, fogOfWar, entityProperties, maxTickCount, maxPathfindNodes, currentTick, players, entities);
     }
 
+    /**
+     * Write PlayerView to output stream
+     */
     async writeTo(stream) {
         let myId = this.myId;
         await stream.writeInt(myId);

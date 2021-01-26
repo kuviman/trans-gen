@@ -1,10 +1,29 @@
+/**
+ * Player (strategy, client)
+ */
 class Player {
+    /**
+     * Player's ID
+     */
+    id;
+    /**
+     * Current score
+     */
+    score;
+    /**
+     * Current amount of resource
+     */
+    resource;
+
     constructor(id, score, resource) {
         this.id = id;
         this.score = score;
         this.resource = resource;
     }
 
+    /**
+     * Read Player from input stream
+     */
     static async readFrom(stream) {
         let id;
         id = await stream.readInt();
@@ -15,6 +34,9 @@ class Player {
         return new Player(id, score, resource);
     }
 
+    /**
+     * Write Player to output stream
+     */
     async writeTo(stream) {
         let id = this.id;
         await stream.writeInt(id);

@@ -1,4 +1,10 @@
+/**
+ * Oneof example
+ */
 class OneOf {
+    /**
+     * Read OneOf from input stream
+     */
     static async readFrom(stream) {
         let tag = await stream.readInt();
         if (tag == OptionOne.TAG) {
@@ -10,13 +16,28 @@ class OneOf {
         throw new Error("Unexpected tag value");
     }
 }
+/**
+ * First option
+ */
 class OptionOne extends OneOf {
+    /**
+     * List of integers
+     */
+    vecInt;
+    /**
+     * Long integer
+     */
+    longInt;
+
     constructor(vecInt, longInt) {
         super();
         this.vecInt = vecInt;
         this.longInt = longInt;
     }
 
+    /**
+     * Read OptionOne from input stream
+     */
     static async readFrom(stream) {
         let vecInt;
         vecInt = [];
@@ -30,6 +51,9 @@ class OptionOne extends OneOf {
         return new OptionOne(vecInt, longInt);
     }
 
+    /**
+     * Write OptionOne to output stream
+     */
     async writeTo(stream) {
         await stream.writeInt(OptionOne.TAG);
         let vecInt = this.vecInt;
@@ -44,18 +68,32 @@ class OptionOne extends OneOf {
 
 OptionOne.TAG = 0;
 OneOf.OptionOne = OptionOne;
+/**
+ * Second option
+ */
 class OptionTwo extends OneOf {
+    /**
+     * usize
+     */
+    value;
+
     constructor(value) {
         super();
         this.value = value;
     }
 
+    /**
+     * Read OptionTwo from input stream
+     */
     static async readFrom(stream) {
         let value;
         value = await stream.readInt();
         return new OptionTwo(value);
     }
 
+    /**
+     * Write OptionTwo to output stream
+     */
     async writeTo(stream) {
         await stream.writeInt(OptionTwo.TAG);
         let value = this.value;

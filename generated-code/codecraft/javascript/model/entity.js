@@ -1,6 +1,34 @@
 const EntityType = require('./entity-type');
 const Vec2Int = require('./vec2-int');
+/**
+ * Game entity
+ */
 class Entity {
+    /**
+     * Entity's ID. Unique for each entity
+     */
+    id;
+    /**
+     * Entity's owner player ID, if owned by a player
+     */
+    playerId;
+    /**
+     * Entity's type
+     */
+    entityType;
+    /**
+     * Entity's position (corner with minimal coordinates)
+     */
+    position;
+    /**
+     * Current health
+     */
+    health;
+    /**
+     * If entity is active, it can perform actions
+     */
+    active;
+
     constructor(id, playerId, entityType, position, health, active) {
         this.id = id;
         this.playerId = playerId;
@@ -10,6 +38,9 @@ class Entity {
         this.active = active;
     }
 
+    /**
+     * Read Entity from input stream
+     */
     static async readFrom(stream) {
         let id;
         id = await stream.readInt();
@@ -30,6 +61,9 @@ class Entity {
         return new Entity(id, playerId, entityType, position, health, active);
     }
 
+    /**
+     * Write Entity to output stream
+     */
     async writeTo(stream) {
         let id = this.id;
         await stream.writeInt(id);

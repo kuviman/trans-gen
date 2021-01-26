@@ -1,7 +1,63 @@
 const AttackProperties = require('./attack-properties');
 const BuildProperties = require('./build-properties');
 const RepairProperties = require('./repair-properties');
+/**
+ * Entity properties
+ */
 class EntityProperties {
+    /**
+     * Size. Entity has a form of a square with side of this length
+     */
+    size;
+    /**
+     * Score for building this entity
+     */
+    buildScore;
+    /**
+     * Score for destroying this entity
+     */
+    destroyScore;
+    /**
+     * Whether this entity can move
+     */
+    canMove;
+    /**
+     * Number of population points this entity provides, if active
+     */
+    populationProvide;
+    /**
+     * Number of population points this entity uses
+     */
+    populationUse;
+    /**
+     * Maximum health points
+     */
+    maxHealth;
+    /**
+     * Cost to build this first entity of this type. If this is a unit (entity can move), the cost is increased by 1 for each existing unit of this type
+     */
+    initialCost;
+    /**
+     * If fog of war is enabled, maximum distance at which other entities are considered visible
+     */
+    sightRange;
+    /**
+     * Amount of resource added to enemy able to collect resource on dealing damage for 1 health point
+     */
+    resourcePerHealth;
+    /**
+     * Build properties, if entity can build
+     */
+    build;
+    /**
+     * Attack properties, if entity can attack
+     */
+    attack;
+    /**
+     * Repair properties, if entity can repair
+     */
+    repair;
+
     constructor(size, buildScore, destroyScore, canMove, populationProvide, populationUse, maxHealth, initialCost, sightRange, resourcePerHealth, build, attack, repair) {
         this.size = size;
         this.buildScore = buildScore;
@@ -18,6 +74,9 @@ class EntityProperties {
         this.repair = repair;
     }
 
+    /**
+     * Read EntityProperties from input stream
+     */
     static async readFrom(stream) {
         let size;
         size = await stream.readInt();
@@ -60,6 +119,9 @@ class EntityProperties {
         return new EntityProperties(size, buildScore, destroyScore, canMove, populationProvide, populationUse, maxHealth, initialCost, sightRange, resourcePerHealth, build, attack, repair);
     }
 
+    /**
+     * Write EntityProperties to output stream
+     */
     async writeTo(stream) {
         let size = this.size;
         await stream.writeInt(size);

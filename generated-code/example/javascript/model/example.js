@@ -1,7 +1,39 @@
 const Enumeration = require('./enumeration');
 const OneOf = require('./one-of');
 const Structure = require('./structure');
+/**
+ * Example
+ */
 class Example {
+    /**
+     * OneOf
+     */
+    oneOf;
+    /**
+     * Dictionary
+     */
+    hashMap;
+    /**
+     * Optional int
+     */
+    optionalInt;
+    /**
+     * Optional boolean
+     */
+    optionalBool;
+    /**
+     * Optional OneOf
+     */
+    optionalOneOf;
+    /**
+     * Optional struct
+     */
+    optionalStruct;
+    /**
+     * Optional enum
+     */
+    optionalEnum;
+
     constructor(oneOf, hashMap, optionalInt, optionalBool, optionalOneOf, optionalStruct, optionalEnum) {
         this.oneOf = oneOf;
         this.hashMap = hashMap;
@@ -12,6 +44,9 @@ class Example {
         this.optionalEnum = optionalEnum;
     }
 
+    /**
+     * Read Example from input stream
+     */
     static async readFrom(stream) {
         let oneOf;
         oneOf = await OneOf.readFrom(stream);
@@ -57,6 +92,9 @@ class Example {
         return new Example(oneOf, hashMap, optionalInt, optionalBool, optionalOneOf, optionalStruct, optionalEnum);
     }
 
+    /**
+     * Write Example to output stream
+     */
     async writeTo(stream) {
         let oneOf = this.oneOf;
         await oneOf.writeTo(stream);

@@ -1,9 +1,24 @@
+/**
+ * 2 dimensional vector.
+ */
 class Vec2Int {
+    /**
+     * `x` coordinate of the vector
+     */
+    x;
+    /**
+     * `y` coordinate of the vector
+     */
+    y;
+
     constructor(x, y) {
         this.x = x;
         this.y = y;
     }
 
+    /**
+     * Read Vec2Int from input stream
+     */
     static async readFrom(stream) {
         let x;
         x = await stream.readInt();
@@ -12,6 +27,9 @@ class Vec2Int {
         return new Vec2Int(x, y);
     }
 
+    /**
+     * Write Vec2Int to output stream
+     */
     async writeTo(stream) {
         let x = this.x;
         await stream.writeInt(x);
