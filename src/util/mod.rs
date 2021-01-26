@@ -21,7 +21,7 @@ pub trait CommandExt {
 
 impl CommandExt for Command {
     fn run(&mut self) -> anyhow::Result<()> {
-        let status = self.status().context("Failed to get process status")?;
+        let status = self.status().context("Failed to execute process")?;
         if !status.success() {
             anyhow::bail!("Process exited with {}", status);
         }
