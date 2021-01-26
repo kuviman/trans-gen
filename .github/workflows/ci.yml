@@ -223,8 +223,7 @@ jobs:
       - name: Run tests
         run: |
           ${{ matrix.setup }}
-          dir
-          testing.exe --lang=${{ matrix.lang }}
+          .\testing.exe --lang=${{ matrix.lang }}
 
   update-testing-branch:
     name: Update testing branch
