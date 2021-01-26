@@ -3,15 +3,25 @@ import stream;
 import std.conv;
 import std.typecons : Nullable;
 
+/// Information available to the player
 struct PlayerView {
+    /// Your player's ID
     int myId;
+    /// Size of the map
     int mapSize;
+    /// Whether fog of war is enabled
     bool fogOfWar;
+    /// Entity properties for each entity type
     EntityProperties[EntityType] entityProperties;
+    /// Max tick count for the game
     int maxTickCount;
+    /// Max pathfind nodes when performing pathfinding in the game simulator
     int maxPathfindNodes;
+    /// Current tick
     int currentTick;
+    /// List of players
     Player[] players;
+    /// List of entities
     Entity[] entities;
 
     this(int myId, int mapSize, bool fogOfWar, EntityProperties[EntityType] entityProperties, int maxTickCount, int maxPathfindNodes, int currentTick, Player[] players, Entity[] entities) {
@@ -26,6 +36,7 @@ struct PlayerView {
         this.entities = entities;
     }
 
+    /// Read PlayerView from input stream
     static PlayerView readFrom(Stream reader) {
         int myId;
         myId = reader.readInt();
@@ -66,6 +77,7 @@ struct PlayerView {
         return PlayerView(myId, mapSize, fogOfWar, entityProperties, maxTickCount, maxPathfindNodes, currentTick, players, entities);
     }
 
+    /// Write PlayerView to output stream
     void writeTo(Stream writer) const {
         writer.write(myId);
         writer.write(mapSize);

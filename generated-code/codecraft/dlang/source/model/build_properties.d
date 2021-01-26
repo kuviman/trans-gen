@@ -3,8 +3,11 @@ import stream;
 import std.conv;
 import std.typecons : Nullable;
 
+/// Entity's build properties
 struct BuildProperties {
+    /// Valid new entity types
     EntityType[] options;
+    /// Initial health of new entity. If absent, it will have full health
     Nullable!(int) initHealth;
 
     this(EntityType[] options, Nullable!(int) initHealth) {
@@ -12,6 +15,7 @@ struct BuildProperties {
         this.initHealth = initHealth;
     }
 
+    /// Read BuildProperties from input stream
     static BuildProperties readFrom(Stream reader) {
         EntityType[] options;
         options = new EntityType[reader.readInt()];
@@ -29,6 +33,7 @@ struct BuildProperties {
         return BuildProperties(options, initHealth);
     }
 
+    /// Write BuildProperties to output stream
     void writeTo(Stream writer) const {
         writer.write(cast(int)(options.length));
         foreach (optionsElement; options) {

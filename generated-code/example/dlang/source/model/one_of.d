@@ -3,8 +3,12 @@ import stream;
 import std.conv;
 import std.typecons : Nullable;
 
+/// Oneof example
 abstract class OneOf {
+    /// Write OneOf to output stream
     abstract void writeTo(Stream writer) const;
+
+    /// Read OneOf from input stream
     static OneOf readFrom(Stream reader) {
         switch (reader.readInt()) {
             case OptionOne.TAG:
@@ -16,10 +20,13 @@ abstract class OneOf {
         }
     }
 
+    /// First option
     static class OptionOne : OneOf {
         static const int TAG = 0;
     
+        /// List of integers
         int[] vecInt;
+        /// Long integer
         long longInt;
     
         this() {}
@@ -29,6 +36,7 @@ abstract class OneOf {
             this.longInt = longInt;
         }
     
+        /// Read OptionOne from input stream
         static OptionOne readFrom(Stream reader) {
             int[] vecInt;
             vecInt = new int[reader.readInt()];
@@ -42,6 +50,7 @@ abstract class OneOf {
             return new OptionOne(vecInt, longInt);
         }
     
+        /// Write OptionOne to output stream
         override void writeTo(Stream writer) const {
             writer.write(TAG);
             writer.write(cast(int)(vecInt.length));
@@ -52,9 +61,11 @@ abstract class OneOf {
         }
     }
 
+    /// Second option
     static class OptionTwo : OneOf {
         static const int TAG = 1;
     
+        /// usize
         int value;
     
         this() {}
@@ -63,12 +74,14 @@ abstract class OneOf {
             this.value = value;
         }
     
+        /// Read OptionTwo from input stream
         static OptionTwo readFrom(Stream reader) {
             int value;
             value = reader.readInt();
             return new OptionTwo(value);
         }
     
+        /// Write OptionTwo to output stream
         override void writeTo(Stream writer) const {
             writer.write(TAG);
             writer.write(value);

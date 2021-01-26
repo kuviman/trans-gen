@@ -1,10 +1,14 @@
 import stream;
 
+/// Example enumeration
 enum Enumeration : int {
+    /// First option
     ValueOne = 0,
+    /// Second option
     ValueTwo = 1,
 }
 
+/// Read Enumeration from input stream
 Enumeration readEnumeration(Stream reader) {
     switch (reader.readInt()) {
         case Enumeration.ValueOne:

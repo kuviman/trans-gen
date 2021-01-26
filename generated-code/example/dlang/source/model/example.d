@@ -3,13 +3,21 @@ import stream;
 import std.conv;
 import std.typecons : Nullable;
 
+/// Example
 struct Example {
+    /// OneOf
     OneOf oneOf;
+    /// Dictionary
     int[Enumeration] hashMap;
+    /// Optional int
     Nullable!(int) optionalInt;
+    /// Optional boolean
     Nullable!(bool) optionalBool;
+    /// Optional OneOf
     Nullable!(OneOf) optionalOneOf;
+    /// Optional struct
     Nullable!(Structure) optionalStruct;
+    /// Optional enum
     Nullable!(Enumeration) optionalEnum;
 
     this(OneOf oneOf, int[Enumeration] hashMap, Nullable!(int) optionalInt, Nullable!(bool) optionalBool, Nullable!(OneOf) optionalOneOf, Nullable!(Structure) optionalStruct, Nullable!(Enumeration) optionalEnum) {
@@ -22,6 +30,7 @@ struct Example {
         this.optionalEnum = optionalEnum;
     }
 
+    /// Read Example from input stream
     static Example readFrom(Stream reader) {
         OneOf oneOf;
         oneOf = OneOf.readFrom(reader);
@@ -68,6 +77,7 @@ struct Example {
         return Example(oneOf, hashMap, optionalInt, optionalBool, optionalOneOf, optionalStruct, optionalEnum);
     }
 
+    /// Write Example to output stream
     void writeTo(Stream writer) const {
         oneOf.writeTo(writer);
         writer.write(cast(int)(hashMap.length));

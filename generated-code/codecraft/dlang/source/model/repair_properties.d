@@ -3,8 +3,11 @@ import stream;
 import std.conv;
 import std.typecons : Nullable;
 
+/// Entity's repair properties
 struct RepairProperties {
+    /// Valid target entity types
     EntityType[] validTargets;
+    /// Health restored in one tick
     int power;
 
     this(EntityType[] validTargets, int power) {
@@ -12,6 +15,7 @@ struct RepairProperties {
         this.power = power;
     }
 
+    /// Read RepairProperties from input stream
     static RepairProperties readFrom(Stream reader) {
         EntityType[] validTargets;
         validTargets = new EntityType[reader.readInt()];
@@ -25,6 +29,7 @@ struct RepairProperties {
         return RepairProperties(validTargets, power);
     }
 
+    /// Write RepairProperties to output stream
     void writeTo(Stream writer) const {
         writer.write(cast(int)(validTargets.length));
         foreach (validTargetsElement; validTargets) {
