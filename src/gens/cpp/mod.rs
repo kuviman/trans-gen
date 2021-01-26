@@ -251,7 +251,7 @@ impl RunnableGenerator for Generator {
         Ok(())
     }
     fn run_local(path: &Path) -> anyhow::Result<Command> {
-        let exe_dir = PathBuf::from(if cfg!(windows) { "Release" } else { "." });
+        let exe_dir = path.join(if cfg!(windows) { "Release" } else { "." });
         fn executable(path: &Path) -> anyhow::Result<String> {
             for line in std::fs::read_to_string(path.join("CMakeLists.txt"))?.lines() {
                 if let Some(args) = line.strip_prefix("add_executable(") {
@@ -264,23 +264,16 @@ impl RunnableGenerator for Generator {
             anyhow::bail!("Failed to determine executable");
         };
         let executable = executable(path)?;
-        let executable = exe_dir
-            .join(format!(
-                "{}{}",
-                executable,
-                if cfg!(windows) { ".exe" } else { "" }
-            ))
-            .to_str()
-            .unwrap()
-            .to_owned();
-        println!("Executable: {:?}", executable);
-        if !cfg!(windows) {
-            command("ls")
-                .arg("-la")
-                .current_dir(path.join(Path::new(&executable).parent().unwrap()))
-                .run()?;
-        }
-        let mut command = command(&executable);
+        let mut command = command(
+            exe_dir
+                .join(format!(
+                    "{}{}",
+                    executable,
+                    if cfg!(windows) { ".exe" } else { "" }
+                ))
+                .to_str()
+                .unwrap(),
+        );
         command.current_dir(path);
         Ok(command)
     }
