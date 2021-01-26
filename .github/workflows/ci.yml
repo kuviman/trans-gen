@@ -223,7 +223,6 @@ jobs:
       - name: Run tests
         run: |
           ${{ matrix.setup }}
-          ls -la
           dir
           testing.exe --lang=${{ matrix.lang }}
 
