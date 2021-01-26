@@ -1,15 +1,45 @@
 namespace TransGenTest.Model
 {
+    /// <summary>
+    /// Information available to the player
+    /// </summary>
     public struct PlayerView
     {
+        /// <summary>
+        /// Your player's ID
+        /// </summary>
         public int MyId { get; set; }
+        /// <summary>
+        /// Size of the map
+        /// </summary>
         public int MapSize { get; set; }
+        /// <summary>
+        /// Whether fog of war is enabled
+        /// </summary>
         public bool FogOfWar { get; set; }
+        /// <summary>
+        /// Entity properties for each entity type
+        /// </summary>
         public System.Collections.Generic.IDictionary<Model.EntityType, Model.EntityProperties> EntityProperties { get; set; }
+        /// <summary>
+        /// Max tick count for the game
+        /// </summary>
         public int MaxTickCount { get; set; }
+        /// <summary>
+        /// Max pathfind nodes when performing pathfinding in the game simulator
+        /// </summary>
         public int MaxPathfindNodes { get; set; }
+        /// <summary>
+        /// Current tick
+        /// </summary>
         public int CurrentTick { get; set; }
+        /// <summary>
+        /// List of players
+        /// </summary>
         public Model.Player[] Players { get; set; }
+        /// <summary>
+        /// List of entities
+        /// </summary>
         public Model.Entity[] Entities { get; set; }
     
         public PlayerView(int myId, int mapSize, bool fogOfWar, System.Collections.Generic.IDictionary<Model.EntityType, Model.EntityProperties> entityProperties, int maxTickCount, int maxPathfindNodes, int currentTick, Model.Player[] players, Model.Entity[] entities)
@@ -25,6 +55,7 @@ namespace TransGenTest.Model
             this.Entities = entities;
         }
     
+        /// <summary> Read PlayerView from reader </summary>
         public static PlayerView ReadFrom(System.IO.BinaryReader reader)
         {
             var result = new PlayerView();
@@ -57,6 +88,7 @@ namespace TransGenTest.Model
             return result;
         }
     
+        /// <summary> Write PlayerView to writer </summary>
         public void WriteTo(System.IO.BinaryWriter writer)
         {
             writer.Write(MyId);
@@ -85,6 +117,7 @@ namespace TransGenTest.Model
             }
         }
     
+        /// <summary> Get string representation of PlayerView </summary>
         public override string ToString() {
             string stringResult = "PlayerView { ";
             stringResult += "MyId: ";

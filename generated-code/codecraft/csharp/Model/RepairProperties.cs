@@ -1,8 +1,17 @@
 namespace TransGenTest.Model
 {
+    /// <summary>
+    /// Entity's repair properties
+    /// </summary>
     public struct RepairProperties
     {
+        /// <summary>
+        /// Valid target entity types
+        /// </summary>
         public Model.EntityType[] ValidTargets { get; set; }
+        /// <summary>
+        /// Health restored in one tick
+        /// </summary>
         public int Power { get; set; }
     
         public RepairProperties(Model.EntityType[] validTargets, int power)
@@ -11,6 +20,7 @@ namespace TransGenTest.Model
             this.Power = power;
         }
     
+        /// <summary> Read RepairProperties from reader </summary>
         public static RepairProperties ReadFrom(System.IO.BinaryReader reader)
         {
             var result = new RepairProperties();
@@ -23,6 +33,7 @@ namespace TransGenTest.Model
             return result;
         }
     
+        /// <summary> Write RepairProperties to writer </summary>
         public void WriteTo(System.IO.BinaryWriter writer)
         {
             writer.Write(ValidTargets.Length);
@@ -33,6 +44,7 @@ namespace TransGenTest.Model
             writer.Write(Power);
         }
     
+        /// <summary> Get string representation of RepairProperties </summary>
         public override string ToString() {
             string stringResult = "RepairProperties { ";
             stringResult += "ValidTargets: ";

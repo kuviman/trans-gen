@@ -1,19 +1,61 @@
 namespace TransGenTest.Model
 {
+    /// <summary>
+    /// Entity properties
+    /// </summary>
     public struct EntityProperties
     {
+        /// <summary>
+        /// Size. Entity has a form of a square with side of this length
+        /// </summary>
         public int Size { get; set; }
+        /// <summary>
+        /// Score for building this entity
+        /// </summary>
         public int BuildScore { get; set; }
+        /// <summary>
+        /// Score for destroying this entity
+        /// </summary>
         public int DestroyScore { get; set; }
+        /// <summary>
+        /// Whether this entity can move
+        /// </summary>
         public bool CanMove { get; set; }
+        /// <summary>
+        /// Number of population points this entity provides, if active
+        /// </summary>
         public int PopulationProvide { get; set; }
+        /// <summary>
+        /// Number of population points this entity uses
+        /// </summary>
         public int PopulationUse { get; set; }
+        /// <summary>
+        /// Maximum health points
+        /// </summary>
         public int MaxHealth { get; set; }
+        /// <summary>
+        /// Cost to build this first entity of this type. If this is a unit (entity can move), the cost is increased by 1 for each existing unit of this type
+        /// </summary>
         public int InitialCost { get; set; }
+        /// <summary>
+        /// If fog of war is enabled, maximum distance at which other entities are considered visible
+        /// </summary>
         public int SightRange { get; set; }
+        /// <summary>
+        /// Amount of resource added to enemy able to collect resource on dealing damage for 1 health point
+        /// </summary>
         public int ResourcePerHealth { get; set; }
+        /// <summary>
+        /// Build properties, if entity can build
+        /// </summary>
         public Model.BuildProperties? Build { get; set; }
+        /// <summary>
+        /// Attack properties, if entity can attack
+        /// </summary>
         public Model.AttackProperties? Attack { get; set; }
+        /// <summary>
+        /// Repair properties, if entity can repair
+        /// </summary>
         public Model.RepairProperties? Repair { get; set; }
     
         public EntityProperties(int size, int buildScore, int destroyScore, bool canMove, int populationProvide, int populationUse, int maxHealth, int initialCost, int sightRange, int resourcePerHealth, Model.BuildProperties? build, Model.AttackProperties? attack, Model.RepairProperties? repair)
@@ -33,6 +75,7 @@ namespace TransGenTest.Model
             this.Repair = repair;
         }
     
+        /// <summary> Read EntityProperties from reader </summary>
         public static EntityProperties ReadFrom(System.IO.BinaryReader reader)
         {
             var result = new EntityProperties();
@@ -70,6 +113,7 @@ namespace TransGenTest.Model
             return result;
         }
     
+        /// <summary> Write EntityProperties to writer </summary>
         public void WriteTo(System.IO.BinaryWriter writer)
         {
             writer.Write(Size);
@@ -108,6 +152,7 @@ namespace TransGenTest.Model
             }
         }
     
+        /// <summary> Get string representation of EntityProperties </summary>
         public override string ToString() {
             string stringResult = "EntityProperties { ";
             stringResult += "Size: ";

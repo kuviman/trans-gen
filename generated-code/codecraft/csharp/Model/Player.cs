@@ -1,9 +1,21 @@
 namespace TransGenTest.Model
 {
+    /// <summary>
+    /// Player (strategy, client)
+    /// </summary>
     public struct Player
     {
+        /// <summary>
+        /// Player's ID
+        /// </summary>
         public int Id { get; set; }
+        /// <summary>
+        /// Current score
+        /// </summary>
         public int Score { get; set; }
+        /// <summary>
+        /// Current amount of resource
+        /// </summary>
         public int Resource { get; set; }
     
         public Player(int id, int score, int resource)
@@ -13,6 +25,7 @@ namespace TransGenTest.Model
             this.Resource = resource;
         }
     
+        /// <summary> Read Player from reader </summary>
         public static Player ReadFrom(System.IO.BinaryReader reader)
         {
             var result = new Player();
@@ -22,6 +35,7 @@ namespace TransGenTest.Model
             return result;
         }
     
+        /// <summary> Write Player to writer </summary>
         public void WriteTo(System.IO.BinaryWriter writer)
         {
             writer.Write(Id);
@@ -29,6 +43,7 @@ namespace TransGenTest.Model
             writer.Write(Resource);
         }
     
+        /// <summary> Get string representation of Player </summary>
         public override string ToString() {
             string stringResult = "Player { ";
             stringResult += "Id: ";

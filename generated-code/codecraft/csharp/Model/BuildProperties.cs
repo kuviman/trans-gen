@@ -1,8 +1,17 @@
 namespace TransGenTest.Model
 {
+    /// <summary>
+    /// Entity's build properties
+    /// </summary>
     public struct BuildProperties
     {
+        /// <summary>
+        /// Valid new entity types
+        /// </summary>
         public Model.EntityType[] Options { get; set; }
+        /// <summary>
+        /// Initial health of new entity. If absent, it will have full health
+        /// </summary>
         public int? InitHealth { get; set; }
     
         public BuildProperties(Model.EntityType[] options, int? initHealth)
@@ -11,6 +20,7 @@ namespace TransGenTest.Model
             this.InitHealth = initHealth;
         }
     
+        /// <summary> Read BuildProperties from reader </summary>
         public static BuildProperties ReadFrom(System.IO.BinaryReader reader)
         {
             var result = new BuildProperties();
@@ -29,6 +39,7 @@ namespace TransGenTest.Model
             return result;
         }
     
+        /// <summary> Write BuildProperties to writer </summary>
         public void WriteTo(System.IO.BinaryWriter writer)
         {
             writer.Write(Options.Length);
@@ -46,6 +57,7 @@ namespace TransGenTest.Model
             }
         }
     
+        /// <summary> Get string representation of BuildProperties </summary>
         public override string ToString() {
             string stringResult = "BuildProperties { ";
             stringResult += "Options: ";

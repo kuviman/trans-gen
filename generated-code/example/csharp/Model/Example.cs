@@ -1,13 +1,37 @@
 namespace TransGenTest.Model
 {
+    /// <summary>
+    /// Example
+    /// </summary>
     public struct Example
     {
+        /// <summary>
+        /// OneOf
+        /// </summary>
         public Model.OneOf OneOf { get; set; }
+        /// <summary>
+        /// Dictionary
+        /// </summary>
         public System.Collections.Generic.IDictionary<Model.Enumeration, int> HashMap { get; set; }
+        /// <summary>
+        /// Optional int
+        /// </summary>
         public int? OptionalInt { get; set; }
+        /// <summary>
+        /// Optional boolean
+        /// </summary>
         public bool? OptionalBool { get; set; }
+        /// <summary>
+        /// Optional OneOf
+        /// </summary>
         public Model.OneOf OptionalOneOf { get; set; }
+        /// <summary>
+        /// Optional struct
+        /// </summary>
         public Model.Structure? OptionalStruct { get; set; }
+        /// <summary>
+        /// Optional enum
+        /// </summary>
         public Model.Enumeration? OptionalEnum { get; set; }
     
         public Example(Model.OneOf oneOf, System.Collections.Generic.IDictionary<Model.Enumeration, int> hashMap, int? optionalInt, bool? optionalBool, Model.OneOf optionalOneOf, Model.Structure? optionalStruct, Model.Enumeration? optionalEnum)
@@ -21,6 +45,7 @@ namespace TransGenTest.Model
             this.OptionalEnum = optionalEnum;
         }
     
+        /// <summary> Read Example from reader </summary>
         public static Example ReadFrom(System.IO.BinaryReader reader)
         {
             var result = new Example();
@@ -73,6 +98,7 @@ namespace TransGenTest.Model
             return result;
         }
     
+        /// <summary> Write Example to writer </summary>
         public void WriteTo(System.IO.BinaryWriter writer)
         {
             OneOf.WriteTo(writer);
@@ -126,6 +152,7 @@ namespace TransGenTest.Model
             }
         }
     
+        /// <summary> Get string representation of Example </summary>
         public override string ToString() {
             string stringResult = "Example { ";
             stringResult += "OneOf: ";
