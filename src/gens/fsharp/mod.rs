@@ -71,10 +71,6 @@ fn doc_write_to(name: &str) -> String {
     format!("/// Write {} to writer", name)
 }
 
-fn doc_to_string(name: &str) -> String {
-    format!("/// Get string representation of {}", name)
-}
-
 fn read_var(schema: &Schema) -> String {
     include_templing!("src/gens/fsharp/read_var.templing")
 }
