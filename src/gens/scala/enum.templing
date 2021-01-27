@@ -2,7 +2,9 @@ package model
 
 import util.StreamUtil
 
+{{ doc_comment(documentation, &[]) }}
 sealed abstract class {{ base_name.camel_case(conv) }} (val tag: Int) {
+    {{ doc_write_to(&base_name.camel_case(conv)) }}
     def writeTo(stream: java.io.OutputStream) {
         StreamUtil.writeInt(stream, tag)
     }
@@ -10,9 +12,11 @@ sealed abstract class {{ base_name.camel_case(conv) }} (val tag: Int) {
 
 object {{ base_name.camel_case(conv) }} {
     - for (tag, variant) in variants.iter().enumerate() {
+    {{ doc_comment(&variant.documentation, &[]) }}
     case object {{ variant.name.shouty_snake_case(conv) }} extends {{ base_name.camel_case(conv) }}({{ tag }})
     - }
 
+    {{ doc_read_from(&base_name.camel_case(conv)) }}
     def readFrom(stream: java.io.InputStream): {{ base_name.camel_case(conv) }} =
         StreamUtil.readInt(stream) match {
             - for (tag, variant) in variants.iter().enumerate() {

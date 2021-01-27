@@ -33,6 +33,22 @@ fn type_name(schema: &Schema) -> String {
     }
 }
 
+fn doc_comment(documentation: &Documentation, fields: &[Field]) -> String {
+    include_templing!("src/gens/scala/doc_comment.templing")
+}
+
+fn doc_read_from(name: &str) -> String {
+    format!("/**\n * Read {} from input stream\n */", name)
+}
+
+fn doc_write_to(name: &str) -> String {
+    format!("/**\n * Write {} to output stream\n */", name)
+}
+
+fn doc_to_string(name: &str) -> String {
+    format!("/**\n * Get string representation of {}\n */", name)
+}
+
 fn read_var(schema: &Schema) -> String {
     include_templing!("src/gens/scala/read_var.templing")
 }
@@ -79,7 +95,7 @@ impl crate::Generator for Generator {
             Schema::Enum {
                 base_name,
                 variants,
-                documentation: _,
+                documentation,
             } => {
                 self.files.insert(
                     format!("src/main/scala/model/{}.scala", base_name.camel_case(conv)),
@@ -95,7 +111,7 @@ impl crate::Generator for Generator {
             Schema::OneOf {
                 base_name,
                 variants,
-                documentation: _,
+                documentation,
             } => {
                 self.files.insert(
                     format!("src/main/scala/model/{}.scala", base_name.camel_case(conv)),

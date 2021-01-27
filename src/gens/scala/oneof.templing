@@ -2,7 +2,9 @@ package model
 
 import util.StreamUtil
 
+{{ doc_comment(documentation, &[]) }}
 sealed trait {{ base_name.camel_case(conv) }} {
+    {{ doc_write_to(&base_name.camel_case(conv)) }}
     def writeTo(stream: java.io.OutputStream)
 }
 
@@ -11,6 +13,7 @@ object {{ base_name.camel_case(conv) }} {
     {{ struct_impl(variant, Some((base_name, tag))) }}
 
     - }
+    {{ doc_read_from(&base_name.camel_case(conv)) }}
     def readFrom(stream: java.io.InputStream): {{ base_name.camel_case(conv) }} = {
         StreamUtil.readInt(stream) match {
             - for variant in variants {

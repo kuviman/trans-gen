@@ -1,3 +1,4 @@
+{{ doc_comment(&struc.documentation, &struc.fields) }}
 case class {{ struc.name.camel_case(conv) }}(~
     - for (index, field) in struc.fields.iter().enumerate() {
     - if index != 0 {
@@ -10,6 +11,7 @@ case class {{ struc.name.camel_case(conv) }}(~
     ~ extends {{ base_name.camel_case(conv) }}~
 - }
 ~ {
+    {{ doc_write_to(&struc.name.camel_case(conv)) }}
     {{# if base.is_some() { }}override {{# } }}def writeTo(stream: java.io.OutputStream) {
         - if base.is_some() {
         StreamUtil.writeInt(stream, {{ struc.name.camel_case(conv) }}.TAG)
@@ -19,6 +21,7 @@ case class {{ struc.name.camel_case(conv) }}(~
         - }
     }
 
+    {{ doc_to_string(&struc.name.camel_case(conv)) }}
     override def toString(): String = {
         var stringBuilder = new StringBuilder("{{ struc.name.camel_case(conv) }} { ")
         - for (index, field) in struc.fields.iter().enumerate() {
@@ -38,6 +41,7 @@ object {{ struc.name.camel_case(conv) }} {
     val TAG: Int = {{ tag }}
 
     - }
+    {{ doc_read_from(&struc.name.camel_case(conv)) }}
     def readFrom(stream: java.io.InputStream): {{ struc.name.camel_case(conv) }} = {{ struc.name.camel_case(conv) }}(
         - for (index, field) in struc.fields.iter().enumerate() {
         {{ read_var(&field.schema) }}{{# if index + 1 < struc.fields.len() { }},{{# } }}
