@@ -1,9 +1,11 @@
+{{ doc_comment(&struc.documentation) }}
 class {{ struc.name.camel_case(conv) }}
     - if let Some((_, tag)) = base {
     TAG = {{ tag }}
 
     - }
     - for field in &struc.fields {
+    {{ doc_comment(&field.documentation) }}
     attr_accessor :{{ field.name.snake_case(conv) }}
     - }
 
@@ -20,6 +22,7 @@ class {{ struc.name.camel_case(conv) }}
     - }
     end
 
+    {{ doc_read_from(&struc.name.camel_case(conv)) }}
     def self.read_from(stream)
         - for field in &struc.fields {
         {{ read_var(&field.name.snake_case(conv), &field.schema) }}
@@ -34,6 +37,7 @@ class {{ struc.name.camel_case(conv) }}
         ~)
     end
 
+    {{ doc_write_to(&struc.name.camel_case(conv)) }}
     def write_to(stream)
         - if base.is_some() {
         stream.write_int(TAG)

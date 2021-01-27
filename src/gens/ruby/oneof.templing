@@ -1,6 +1,8 @@
 {{ imports(schema) }}
 
+{{ doc_comment(documentation) }}
 class {{ base_name.camel_case(conv) }}
+    {{ doc_read_from(&base_name.camel_case(conv)) }}
     def self.read_from(stream)
         tag = stream.read_int()
         - for variant in variants {

@@ -1,8 +1,11 @@
+{{ doc_comment(documentation) }}
 module {{ base_name.camel_case(conv) }}
 - for (index, variant) in variants.iter().enumerate() {
+    {{ doc_comment(&variant.documentation) }}
     {{ variant.name.shouty_snake_case(conv) }} = {{ index }}
 - }
 
+    {{ doc_read_from(&base_name.camel_case(conv)) }}
     def self.read_from(stream)
         result = stream.read_int()
         if result < 0 || result >= {{ variants.len() }}
