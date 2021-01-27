@@ -1,12 +1,19 @@
 use super::*;
 
+/// Game entity
 #[derive(Clone, Debug)]
 pub struct Entity {
+    /// Entity's ID. Unique for each entity
     pub id: i32,
+    /// Entity's owner player ID, if owned by a player
     pub player_id: Option<i32>,
+    /// Entity's type
     pub entity_type: EntityType,
+    /// Entity's position (corner with minimal coordinates)
     pub position: Vec2I32,
+    /// Current health
     pub health: i32,
+    /// If entity is active, it can perform actions
     pub active: bool,
 }
 

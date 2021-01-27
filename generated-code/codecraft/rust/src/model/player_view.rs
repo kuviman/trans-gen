@@ -1,15 +1,25 @@
 use super::*;
 
+/// Information available to the player
 #[derive(Clone, Debug)]
 pub struct PlayerView {
+    /// Your player's ID
     pub my_id: i32,
+    /// Size of the map
     pub map_size: i32,
+    /// Whether fog of war is enabled
     pub fog_of_war: bool,
+    /// Entity properties for each entity type
     pub entity_properties: std::collections::HashMap<EntityType, EntityProperties>,
+    /// Max tick count for the game
     pub max_tick_count: i32,
+    /// Max pathfind nodes when performing pathfinding in the game simulator
     pub max_pathfind_nodes: i32,
+    /// Current tick
     pub current_tick: i32,
+    /// List of players
     pub players: Vec<Player>,
+    /// List of entities
     pub entities: Vec<Entity>,
 }
 

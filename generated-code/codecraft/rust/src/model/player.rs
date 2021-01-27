@@ -1,9 +1,13 @@
 use super::*;
 
+/// Player (strategy, client)
 #[derive(Clone, Debug, PartialEq, Eq, Hash)]
 pub struct Player {
+    /// Player's ID
     pub id: i32,
+    /// Current score
     pub score: i32,
+    /// Current amount of resource
     pub resource: i32,
 }
 

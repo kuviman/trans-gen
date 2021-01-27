@@ -1,13 +1,21 @@
 use super::*;
 
+/// Example
 #[derive(Clone, Debug)]
 pub struct Example {
+    /// OneOf
     pub one_of: OneOf,
+    /// Dictionary
     pub hash_map: std::collections::HashMap<Enumeration, i32>,
+    /// Optional int
     pub optional_int: Option<i32>,
+    /// Optional boolean
     pub optional_bool: Option<bool>,
+    /// Optional OneOf
     pub optional_one_of: Option<OneOf>,
+    /// Optional struct
     pub optional_struct: Option<Structure>,
+    /// Optional enum
     pub optional_enum: Option<Enumeration>,
 }
 

@@ -1,9 +1,13 @@
 use super::*;
 
+/// Example structure
 #[derive(Clone, Debug)]
 pub struct Structure {
+    /// Text
     pub text: String,
+    /// 32-bit float
     pub float_number: f32,
+    /// 64-bit float
     pub double_number: f64,
 }
 

@@ -1,12 +1,18 @@
 use super::*;
 
+/// Oneof example
 #[derive(Clone, Debug)]
 pub enum OneOf {
+    /// First option
     OptionOne {
+        /// List of integers
         vec_i32: Vec<i32>,
+        /// Long integer
         long_int: i64,
     },
+    /// Second option
     OptionTwo {
+        /// usize
         value: i32,
     },
 }

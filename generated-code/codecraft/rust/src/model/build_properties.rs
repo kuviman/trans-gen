@@ -1,8 +1,11 @@
 use super::*;
 
+/// Entity's build properties
 #[derive(Clone, Debug)]
 pub struct BuildProperties {
+    /// Valid new entity types
     pub options: Vec<EntityType>,
+    /// Initial health of new entity. If absent, it will have full health
     pub init_health: Option<i32>,
 }
 

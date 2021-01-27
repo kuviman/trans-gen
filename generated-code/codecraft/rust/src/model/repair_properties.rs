@@ -1,8 +1,11 @@
 use super::*;
 
+/// Entity's repair properties
 #[derive(Clone, Debug)]
 pub struct RepairProperties {
+    /// Valid target entity types
     pub valid_targets: Vec<EntityType>,
+    /// Health restored in one tick
     pub power: i32,
 }
 

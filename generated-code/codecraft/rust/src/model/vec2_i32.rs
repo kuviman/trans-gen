@@ -1,8 +1,11 @@
 use super::*;
 
+/// 2 dimensional vector.
 #[derive(Clone, Debug, PartialEq, Eq, Hash)]
 pub struct Vec2I32 {
+    /// `x` coordinate of the vector
     pub x: i32,
+    /// `y` coordinate of the vector
     pub y: i32,
 }
 

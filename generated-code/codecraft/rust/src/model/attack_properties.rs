@@ -1,9 +1,13 @@
 use super::*;
 
+/// Entity's attack properties
 #[derive(Clone, Debug, PartialEq, Eq, Hash)]
 pub struct AttackProperties {
+    /// Maximum attack range
     pub attack_range: i32,
+    /// Damage dealt in one tick
     pub damage: i32,
+    /// If true, dealing damage will collect resource from target
     pub collect_resource: bool,
 }
 

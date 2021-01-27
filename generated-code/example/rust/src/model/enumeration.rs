@@ -1,8 +1,11 @@
 use super::*;
 
+/// Example enumeration
 #[derive(Clone, Debug, PartialEq, Eq, Hash)]
 pub enum Enumeration {
+    /// First option
     ValueOne,
+    /// Second option
     ValueTwo,
 }
 

@@ -1,19 +1,33 @@
 use super::*;
 
+/// Entity properties
 #[derive(Clone, Debug)]
 pub struct EntityProperties {
+    /// Size. Entity has a form of a square with side of this length
     pub size: i32,
+    /// Score for building this entity
     pub build_score: i32,
+    /// Score for destroying this entity
     pub destroy_score: i32,
+    /// Whether this entity can move
     pub can_move: bool,
+    /// Number of population points this entity provides, if active
     pub population_provide: i32,
+    /// Number of population points this entity uses
     pub population_use: i32,
+    /// Maximum health points
     pub max_health: i32,
+    /// Cost to build this first entity of this type. If this is a unit (entity can move), the cost is increased by 1 for each existing unit of this type
     pub initial_cost: i32,
+    /// If fog of war is enabled, maximum distance at which other entities are considered visible
     pub sight_range: i32,
+    /// Amount of resource added to enemy able to collect resource on dealing damage for 1 health point
     pub resource_per_health: i32,
+    /// Build properties, if entity can build
     pub build: Option<BuildProperties>,
+    /// Attack properties, if entity can attack
     pub attack: Option<AttackProperties>,
+    /// Repair properties, if entity can repair
     pub repair: Option<RepairProperties>,
 }
 
