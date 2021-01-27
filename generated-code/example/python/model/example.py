@@ -3,17 +3,28 @@ from .one_of import OneOf
 from .structure import Structure
 
 class Example:
+    """Example"""
+
     def __init__(self, one_of, hash_map, optional_int, optional_bool, optional_one_of, optional_struct, optional_enum):
         self.one_of = one_of
+        """OneOf"""
         self.hash_map = hash_map
+        """Dictionary"""
         self.optional_int = optional_int
+        """Optional int"""
         self.optional_bool = optional_bool
+        """Optional boolean"""
         self.optional_one_of = optional_one_of
+        """Optional OneOf"""
         self.optional_struct = optional_struct
+        """Optional struct"""
         self.optional_enum = optional_enum
+        """Optional enum"""
 
     @staticmethod
     def read_from(stream):
+        """Read Example from input stream
+        """
         one_of = OneOf.read_from(stream)
         hash_map = {}
         for _ in range(stream.read_int()):
@@ -43,6 +54,8 @@ class Example:
         return Example(one_of, hash_map, optional_int, optional_bool, optional_one_of, optional_struct, optional_enum)
 
     def write_to(self, stream):
+        """Write Example to output stream
+        """
         self.one_of.write_to(stream)
         stream.write_int(len(self.hash_map))
         for key, value in self.hash_map.items():

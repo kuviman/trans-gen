@@ -3,23 +3,40 @@ from .build_properties import BuildProperties
 from .repair_properties import RepairProperties
 
 class EntityProperties:
+    """Entity properties"""
+
     def __init__(self, size, build_score, destroy_score, can_move, population_provide, population_use, max_health, initial_cost, sight_range, resource_per_health, build, attack, repair):
         self.size = size
+        """Size. Entity has a form of a square with side of this length"""
         self.build_score = build_score
+        """Score for building this entity"""
         self.destroy_score = destroy_score
+        """Score for destroying this entity"""
         self.can_move = can_move
+        """Whether this entity can move"""
         self.population_provide = population_provide
+        """Number of population points this entity provides, if active"""
         self.population_use = population_use
+        """Number of population points this entity uses"""
         self.max_health = max_health
+        """Maximum health points"""
         self.initial_cost = initial_cost
+        """Cost to build this first entity of this type. If this is a unit (entity can move), the cost is increased by 1 for each existing unit of this type"""
         self.sight_range = sight_range
+        """If fog of war is enabled, maximum distance at which other entities are considered visible"""
         self.resource_per_health = resource_per_health
+        """Amount of resource added to enemy able to collect resource on dealing damage for 1 health point"""
         self.build = build
+        """Build properties, if entity can build"""
         self.attack = attack
+        """Attack properties, if entity can attack"""
         self.repair = repair
+        """Repair properties, if entity can repair"""
 
     @staticmethod
     def read_from(stream):
+        """Read EntityProperties from input stream
+        """
         size = stream.read_int()
         build_score = stream.read_int()
         destroy_score = stream.read_int()
@@ -45,6 +62,8 @@ class EntityProperties:
         return EntityProperties(size, build_score, destroy_score, can_move, population_provide, population_use, max_health, initial_cost, sight_range, resource_per_health, build, attack, repair)
 
     def write_to(self, stream):
+        """Write EntityProperties to output stream
+        """
         stream.write_int(self.size)
         stream.write_int(self.build_score)
         stream.write_int(self.destroy_score)

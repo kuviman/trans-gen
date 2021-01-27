@@ -4,19 +4,32 @@ from .entity_type import EntityType
 from .player import Player
 
 class PlayerView:
+    """Information available to the player"""
+
     def __init__(self, my_id, map_size, fog_of_war, entity_properties, max_tick_count, max_pathfind_nodes, current_tick, players, entities):
         self.my_id = my_id
+        """Your player's ID"""
         self.map_size = map_size
+        """Size of the map"""
         self.fog_of_war = fog_of_war
+        """Whether fog of war is enabled"""
         self.entity_properties = entity_properties
+        """Entity properties for each entity type"""
         self.max_tick_count = max_tick_count
+        """Max tick count for the game"""
         self.max_pathfind_nodes = max_pathfind_nodes
+        """Max pathfind nodes when performing pathfinding in the game simulator"""
         self.current_tick = current_tick
+        """Current tick"""
         self.players = players
+        """List of players"""
         self.entities = entities
+        """List of entities"""
 
     @staticmethod
     def read_from(stream):
+        """Read PlayerView from input stream
+        """
         my_id = stream.read_int()
         map_size = stream.read_int()
         fog_of_war = stream.read_bool()
@@ -39,6 +52,8 @@ class PlayerView:
         return PlayerView(my_id, map_size, fog_of_war, entity_properties, max_tick_count, max_pathfind_nodes, current_tick, players, entities)
 
     def write_to(self, stream):
+        """Write PlayerView to output stream
+        """
         stream.write_int(self.my_id)
         stream.write_int(self.map_size)
         stream.write_bool(self.fog_of_war)
