@@ -1,8 +1,10 @@
 use super::*;
 
+{{ doc_comment(documentation) }}
 #[derive(Clone, Debug{{# if schema.hashable() { }}, PartialEq, Eq, Hash{{# } }})]
 pub struct {{ name.camel_case(conv) }} {
 - for field in fields {
+    {{ doc_comment(&field.documentation) }}
     pub {{ field.name.snake_case(conv) }}: {{ type_name(&field.schema) }},
 - }
 }

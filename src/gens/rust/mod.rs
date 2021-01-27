@@ -28,6 +28,16 @@ fn type_name(schema: &Schema) -> String {
     }
 }
 
+fn doc_comment(documentation: &Documentation) -> String {
+    let mut result = String::new();
+    for line in documentation.get("en").unwrap().lines() {
+        result.push_str("/// ");
+        result.push_str(line);
+        result.push('\n');
+    }
+    result.trim().to_owned()
+}
+
 pub struct Generator {
     crate_name: String,
     crate_version: String,
@@ -74,7 +84,7 @@ impl crate::Generator for Generator {
     fn add_only(&mut self, schema: &Schema) {
         match schema {
             Schema::Struct(Struct {
-                documentation: _,
+                documentation,
                 name,
                 fields,
             }) => {
@@ -86,7 +96,7 @@ impl crate::Generator for Generator {
             Schema::OneOf {
                 base_name,
                 variants,
-                documentation: _,
+                documentation,
             } => {
                 self.types.insert(
                     base_name.snake_case(conv),
@@ -96,7 +106,7 @@ impl crate::Generator for Generator {
             Schema::Enum {
                 base_name,
                 variants,
-                documentation: _,
+                documentation,
             } => {
                 self.types.insert(
                     base_name.snake_case(conv),

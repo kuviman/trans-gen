@@ -1,10 +1,13 @@
 use super::*;
 
+{{ doc_comment(documentation) }}
 #[derive(Clone, Debug)]
 pub enum {{ base_name.camel_case(conv) }} {
 - for variant in variants {
+    {{ doc_comment(&variant.documentation) }}
     {{ variant.name.camel_case(conv) }} {
     - for field in &variant.fields {
+        {{ doc_comment(&field.documentation) }}
         {{ field.name.snake_case(conv) }}: {{ type_name(&field.schema) }},
     - }
     },
