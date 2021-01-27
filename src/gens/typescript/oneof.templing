@@ -1,8 +1,12 @@
 {{ imports(schema) }}
 import { StreamWrapper } from "../stream-wrapper";
 
+{{ doc_comment(documentation) }}
 export abstract class {{ base_name.camel_case(conv) }} {
+    {{ doc_write_to(&base_name.camel_case(conv)) }}
     abstract writeTo(stream: StreamWrapper): Promise<void>;
+
+    {{ doc_read_from(&base_name.camel_case(conv)) }}
     static async readFrom(stream: StreamWrapper): Promise<{{ base_name.camel_case(conv) }}> {
         const tag = await stream.readInt();
         - for variant in variants {
