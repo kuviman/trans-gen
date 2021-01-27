@@ -1,12 +1,19 @@
 require_relative 'entity_type'
 require_relative 'vec2_int'
 
+# Game entity
 class Entity
+    # Entity's ID. Unique for each entity
     attr_accessor :id
+    # Entity's owner player ID, if owned by a player
     attr_accessor :player_id
+    # Entity's type
     attr_accessor :entity_type
+    # Entity's position (corner with minimal coordinates)
     attr_accessor :position
+    # Current health
     attr_accessor :health
+    # If entity is active, it can perform actions
     attr_accessor :active
 
     def initialize(id, player_id, entity_type, position, health, active)
@@ -18,6 +25,7 @@ class Entity
         @active = active
     end
 
+    # Read Entity from input stream
     def self.read_from(stream)
         id = stream.read_int()
         if stream.read_bool()
@@ -32,6 +40,7 @@ class Entity
         Entity.new(id, player_id, entity_type, position, health, active)
     end
 
+    # Write Entity to output stream
     def write_to(stream)
         stream.write_int(@id)
         if @player_id.nil?

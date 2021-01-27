@@ -1,7 +1,10 @@
 require_relative 'entity_type'
 
+# Entity's build properties
 class BuildProperties
+    # Valid new entity types
     attr_accessor :options
+    # Initial health of new entity. If absent, it will have full health
     attr_accessor :init_health
 
     def initialize(options, init_health)
@@ -9,6 +12,7 @@ class BuildProperties
         @init_health = init_health
     end
 
+    # Read BuildProperties from input stream
     def self.read_from(stream)
         options = []
         stream.read_int().times do |_|
@@ -23,6 +27,7 @@ class BuildProperties
         BuildProperties.new(options, init_health)
     end
 
+    # Write BuildProperties to output stream
     def write_to(stream)
         stream.write_int(@options.length())
         @options.each do |options_element|

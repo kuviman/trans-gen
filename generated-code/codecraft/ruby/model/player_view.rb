@@ -3,15 +3,25 @@ require_relative 'entity_properties'
 require_relative 'entity_type'
 require_relative 'player'
 
+# Information available to the player
 class PlayerView
+    # Your player's ID
     attr_accessor :my_id
+    # Size of the map
     attr_accessor :map_size
+    # Whether fog of war is enabled
     attr_accessor :fog_of_war
+    # Entity properties for each entity type
     attr_accessor :entity_properties
+    # Max tick count for the game
     attr_accessor :max_tick_count
+    # Max pathfind nodes when performing pathfinding in the game simulator
     attr_accessor :max_pathfind_nodes
+    # Current tick
     attr_accessor :current_tick
+    # List of players
     attr_accessor :players
+    # List of entities
     attr_accessor :entities
 
     def initialize(my_id, map_size, fog_of_war, entity_properties, max_tick_count, max_pathfind_nodes, current_tick, players, entities)
@@ -26,6 +36,7 @@ class PlayerView
         @entities = entities
     end
 
+    # Read PlayerView from input stream
     def self.read_from(stream)
         my_id = stream.read_int()
         map_size = stream.read_int()
@@ -52,6 +63,7 @@ class PlayerView
         PlayerView.new(my_id, map_size, fog_of_war, entity_properties, max_tick_count, max_pathfind_nodes, current_tick, players, entities)
     end
 
+    # Write PlayerView to output stream
     def write_to(stream)
         stream.write_int(@my_id)
         stream.write_int(@map_size)

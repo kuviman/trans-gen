@@ -1,7 +1,10 @@
 require_relative 'entity_type'
 
+# Entity's repair properties
 class RepairProperties
+    # Valid target entity types
     attr_accessor :valid_targets
+    # Health restored in one tick
     attr_accessor :power
 
     def initialize(valid_targets, power)
@@ -9,6 +12,7 @@ class RepairProperties
         @power = power
     end
 
+    # Read RepairProperties from input stream
     def self.read_from(stream)
         valid_targets = []
         stream.read_int().times do |_|
@@ -19,6 +23,7 @@ class RepairProperties
         RepairProperties.new(valid_targets, power)
     end
 
+    # Write RepairProperties to output stream
     def write_to(stream)
         stream.write_int(@valid_targets.length())
         @valid_targets.each do |valid_targets_element|

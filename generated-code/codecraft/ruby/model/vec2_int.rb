@@ -1,5 +1,8 @@
+# 2 dimensional vector.
 class Vec2Int
+    # `x` coordinate of the vector
     attr_accessor :x
+    # `y` coordinate of the vector
     attr_accessor :y
 
     def initialize(x, y)
@@ -7,12 +10,14 @@ class Vec2Int
         @y = y
     end
 
+    # Read Vec2Int from input stream
     def self.read_from(stream)
         x = stream.read_int()
         y = stream.read_int()
         Vec2Int.new(x, y)
     end
 
+    # Write Vec2Int to output stream
     def write_to(stream)
         stream.write_int(@x)
         stream.write_int(@y)

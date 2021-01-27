@@ -1,6 +1,10 @@
+# Entity's attack properties
 class AttackProperties
+    # Maximum attack range
     attr_accessor :attack_range
+    # Damage dealt in one tick
     attr_accessor :damage
+    # If true, dealing damage will collect resource from target
     attr_accessor :collect_resource
 
     def initialize(attack_range, damage, collect_resource)
@@ -9,6 +13,7 @@ class AttackProperties
         @collect_resource = collect_resource
     end
 
+    # Read AttackProperties from input stream
     def self.read_from(stream)
         attack_range = stream.read_int()
         damage = stream.read_int()
@@ -16,6 +21,7 @@ class AttackProperties
         AttackProperties.new(attack_range, damage, collect_resource)
     end
 
+    # Write AttackProperties to output stream
     def write_to(stream)
         stream.write_int(@attack_range)
         stream.write_int(@damage)

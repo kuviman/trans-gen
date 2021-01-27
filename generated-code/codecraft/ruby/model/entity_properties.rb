@@ -2,19 +2,33 @@ require_relative 'attack_properties'
 require_relative 'build_properties'
 require_relative 'repair_properties'
 
+# Entity properties
 class EntityProperties
+    # Size. Entity has a form of a square with side of this length
     attr_accessor :size
+    # Score for building this entity
     attr_accessor :build_score
+    # Score for destroying this entity
     attr_accessor :destroy_score
+    # Whether this entity can move
     attr_accessor :can_move
+    # Number of population points this entity provides, if active
     attr_accessor :population_provide
+    # Number of population points this entity uses
     attr_accessor :population_use
+    # Maximum health points
     attr_accessor :max_health
+    # Cost to build this first entity of this type. If this is a unit (entity can move), the cost is increased by 1 for each existing unit of this type
     attr_accessor :initial_cost
+    # If fog of war is enabled, maximum distance at which other entities are considered visible
     attr_accessor :sight_range
+    # Amount of resource added to enemy able to collect resource on dealing damage for 1 health point
     attr_accessor :resource_per_health
+    # Build properties, if entity can build
     attr_accessor :build
+    # Attack properties, if entity can attack
     attr_accessor :attack
+    # Repair properties, if entity can repair
     attr_accessor :repair
 
     def initialize(size, build_score, destroy_score, can_move, population_provide, population_use, max_health, initial_cost, sight_range, resource_per_health, build, attack, repair)
@@ -33,6 +47,7 @@ class EntityProperties
         @repair = repair
     end
 
+    # Read EntityProperties from input stream
     def self.read_from(stream)
         size = stream.read_int()
         build_score = stream.read_int()
@@ -62,6 +77,7 @@ class EntityProperties
         EntityProperties.new(size, build_score, destroy_score, can_move, population_provide, population_use, max_health, initial_cost, sight_range, resource_per_health, build, attack, repair)
     end
 
+    # Write EntityProperties to output stream
     def write_to(stream)
         stream.write_int(@size)
         stream.write_int(@build_score)

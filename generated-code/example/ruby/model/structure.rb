@@ -1,6 +1,10 @@
+# Example structure
 class Structure
+    # Text
     attr_accessor :text
+    # 32-bit float
     attr_accessor :float_number
+    # 64-bit float
     attr_accessor :double_number
 
     def initialize(text, float_number, double_number)
@@ -9,6 +13,7 @@ class Structure
         @double_number = double_number
     end
 
+    # Read Structure from input stream
     def self.read_from(stream)
         text = stream.read_string()
         float_number = stream.read_float()
@@ -16,6 +21,7 @@ class Structure
         Structure.new(text, float_number, double_number)
     end
 
+    # Write Structure to output stream
     def write_to(stream)
         stream.write_string(@text)
         stream.write_float(@float_number)

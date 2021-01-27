@@ -2,13 +2,21 @@ require_relative 'enumeration'
 require_relative 'one_of'
 require_relative 'structure'
 
+# Example
 class Example
+    # OneOf
     attr_accessor :one_of
+    # Dictionary
     attr_accessor :hash_map
+    # Optional int
     attr_accessor :optional_int
+    # Optional boolean
     attr_accessor :optional_bool
+    # Optional OneOf
     attr_accessor :optional_one_of
+    # Optional struct
     attr_accessor :optional_struct
+    # Optional enum
     attr_accessor :optional_enum
 
     def initialize(one_of, hash_map, optional_int, optional_bool, optional_one_of, optional_struct, optional_enum)
@@ -21,6 +29,7 @@ class Example
         @optional_enum = optional_enum
     end
 
+    # Read Example from input stream
     def self.read_from(stream)
         one_of = OneOf.read_from(stream)
         hash_map = Hash.new
@@ -57,6 +66,7 @@ class Example
         Example.new(one_of, hash_map, optional_int, optional_bool, optional_one_of, optional_struct, optional_enum)
     end
 
+    # Write Example to output stream
     def write_to(stream)
         @one_of.write_to(stream)
         stream.write_int(@hash_map.length())

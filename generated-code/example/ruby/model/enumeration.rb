@@ -1,7 +1,11 @@
+# Example enumeration
 module Enumeration
+    # First option
     VALUE_ONE = 0
+    # Second option
     VALUE_TWO = 1
 
+    # Read Enumeration from input stream
     def self.read_from(stream)
         result = stream.read_int()
         if result < 0 || result >= 2
