@@ -2,7 +2,16 @@ package model
 
 import util.StreamUtil
 
+/**
+ * Entity's build properties
+ *
+ * @param options Valid new entity types
+ * @param initHealth Initial health of new entity. If absent, it will have full health
+ */
 case class BuildProperties(options: Seq[model.EntityType], initHealth: Option[Int]) {
+    /**
+     * Write BuildProperties to output stream
+     */
     def writeTo(stream: java.io.OutputStream) {
         StreamUtil.writeInt(stream, options.length)
         options.foreach { value =>
@@ -17,6 +26,9 @@ case class BuildProperties(options: Seq[model.EntityType], initHealth: Option[In
         }
     }
 
+    /**
+     * Get string representation of BuildProperties
+     */
     override def toString(): String = {
         var stringBuilder = new StringBuilder("BuildProperties { ")
         stringBuilder.append("options: ")
@@ -30,6 +42,9 @@ case class BuildProperties(options: Seq[model.EntityType], initHealth: Option[In
 }
 
 object BuildProperties {
+    /**
+     * Read BuildProperties from input stream
+     */
     def readFrom(stream: java.io.InputStream): BuildProperties = BuildProperties(
         (0 until StreamUtil.readInt(stream)).map { _ =>
             model.EntityType.readFrom(stream)

@@ -2,7 +2,21 @@ package model
 
 import util.StreamUtil
 
+/**
+ * Example
+ *
+ * @param oneOf OneOf
+ * @param hashMap Dictionary
+ * @param optionalInt Optional int
+ * @param optionalBoolean Optional boolean
+ * @param optionalOneOf Optional OneOf
+ * @param optionalStruct Optional struct
+ * @param optionalEnum Optional enum
+ */
 case class Example(oneOf: model.OneOf, hashMap: Map[model.Enumeration, Int], optionalInt: Option[Int], optionalBoolean: Option[Boolean], optionalOneOf: Option[model.OneOf], optionalStruct: Option[model.Structure], optionalEnum: Option[model.Enumeration]) {
+    /**
+     * Write Example to output stream
+     */
     def writeTo(stream: java.io.OutputStream) {
         oneOf.writeTo(stream)
         StreamUtil.writeInt(stream, hashMap.size)
@@ -47,6 +61,9 @@ case class Example(oneOf: model.OneOf, hashMap: Map[model.Enumeration, Int], opt
         }
     }
 
+    /**
+     * Get string representation of Example
+     */
     override def toString(): String = {
         var stringBuilder = new StringBuilder("Example { ")
         stringBuilder.append("oneOf: ")
@@ -75,6 +92,9 @@ case class Example(oneOf: model.OneOf, hashMap: Map[model.Enumeration, Int], opt
 }
 
 object Example {
+    /**
+     * Read Example from input stream
+     */
     def readFrom(stream: java.io.InputStream): Example = Example(
         model.OneOf.readFrom(stream),
         (0 until StreamUtil.readInt(stream)).map { _ => (

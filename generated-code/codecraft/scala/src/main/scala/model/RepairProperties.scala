@@ -2,7 +2,16 @@ package model
 
 import util.StreamUtil
 
+/**
+ * Entity's repair properties
+ *
+ * @param validTargets Valid target entity types
+ * @param power Health restored in one tick
+ */
 case class RepairProperties(validTargets: Seq[model.EntityType], power: Int) {
+    /**
+     * Write RepairProperties to output stream
+     */
     def writeTo(stream: java.io.OutputStream) {
         StreamUtil.writeInt(stream, validTargets.length)
         validTargets.foreach { value =>
@@ -11,6 +20,9 @@ case class RepairProperties(validTargets: Seq[model.EntityType], power: Int) {
         StreamUtil.writeInt(stream, power)
     }
 
+    /**
+     * Get string representation of RepairProperties
+     */
     override def toString(): String = {
         var stringBuilder = new StringBuilder("RepairProperties { ")
         stringBuilder.append("validTargets: ")
@@ -24,6 +36,9 @@ case class RepairProperties(validTargets: Seq[model.EntityType], power: Int) {
 }
 
 object RepairProperties {
+    /**
+     * Read RepairProperties from input stream
+     */
     def readFrom(stream: java.io.InputStream): RepairProperties = RepairProperties(
         (0 until StreamUtil.readInt(stream)).map { _ =>
             model.EntityType.readFrom(stream)

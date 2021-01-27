@@ -2,7 +2,20 @@ package model
 
 import util.StreamUtil
 
+/**
+ * Game entity
+ *
+ * @param id Entity's ID. Unique for each entity
+ * @param playerId Entity's owner player ID, if owned by a player
+ * @param entityType Entity's type
+ * @param position Entity's position (corner with minimal coordinates)
+ * @param health Current health
+ * @param active If entity is active, it can perform actions
+ */
 case class Entity(id: Int, playerId: Option[Int], entityType: model.EntityType, position: model.Vec2Int, health: Int, active: Boolean) {
+    /**
+     * Write Entity to output stream
+     */
     def writeTo(stream: java.io.OutputStream) {
         StreamUtil.writeInt(stream, id)
         playerId match {
@@ -18,6 +31,9 @@ case class Entity(id: Int, playerId: Option[Int], entityType: model.EntityType, 
         StreamUtil.writeBoolean(stream, active)
     }
 
+    /**
+     * Get string representation of Entity
+     */
     override def toString(): String = {
         var stringBuilder = new StringBuilder("Entity { ")
         stringBuilder.append("id: ")
@@ -43,6 +59,9 @@ case class Entity(id: Int, playerId: Option[Int], entityType: model.EntityType, 
 }
 
 object Entity {
+    /**
+     * Read Entity from input stream
+     */
     def readFrom(stream: java.io.InputStream): Entity = Entity(
         StreamUtil.readInt(stream),
         if (StreamUtil.readBoolean(stream)) Some(
