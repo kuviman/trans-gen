@@ -1,8 +1,11 @@
+{{ doc_comment(&struc.documentation) }}
 public struct {{ struc.name.camel_case(conv) }} {
     - for field in &struc.fields {
+    {{ doc_comment(&field.documentation) }}
     let {{ field.name.mixed_case(conv) }}: {{ type_name(&field.schema) }}
-    - }
 
+    - }
+    {{ doc_read_from(&struc.name.camel_case(conv)) }}
     static func readFrom<S: InputStream>(_ stream: S) -> {{ struc.name.camel_case(conv) }} {
         - for field in &struc.fields {
         var {{ field.name.mixed_case(conv) }}: {{ type_name(&field.schema) }}
@@ -18,6 +21,7 @@ public struct {{ struc.name.camel_case(conv) }} {
         ~)
     }
 
+    {{ doc_write_to(&struc.name.camel_case(conv)) }}
     func writeTo<S: OutputStream>(_ stream: S) {
         - for field in &struc.fields {
         {{ write_var(&field.name.mixed_case(conv), &field.schema) }}

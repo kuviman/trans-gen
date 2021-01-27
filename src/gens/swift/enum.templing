@@ -1,12 +1,16 @@
+{{ doc_comment(documentation) }}
 public enum {{ base_name.camel_case(conv) }}: Int32 {
     - for (tag, variant) in variants.iter().enumerate() {
+    {{ doc_comment(&variant.documentation) }}
     case {{ variant.name.mixed_case(conv) }} = {{ tag }}
-    - }
 
+    - }
+    {{ doc_read_from(&base_name.camel_case(conv)) }}
     static func readFrom<S: InputStream>(_ stream: S) -> {{ base_name.camel_case(conv) }} {
         return {{ base_name.camel_case(conv) }}(rawValue: stream.readInt32())!
     }
 
+    {{ doc_write_to(&base_name.camel_case(conv)) }}
     func writeTo<S: OutputStream>(_ stream: S) {
         stream.writeInt32(rawValue)
     }
