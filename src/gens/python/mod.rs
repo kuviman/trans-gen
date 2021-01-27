@@ -62,6 +62,30 @@ fn imports(schema: &Schema) -> String {
     include_templing!("src/gens/python/imports.templing")
 }
 
+fn doc_comment(documentation: &Documentation) -> String {
+    let mut result = String::new();
+    result.push_str("\"\"\"");
+    for (index, line) in documentation.get("en").unwrap().lines().enumerate() {
+        if index == 1 {
+            result.push('\n')
+        }
+        result.push_str(line);
+        if index != 0 {
+            result.push('\n');
+        }
+    }
+    result.push_str("\"\"\"\n");
+    result.trim().to_owned()
+}
+
+fn doc_read_from(name: &str) -> String {
+    format!("\"\"\"Read {} from input stream\n\"\"\"", name)
+}
+
+fn doc_write_to(name: &str) -> String {
+    format!("\"\"\"Write {} to output stream\n\"\"\"", name)
+}
+
 fn read_var(var: &str, schema: &Schema) -> String {
     include_templing!("src/gens/python/read_var.templing")
 }
@@ -101,7 +125,7 @@ impl crate::Generator for Generator {
     fn add_only(&mut self, schema: &Schema) {
         match schema {
             Schema::Enum {
-                documentation: _,
+                documentation,
                 base_name,
                 variants,
             } => {
@@ -131,7 +155,7 @@ impl crate::Generator for Generator {
                 );
             }
             Schema::OneOf {
-                documentation: _,
+                documentation,
                 base_name,
                 variants,
             } => {

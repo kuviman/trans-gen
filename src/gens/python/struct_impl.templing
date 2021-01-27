@@ -3,6 +3,8 @@ class {{ struc.name.camel_case(conv) }}~
     ~({{ base_name.camel_case(conv) }})~
 - }
 ~:
+    {{ doc_comment(&struc.documentation) }}
+
     - if let Some((_, tag)) = base {
     TAG = {{ tag }}
 
@@ -14,6 +16,7 @@ class {{ struc.name.camel_case(conv) }}~
     ~):
         - for field in &struc.fields {
         self.{{ field.name.snake_case(conv) }} = {{ field.name.snake_case(conv) }}
+        {{ doc_comment(&field.documentation) }}
         - }
         - if struc.fields.is_empty() {
         pass
@@ -21,6 +24,7 @@ class {{ struc.name.camel_case(conv) }}~
 
     @staticmethod
     def read_from(stream):
+        {{ doc_read_from(&struc.name.camel_case(conv)) }}
         - for field in &struc.fields {
         {{ read_var(&field.name.snake_case(conv), &field.schema) }}
         - }
@@ -34,6 +38,7 @@ class {{ struc.name.camel_case(conv) }}~
         ~)
     
     def write_to(self, stream):
+        {{ doc_write_to(&struc.name.camel_case(conv)) }}
         - if base.is_some() {
         stream.write_int(self.TAG)
         - } else if struc.fields.is_empty() {

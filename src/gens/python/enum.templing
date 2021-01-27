@@ -1,8 +1,11 @@
 from enum import IntEnum
 
 class {{ base_name.camel_case(conv) }}(IntEnum):
+    {{ doc_comment(documentation) }}
+
     - for (tag, variant) in variants.iter().enumerate() {
     {{ variant.name.shouty_snake_case(conv) }} = {{ tag }}
+    {{ doc_comment(&variant.documentation) }}
     - }
 
     def __repr__(self):
