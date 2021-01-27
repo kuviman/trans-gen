@@ -1,5 +1,8 @@
 import { StreamWrapper } from "../stream-wrapper";
 
+/**
+ * Entity type
+ */
 export class EntityType {
     readonly name: string;
     readonly tag: number;
@@ -9,17 +12,50 @@ export class EntityType {
         this.tag = tag;
     }
 
+    /**
+     * Wall, can be used to prevent enemy from moving through
+     */
     static readonly WALL = new EntityType("WALL", 0);
+    /**
+     * House, used to increase population
+     */
     static readonly HOUSE = new EntityType("HOUSE", 1);
+    /**
+     * Base for recruiting new builder units
+     */
     static readonly BUILDER_BASE = new EntityType("BUILDER_BASE", 2);
+    /**
+     * Builder unit can build buildings
+     */
     static readonly BUILDER_UNIT = new EntityType("BUILDER_UNIT", 3);
+    /**
+     * Base for recruiting new melee units
+     */
     static readonly MELEE_BASE = new EntityType("MELEE_BASE", 4);
+    /**
+     * Melee unit
+     */
     static readonly MELEE_UNIT = new EntityType("MELEE_UNIT", 5);
+    /**
+     * Base for recruiting new ranged units
+     */
     static readonly RANGED_BASE = new EntityType("RANGED_BASE", 6);
+    /**
+     * Ranged unit
+     */
     static readonly RANGED_UNIT = new EntityType("RANGED_UNIT", 7);
+    /**
+     * Resource can be harvested
+     */
     static readonly RESOURCE = new EntityType("RESOURCE", 8);
+    /**
+     * Ranged attacking building
+     */
     static readonly TURRET = new EntityType("TURRET", 9);
 
+    /**
+     * Read EntityType from input stream
+     */
     static async readFrom(stream: StreamWrapper): Promise<EntityType> {
         const tag = await stream.readInt();
         if (tag == EntityType.WALL.tag) {
@@ -55,6 +91,9 @@ export class EntityType {
         throw new Error("Unexpected tag value");
     }
 
+    /**
+     * Write EntityType to output stream
+     */
     async writeTo(stream: StreamWrapper) {
         await stream.writeInt(this.tag);
     }

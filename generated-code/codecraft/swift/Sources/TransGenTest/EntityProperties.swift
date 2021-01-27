@@ -1,18 +1,45 @@
+/// Entity properties
 public struct EntityProperties {
+    /// Size. Entity has a form of a square with side of this length
     let size: Int32
+
+    /// Score for building this entity
     let buildScore: Int32
+
+    /// Score for destroying this entity
     let destroyScore: Int32
+
+    /// Whether this entity can move
     let canMove: Bool
+
+    /// Number of population points this entity provides, if active
     let populationProvide: Int32
+
+    /// Number of population points this entity uses
     let populationUse: Int32
+
+    /// Maximum health points
     let maxHealth: Int32
+
+    /// Cost to build this first entity of this type. If this is a unit (entity can move), the cost is increased by 1 for each existing unit of this type
     let initialCost: Int32
+
+    /// If fog of war is enabled, maximum distance at which other entities are considered visible
     let sightRange: Int32
+
+    /// Amount of resource added to enemy able to collect resource on dealing damage for 1 health point
     let resourcePerHealth: Int32
+
+    /// Build properties, if entity can build
     let build: BuildProperties?
+
+    /// Attack properties, if entity can attack
     let attack: AttackProperties?
+
+    /// Repair properties, if entity can repair
     let repair: RepairProperties?
 
+    /// Read EntityProperties from input stream
     static func readFrom<S: InputStream>(_ stream: S) -> EntityProperties {
         var size: Int32
         size = stream.readInt32()
@@ -55,6 +82,7 @@ public struct EntityProperties {
         return EntityProperties(size: size, buildScore: buildScore, destroyScore: destroyScore, canMove: canMove, populationProvide: populationProvide, populationUse: populationUse, maxHealth: maxHealth, initialCost: initialCost, sightRange: sightRange, resourcePerHealth: resourcePerHealth, build: build, attack: attack, repair: repair)
     }
 
+    /// Write EntityProperties to output stream
     func writeTo<S: OutputStream>(_ stream: S) {
         stream.writeInt32(size)
         stream.writeInt32(buildScore)

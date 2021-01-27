@@ -1,7 +1,17 @@
 import { StreamWrapper } from "../stream-wrapper";
 
+/**
+ * Oneof example
+ */
 export abstract class OneOf {
+    /**
+     * Write OneOf to output stream
+     */
     abstract writeTo(stream: StreamWrapper): Promise<void>;
+
+    /**
+     * Read OneOf from input stream
+     */
     static async readFrom(stream: StreamWrapper): Promise<OneOf> {
         const tag = await stream.readInt();
         if (tag == OneOf.OptionOne.TAG) {
@@ -15,8 +25,17 @@ export abstract class OneOf {
 }
 
 export namespace OneOf {
+    /**
+     * First option
+     */
     export class OptionOne extends OneOf {
+        /**
+         * List of integers
+         */
         vecInt: Array<number>
+        /**
+         * Long integer
+         */
         longInt: bigint
     
         constructor(vecInt: Array<number>, longInt: bigint) {
@@ -25,6 +44,9 @@ export namespace OneOf {
             this.longInt = longInt;
         }
     
+        /**
+         * Read OptionOne from input stream
+         */
         static async readFrom(stream: StreamWrapper): Promise<OneOf.OptionOne> {
             let vecInt;
             vecInt = [];
@@ -38,6 +60,9 @@ export namespace OneOf {
             return new OptionOne(vecInt, longInt)
         }
     
+        /**
+         * Write OptionOne to output stream
+         */
         async writeTo(stream: StreamWrapper) {
             await stream.writeInt(OptionOne.TAG);
             let vecInt = this.vecInt;
@@ -53,7 +78,13 @@ export namespace OneOf {
     export namespace OptionOne {
         export const TAG = 0;
     }
+    /**
+     * Second option
+     */
     export class OptionTwo extends OneOf {
+        /**
+         * usize
+         */
         value: number
     
         constructor(value: number) {
@@ -61,12 +92,18 @@ export namespace OneOf {
             this.value = value;
         }
     
+        /**
+         * Read OptionTwo from input stream
+         */
         static async readFrom(stream: StreamWrapper): Promise<OneOf.OptionTwo> {
             let value;
             value = await stream.readInt();
             return new OptionTwo(value)
         }
     
+        /**
+         * Write OptionTwo to output stream
+         */
         async writeTo(stream: StreamWrapper) {
             await stream.writeInt(OptionTwo.TAG);
             let value = this.value;

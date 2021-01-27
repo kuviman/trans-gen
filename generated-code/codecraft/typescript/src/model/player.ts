@@ -1,8 +1,20 @@
 import { StreamWrapper } from "../stream-wrapper";
 
+/**
+ * Player (strategy, client)
+ */
 export class Player {
+    /**
+     * Player's ID
+     */
     id: number
+    /**
+     * Current score
+     */
     score: number
+    /**
+     * Current amount of resource
+     */
     resource: number
 
     constructor(id: number, score: number, resource: number) {
@@ -11,6 +23,9 @@ export class Player {
         this.resource = resource;
     }
 
+    /**
+     * Read Player from input stream
+     */
     static async readFrom(stream: StreamWrapper): Promise<Player> {
         let id;
         id = await stream.readInt();
@@ -21,6 +36,9 @@ export class Player {
         return new Player(id, score, resource)
     }
 
+    /**
+     * Write Player to output stream
+     */
     async writeTo(stream: StreamWrapper) {
         let id = this.id;
         await stream.writeInt(id);

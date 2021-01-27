@@ -1,7 +1,12 @@
+/// Entity's build properties
 public struct BuildProperties {
+    /// Valid new entity types
     let options: [EntityType]
+
+    /// Initial health of new entity. If absent, it will have full health
     let initHealth: Int32?
 
+    /// Read BuildProperties from input stream
     static func readFrom<S: InputStream>(_ stream: S) -> BuildProperties {
         var options: [EntityType]
         let optionsSize = stream.readInt32()
@@ -19,6 +24,7 @@ public struct BuildProperties {
         return BuildProperties(options: options, initHealth: initHealth)
     }
 
+    /// Write BuildProperties to output stream
     func writeTo<S: OutputStream>(_ stream: S) {
         stream.writeInt32(Int32(options.count))
         for optionsElement in options {

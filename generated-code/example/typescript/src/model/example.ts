@@ -3,13 +3,37 @@ import { OneOf } from "./one-of";
 import { Structure } from "./structure";
 import { StreamWrapper } from "../stream-wrapper";
 
+/**
+ * Example
+ */
 export class Example {
+    /**
+     * OneOf
+     */
     oneOf: OneOf
+    /**
+     * Dictionary
+     */
     hashMap: Map<Enumeration, number>
+    /**
+     * Optional int
+     */
     optionalInt: number | null
+    /**
+     * Optional boolean
+     */
     optionalBool: boolean | null
+    /**
+     * Optional OneOf
+     */
     optionalOneOf: OneOf | null
+    /**
+     * Optional struct
+     */
     optionalStruct: Structure | null
+    /**
+     * Optional enum
+     */
     optionalEnum: Enumeration | null
 
     constructor(oneOf: OneOf, hashMap: Map<Enumeration, number>, optionalInt: number | null, optionalBool: boolean | null, optionalOneOf: OneOf | null, optionalStruct: Structure | null, optionalEnum: Enumeration | null) {
@@ -22,6 +46,9 @@ export class Example {
         this.optionalEnum = optionalEnum;
     }
 
+    /**
+     * Read Example from input stream
+     */
     static async readFrom(stream: StreamWrapper): Promise<Example> {
         let oneOf;
         oneOf = await OneOf.readFrom(stream);
@@ -67,6 +94,9 @@ export class Example {
         return new Example(oneOf, hashMap, optionalInt, optionalBool, optionalOneOf, optionalStruct, optionalEnum)
     }
 
+    /**
+     * Write Example to output stream
+     */
     async writeTo(stream: StreamWrapper) {
         let oneOf = this.oneOf;
         await oneOf.writeTo(stream);

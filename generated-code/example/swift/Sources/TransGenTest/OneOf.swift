@@ -1,7 +1,17 @@
+/// Oneof example
 enum OneOf {
+    /// First option
+    ///
+    /// - vecInt: List of integers
+    /// - longInt: Long integer
     case optionOne(vecInt: [Int32], longInt: Int64)
+
+    /// Second option
+    ///
+    /// - value: usize
     case optionTwo(value: Int32)
 
+    /// Read OneOf from input stream
     static func readFrom<S: InputStream>(_ stream: S) -> OneOf {
         switch stream.readInt32() {
             case 0:
@@ -24,6 +34,7 @@ enum OneOf {
         }
     }
 
+    /// Write OneOf to output stream
     func writeTo<S: OutputStream>(_ stream: S) {
         switch self {
             case let .optionOne(vecInt, longInt):

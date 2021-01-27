@@ -1,8 +1,20 @@
 import { StreamWrapper } from "../stream-wrapper";
 
+/**
+ * Example structure
+ */
 export class Structure {
+    /**
+     * Text
+     */
     text: string
+    /**
+     * 32-bit float
+     */
     floatNumber: number
+    /**
+     * 64-bit float
+     */
     doubleNumber: number
 
     constructor(text: string, floatNumber: number, doubleNumber: number) {
@@ -11,6 +23,9 @@ export class Structure {
         this.doubleNumber = doubleNumber;
     }
 
+    /**
+     * Read Structure from input stream
+     */
     static async readFrom(stream: StreamWrapper): Promise<Structure> {
         let text;
         text = await stream.readString();
@@ -21,6 +36,9 @@ export class Structure {
         return new Structure(text, floatNumber, doubleNumber)
     }
 
+    /**
+     * Write Structure to output stream
+     */
     async writeTo(stream: StreamWrapper) {
         let text = this.text;
         await stream.writeString(text);

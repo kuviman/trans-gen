@@ -3,19 +3,61 @@ import { BuildProperties } from "./build-properties";
 import { RepairProperties } from "./repair-properties";
 import { StreamWrapper } from "../stream-wrapper";
 
+/**
+ * Entity properties
+ */
 export class EntityProperties {
+    /**
+     * Size. Entity has a form of a square with side of this length
+     */
     size: number
+    /**
+     * Score for building this entity
+     */
     buildScore: number
+    /**
+     * Score for destroying this entity
+     */
     destroyScore: number
+    /**
+     * Whether this entity can move
+     */
     canMove: boolean
+    /**
+     * Number of population points this entity provides, if active
+     */
     populationProvide: number
+    /**
+     * Number of population points this entity uses
+     */
     populationUse: number
+    /**
+     * Maximum health points
+     */
     maxHealth: number
+    /**
+     * Cost to build this first entity of this type. If this is a unit (entity can move), the cost is increased by 1 for each existing unit of this type
+     */
     initialCost: number
+    /**
+     * If fog of war is enabled, maximum distance at which other entities are considered visible
+     */
     sightRange: number
+    /**
+     * Amount of resource added to enemy able to collect resource on dealing damage for 1 health point
+     */
     resourcePerHealth: number
+    /**
+     * Build properties, if entity can build
+     */
     build: BuildProperties | null
+    /**
+     * Attack properties, if entity can attack
+     */
     attack: AttackProperties | null
+    /**
+     * Repair properties, if entity can repair
+     */
     repair: RepairProperties | null
 
     constructor(size: number, buildScore: number, destroyScore: number, canMove: boolean, populationProvide: number, populationUse: number, maxHealth: number, initialCost: number, sightRange: number, resourcePerHealth: number, build: BuildProperties | null, attack: AttackProperties | null, repair: RepairProperties | null) {
@@ -34,6 +76,9 @@ export class EntityProperties {
         this.repair = repair;
     }
 
+    /**
+     * Read EntityProperties from input stream
+     */
     static async readFrom(stream: StreamWrapper): Promise<EntityProperties> {
         let size;
         size = await stream.readInt();
@@ -76,6 +121,9 @@ export class EntityProperties {
         return new EntityProperties(size, buildScore, destroyScore, canMove, populationProvide, populationUse, maxHealth, initialCost, sightRange, resourcePerHealth, build, attack, repair)
     }
 
+    /**
+     * Write EntityProperties to output stream
+     */
     async writeTo(stream: StreamWrapper) {
         let size = this.size;
         await stream.writeInt(size);

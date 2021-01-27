@@ -2,12 +2,33 @@ import { EntityType } from "./entity-type";
 import { Vec2Int } from "./vec2-int";
 import { StreamWrapper } from "../stream-wrapper";
 
+/**
+ * Game entity
+ */
 export class Entity {
+    /**
+     * Entity's ID. Unique for each entity
+     */
     id: number
+    /**
+     * Entity's owner player ID, if owned by a player
+     */
     playerId: number | null
+    /**
+     * Entity's type
+     */
     entityType: EntityType
+    /**
+     * Entity's position (corner with minimal coordinates)
+     */
     position: Vec2Int
+    /**
+     * Current health
+     */
     health: number
+    /**
+     * If entity is active, it can perform actions
+     */
     active: boolean
 
     constructor(id: number, playerId: number | null, entityType: EntityType, position: Vec2Int, health: number, active: boolean) {
@@ -19,6 +40,9 @@ export class Entity {
         this.active = active;
     }
 
+    /**
+     * Read Entity from input stream
+     */
     static async readFrom(stream: StreamWrapper): Promise<Entity> {
         let id;
         id = await stream.readInt();
@@ -39,6 +63,9 @@ export class Entity {
         return new Entity(id, playerId, entityType, position, health, active)
     }
 
+    /**
+     * Write Entity to output stream
+     */
     async writeTo(stream: StreamWrapper) {
         let id = this.id;
         await stream.writeInt(id);

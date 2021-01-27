@@ -1,14 +1,33 @@
+/// Information available to the player
 public struct PlayerView {
+    /// Your player's ID
     let myId: Int32
+
+    /// Size of the map
     let mapSize: Int32
+
+    /// Whether fog of war is enabled
     let fogOfWar: Bool
+
+    /// Entity properties for each entity type
     let entityProperties: [EntityType: EntityProperties]
+
+    /// Max tick count for the game
     let maxTickCount: Int32
+
+    /// Max pathfind nodes when performing pathfinding in the game simulator
     let maxPathfindNodes: Int32
+
+    /// Current tick
     let currentTick: Int32
+
+    /// List of players
     let players: [Player]
+
+    /// List of entities
     let entities: [Entity]
 
+    /// Read PlayerView from input stream
     static func readFrom<S: InputStream>(_ stream: S) -> PlayerView {
         var myId: Int32
         myId = stream.readInt32()
@@ -49,6 +68,7 @@ public struct PlayerView {
         return PlayerView(myId: myId, mapSize: mapSize, fogOfWar: fogOfWar, entityProperties: entityProperties, maxTickCount: maxTickCount, maxPathfindNodes: maxPathfindNodes, currentTick: currentTick, players: players, entities: entities)
     }
 
+    /// Write PlayerView to output stream
     func writeTo<S: OutputStream>(_ stream: S) {
         stream.writeInt32(myId)
         stream.writeInt32(mapSize)

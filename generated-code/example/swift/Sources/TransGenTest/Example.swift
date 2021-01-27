@@ -1,12 +1,27 @@
+/// Example
 public struct Example {
+    /// OneOf
     let oneOf: OneOf
+
+    /// Dictionary
     let hashMap: [Enumeration: Int32]
+
+    /// Optional int
     let optionalInt: Int32?
+
+    /// Optional boolean
     let optionalBool: Bool?
+
+    /// Optional OneOf
     let optionalOneOf: OneOf?
+
+    /// Optional struct
     let optionalStruct: Structure?
+
+    /// Optional enum
     let optionalEnum: Enumeration?
 
+    /// Read Example from input stream
     static func readFrom<S: InputStream>(_ stream: S) -> Example {
         var oneOf: OneOf
         oneOf = OneOf.readFrom(stream)
@@ -53,6 +68,7 @@ public struct Example {
         return Example(oneOf: oneOf, hashMap: hashMap, optionalInt: optionalInt, optionalBool: optionalBool, optionalOneOf: optionalOneOf, optionalStruct: optionalStruct, optionalEnum: optionalEnum)
     }
 
+    /// Write Example to output stream
     func writeTo<S: OutputStream>(_ stream: S) {
         oneOf.writeTo(stream)
         stream.writeInt32(Int32(hashMap.count))

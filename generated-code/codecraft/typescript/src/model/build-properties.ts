@@ -1,8 +1,17 @@
 import { EntityType } from "./entity-type";
 import { StreamWrapper } from "../stream-wrapper";
 
+/**
+ * Entity's build properties
+ */
 export class BuildProperties {
+    /**
+     * Valid new entity types
+     */
     options: Array<EntityType>
+    /**
+     * Initial health of new entity. If absent, it will have full health
+     */
     initHealth: number | null
 
     constructor(options: Array<EntityType>, initHealth: number | null) {
@@ -10,6 +19,9 @@ export class BuildProperties {
         this.initHealth = initHealth;
     }
 
+    /**
+     * Read BuildProperties from input stream
+     */
     static async readFrom(stream: StreamWrapper): Promise<BuildProperties> {
         let options;
         options = [];
@@ -27,6 +39,9 @@ export class BuildProperties {
         return new BuildProperties(options, initHealth)
     }
 
+    /**
+     * Write BuildProperties to output stream
+     */
     async writeTo(stream: StreamWrapper) {
         let options = this.options;
         await stream.writeInt(options.length);

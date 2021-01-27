@@ -4,15 +4,45 @@ import { EntityType } from "./entity-type";
 import { Player } from "./player";
 import { StreamWrapper } from "../stream-wrapper";
 
+/**
+ * Information available to the player
+ */
 export class PlayerView {
+    /**
+     * Your player's ID
+     */
     myId: number
+    /**
+     * Size of the map
+     */
     mapSize: number
+    /**
+     * Whether fog of war is enabled
+     */
     fogOfWar: boolean
+    /**
+     * Entity properties for each entity type
+     */
     entityProperties: Map<EntityType, EntityProperties>
+    /**
+     * Max tick count for the game
+     */
     maxTickCount: number
+    /**
+     * Max pathfind nodes when performing pathfinding in the game simulator
+     */
     maxPathfindNodes: number
+    /**
+     * Current tick
+     */
     currentTick: number
+    /**
+     * List of players
+     */
     players: Array<Player>
+    /**
+     * List of entities
+     */
     entities: Array<Entity>
 
     constructor(myId: number, mapSize: number, fogOfWar: boolean, entityProperties: Map<EntityType, EntityProperties>, maxTickCount: number, maxPathfindNodes: number, currentTick: number, players: Array<Player>, entities: Array<Entity>) {
@@ -27,6 +57,9 @@ export class PlayerView {
         this.entities = entities;
     }
 
+    /**
+     * Read PlayerView from input stream
+     */
     static async readFrom(stream: StreamWrapper): Promise<PlayerView> {
         let myId;
         myId = await stream.readInt();
@@ -66,6 +99,9 @@ export class PlayerView {
         return new PlayerView(myId, mapSize, fogOfWar, entityProperties, maxTickCount, maxPathfindNodes, currentTick, players, entities)
     }
 
+    /**
+     * Write PlayerView to output stream
+     */
     async writeTo(stream: StreamWrapper) {
         let myId = this.myId;
         await stream.writeInt(myId);
