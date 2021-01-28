@@ -31,7 +31,7 @@ jobs:
         uses: actions-rs/cargo@v1
         with:
           command: test
-          args: --release
+          args: --release --all
 
       - name: Build testing binary
         uses: actions-rs/cargo@v1
