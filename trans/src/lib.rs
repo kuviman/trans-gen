@@ -17,10 +17,8 @@ mod impls;
 mod schema;
 pub mod test_utils;
 
-#[cfg(test)]
-use test_utils::*;
-
 pub use schema::*;
+pub use test_utils::*;
 
 pub const VERSION: &str = env!("CARGO_PKG_VERSION");
 

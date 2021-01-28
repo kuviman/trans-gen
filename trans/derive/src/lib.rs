@@ -155,6 +155,7 @@ pub fn derive_trans(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
                         .map(|field| field.ident.as_ref().unwrap())
                         .collect();
                     let field_names = &field_names;
+                    let field_names_2 = field_names;
                     let mut generics = ast.generics.clone();
                     let extra_where_clauses = quote! {
                         where
@@ -192,12 +193,18 @@ pub fn derive_trans(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
                                 })
                             }
                             fn write_to(&self, writer: &mut dyn std::io::Write) -> std::io::Result<()> {
-                                #(trans::Trans::write_to(&self.#field_names, writer)?;)*
+                                #(trans::add_error_context(
+                                    trans::Trans::write_to(&self.#field_names, writer),
+                                    trans::err_fmt::write_field::<#input_type #ty_generics>(stringify!(#field_names_2)),
+                                )?;)*
                                 Ok(())
                             }
                             fn read_from(reader: &mut dyn std::io::Read) -> std::io::Result<Self> {
                                 Ok(Self {
-                                    #(#field_names: trans::Trans::read_from(reader)?),*
+                                    #(#field_names: trans::add_error_context(
+                                        trans::Trans::read_from(reader),
+                                        trans::err_fmt::read_field::<#input_type #ty_generics>(stringify!(#field_names_2)),
+                                    )?,)*
                                 })
                             }
                         }
@@ -256,24 +263,36 @@ pub fn derive_trans(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
                             })
                             .collect();
                         let field_names = &field_names;
+                        let field_names_2 = field_names;
                         let field_names_copy = field_names;
                         quote! {
                             #input_type::#variant_name { #(#field_names,)* } => {
-                                trans::Trans::write_to(&#tag, writer)?;
-                                #(trans::Trans::write_to(#field_names_copy, writer)?;)*
+                                trans::add_error_context(
+                                    trans::Trans::write_to(&#tag, writer),
+                                    trans::err_fmt::write_tag::<#input_type #ty_generics>(stringify!(#variant_name)),
+                                )?;
+                                #(trans::add_error_context(
+                                    trans::Trans::write_to(#field_names_copy, writer),
+                                    trans::err_fmt::write_variant_field::<#input_type #ty_generics>(stringify!(#variant_name), stringify!(#field_names_2)),
+                                )?;)*
                             }
                         }
                     });
                     let variant_reads = variants.iter().enumerate().map(|(tag, variant)| {
                         let tag = tag as i32;
                         let variant_name = &variant.ident;
-                        let field_names = variant
+                        let field_names: Vec<_> = variant
                             .fields
                             .iter()
-                            .map(|field| field.ident.as_ref().unwrap());
+                            .map(|field| field.ident.as_ref().unwrap()).collect();
+                        let field_names = &field_names;
+                        let field_names_2 = field_names;
                         quote! {
                             #tag => #input_type::#variant_name {
-                                #(#field_names: trans::Trans::read_from(reader)?,)*
+                                #(#field_names: trans::add_error_context(
+                                    trans::Trans::read_from(reader),
+                                    trans::err_fmt::read_variant_field::<#input_type #ty_generics>(stringify!(#variant_name), stringify!(#field_names_2)),
+                                )?,)*
                             },
                         }
                     });
@@ -285,12 +304,16 @@ pub fn derive_trans(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
                             Ok(())
                         }
                         fn read_from(reader: &mut dyn std::io::Read) -> std::io::Result<Self> {
-                            Ok(match <i32 as trans::Trans>::read_from(reader)? {
+                            let tag = trans::add_error_context(
+                                <i32 as trans::Trans>::read_from(reader),
+                                trans::err_fmt::read_tag::<#input_type #ty_generics>(),
+                            )?;
+                            Ok(match tag {
                                 #(#variant_reads)*
-                                tag => {
+                                _ => {
                                     return Err(std::io::Error::new(
                                         std::io::ErrorKind::Other,
-                                        format!("Unexpected tag {:?}", tag)));
+                                        trans::err_fmt::unexpected_tag::<#input_type #ty_generics>(tag)));
                                 }
                             })
                         }

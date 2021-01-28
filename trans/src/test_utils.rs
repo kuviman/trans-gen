@@ -47,3 +47,24 @@ pub fn test_serde<T: Trans + std::fmt::Debug + PartialEq>(value: &T) {
         .expect("Failed to deserialize");
     assert_eq!(*value, serded);
 }
+
+pub fn add_error_context<T, C: Into<Box<dyn std::error::Error + Sync + Send>>>(
+    result: Result<T, std::io::Error>,
+    context: C,
+) -> Result<T, std::io::Error> {
+    #[derive(thiserror::Error, Debug)]
+    #[error("{context}: {source}")]
+    struct Context {
+        context: Box<dyn std::error::Error + Sync + Send>,
+        source: std::io::Error,
+    }
+    result.map_err(|e| {
+        std::io::Error::new(
+            e.kind(),
+            Context {
+                context: context.into(),
+                source: e,
+            },
+        )
+    })
+}
