@@ -31,7 +31,7 @@ jobs:
         uses: actions-rs/cargo@v1
         with:
           command: test
-          args: --release --all
+          args: --release -p trans-derive -p trans -p trans-gen
 
       - name: Build testing binary
         uses: actions-rs/cargo@v1
