@@ -1,0 +1,33 @@
+<?php
+
+{{ imports(schema) }}
+
+namespace {
+    {{ doc_comment(documentation) }}
+    abstract class {{ base_name.camel_case(conv) }}
+    {
+        {{ doc_write_to(&base_name.camel_case(conv)) }}
+        abstract function writeTo($stream);
+
+        {{ doc_read_from(&base_name.camel_case(conv)) }}
+        static function readFrom($stream)
+        {
+            $tag = $stream->readInt32();
+            - for variant in variants {
+            if ($tag == {{ base_name.camel_case(conv) }}\{{ variant.name.camel_case(conv) }}::TAG) {
+                return {{ base_name.camel_case(conv) }}\{{ variant.name.camel_case(conv) }}::readFrom($stream);
+            }
+            - }
+            throw new Exception('Unexpected tag value');
+        }
+    }
+}
+
+namespace {{ base_name.camel_case(conv) }} {
+    - for (tag, variant) in variants.iter().enumerate() {
+    - if tag != 0 {
+
+    - }
+    {{ struct_impl(variant, Some((base_name, tag))) }}
+    - }
+}

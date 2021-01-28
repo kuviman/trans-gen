@@ -1,0 +1,54 @@
+- match schema {
+- Schema::Bool => {
+${{ var }} = $stream->readBool();
+- }
+- Schema::Int32 => {
+${{ var }} = $stream->readInt32();
+- }
+- Schema::Int64 => {
+${{ var }} = $stream->readInt64();
+- }
+- Schema::Float32 => {
+${{ var }} = $stream->readFloat32();
+- }
+- Schema::Float64 => {
+${{ var }} = $stream->readDouble();
+- }
+- Schema::String => {
+${{ var }} = $stream->readString();
+- }
+- Schema::Struct(Struct { name, .. }) | Schema::OneOf { base_name: name, .. } | Schema::Enum { base_name: name, .. } => {
+${{ var }} = {{ name.camel_case(conv) }}::readFrom($stream);
+- }
+- Schema::Option(inner) => {
+if ($stream->readBool()) {
+    {{ read_var(var, inner) }}
+} else {
+    ${{ var }} = NULL;
+}
+- }
+- Schema::Vec(inner) => {
+${{ var }} = [];
+- let size_var = format!("{}Size", var); let size_var = &size_var;
+${{ size_var }} = $stream->readInt32();
+- let index_var = format!("{}Index", var); let index_var = &index_var;
+for (${{ index_var }} = 0; ${{ index_var }} < ${{ size_var }}; ${{ index_var }}++) {
+    - let element_var = format!("{}Element", var); let element_var = &element_var;
+    {{ read_var(element_var, inner) }}
+    ${{ var }}[] = ${{ element_var }};
+}
+- }
+- Schema::Map(key_type, value_type) => {
+${{ var }} = [];
+- let size_var = format!("{}Size", var); let size_var = &size_var;
+${{ size_var }} = $stream->readInt32();
+- let index_var = format!("{}Index", var); let index_var = &index_var;
+for (${{ index_var }} = 0; ${{ index_var }} < ${{ size_var }}; ${{ index_var }}++) {
+    - let key_var = format!("{}Key", var); let key_var = &key_var;
+    - let value_var = format!("{}Value", var); let value_var = &value_var;
+    {{ read_var(key_var, key_type) }}
+    {{ read_var(value_var, value_type) }}
+    ${{ var }}[${{ key_var }}] = ${{ value_var }};
+}
+- }
+- }

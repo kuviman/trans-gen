@@ -1,0 +1,3 @@
+- for name in &imports {
+require_once '{{ name.camel_case(conv) }}.php';
+- }

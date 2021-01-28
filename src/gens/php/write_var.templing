@@ -1,0 +1,47 @@
+- match schema {
+- Schema::Bool => {
+$stream->writeBool(${{ var }});
+- }
+- Schema::Int32 => {
+$stream->writeInt32(${{ var }});
+- }
+- Schema::Int64 => {
+$stream->writeInt64(${{ var }});
+- }
+- Schema::Float32 => {
+$stream->writeFloat32(${{ var }});
+- }
+- Schema::Float64 => {
+$stream->writeDouble(${{ var }});
+- }
+- Schema::String => {
+$stream->writeString(${{ var }});
+- }
+- Schema::Struct(_) | Schema::OneOf { .. } => {
+${{ var }}->writeTo($stream);
+- }
+- Schema::Option(inner) => {
+if (is_null(${{ var }})) {
+    $stream->writeBool(false);
+} else {
+    $stream->writeBool(true);
+    {{ write_var(var, inner) }}
+}
+- }
+- Schema::Vec(inner) => {
+$stream->writeInt32(count(${{ var }}));
+foreach (${{ var }} as $element) {
+    {{ write_var("element", inner) }}
+}
+- }
+- Schema::Map(key_type, value_type) => {
+$stream->writeInt32(count(${{ var }}));
+foreach (${{ var }} as $key => $value) {
+    {{ write_var("key", key_type) }}
+    {{ write_var("value", value_type) }}
+}
+- }
+- Schema::Enum { base_name, .. } => {
+$stream->writeInt32(${{ var }});
+- }
+- }

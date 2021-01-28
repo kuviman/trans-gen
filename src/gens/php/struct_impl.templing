@@ -1,0 +1,57 @@
+{{ doc_comment(&struc.documentation) }}
+- if let Some((base_name, _)) = base {
+class {{ struc.name.camel_case(conv) }} extends \{{ base_name.camel_case(conv) }}
+- } else {
+class {{ struc.name.camel_case(conv) }}
+- }
+{
+    - if let Some((_, tag)) = base {
+    const TAG = {{ tag }};
+
+    - }
+    - for field in &struc.fields {
+    {{ doc_comment(&field.documentation) }}
+    public ${{ &field.name.mixed_case(conv) }};
+    - }
+
+    function __construct(~
+    - for (index, field) in struc.fields.iter().enumerate() {
+        - if index != 0 {
+        ~, ~
+        - }
+        ~${{ field.name.mixed_case(conv) }}~
+    - }
+    ~)
+    {
+        - for field in &struc.fields {
+        $this->{{ field.name.mixed_case(conv) }} = ${{ field.name.mixed_case(conv) }};
+        - }
+    }
+
+    {{ doc_read_from(&struc.name.camel_case(conv)) }}
+    public static function readFrom($stream)
+    {
+        - for field in &struc.fields {
+        {{ read_var(&field.name.mixed_case(conv), &field.schema) }}
+        - }
+        return new {{ struc.name.camel_case(conv) }}(~
+        - for (index, field) in struc.fields.iter().enumerate() {
+        - if index != 0 {
+        ~, ~
+        - }
+        ~${{ field.name.mixed_case(conv) }}~
+        - }
+        ~);
+    }
+    
+    {{ doc_write_to(&struc.name.camel_case(conv)) }}
+    public function writeTo($stream)
+    {
+        - if base.is_some() {
+        $stream->writeInt32({{ struc.name.camel_case(conv) }}::TAG);
+        - }
+        - for field in &struc.fields {
+        {{ write_var(&format!("this->{}", field.name.mixed_case(conv)), &field.schema) }}
+        - }
+    }
+}

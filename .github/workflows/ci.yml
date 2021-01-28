@@ -98,6 +98,9 @@ jobs:
           - language: Swift
             lang: swift
             docker: swift
+          - language: PHP
+            lang: php
+            docker: php
     runs-on: ubuntu-latest
     container: ${{ matrix.docker }}
     steps:
@@ -152,6 +155,8 @@ jobs:
             lang: typescript
           - language: Swift
             lang: swift
+          - language: PHP
+            lang: php
     runs-on: macos-latest
     steps:
       - name: Download artifacts
@@ -170,7 +175,7 @@ jobs:
         name: Setup Java
         uses: actions/setup-java@v1
         with:
-          java-version: '15'
+          java-version: "15"
 
       - name: Run tests
         run: |
@@ -215,6 +220,8 @@ jobs:
             lang: typescript
           # - language: Swift
           #   lang: swift
+          - language: PHP
+            lang: php
     runs-on: windows-latest
     steps:
       - name: Download artifacts
@@ -230,7 +237,7 @@ jobs:
         name: Setup Java
         uses: actions/setup-java@v1
         with:
-          java-version: '15'
+          java-version: "15"
 
       - name: Run tests
         run: |

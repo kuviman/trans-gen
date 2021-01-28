@@ -1,0 +1,23 @@
+<?php
+
+{{ doc_comment(documentation) }}
+abstract class {{ base_name.camel_case(conv) }}
+{
+    - for (tag, variant) in variants.iter().enumerate() {
+    - if tag != 0 {
+
+    - }
+    {{ doc_comment(&variant.documentation) }}
+    const {{ variant.name.shouty_snake_case(conv) }} = {{ tag }};
+    - }
+
+    {{ doc_read_from(&base_name.camel_case(conv)) }}
+    public static function readFrom($stream)
+    {
+        $result = $stream->readInt32();
+        if (0 <= $result && $result < {{ variants.len() }}) {
+            return $result;
+        }
+        throw new Exception('Unexpected tag value');
+    }
+}
