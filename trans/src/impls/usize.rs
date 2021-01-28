@@ -21,7 +21,7 @@ fn test_schema() {
 fn test_invalid_deserialize() {
     let value: i32 = -123;
     deserialize::<usize>(&serialize(&value).unwrap())
-        .ensure_err_contains(err_fmt::invalid_value_of_type::<usize, _>(value))
+        .ensure_err_contains(error_format::invalid_value_of_type::<usize, _>(value))
         .unwrap();
 }
 
@@ -29,7 +29,7 @@ fn test_invalid_deserialize() {
 fn test_invalid_serialize() {
     let value = usize::MAX;
     serialize::<usize>(&value)
-        .ensure_err_contains(err_fmt::invalid_value_of_type::<i32, _>(value))
+        .ensure_err_contains(error_format::invalid_value_of_type::<i32, _>(value))
         .unwrap();
 }
 

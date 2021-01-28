@@ -11,7 +11,7 @@ impl Trans for bool {
             1 => Ok(true),
             value => Err(std::io::Error::new(
                 std::io::ErrorKind::Other,
-                err_fmt::invalid_bool(value),
+                error_format::invalid_bool(value),
             )),
         }
     }
@@ -29,7 +29,7 @@ fn test_schema() {
 fn test_invalid() {
     let value: u8 = 0xcd;
     deserialize::<bool>(&[value])
-        .ensure_err_contains(err_fmt::invalid_bool(value))
+        .ensure_err_contains(error_format::invalid_bool(value))
         .unwrap();
 }
 

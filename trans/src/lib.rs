@@ -12,7 +12,7 @@ pub mod prelude {
     pub use trans_derive::*;
 }
 
-pub mod err_fmt;
+pub mod error_format;
 mod impls;
 mod schema;
 pub mod test_utils;
@@ -28,7 +28,7 @@ fn try_from<U: std::fmt::Debug + Copy, T: std::convert::TryFrom<U>>(
     T::try_from(value).map_err(|_| {
         std::io::Error::new(
             std::io::ErrorKind::Other,
-            err_fmt::invalid_value_of_type::<T, _>(value),
+            error_format::invalid_value_of_type::<T, _>(value),
         )
     })
 }
@@ -48,7 +48,7 @@ pub fn deserialize_only_from<T: Trans>(reader: impl std::io::Read) -> std::io::R
     } else {
         Err(std::io::Error::new(
             std::io::ErrorKind::Other,
-            err_fmt::expected_eof(),
+            error_format::expected_eof(),
         ))
     }
 }

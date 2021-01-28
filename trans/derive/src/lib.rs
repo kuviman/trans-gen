@@ -195,7 +195,7 @@ pub fn derive_trans(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
                             fn write_to(&self, writer: &mut dyn std::io::Write) -> std::io::Result<()> {
                                 #(trans::add_error_context(
                                     trans::Trans::write_to(&self.#field_names, writer),
-                                    trans::err_fmt::write_field::<#input_type #ty_generics>(stringify!(#field_names_2)),
+                                    trans::error_format::write_field::<#input_type #ty_generics>(stringify!(#field_names_2)),
                                 )?;)*
                                 Ok(())
                             }
@@ -203,7 +203,7 @@ pub fn derive_trans(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
                                 Ok(Self {
                                     #(#field_names: trans::add_error_context(
                                         trans::Trans::read_from(reader),
-                                        trans::err_fmt::read_field::<#input_type #ty_generics>(stringify!(#field_names_2)),
+                                        trans::error_format::read_field::<#input_type #ty_generics>(stringify!(#field_names_2)),
                                     )?,)*
                                 })
                             }
@@ -269,11 +269,11 @@ pub fn derive_trans(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
                             #input_type::#variant_name { #(#field_names,)* } => {
                                 trans::add_error_context(
                                     trans::Trans::write_to(&#tag, writer),
-                                    trans::err_fmt::write_tag::<#input_type #ty_generics>(stringify!(#variant_name)),
+                                    trans::error_format::write_tag::<#input_type #ty_generics>(stringify!(#variant_name)),
                                 )?;
                                 #(trans::add_error_context(
                                     trans::Trans::write_to(#field_names_copy, writer),
-                                    trans::err_fmt::write_variant_field::<#input_type #ty_generics>(stringify!(#variant_name), stringify!(#field_names_2)),
+                                    trans::error_format::write_variant_field::<#input_type #ty_generics>(stringify!(#variant_name), stringify!(#field_names_2)),
                                 )?;)*
                             }
                         }
@@ -291,7 +291,7 @@ pub fn derive_trans(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
                             #tag => #input_type::#variant_name {
                                 #(#field_names: trans::add_error_context(
                                     trans::Trans::read_from(reader),
-                                    trans::err_fmt::read_variant_field::<#input_type #ty_generics>(stringify!(#variant_name), stringify!(#field_names_2)),
+                                    trans::error_format::read_variant_field::<#input_type #ty_generics>(stringify!(#variant_name), stringify!(#field_names_2)),
                                 )?,)*
                             },
                         }
@@ -306,14 +306,14 @@ pub fn derive_trans(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
                         fn read_from(reader: &mut dyn std::io::Read) -> std::io::Result<Self> {
                             let tag = trans::add_error_context(
                                 <i32 as trans::Trans>::read_from(reader),
-                                trans::err_fmt::read_tag::<#input_type #ty_generics>(),
+                                trans::error_format::read_tag::<#input_type #ty_generics>(),
                             )?;
                             Ok(match tag {
                                 #(#variant_reads)*
                                 _ => {
                                     return Err(std::io::Error::new(
                                         std::io::ErrorKind::Other,
-                                        trans::err_fmt::unexpected_tag::<#input_type #ty_generics>(tag)));
+                                        trans::error_format::unexpected_tag::<#input_type #ty_generics>(tag)));
                                 }
                             })
                         }
