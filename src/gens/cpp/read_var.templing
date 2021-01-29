@@ -22,10 +22,21 @@
 - }
 - Schema::Option(inner) => {
 if (stream.readBool()) {
+    - if self.options.cxx_standard >= 17 {
+    - let value_var = format!("{}Value", var); let value_var = &value_var;
+    {{ self.type_name(inner) }} {{ value_var }};
+    {{ self.read_var(value_var, inner) }}
+    {{ var }} = {{ value_var }};
+    - } else {
     {{ var }} = std::shared_ptr<{{ self.type_name(inner) }}>(new {{ self.type_name(inner) }}());
     {{ self.read_var(&format!("*{}", var), inner) }}
+    - }
 } else {
+    - if self.options.cxx_standard >= 17 {
+    {{ var }} = std::optional<{{ self.type_name(inner) }}>();
+    - } else {
     {{ var }} = std::shared_ptr<{{ self.type_name(inner) }}>();
+    - }
 }
 - }
 - Schema::Vec(inner) => {

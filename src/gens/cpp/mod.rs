@@ -7,9 +7,21 @@ fn conv(name: &str) -> String {
         .replace("Float64", "Double")
 }
 
+#[derive(Debug)]
+pub struct Options {
+    pub cxx_standard: i32,
+}
+
+impl Default for Options {
+    fn default() -> Self {
+        Self { cxx_standard: 20 }
+    }
+}
+
 pub struct Generator {
     files: HashMap<String, String>,
     model_include: String,
+    options: Options,
 }
 
 impl Generator {
@@ -28,7 +40,13 @@ impl Generator {
             | Schema::Enum {
                 base_name: name, ..
             } => format!("{}", name.camel_case(conv)),
-            Schema::Option(inner) => format!("std::shared_ptr<{}>", self.type_name(inner)),
+            Schema::Option(inner) => {
+                if self.options.cxx_standard >= 17 {
+                    format!("std::optional<{}>", self.type_name(inner))
+                } else {
+                    format!("std::shared_ptr<{}>", self.type_name(inner))
+                }
+            }
             Schema::Vec(inner) => format!("std::vector<{}>", self.type_name(inner)),
             Schema::Map(key, value) => format!(
                 "std::unordered_map<{}, {}>",
@@ -55,7 +73,11 @@ impl Generator {
                 | Schema::Float64
                 | Schema::String => {}
                 Schema::Option(_) => {
-                    result.insert("<memory>".to_owned());
+                    if self.options.cxx_standard >= 17 {
+                        result.insert("<optional>".to_owned());
+                    } else {
+                        result.insert("<memory>".to_owned());
+                    }
                 }
                 Schema::Map(_, _) => {
                     result.insert("<unordered_map>".to_owned());
@@ -143,17 +165,6 @@ impl Generator {
     }
 }
 
-#[derive(Debug)]
-pub struct Options {
-    pub cxx_standard: i32,
-}
-
-impl Default for Options {
-    fn default() -> Self {
-        Self { cxx_standard: 20 }
-    }
-}
-
 impl crate::Generator for Generator {
     const NAME: &'static str = "C++";
     type Options = Options;
@@ -176,12 +187,14 @@ impl crate::Generator for Generator {
         Self {
             files,
             model_include: "#ifndef _MODEL_HPP_\n#define _MODEL_HPP_\n\n".to_owned(),
+            options,
         }
     }
     fn generate(self, extra_files: Vec<File>) -> GenResult {
         let Self {
             mut files,
             mut model_include,
+            ..
         } = self;
         model_include.push_str("\n#endif\n");
         files.insert("model/Model.hpp".to_owned(), model_include.to_owned());
