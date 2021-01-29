@@ -2,7 +2,7 @@
 
 EntityProperties::EntityProperties() { }
 
-EntityProperties::EntityProperties(int size, int buildScore, int destroyScore, bool canMove, int populationProvide, int populationUse, int maxHealth, int initialCost, int sightRange, int resourcePerHealth, std::shared_ptr<BuildProperties> build, std::shared_ptr<AttackProperties> attack, std::shared_ptr<RepairProperties> repair) : size(size), buildScore(buildScore), destroyScore(destroyScore), canMove(canMove), populationProvide(populationProvide), populationUse(populationUse), maxHealth(maxHealth), initialCost(initialCost), sightRange(sightRange), resourcePerHealth(resourcePerHealth), build(build), attack(attack), repair(repair) { }
+EntityProperties::EntityProperties(int size, int buildScore, int destroyScore, bool canMove, int populationProvide, int populationUse, int maxHealth, int initialCost, int sightRange, int resourcePerHealth, std::optional<BuildProperties> build, std::optional<AttackProperties> attack, std::optional<RepairProperties> repair) : size(size), buildScore(buildScore), destroyScore(destroyScore), canMove(canMove), populationProvide(populationProvide), populationUse(populationUse), maxHealth(maxHealth), initialCost(initialCost), sightRange(sightRange), resourcePerHealth(resourcePerHealth), build(build), attack(attack), repair(repair) { }
 
 // Read EntityProperties from input stream
 EntityProperties EntityProperties::readFrom(InputStream& stream) {
@@ -26,26 +26,29 @@ EntityProperties EntityProperties::readFrom(InputStream& stream) {
     sightRange = stream.readInt();
     int resourcePerHealth;
     resourcePerHealth = stream.readInt();
-    std::shared_ptr<BuildProperties> build;
+    std::optional<BuildProperties> build;
     if (stream.readBool()) {
-        build = std::shared_ptr<BuildProperties>(new BuildProperties());
-        *build = BuildProperties::readFrom(stream);
+        BuildProperties buildValue;
+        buildValue = BuildProperties::readFrom(stream);
+        build = buildValue;
     } else {
-        build = std::shared_ptr<BuildProperties>();
+        build = std::optional<BuildProperties>();
     }
-    std::shared_ptr<AttackProperties> attack;
+    std::optional<AttackProperties> attack;
     if (stream.readBool()) {
-        attack = std::shared_ptr<AttackProperties>(new AttackProperties());
-        *attack = AttackProperties::readFrom(stream);
+        AttackProperties attackValue;
+        attackValue = AttackProperties::readFrom(stream);
+        attack = attackValue;
     } else {
-        attack = std::shared_ptr<AttackProperties>();
+        attack = std::optional<AttackProperties>();
     }
-    std::shared_ptr<RepairProperties> repair;
+    std::optional<RepairProperties> repair;
     if (stream.readBool()) {
-        repair = std::shared_ptr<RepairProperties>(new RepairProperties());
-        *repair = RepairProperties::readFrom(stream);
+        RepairProperties repairValue;
+        repairValue = RepairProperties::readFrom(stream);
+        repair = repairValue;
     } else {
-        repair = std::shared_ptr<RepairProperties>();
+        repair = std::optional<RepairProperties>();
     }
     return EntityProperties(size, buildScore, destroyScore, canMove, populationProvide, populationUse, maxHealth, initialCost, sightRange, resourcePerHealth, build, attack, repair);
 }

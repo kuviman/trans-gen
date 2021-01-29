@@ -10,7 +10,7 @@
 #include "Player.hpp"
 #include "RepairProperties.hpp"
 #include "Vec2Int.hpp"
-#include <memory>
+#include <optional>
 #include <sstream>
 #include <stdexcept>
 #include <string>

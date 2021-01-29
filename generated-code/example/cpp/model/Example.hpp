@@ -6,6 +6,7 @@
 #include "OneOf.hpp"
 #include "Structure.hpp"
 #include <memory>
+#include <optional>
 #include <sstream>
 #include <stdexcept>
 #include <string>
@@ -20,19 +21,19 @@ public:
     // Dictionary
     std::unordered_map<Enumeration, int> hashMap;
     // Optional int
-    std::shared_ptr<int> optionalInt;
+    std::optional<int> optionalInt;
     // Optional boolean
-    std::shared_ptr<bool> optionalBool;
+    std::optional<bool> optionalBool;
     // Optional OneOf
-    std::shared_ptr<std::shared_ptr<OneOf>> optionalOneOf;
+    std::optional<std::shared_ptr<OneOf>> optionalOneOf;
     // Optional struct
-    std::shared_ptr<Structure> optionalStruct;
+    std::optional<Structure> optionalStruct;
     // Optional enum
-    std::shared_ptr<Enumeration> optionalEnum;
+    std::optional<Enumeration> optionalEnum;
 
     Example();
 
-    Example(std::shared_ptr<OneOf> oneOf, std::unordered_map<Enumeration, int> hashMap, std::shared_ptr<int> optionalInt, std::shared_ptr<bool> optionalBool, std::shared_ptr<std::shared_ptr<OneOf>> optionalOneOf, std::shared_ptr<Structure> optionalStruct, std::shared_ptr<Enumeration> optionalEnum);
+    Example(std::shared_ptr<OneOf> oneOf, std::unordered_map<Enumeration, int> hashMap, std::optional<int> optionalInt, std::optional<bool> optionalBool, std::optional<std::shared_ptr<OneOf>> optionalOneOf, std::optional<Structure> optionalStruct, std::optional<Enumeration> optionalEnum);
 
     // Read Example from input stream
     static Example readFrom(InputStream& stream);

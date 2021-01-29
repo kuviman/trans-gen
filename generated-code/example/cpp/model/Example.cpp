@@ -2,7 +2,7 @@
 
 Example::Example() { }
 
-Example::Example(std::shared_ptr<OneOf> oneOf, std::unordered_map<Enumeration, int> hashMap, std::shared_ptr<int> optionalInt, std::shared_ptr<bool> optionalBool, std::shared_ptr<std::shared_ptr<OneOf>> optionalOneOf, std::shared_ptr<Structure> optionalStruct, std::shared_ptr<Enumeration> optionalEnum) : oneOf(oneOf), hashMap(hashMap), optionalInt(optionalInt), optionalBool(optionalBool), optionalOneOf(optionalOneOf), optionalStruct(optionalStruct), optionalEnum(optionalEnum) { }
+Example::Example(std::shared_ptr<OneOf> oneOf, std::unordered_map<Enumeration, int> hashMap, std::optional<int> optionalInt, std::optional<bool> optionalBool, std::optional<std::shared_ptr<OneOf>> optionalOneOf, std::optional<Structure> optionalStruct, std::optional<Enumeration> optionalEnum) : oneOf(oneOf), hashMap(hashMap), optionalInt(optionalInt), optionalBool(optionalBool), optionalOneOf(optionalOneOf), optionalStruct(optionalStruct), optionalEnum(optionalEnum) { }
 
 // Read Example from input stream
 Example Example::readFrom(InputStream& stream) {
@@ -19,40 +19,45 @@ Example Example::readFrom(InputStream& stream) {
         hashMapValue = stream.readInt();
         hashMap.emplace(std::make_pair(hashMapKey, hashMapValue));
     }
-    std::shared_ptr<int> optionalInt;
+    std::optional<int> optionalInt;
     if (stream.readBool()) {
-        optionalInt = std::shared_ptr<int>(new int());
-        *optionalInt = stream.readInt();
+        int optionalIntValue;
+        optionalIntValue = stream.readInt();
+        optionalInt = optionalIntValue;
     } else {
-        optionalInt = std::shared_ptr<int>();
+        optionalInt = std::optional<int>();
     }
-    std::shared_ptr<bool> optionalBool;
+    std::optional<bool> optionalBool;
     if (stream.readBool()) {
-        optionalBool = std::shared_ptr<bool>(new bool());
-        *optionalBool = stream.readBool();
+        bool optionalBoolValue;
+        optionalBoolValue = stream.readBool();
+        optionalBool = optionalBoolValue;
     } else {
-        optionalBool = std::shared_ptr<bool>();
+        optionalBool = std::optional<bool>();
     }
-    std::shared_ptr<std::shared_ptr<OneOf>> optionalOneOf;
+    std::optional<std::shared_ptr<OneOf>> optionalOneOf;
     if (stream.readBool()) {
-        optionalOneOf = std::shared_ptr<std::shared_ptr<OneOf>>(new std::shared_ptr<OneOf>());
-        *optionalOneOf = OneOf::readFrom(stream);
+        std::shared_ptr<OneOf> optionalOneOfValue;
+        optionalOneOfValue = OneOf::readFrom(stream);
+        optionalOneOf = optionalOneOfValue;
     } else {
-        optionalOneOf = std::shared_ptr<std::shared_ptr<OneOf>>();
+        optionalOneOf = std::optional<std::shared_ptr<OneOf>>();
     }
-    std::shared_ptr<Structure> optionalStruct;
+    std::optional<Structure> optionalStruct;
     if (stream.readBool()) {
-        optionalStruct = std::shared_ptr<Structure>(new Structure());
-        *optionalStruct = Structure::readFrom(stream);
+        Structure optionalStructValue;
+        optionalStructValue = Structure::readFrom(stream);
+        optionalStruct = optionalStructValue;
     } else {
-        optionalStruct = std::shared_ptr<Structure>();
+        optionalStruct = std::optional<Structure>();
     }
-    std::shared_ptr<Enumeration> optionalEnum;
+    std::optional<Enumeration> optionalEnum;
     if (stream.readBool()) {
-        optionalEnum = std::shared_ptr<Enumeration>(new Enumeration());
-        *optionalEnum = readEnumeration(stream);
+        Enumeration optionalEnumValue;
+        optionalEnumValue = readEnumeration(stream);
+        optionalEnum = optionalEnumValue;
     } else {
-        optionalEnum = std::shared_ptr<Enumeration>();
+        optionalEnum = std::optional<Enumeration>();
     }
     return Example(oneOf, hashMap, optionalInt, optionalBool, optionalOneOf, optionalStruct, optionalEnum);
 }

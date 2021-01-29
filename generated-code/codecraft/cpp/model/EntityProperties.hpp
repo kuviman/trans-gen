@@ -6,7 +6,7 @@
 #include "BuildProperties.hpp"
 #include "EntityType.hpp"
 #include "RepairProperties.hpp"
-#include <memory>
+#include <optional>
 #include <sstream>
 #include <stdexcept>
 #include <string>
@@ -36,15 +36,15 @@ public:
     // Amount of resource added to enemy able to collect resource on dealing damage for 1 health point
     int resourcePerHealth;
     // Build properties, if entity can build
-    std::shared_ptr<BuildProperties> build;
+    std::optional<BuildProperties> build;
     // Attack properties, if entity can attack
-    std::shared_ptr<AttackProperties> attack;
+    std::optional<AttackProperties> attack;
     // Repair properties, if entity can repair
-    std::shared_ptr<RepairProperties> repair;
+    std::optional<RepairProperties> repair;
 
     EntityProperties();
 
-    EntityProperties(int size, int buildScore, int destroyScore, bool canMove, int populationProvide, int populationUse, int maxHealth, int initialCost, int sightRange, int resourcePerHealth, std::shared_ptr<BuildProperties> build, std::shared_ptr<AttackProperties> attack, std::shared_ptr<RepairProperties> repair);
+    EntityProperties(int size, int buildScore, int destroyScore, bool canMove, int populationProvide, int populationUse, int maxHealth, int initialCost, int sightRange, int resourcePerHealth, std::optional<BuildProperties> build, std::optional<AttackProperties> attack, std::optional<RepairProperties> repair);
 
     // Read EntityProperties from input stream
     static EntityProperties readFrom(InputStream& stream);

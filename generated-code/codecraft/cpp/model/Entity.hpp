@@ -4,7 +4,7 @@
 #include "../Stream.hpp"
 #include "EntityType.hpp"
 #include "Vec2Int.hpp"
-#include <memory>
+#include <optional>
 #include <sstream>
 #include <stdexcept>
 #include <string>
@@ -15,7 +15,7 @@ public:
     // Entity's ID. Unique for each entity
     int id;
     // Entity's owner player ID, if owned by a player
-    std::shared_ptr<int> playerId;
+    std::optional<int> playerId;
     // Entity's type
     EntityType entityType;
     // Entity's position (corner with minimal coordinates)
@@ -27,7 +27,7 @@ public:
 
     Entity();
 
-    Entity(int id, std::shared_ptr<int> playerId, EntityType entityType, Vec2Int position, int health, bool active);
+    Entity(int id, std::optional<int> playerId, EntityType entityType, Vec2Int position, int health, bool active);
 
     // Read Entity from input stream
     static Entity readFrom(InputStream& stream);

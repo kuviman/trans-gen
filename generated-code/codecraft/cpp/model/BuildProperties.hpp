@@ -3,7 +3,7 @@
 
 #include "../Stream.hpp"
 #include "EntityType.hpp"
-#include <memory>
+#include <optional>
 #include <sstream>
 #include <stdexcept>
 #include <string>
@@ -15,11 +15,11 @@ public:
     // Valid new entity types
     std::vector<EntityType> options;
     // Initial health of new entity. If absent, it will have full health
-    std::shared_ptr<int> initHealth;
+    std::optional<int> initHealth;
 
     BuildProperties();
 
-    BuildProperties(std::vector<EntityType> options, std::shared_ptr<int> initHealth);
+    BuildProperties(std::vector<EntityType> options, std::optional<int> initHealth);
 
     // Read BuildProperties from input stream
     static BuildProperties readFrom(InputStream& stream);

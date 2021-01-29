@@ -2,7 +2,7 @@
 
 BuildProperties::BuildProperties() { }
 
-BuildProperties::BuildProperties(std::vector<EntityType> options, std::shared_ptr<int> initHealth) : options(options), initHealth(initHealth) { }
+BuildProperties::BuildProperties(std::vector<EntityType> options, std::optional<int> initHealth) : options(options), initHealth(initHealth) { }
 
 // Read BuildProperties from input stream
 BuildProperties BuildProperties::readFrom(InputStream& stream) {
@@ -11,12 +11,13 @@ BuildProperties BuildProperties::readFrom(InputStream& stream) {
     for (size_t optionsIndex = 0; optionsIndex < options.size(); optionsIndex++) {
         options[optionsIndex] = readEntityType(stream);
     }
-    std::shared_ptr<int> initHealth;
+    std::optional<int> initHealth;
     if (stream.readBool()) {
-        initHealth = std::shared_ptr<int>(new int());
-        *initHealth = stream.readInt();
+        int initHealthValue;
+        initHealthValue = stream.readInt();
+        initHealth = initHealthValue;
     } else {
-        initHealth = std::shared_ptr<int>();
+        initHealth = std::optional<int>();
     }
     return BuildProperties(options, initHealth);
 }
