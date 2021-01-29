@@ -54,55 +54,37 @@ jobs:
         include:
           - language: C++
             lang: cpp
-            docker: gcc
-            setup: apt-get update && apt-get install -y cmake
           - language: C#
             lang: csharp
-            docker: mcr.microsoft.com/dotnet/sdk
           - language: D
             lang: dlang
-            docker: dlanguage/dmd
           - language: F#
             lang: fsharp
-            docker: mcr.microsoft.com/dotnet/sdk
           - language: Go
             lang: go
-            docker: golang
           - language: Java
             lang: java
-            docker: maven
           - language: JavaScript
             lang: javascript
-            docker: node
           - language: Kotlin
             lang: kotlin
-            docker: maven
           # - language: Markdown
           #   lang: markdown
-          #   docker: ???
           - language: Python
             lang: python
-            docker: python
           - language: Ruby
             lang: ruby
-            docker: ruby
           - language: Rust
             lang: rust
-            docker: rust
           - language: Scala
             lang: scala
-            docker: maven
           - language: TypeScript
             lang: typescript
-            docker: node
           - language: Swift
             lang: swift
-            docker: swift
           - language: PHP
             lang: php
-            docker: php
     runs-on: ubuntu-latest
-    container: ${{ matrix.docker }}
     steps:
       - name: Download artifacts
         uses: actions/download-artifact@v2
@@ -112,10 +94,18 @@ jobs:
       - name: Prepare testing binary
         run: chmod +x testing
 
+      - if: matrix.lang == 'dlang'
+        name: Setup D
+        uses: dlang-community/setup-dlang@v1
+
+      - if: matrix.lang == 'java'
+        name: Setup Java
+        uses: actions/setup-java@v1
+        with:
+          java-version: "15"
+
       - name: Run tests
-        run: |
-          ${{ matrix.setup }}
-          ./testing --lang=${{ matrix.lang }}
+        run: ./testing --lang=${{ matrix.lang }}
 
   test-languages-macos:
     name: Test ${{ matrix.language }} (MacOS)
@@ -178,9 +168,7 @@ jobs:
           java-version: "15"
 
       - name: Run tests
-        run: |
-          ${{ matrix.setup }}
-          ./testing --lang=${{ matrix.lang }}
+        run: ./testing --lang=${{ matrix.lang }}
 
   test-languages-windows:
     name: Test ${{ matrix.language }} (Windows)
@@ -241,7 +229,6 @@ jobs:
 
       - name: Run tests
         run: |
-          ${{ matrix.setup }}
           .\testing.exe --lang=${{ matrix.lang }}
 
   update-testing-branch:
