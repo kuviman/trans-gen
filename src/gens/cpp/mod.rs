@@ -152,10 +152,21 @@ fn struct_impl(struc: &Struct, base: Option<(&Name, usize)>) -> String {
     include_templing!("src/gens/cpp/struct_impl.templing")
 }
 
+#[derive(Debug)]
+pub struct Options {
+    pub cxx_standard: i32,
+}
+
+impl Default for Options {
+    fn default() -> Self {
+        Self { cxx_standard: 20 }
+    }
+}
+
 impl crate::Generator for Generator {
     const NAME: &'static str = "C++";
-    type Options = ();
-    fn new(name: &str, _version: &str, _: ()) -> Self {
+    type Options = Options;
+    fn new(name: &str, _version: &str, options: Options) -> Self {
         let project_name = name;
 
         let mut files = HashMap::new();
@@ -255,10 +266,8 @@ impl crate::Generator for Generator {
 
 impl RunnableGenerator for Generator {
     fn build_local(path: &Path) -> anyhow::Result<()> {
-        let standard: &str = "17";
         command("cmake")
             .current_dir(path)
-            .arg(format!("-DCMAKE_CXX_STANDARD={}", standard))
             .arg("-DCMAKE_BUILD_TYPE=RELEASE")
             .arg("-DCMAKE_VERBOSE_MAKEFILE=ON")
             .arg(".")
