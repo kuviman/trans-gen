@@ -131,13 +131,23 @@ impl Schema {
             Self::Enum { .. } => true,
         }
     }
-    pub fn of<T: Trans>() -> Arc<Schema> {
-        static MAP: Lazy<Mutex<HashSet<Arc<Schema>>>> = Lazy::new(|| Mutex::new(HashSet::new()));
-        let schema = T::create_schema();
-        if !MAP.lock().unwrap().contains(&schema) {
-            let schema = Arc::new(T::create_schema());
-            MAP.lock().unwrap().insert(schema);
+    pub fn of<T: Trans>(version: &Version) -> Arc<Schema> {
+        static MAP: Lazy<Mutex<HashMap<Version, HashSet<Arc<Schema>>>>> =
+            Lazy::new(|| Mutex::new(HashMap::new()));
+        let schema = Arc::new(T::create_schema(version));
+        if !MAP
+            .lock()
+            .unwrap()
+            .entry(version.clone())
+            .or_default()
+            .contains(&schema)
+        {
+            MAP.lock()
+                .unwrap()
+                .get_mut(&version)
+                .unwrap()
+                .insert(schema.clone());
         }
-        MAP.lock().unwrap().get(&schema).unwrap().clone()
+        MAP.lock().unwrap()[&version].get(&schema).unwrap().clone()
     }
 }

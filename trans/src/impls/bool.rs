@@ -1,10 +1,10 @@
 use super::*;
 
 impl Trans for bool {
-    fn create_schema() -> Schema {
+    fn create_schema(_version: &Version) -> Schema {
         Schema::Bool
     }
-    fn read_from(reader: &mut dyn std::io::Read) -> std::io::Result<Self> {
+    fn read_from(reader: &mut dyn std::io::Read, _version: &Version) -> std::io::Result<Self> {
         let value = reader.read_u8()?;
         match value {
             0 => Ok(false),
@@ -15,26 +15,26 @@ impl Trans for bool {
             )),
         }
     }
-    fn write_to(&self, writer: &mut dyn std::io::Write) -> std::io::Result<()> {
+    fn write_to(&self, writer: &mut dyn std::io::Write, _version: &Version) -> std::io::Result<()> {
         writer.write_u8(if *self { 1 } else { 0 })
     }
 }
 
 #[test]
 fn test_schema() {
-    assert_eq!(*Schema::of::<bool>(), Schema::Bool);
+    assert_eq!(*Schema::of::<bool>(&crate::version()), Schema::Bool);
 }
 
 #[test]
 fn test_invalid() {
     let value: u8 = 0xcd;
-    deserialize::<bool>(&[value])
+    deserialize::<bool>(&crate::version(), &[value])
         .ensure_err_contains(error_format::invalid_bool(value))
         .unwrap();
 }
 
 #[test]
 fn test_serde() {
-    crate::test_serde(&false);
-    crate::test_serde(&true);
+    test_serde_eq(&crate::version(), &false);
+    test_serde_eq(&crate::version(), &true);
 }

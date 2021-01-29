@@ -22,6 +22,12 @@ pub use test_utils::*;
 
 pub const VERSION: &str = env!("CARGO_PKG_VERSION");
 
+pub use semver::{Version, VersionReq};
+
+pub fn version() -> Version {
+    Version::parse(VERSION).unwrap()
+}
+
 fn try_from<U: std::fmt::Debug + Copy, T: std::convert::TryFrom<U>>(
     value: U,
 ) -> std::io::Result<T> {
@@ -34,15 +40,18 @@ fn try_from<U: std::fmt::Debug + Copy, T: std::convert::TryFrom<U>>(
 }
 
 pub trait Trans: Sized + 'static {
-    fn create_schema() -> Schema;
-    fn write_to(&self, writer: &mut dyn std::io::Write) -> std::io::Result<()>;
-    fn read_from(reader: &mut dyn std::io::Read) -> std::io::Result<Self>;
+    fn create_schema(version: &Version) -> Schema;
+    fn write_to(&self, writer: &mut dyn std::io::Write, version: &Version) -> std::io::Result<()>;
+    fn read_from(reader: &mut dyn std::io::Read, version: &Version) -> std::io::Result<Self>;
 }
 
-pub fn deserialize_only_from<T: Trans>(reader: impl std::io::Read) -> std::io::Result<T> {
+pub fn deserialize_only_from<T: Trans>(
+    version: &Version,
+    reader: impl std::io::Read,
+) -> std::io::Result<T> {
     use std::io::BufRead;
     let mut reader = std::io::BufReader::new(reader);
-    let value = T::read_from(&mut reader)?;
+    let value = T::read_from(&mut reader, version)?;
     if reader.fill_buf()?.is_empty() {
         Ok(value)
     } else {
@@ -53,19 +62,19 @@ pub fn deserialize_only_from<T: Trans>(reader: impl std::io::Read) -> std::io::R
     }
 }
 
-pub fn deserialize<T: Trans>(bytes: &[u8]) -> std::io::Result<T> {
-    deserialize_only_from(bytes)
+pub fn deserialize<T: Trans>(version: &Version, bytes: &[u8]) -> std::io::Result<T> {
+    deserialize_only_from(version, bytes)
 }
 
-pub fn serialize<T: Trans>(value: &T) -> std::io::Result<Vec<u8>> {
+pub fn serialize<T: Trans>(version: &Version, value: &T) -> std::io::Result<Vec<u8>> {
     let mut buffer = Vec::<u8>::new();
-    value.write_to(&mut buffer)?;
+    value.write_to(&mut buffer, version)?;
     Ok(buffer)
 }
 
 #[test]
 fn test_eof() {
-    deserialize::<i32>(&[])
+    deserialize::<i32>(&crate::version(), &[])
         .ensure_err_kind(std::io::ErrorKind::UnexpectedEof)
         .unwrap();
 }

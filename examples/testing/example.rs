@@ -84,3 +84,6 @@ pub struct Example {
 
 pub type Model = Example;
 pub const SHOW_STDOUT: bool = true;
+pub fn version() -> trans::Version {
+    trans::version()
+}

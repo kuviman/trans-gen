@@ -292,3 +292,6 @@ pub struct PlayerView {
 
 pub type Model = PlayerView;
 pub const SHOW_STDOUT: bool = false;
+pub fn version() -> trans::Version {
+    trans::version()
+}

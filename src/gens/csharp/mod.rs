@@ -251,8 +251,8 @@ impl RunnableGenerator for Generator {
 }
 
 impl<D: Trans + PartialEq + Debug> TestableGenerator<testing::FileReadWrite<D>> for Generator {
-    fn extra_files(_: &testing::FileReadWrite<D>) -> Vec<File> {
-        let schema = Schema::of::<D>();
+    fn extra_files(test: &testing::FileReadWrite<D>) -> Vec<File> {
+        let schema = Schema::of::<D>(&test.version);
         let schema: &Schema = &schema;
         vec![File {
             path: "Runner.cs".to_owned(),

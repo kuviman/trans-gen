@@ -35,6 +35,84 @@ fn field_schema_name(field: &syn::Field) -> syn::Ident {
     name
 }
 
+fn version_req(attrs: &[syn::Attribute]) -> Option<syn::LitStr> {
+    let mut version_req = None;
+    for attr in attrs {
+        if let Ok(syn::Meta::List(syn::MetaList {
+            path: ref meta_path,
+            ref nested,
+            ..
+        })) = attr.parse_meta()
+        {
+            if meta_path.is_ident("trans") {
+                for inner in nested {
+                    match *inner {
+                        syn::NestedMeta::Meta(syn::Meta::NameValue(syn::MetaNameValue {
+                            path: ref meta_path,
+                            lit: syn::Lit::Str(ref lit),
+                            ..
+                        })) => {
+                            if meta_path.is_ident("version") {
+                                version_req = Some(lit.clone());
+                            }
+                        }
+                        _ => panic!("Unexpected meta"),
+                    }
+                }
+            }
+        }
+    }
+    version_req
+}
+
+fn default_field_value(field: &syn::Field) -> Option<syn::Expr> {
+    let mut default: Option<syn::Expr> = None;
+    for attr in &field.attrs {
+        if let Ok(syn::Meta::List(syn::MetaList {
+            path: ref meta_path,
+            ref nested,
+            ..
+        })) = attr.parse_meta()
+        {
+            if meta_path.is_ident("trans") {
+                for inner in nested {
+                    match *inner {
+                        syn::NestedMeta::Meta(syn::Meta::NameValue(syn::MetaNameValue {
+                            path: ref meta_path,
+                            lit: syn::Lit::Str(ref lit),
+                            ..
+                        })) => {
+                            if meta_path.is_ident("default") {
+                                default = Some(
+                                    syn::parse_str(&lit.value())
+                                        .expect("Failed to parse default_value"),
+                                );
+                            }
+                        }
+                        _ => panic!("Unexpected meta"),
+                    }
+                }
+            }
+        }
+    }
+    default
+}
+
+fn add_version_req(
+    version_req: Option<syn::LitStr>,
+    ast: proc_macro2::TokenStream,
+) -> proc_macro2::TokenStream {
+    if let Some(version_req) = version_req {
+        quote! {
+            if trans::VersionReq::parse(#version_req).unwrap().matches(version) {
+                #ast
+            }
+        }
+    } else {
+        ast
+    }
+}
+
 fn get_documentation(attrs: &[syn::Attribute]) -> proc_macro2::TokenStream {
     use std::collections::HashMap;
     let mut language_docs: HashMap<String, String> = HashMap::new();
@@ -91,6 +169,69 @@ fn get_documentation(attrs: &[syn::Attribute]) -> proc_macro2::TokenStream {
     }
 }
 
+fn field_write(
+    field: &syn::Field,
+    input_type: &syn::Ident,
+    ty_generics: &syn::TypeGenerics,
+    variant_name: Option<&syn::Ident>,
+) -> proc_macro2::TokenStream {
+    let field_name = field
+        .ident
+        .as_ref()
+        .expect("Only named fields are supported");
+    let error_context = match variant_name {
+        Some(variant_name) => quote! {
+            trans::error_format::write_variant_field::<#input_type #ty_generics>(stringify!(#variant_name), stringify!(#field_name))
+        },
+        None => quote! {
+            trans::error_format::write_field::<#input_type #ty_generics>(stringify!(#field_name))
+        },
+    };
+    add_version_req(
+        version_req(&field.attrs),
+        quote! {
+            trans::add_error_context(trans::Trans::write_to(#field_name, writer, version), #error_context)?;
+        },
+    )
+}
+
+fn field_read(
+    field: &syn::Field,
+    input_type: &syn::Ident,
+    ty_generics: &syn::TypeGenerics,
+    variant_name: Option<&syn::Ident>,
+) -> proc_macro2::TokenStream {
+    let field_name = field
+        .ident
+        .as_ref()
+        .expect("Only named fields are supported");
+    let error_context = match variant_name {
+        Some(variant_name) => quote! {
+            trans::error_format::read_variant_field::<#input_type #ty_generics>(stringify!(#variant_name), stringify!(#field_name))
+        },
+        None => quote! {
+            trans::error_format::read_field::<#input_type #ty_generics>(stringify!(#field_name))
+        },
+    };
+    let mut field_read = quote! {
+        trans::add_error_context(trans::Trans::read_from(reader, version), #error_context)?
+    };
+    if let Some(version_req) = version_req(&field.attrs) {
+        let field_default = default_field_value(field)
+            .expect("Fields with version requirements need a default value");
+        field_read = quote! {
+            if trans::VersionReq::parse(#version_req).unwrap().matches(version) {
+                #field_read
+            } else {
+                #field_default
+            }
+        };
+    }
+    quote! {
+        #field_name: #field_read
+    }
+}
+
 #[proc_macro_derive(Trans, attributes(trans, trans_doc))]
 pub fn derive_trans(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
     let input: TokenStream = input.into();
@@ -140,7 +281,7 @@ pub fn derive_trans(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
             let mut name = #base_name.to_owned();
             if #generics_in_name {
                 #(
-                    name += &trans::Schema::of::<#generic_params>().full_name().raw();
+                    name += &trans::Schema::of::<#generic_params>(version).full_name().raw();
                 )*
             }
             name
@@ -150,12 +291,6 @@ pub fn derive_trans(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
                 syn::Fields::Named(_) => {
                     let field_tys: Vec<_> = fields.iter().map(|field| &field.ty).collect();
                     let field_tys = &field_tys;
-                    let field_names: Vec<_> = fields
-                        .iter()
-                        .map(|field| field.ident.as_ref().unwrap())
-                        .collect();
-                    let field_names = &field_names;
-                    let field_names_2 = field_names;
                     let mut generics = ast.generics.clone();
                     let extra_where_clauses = quote! {
                         where
@@ -173,38 +308,52 @@ pub fn derive_trans(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
                         let documentation = get_documentation(&field.attrs);
                         let schema_name = field_schema_name(field);
                         let ty = &field.ty;
-                        quote! {
-                            trans::Field {
-                                documentation: #documentation,
-                                name: trans::Name::new(stringify!(#schema_name).to_owned()),
-                                schema: trans::Schema::of::<#ty>(),
-                            }
-                        }
+                        add_version_req(
+                            version_req(&field.attrs),
+                            quote! {
+                                fields.push(trans::Field {
+                                    documentation: #documentation,
+                                    name: trans::Name::new(stringify!(#schema_name).to_owned()),
+                                    schema: trans::Schema::of::<#ty>(version),
+                                });
+                            },
+                        )
                     });
+                    let field_names = fields.iter().map(|field| {
+                        field
+                            .ident
+                            .as_ref()
+                            .expect("Only named fields are supported")
+                    });
+                    let field_reads = fields
+                        .iter()
+                        .map(|field| field_read(field, input_type, &ty_generics, None));
+                    let field_writes = fields
+                        .iter()
+                        .map(|field| field_write(field, input_type, &ty_generics, None));
                     let documentation = get_documentation(&ast.attrs);
                     let expanded = quote! {
                         impl #impl_generics trans::Trans for #input_type #ty_generics #where_clause {
-                            fn create_schema() -> trans::Schema {
+                            fn create_schema(version: &trans::Version) -> trans::Schema {
                                 let name = #final_name;
                                 trans::Schema::Struct(trans::Struct {
                                     documentation: #documentation,
                                     name: trans::Name::new(name),
-                                    fields: vec![#(#schema_fields),*],
+                                    fields: {
+                                        let mut fields = Vec::new();
+                                        #(#schema_fields)*
+                                        fields
+                                    },
                                 })
                             }
-                            fn write_to(&self, writer: &mut dyn std::io::Write) -> std::io::Result<()> {
-                                #(trans::add_error_context(
-                                    trans::Trans::write_to(&self.#field_names, writer),
-                                    trans::error_format::write_field::<#input_type #ty_generics>(stringify!(#field_names_2)),
-                                )?;)*
+                            fn write_to(&self, writer: &mut dyn std::io::Write, version: &trans::Version) -> std::io::Result<()> {
+                                let Self { #(#field_names,)* } = self;
+                                #(#field_writes)*
                                 Ok(())
                             }
-                            fn read_from(reader: &mut dyn std::io::Read) -> std::io::Result<Self> {
+                            fn read_from(reader: &mut dyn std::io::Read, version: &trans::Version) -> std::io::Result<Self> {
                                 Ok(Self {
-                                    #(#field_names: trans::add_error_context(
-                                        trans::Trans::read_from(reader),
-                                        trans::error_format::read_field::<#input_type #ty_generics>(stringify!(#field_names_2)),
-                                    )?,)*
+                                    #(#field_reads,)*
                                 })
                             }
                         }
@@ -229,15 +378,15 @@ pub fn derive_trans(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
                     let (impl_generics, ty_generics, where_clause) = generics.split_for_impl();
                     let expanded = quote! {
                         impl #impl_generics trans::Trans for #input_type #ty_generics #where_clause {
-                            fn create_schema() -> trans::Schema {
-                                <#inner_ty as trans::Trans>::create_schema()
+                            fn create_schema(version: &trans::Version) -> trans::Schema {
+                                <#inner_ty as trans::Trans>::create_schema(version)
                             }
-                            fn write_to(&self, writer: &mut dyn std::io::Write) -> std::io::Result<()> {
-                                trans::Trans::write_to(&self.0, writer)?;
+                            fn write_to(&self, writer: &mut dyn std::io::Write, version: &trans::Version) -> std::io::Result<()> {
+                                trans::Trans::write_to(&self.0, writer, version)?;
                                 Ok(())
                             }
-                            fn read_from(reader: &mut dyn std::io::Read) -> std::io::Result<Self> {
-                                Ok(Self(trans::Trans::read_from(reader)?))
+                            fn read_from(reader: &mut dyn std::io::Read, version: &trans::Version) -> std::io::Result<Self> {
+                                Ok(Self(trans::Trans::read_from(reader, version)?))
                             }
                         }
                     };
@@ -252,7 +401,7 @@ pub fn derive_trans(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
                     let variant_writes = variants.iter().enumerate().map(|(tag, variant)| {
                         let tag = tag as i32;
                         let variant_name = &variant.ident;
-                        let field_names: Vec<_> = variant
+                        let field_names = variant
                             .fields
                             .iter()
                             .map(|field| {
@@ -260,52 +409,40 @@ pub fn derive_trans(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
                                     .ident
                                     .as_ref()
                                     .expect("Only named fields are supported")
-                            })
-                            .collect();
-                        let field_names = &field_names;
-                        let field_names_2 = field_names;
-                        let field_names_copy = field_names;
+                            });
+                        let field_writes = variant.fields.iter().map(|field| field_write(field, input_type, &ty_generics, Some(variant_name)));
                         quote! {
                             #input_type::#variant_name { #(#field_names,)* } => {
                                 trans::add_error_context(
-                                    trans::Trans::write_to(&#tag, writer),
+                                    trans::Trans::write_to(&#tag, writer, version),
                                     trans::error_format::write_tag::<#input_type #ty_generics>(stringify!(#variant_name)),
                                 )?;
-                                #(trans::add_error_context(
-                                    trans::Trans::write_to(#field_names_copy, writer),
-                                    trans::error_format::write_variant_field::<#input_type #ty_generics>(stringify!(#variant_name), stringify!(#field_names_2)),
-                                )?;)*
+                                #(#field_writes)*
                             }
                         }
                     });
                     let variant_reads = variants.iter().enumerate().map(|(tag, variant)| {
                         let tag = tag as i32;
                         let variant_name = &variant.ident;
-                        let field_names: Vec<_> = variant
-                            .fields
-                            .iter()
-                            .map(|field| field.ident.as_ref().unwrap()).collect();
-                        let field_names = &field_names;
-                        let field_names_2 = field_names;
+                        let field_reads = variant.fields.iter().map(|field| {
+                            field_read(field, input_type, &ty_generics, Some(&variant.ident))
+                        });
                         quote! {
                             #tag => #input_type::#variant_name {
-                                #(#field_names: trans::add_error_context(
-                                    trans::Trans::read_from(reader),
-                                    trans::error_format::read_variant_field::<#input_type #ty_generics>(stringify!(#variant_name), stringify!(#field_names_2)),
-                                )?,)*
+                                #(#field_reads,)*
                             },
                         }
                     });
                     quote! {
-                        fn write_to(&self, writer: &mut dyn std::io::Write) -> std::io::Result<()> {
+                        fn write_to(&self, writer: &mut dyn std::io::Write, version: &trans::Version) -> std::io::Result<()> {
                             match self {
                                 #(#variant_writes)*
                             }
                             Ok(())
                         }
-                        fn read_from(reader: &mut dyn std::io::Read) -> std::io::Result<Self> {
+                        fn read_from(reader: &mut dyn std::io::Read, version: &trans::Version) -> std::io::Result<Self> {
                             let tag = trans::add_error_context(
-                                <i32 as trans::Trans>::read_from(reader),
+                                <i32 as trans::Trans>::read_from(reader, version),
                                 trans::error_format::read_tag::<#input_type #ty_generics>(),
                             )?;
                             Ok(match tag {
@@ -329,22 +466,29 @@ pub fn derive_trans(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
                     let variants = variants.iter().map(|variant| {
                         let name = &variant.ident;
                         let documentation = get_documentation(&variant.attrs);
-                        quote! {
-                            trans::EnumVariant {
-                                name: trans::Name::new(stringify!(#name).to_owned()),
-                                documentation: #documentation,
-                            }
-                        }
+                        add_version_req(
+                            version_req(&variant.attrs),
+                            quote! {
+                                variants.push(trans::EnumVariant {
+                                    name: trans::Name::new(stringify!(#name).to_owned()),
+                                    documentation: #documentation,
+                                });
+                            },
+                        )
                     });
                     let documentation = get_documentation(&ast.attrs);
                     let expanded = quote! {
                         impl #impl_generics trans::Trans for #input_type #ty_generics #where_clause {
-                            fn create_schema() -> trans::Schema {
+                            fn create_schema(version: &trans::Version) -> trans::Schema {
                                 let base_name = #final_name;
                                 trans::Schema::Enum {
                                     documentation: #documentation,
                                     base_name: trans::Name::new(base_name),
-                                    variants: vec![#(#variants),*],
+                                    variants: {
+                                        let mut variants = Vec::new();
+                                        #(#variants)*
+                                        variants
+                                    },
                                 }
                             }
                             #read_write_impl
@@ -359,33 +503,45 @@ pub fn derive_trans(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
                             let documentation = get_documentation(&field.attrs);
                             let schema_name = field_schema_name(field);
                             let ty = &field.ty;
-                            quote! {
-                                trans::Field {
-                                    documentation: #documentation,
-                                    name: trans::Name::new(stringify!(#schema_name).to_owned()),
-                                    schema: trans::Schema::of::<#ty>(),
-                                }
-                            }
+                            add_version_req(
+                                version_req(&field.attrs),
+                                quote! {
+                                    fields.push(trans::Field {
+                                        documentation: #documentation,
+                                        name: trans::Name::new(stringify!(#schema_name).to_owned()),
+                                        schema: trans::Schema::of::<#ty>(version),
+                                    });
+                                },
+                            )
                         });
-                        quote! {
-                            trans::Struct {
-                                documentation: #documentation,
-                                name: trans::Name::new(stringify!(#variant_name).to_owned()),
-                                fields: vec![
-                                    #(#schema_fields),*
-                                ],
-                            }
-                        }
+                        add_version_req(
+                            version_req(&variant.attrs),
+                            quote! {
+                                variants.push(trans::Struct {
+                                    documentation: #documentation,
+                                    name: trans::Name::new(stringify!(#variant_name).to_owned()),
+                                    fields: {
+                                        let mut fields = Vec::new();
+                                        #(#schema_fields)*
+                                        fields
+                                    },
+                                });
+                            },
+                        )
                     });
                     let documentation = get_documentation(&ast.attrs);
                     let expanded = quote! {
                         impl #impl_generics trans::Trans for #input_type #ty_generics #where_clause {
-                            fn create_schema() -> trans::Schema {
+                            fn create_schema(version: &trans::Version) -> trans::Schema {
                                 let base_name = #final_name;
                                 trans::Schema::OneOf {
                                     documentation: #documentation,
                                     base_name: trans::Name::new(base_name),
-                                    variants: vec![#(#variants),*],
+                                    variants: {
+                                        let mut variants = Vec::new();
+                                        #(#variants)*
+                                        variants
+                                    },
                                 }
                             }
                             #read_write_impl

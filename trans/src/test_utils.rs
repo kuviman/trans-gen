@@ -42,9 +42,12 @@ impl<T: std::fmt::Debug> ResultExt<T, std::io::Error> for Result<T, std::io::Err
     }
 }
 
-pub fn test_serde<T: Trans + std::fmt::Debug + PartialEq>(value: &T) {
-    let serded: T = deserialize(&serialize(value).expect("Failed to serialize"))
-        .expect("Failed to deserialize");
+pub fn test_serde_eq<T: Trans + std::fmt::Debug + PartialEq>(version: &Version, value: &T) {
+    let serded: T = deserialize(
+        version,
+        &serialize(version, value).expect("Failed to serialize"),
+    )
+    .expect("Failed to deserialize");
     assert_eq!(*value, serded);
 }
 
