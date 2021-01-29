@@ -24,7 +24,7 @@ public:
     {{ self.type_name(&field.schema) }} {{ field.name.mixed_case(conv) }};
     - }
 
-    - if !struc.fields.is_empty() {
+    - if !struc.fields.is_empty() && self.options.cxx_standard < 17 {
     {{ struc.name.camel_case(conv) }}();
 
     - }

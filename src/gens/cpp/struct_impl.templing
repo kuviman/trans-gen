@@ -8,7 +8,7 @@
 -     struc.name.camel_case(conv)
 - };
 - let full_name = &full_name;
-- if !struc.fields.is_empty() {
+- if !struc.fields.is_empty() && self.options.cxx_standard < 17 {
 {{ full_name }}::{{ struc.name.camel_case(conv) }}() { }
 
 - }
