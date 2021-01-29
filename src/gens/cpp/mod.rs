@@ -12,144 +12,135 @@ pub struct Generator {
     model_include: String,
 }
 
-fn type_name(schema: &Schema) -> String {
-    match schema {
-        Schema::Bool => "bool".to_owned(),
-        Schema::Int32 => "int".to_owned(),
-        Schema::Int64 => "long long".to_owned(),
-        Schema::Float32 => "float".to_owned(),
-        Schema::Float64 => "double".to_owned(),
-        Schema::String => "std::string".to_owned(),
-        Schema::OneOf {
-            base_name: name, ..
-        } => format!("std::shared_ptr<{}>", name.camel_case(conv)),
-        Schema::Struct(Struct { name, .. })
-        | Schema::Enum {
-            base_name: name, ..
-        } => format!("{}", name.camel_case(conv)),
-        Schema::Option(inner) => format!("std::shared_ptr<{}>", type_name(inner)),
-        Schema::Vec(inner) => format!("std::vector<{}>", type_name(inner)),
-        Schema::Map(key, value) => format!(
-            "std::unordered_map<{}, {}>",
-            type_name(key),
-            type_name(value)
-        ),
+impl Generator {
+    fn type_name(&self, schema: &Schema) -> String {
+        match schema {
+            Schema::Bool => "bool".to_owned(),
+            Schema::Int32 => "int".to_owned(),
+            Schema::Int64 => "long long".to_owned(),
+            Schema::Float32 => "float".to_owned(),
+            Schema::Float64 => "double".to_owned(),
+            Schema::String => "std::string".to_owned(),
+            Schema::OneOf {
+                base_name: name, ..
+            } => format!("std::shared_ptr<{}>", name.camel_case(conv)),
+            Schema::Struct(Struct { name, .. })
+            | Schema::Enum {
+                base_name: name, ..
+            } => format!("{}", name.camel_case(conv)),
+            Schema::Option(inner) => format!("std::shared_ptr<{}>", self.type_name(inner)),
+            Schema::Vec(inner) => format!("std::vector<{}>", self.type_name(inner)),
+            Schema::Map(key, value) => format!(
+                "std::unordered_map<{}, {}>",
+                self.type_name(key),
+                self.type_name(value)
+            ),
+        }
     }
-}
-
-fn includes(schema: &Schema) -> String {
-    let mut includes = BTreeSet::new();
-    includes.insert("<string>".to_owned());
-    includes.insert("<sstream>".to_owned());
-    includes.insert("\"../Stream.hpp\"".to_owned());
-    collect_includes(&mut includes, schema, false);
-    include_templing!("src/gens/cpp/includes.templing")
-}
-
-fn collect_includes(result: &mut BTreeSet<String>, schema: &Schema, current: bool) {
-    if current {
+    fn includes(&self, schema: &Schema) -> String {
+        let mut includes = BTreeSet::new();
+        includes.insert("<string>".to_owned());
+        includes.insert("<sstream>".to_owned());
+        includes.insert("\"../Stream.hpp\"".to_owned());
+        self.collect_includes(&mut includes, schema, false);
+        include_templing!("src/gens/cpp/includes.templing")
+    }
+    fn collect_includes(&self, result: &mut BTreeSet<String>, schema: &Schema, current: bool) {
+        if current {
+            match schema {
+                Schema::Bool
+                | Schema::Int32
+                | Schema::Int64
+                | Schema::Float32
+                | Schema::Float64
+                | Schema::String => {}
+                Schema::Option(_) => {
+                    result.insert("<memory>".to_owned());
+                }
+                Schema::Map(_, _) => {
+                    result.insert("<unordered_map>".to_owned());
+                }
+                Schema::Vec(_) => {
+                    result.insert("<vector>".to_owned());
+                }
+                Schema::Struct(Struct { name, .. })
+                | Schema::OneOf {
+                    base_name: name, ..
+                }
+                | Schema::Enum {
+                    base_name: name, ..
+                } => {
+                    result.insert("<stdexcept>".to_owned());
+                    result.insert(format!("\"{}.hpp\"", name.camel_case(conv)));
+                }
+            }
+        }
         match schema {
             Schema::Bool
             | Schema::Int32
             | Schema::Int64
             | Schema::Float32
             | Schema::Float64
-            | Schema::String => {}
-            Schema::Option(_) => {
+            | Schema::String
+            | Schema::Enum { .. } => {}
+            Schema::Option(inner) => {
+                self.collect_includes(result, inner, true);
+            }
+            Schema::Map(key_type, value_type) => {
+                self.collect_includes(result, key_type, true);
+                self.collect_includes(result, value_type, true);
+            }
+            Schema::Vec(inner) => {
+                self.collect_includes(result, inner, true);
+            }
+            Schema::Struct(Struct { fields, .. }) => {
+                for field in fields {
+                    self.collect_includes(result, &field.schema, true);
+                }
+            }
+            Schema::OneOf { variants, .. } => {
                 result.insert("<memory>".to_owned());
-            }
-            Schema::Map(_, _) => {
-                result.insert("<unordered_map>".to_owned());
-            }
-            Schema::Vec(_) => {
-                result.insert("<vector>".to_owned());
-            }
-            Schema::Struct(Struct { name, .. })
-            | Schema::OneOf {
-                base_name: name, ..
-            }
-            | Schema::Enum {
-                base_name: name, ..
-            } => {
-                result.insert("<stdexcept>".to_owned());
-                result.insert(format!("\"{}.hpp\"", name.camel_case(conv)));
-            }
-        }
-    }
-    match schema {
-        Schema::Bool
-        | Schema::Int32
-        | Schema::Int64
-        | Schema::Float32
-        | Schema::Float64
-        | Schema::String
-        | Schema::Enum { .. } => {}
-        Schema::Option(inner) => {
-            collect_includes(result, inner, true);
-        }
-        Schema::Map(key_type, value_type) => {
-            collect_includes(result, key_type, true);
-            collect_includes(result, value_type, true);
-        }
-        Schema::Vec(inner) => {
-            collect_includes(result, inner, true);
-        }
-        Schema::Struct(Struct { fields, .. }) => {
-            for field in fields {
-                collect_includes(result, &field.schema, true);
-            }
-        }
-        Schema::OneOf { variants, .. } => {
-            result.insert("<memory>".to_owned());
-            for variant in variants {
-                for field in &variant.fields {
-                    collect_includes(result, &field.schema, true);
+                for variant in variants {
+                    for field in &variant.fields {
+                        self.collect_includes(result, &field.schema, true);
+                    }
                 }
             }
         }
     }
-}
-
-fn doc_comment(documentation: &Documentation) -> String {
-    let mut result = String::new();
-    for line in documentation.get("en").unwrap().lines() {
-        result.push_str("// ");
-        result.push_str(line);
-        result.push('\n');
+    fn doc_comment(&self, documentation: &Documentation) -> String {
+        let mut result = String::new();
+        for line in documentation.get("en").unwrap().lines() {
+            result.push_str("// ");
+            result.push_str(line);
+            result.push('\n');
+        }
+        result.trim().to_owned()
     }
-    result.trim().to_owned()
-}
-
-fn doc_read_from(name: &str) -> String {
-    format!("// Read {} from input stream", name)
-}
-
-fn doc_write_to(name: &str) -> String {
-    format!("// Write {} to output stream", name)
-}
-
-fn doc_to_string(name: &str) -> String {
-    format!("// Get string representation of {}", name)
-}
-
-fn read_var(var: &str, schema: &Schema) -> String {
-    include_templing!("src/gens/cpp/read_var.templing")
-}
-
-fn write_var(var: &str, schema: &Schema) -> String {
-    include_templing!("src/gens/cpp/write_var.templing")
-}
-
-fn var_to_string(var: &str, schema: &Schema) -> String {
-    include_templing!("src/gens/cpp/var_to_string.templing")
-}
-
-fn struct_def(struc: &Struct, base: Option<(&Name, usize)>) -> String {
-    include_templing!("src/gens/cpp/struct_def.templing")
-}
-
-fn struct_impl(struc: &Struct, base: Option<(&Name, usize)>) -> String {
-    include_templing!("src/gens/cpp/struct_impl.templing")
+    fn doc_read_from(&self, name: &str) -> String {
+        format!("// Read {} from input stream", name)
+    }
+    fn doc_write_to(&self, name: &str) -> String {
+        format!("// Write {} to output stream", name)
+    }
+    fn doc_to_string(&self, name: &str) -> String {
+        format!("// Get string representation of {}", name)
+    }
+    fn read_var(&self, var: &str, schema: &Schema) -> String {
+        include_templing!("src/gens/cpp/read_var.templing")
+    }
+    fn write_var(&self, var: &str, schema: &Schema) -> String {
+        include_templing!("src/gens/cpp/write_var.templing")
+    }
+    fn var_to_string(&self, var: &str, schema: &Schema) -> String {
+        include_templing!("src/gens/cpp/var_to_string.templing")
+    }
+    fn struct_def(&self, struc: &Struct, base: Option<(&Name, usize)>) -> String {
+        include_templing!("src/gens/cpp/struct_def.templing")
+    }
+    fn struct_impl(&self, struc: &Struct, base: Option<(&Name, usize)>) -> String {
+        include_templing!("src/gens/cpp/struct_impl.templing")
+    }
 }
 
 #[derive(Debug)]
@@ -314,6 +305,15 @@ impl<D: Trans + PartialEq + Debug> TestableGenerator<testing::FileReadWrite<D>> 
     fn extra_files(_: &testing::FileReadWrite<D>) -> Vec<File> {
         let schema = Schema::of::<D>();
         let schema: &Schema = &schema;
+        fn type_name(schema: &Schema) -> String {
+            match schema {
+                Schema::Struct(struc) => struc.name.camel_case(conv),
+                Schema::OneOf { base_name, .. } => {
+                    format!("std::shared_ptr<{}>", base_name.camel_case(conv))
+                }
+                _ => unreachable!(),
+            }
+        }
         vec![File {
             path: "main.cpp".to_owned(),
             content: include_templing!("src/gens/cpp/file_read_write.cpp.templing"),

@@ -8,7 +8,7 @@
 -     struc.name.camel_case(conv)
 - };
 - let full_name = &full_name;
-{{ doc_comment(&struc.documentation) }}
+{{ self.doc_comment(&struc.documentation) }}
 class {{ full_name }}~
 - if let Some((base_name, _)) = base {
 ~ : public {{ base_name.camel_case(conv) }}~
@@ -20,8 +20,8 @@ public:
 
     - }
     - for field in &struc.fields {
-    {{ doc_comment(&field.documentation) }}
-    {{ type_name(&field.schema) }} {{ field.name.mixed_case(conv) }};
+    {{ self.doc_comment(&field.documentation) }}
+    {{ self.type_name(&field.schema) }} {{ field.name.mixed_case(conv) }};
     - }
 
     - if !struc.fields.is_empty() {
@@ -33,17 +33,17 @@ public:
         - if index != 0 {
         ~, ~
         - }
-        ~{{ type_name(&field.schema) }} {{ field.name.mixed_case(conv) }}~
+        ~{{ self.type_name(&field.schema) }} {{ field.name.mixed_case(conv) }}~
         - }
     ~);
 
-    {{ doc_read_from(&struc.name.camel_case(conv)) }}
+    {{ self.doc_read_from(&struc.name.camel_case(conv)) }}
     static {{ struc.name.camel_case(conv) }} readFrom(InputStream& stream);
 
-    {{ doc_write_to(&struc.name.camel_case(conv)) }}
+    {{ self.doc_write_to(&struc.name.camel_case(conv)) }}
     void writeTo(OutputStream& stream) const;
 
-    {{ doc_to_string(&struc.name.camel_case(conv)) }}
+    {{ self.doc_to_string(&struc.name.camel_case(conv)) }}
     std::string toString() const;
     - if struc.hashable() {
 

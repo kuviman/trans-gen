@@ -22,32 +22,32 @@
 - }
 - Schema::Option(inner) => {
 if (stream.readBool()) {
-    {{ var }} = std::shared_ptr<{{ type_name(inner) }}>(new {{ type_name(inner) }}());
-    {{ read_var(&format!("*{}", var), inner) }}
+    {{ var }} = std::shared_ptr<{{ self.type_name(inner) }}>(new {{ self.type_name(inner) }}());
+    {{ self.read_var(&format!("*{}", var), inner) }}
 } else {
-    {{ var }} = std::shared_ptr<{{ type_name(inner) }}>();
+    {{ var }} = std::shared_ptr<{{ self.type_name(inner) }}>();
 }
 - }
 - Schema::Vec(inner) => {
-{{ var }} = std::vector<{{ type_name(inner) }}>(stream.readInt());
+{{ var }} = std::vector<{{ self.type_name(inner) }}>(stream.readInt());
 - let index_var = format!("{}Index", var); let index_var = &index_var;
 for (size_t {{ index_var }} = 0; {{ index_var }} < {{ var }}.size(); {{ index_var }}++) {
-    {{ read_var(&format!("{}[{}]", var, index_var), inner) }}
+    {{ self.read_var(&format!("{}[{}]", var, index_var), inner) }}
 }
 - }
 - Schema::Map(key_type, value_type) => {
 - let size_var = format!("{}Size", var); let size_var = &size_var;
 size_t {{ size_var }} = stream.readInt();
-{{ var }} = std::unordered_map<{{ type_name(key_type) }}, {{ type_name(value_type) }}>();
+{{ var }} = std::unordered_map<{{ self.type_name(key_type) }}, {{ self.type_name(value_type) }}>();
 {{ var }}.reserve({{ size_var }});
 - let index_var = format!("{}Index", var); let index_var = &index_var;
 for (size_t {{ index_var }} = 0; {{ index_var }} < {{ size_var }}; {{ index_var }}++) {
     - let key_var = format!("{}Key", var); let key_var = &key_var;
     - let value_var = format!("{}Value", var); let value_var = &value_var;
-    {{ type_name(key_type) }} {{ key_var }};
-    {{ type_name(value_type) }} {{ value_var }};
-    {{ read_var(key_var, key_type) }}
-    {{ read_var(value_var, value_type) }}
+    {{ self.type_name(key_type) }} {{ key_var }};
+    {{ self.type_name(value_type) }} {{ value_var }};
+    {{ self.read_var(key_var, key_type) }}
+    {{ self.read_var(value_var, value_type) }}
     {{ var }}.emplace(std::make_pair({{ key_var }}, {{ value_var }}));
 }
 - }

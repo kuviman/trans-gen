@@ -2,10 +2,10 @@
 #include <stdexcept>
 - for (tag, variant) in variants.iter().enumerate() {
 
-{{ struct_impl(variant, Some((base_name, tag))) }}
+{{ self.struct_impl(variant, Some((base_name, tag))) }}
 - }
 
-{{ doc_read_from(&base_name.camel_case(conv)) }}
+{{ self.doc_read_from(&base_name.camel_case(conv)) }}
 std::shared_ptr<{{ base_name.camel_case(conv) }}> {{ base_name.camel_case(conv) }}::readFrom(InputStream& stream) {
     switch (stream.readInt()) {
     - for (tag, variant) in variants.iter().enumerate() {
