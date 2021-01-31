@@ -24,10 +24,6 @@ public:
     {{ self.type_name(&field.schema) }} {{ field.name.mixed_case(conv) }};
     - }
 
-    - if !struc.fields.is_empty() && self.options.cxx_standard < 17 {
-    {{ struc.name.camel_case(conv) }}();
-
-    - }
     {{ struc.name.camel_case(conv) }}(~
         - for (index, field) in struc.fields.iter().enumerate() {
         - if index != 0 {

@@ -8,10 +8,6 @@
 -     struc.name.camel_case(conv)
 - };
 - let full_name = &full_name;
-- if !struc.fields.is_empty() && self.options.cxx_standard < 17 {
-{{ full_name }}::{{ struc.name.camel_case(conv) }}() { }
-
-- }
 {{ full_name }}::{{ struc.name.camel_case(conv) }}(~
     - for (index, field) in struc.fields.iter().enumerate() {
         - if index != 0 {
@@ -31,8 +27,7 @@
 {{ self.doc_read_from(&struc.name.camel_case(conv)) }}
 {{ full_name }} {{ full_name }}::readFrom(InputStream& stream) {
     - for field in &struc.fields {
-    {{ self.type_name(&field.schema) }} {{ field.name.mixed_case(conv) }};
-    {{ self.read_var(&field.name.mixed_case(conv), &field.schema) }}
+    {{ self.read_var(&field.name.mixed_case(conv), &field.schema, true) }}
     - }
     return {{ full_name }}(~ 
         - for (index, field) in struc.fields.iter().enumerate() {

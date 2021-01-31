@@ -1,65 +1,69 @@
+- let var_decl = if decl_var { format!("{} {}", self.type_name(schema), var) } else { var.to_owned() }; let var_decl = &var_decl;
 - match schema {
 - Schema::Bool => {
-{{ var }} = stream.readBool();
+{{ var_decl }} = stream.readBool();
 - }
 - Schema::Int32 => {
-{{ var }} = stream.readInt();
+{{ var_decl }} = stream.readInt();
 - }
 - Schema::Int64 => {
-{{ var }} = stream.readLongLong();
+{{ var_decl }} = stream.readLongLong();
 - }
 - Schema::Float32 => {
-{{ var }} = stream.readFloat();
+{{ var_decl }} = stream.readFloat();
 - }
 - Schema::Float64 => {
-{{ var }} = stream.readDouble();
+{{ var_decl }} = stream.readDouble();
 - }
 - Schema::String => {
-{{ var }} = stream.readString();
+{{ var_decl }} = stream.readString();
 - }
 - Schema::Struct(Struct { name, .. }) | Schema::OneOf { base_name: name, .. } => {
-{{ var }} = {{ name.camel_case(conv) }}::readFrom(stream);
+{{ var_decl }} = {{ name.camel_case(conv) }}::readFrom(stream);
 - }
 - Schema::Option(inner) => {
+- if self.options.cxx_standard >= 17 {
+{{ var_decl }} = std::optional<{{ self.type_name(inner) }}>();
+- } else {
+{{ var_decl }} = std::shared_ptr<{{ self.type_name(inner) }}>();
+- }
 if (stream.readBool()) {
     - if self.options.cxx_standard >= 17 {
-    {{ self.read_var(var, inner) }}
+    {{ self.read_var(var, inner, false) }}
     - } else {
-    {{ var }} = std::shared_ptr<{{ self.type_name(inner) }}>(new {{ self.type_name(inner) }}());
-    {{ self.read_var(&format!("*{}", var), inner) }}
-    - }
-} else {
-    - if self.options.cxx_standard >= 17 {
-    {{ var }} = std::optional<{{ self.type_name(inner) }}>();
-    - } else {
-    {{ var }} = std::shared_ptr<{{ self.type_name(inner) }}>();
+    - let value_var = format!("{}Value", var); let value_var = &value_var;
+    {{ self.read_var(value_var, inner, true) }}
+    {{ var }}.reset(new {{ self.type_name(inner) }}({{ value_var }}));
     - }
 }
 - }
 - Schema::Vec(inner) => {
-{{ var }} = std::vector<{{ self.type_name(inner) }}>(stream.readInt());
+{{ var_decl }} = std::vector<{{ self.type_name(inner) }}>();
+- let size_var = format!("{}Size", var); let size_var = &size_var;
+size_t {{ size_var }} = stream.readInt();
+{{ var }}.reserve({{ size_var }});
 - let index_var = format!("{}Index", var); let index_var = &index_var;
-for (size_t {{ index_var }} = 0; {{ index_var }} < {{ var }}.size(); {{ index_var }}++) {
-    {{ self.read_var(&format!("{}[{}]", var, index_var), inner) }}
+for (size_t {{ index_var }} = 0; {{ index_var }} < {{ size_var }}; {{ index_var }}++) {
+    - let element_var = format!("{}Element", var); let element_var = &element_var;
+    {{ self.read_var(element_var, inner, true) }}
+    {{ var }}.emplace_back({{ element_var }});
 }
 - }
 - Schema::Map(key_type, value_type) => {
 - let size_var = format!("{}Size", var); let size_var = &size_var;
 size_t {{ size_var }} = stream.readInt();
-{{ var }} = std::unordered_map<{{ self.type_name(key_type) }}, {{ self.type_name(value_type) }}>();
+{{ var_decl }} = std::unordered_map<{{ self.type_name(key_type) }}, {{ self.type_name(value_type) }}>();
 {{ var }}.reserve({{ size_var }});
 - let index_var = format!("{}Index", var); let index_var = &index_var;
 for (size_t {{ index_var }} = 0; {{ index_var }} < {{ size_var }}; {{ index_var }}++) {
     - let key_var = format!("{}Key", var); let key_var = &key_var;
     - let value_var = format!("{}Value", var); let value_var = &value_var;
-    {{ self.type_name(key_type) }} {{ key_var }};
-    {{ self.type_name(value_type) }} {{ value_var }};
-    {{ self.read_var(key_var, key_type) }}
-    {{ self.read_var(value_var, value_type) }}
+    {{ self.read_var(key_var, key_type, true) }}
+    {{ self.read_var(value_var, value_type, true) }}
     {{ var }}.emplace(std::make_pair({{ key_var }}, {{ value_var }}));
 }
 - }
 - Schema::Enum { base_name, variants, .. } => {
-{{ var }} = read{{ base_name.camel_case(conv) }}(stream);
+{{ var_decl }} = read{{ base_name.camel_case(conv) }}(stream);
 - }
 - }

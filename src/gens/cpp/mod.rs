@@ -148,7 +148,7 @@ impl Generator {
     fn doc_to_string(&self, name: &str) -> String {
         format!("// Get string representation of {}", name)
     }
-    fn read_var(&self, var: &str, schema: &Schema) -> String {
+    fn read_var(&self, var: &str, schema: &Schema, decl_var: bool) -> String {
         include_templing!("src/gens/cpp/read_var.templing")
     }
     fn write_var(&self, var: &str, schema: &Schema) -> String {
