@@ -17,8 +17,6 @@ public:
     // Initial health of new entity. If absent, it will have full health
     std::optional<int> initHealth;
 
-    BuildProperties();
-
     BuildProperties(std::vector<EntityType> options, std::optional<int> initHealth);
 
     // Read BuildProperties from input stream

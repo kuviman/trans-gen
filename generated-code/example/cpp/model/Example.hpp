@@ -31,8 +31,6 @@ public:
     // Optional enum
     std::optional<Enumeration> optionalEnum;
 
-    Example();
-
     Example(std::shared_ptr<OneOf> oneOf, std::unordered_map<Enumeration, int> hashMap, std::optional<int> optionalInt, std::optional<bool> optionalBool, std::optional<std::shared_ptr<OneOf>> optionalOneOf, std::optional<Structure> optionalStruct, std::optional<Enumeration> optionalEnum);
 
     // Read Example from input stream

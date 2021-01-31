@@ -1,18 +1,17 @@
 #include "RepairProperties.hpp"
 
-RepairProperties::RepairProperties() { }
-
 RepairProperties::RepairProperties(std::vector<EntityType> validTargets, int power) : validTargets(validTargets), power(power) { }
 
 // Read RepairProperties from input stream
 RepairProperties RepairProperties::readFrom(InputStream& stream) {
-    std::vector<EntityType> validTargets;
-    validTargets = std::vector<EntityType>(stream.readInt());
-    for (size_t validTargetsIndex = 0; validTargetsIndex < validTargets.size(); validTargetsIndex++) {
-        validTargets[validTargetsIndex] = readEntityType(stream);
+    std::vector<EntityType> validTargets = std::vector<EntityType>();
+    size_t validTargetsSize = stream.readInt();
+    validTargets.reserve(validTargetsSize);
+    for (size_t validTargetsIndex = 0; validTargetsIndex < validTargetsSize; validTargetsIndex++) {
+        EntityType validTargetsElement = readEntityType(stream);
+        validTargets.emplace_back(validTargetsElement);
     }
-    int power;
-    power = stream.readInt();
+    int power = stream.readInt();
     return RepairProperties(validTargets, power);
 }
 

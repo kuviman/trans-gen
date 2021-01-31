@@ -35,8 +35,6 @@ public:
     // Long integer
     long long longInt;
 
-    OptionOne();
-
     OptionOne(std::vector<int> vecInt, long long longInt);
 
     // Read OptionOne from input stream
@@ -56,8 +54,6 @@ public:
 
     // usize
     int value;
-
-    OptionTwo();
 
     OptionTwo(int value);
 

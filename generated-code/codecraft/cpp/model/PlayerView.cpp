@@ -1,43 +1,36 @@
 #include "PlayerView.hpp"
 
-PlayerView::PlayerView() { }
-
 PlayerView::PlayerView(int myId, int mapSize, bool fogOfWar, std::unordered_map<EntityType, EntityProperties> entityProperties, int maxTickCount, int maxPathfindNodes, int currentTick, std::vector<Player> players, std::vector<Entity> entities) : myId(myId), mapSize(mapSize), fogOfWar(fogOfWar), entityProperties(entityProperties), maxTickCount(maxTickCount), maxPathfindNodes(maxPathfindNodes), currentTick(currentTick), players(players), entities(entities) { }
 
 // Read PlayerView from input stream
 PlayerView PlayerView::readFrom(InputStream& stream) {
-    int myId;
-    myId = stream.readInt();
-    int mapSize;
-    mapSize = stream.readInt();
-    bool fogOfWar;
-    fogOfWar = stream.readBool();
-    std::unordered_map<EntityType, EntityProperties> entityProperties;
+    int myId = stream.readInt();
+    int mapSize = stream.readInt();
+    bool fogOfWar = stream.readBool();
     size_t entityPropertiesSize = stream.readInt();
-    entityProperties = std::unordered_map<EntityType, EntityProperties>();
+    std::unordered_map<EntityType, EntityProperties> entityProperties = std::unordered_map<EntityType, EntityProperties>();
     entityProperties.reserve(entityPropertiesSize);
     for (size_t entityPropertiesIndex = 0; entityPropertiesIndex < entityPropertiesSize; entityPropertiesIndex++) {
-        EntityType entityPropertiesKey;
-        EntityProperties entityPropertiesValue;
-        entityPropertiesKey = readEntityType(stream);
-        entityPropertiesValue = EntityProperties::readFrom(stream);
+        EntityType entityPropertiesKey = readEntityType(stream);
+        EntityProperties entityPropertiesValue = EntityProperties::readFrom(stream);
         entityProperties.emplace(std::make_pair(entityPropertiesKey, entityPropertiesValue));
     }
-    int maxTickCount;
-    maxTickCount = stream.readInt();
-    int maxPathfindNodes;
-    maxPathfindNodes = stream.readInt();
-    int currentTick;
-    currentTick = stream.readInt();
-    std::vector<Player> players;
-    players = std::vector<Player>(stream.readInt());
-    for (size_t playersIndex = 0; playersIndex < players.size(); playersIndex++) {
-        players[playersIndex] = Player::readFrom(stream);
+    int maxTickCount = stream.readInt();
+    int maxPathfindNodes = stream.readInt();
+    int currentTick = stream.readInt();
+    std::vector<Player> players = std::vector<Player>();
+    size_t playersSize = stream.readInt();
+    players.reserve(playersSize);
+    for (size_t playersIndex = 0; playersIndex < playersSize; playersIndex++) {
+        Player playersElement = Player::readFrom(stream);
+        players.emplace_back(playersElement);
     }
-    std::vector<Entity> entities;
-    entities = std::vector<Entity>(stream.readInt());
-    for (size_t entitiesIndex = 0; entitiesIndex < entities.size(); entitiesIndex++) {
-        entities[entitiesIndex] = Entity::readFrom(stream);
+    std::vector<Entity> entities = std::vector<Entity>();
+    size_t entitiesSize = stream.readInt();
+    entities.reserve(entitiesSize);
+    for (size_t entitiesIndex = 0; entitiesIndex < entitiesSize; entitiesIndex++) {
+        Entity entitiesElement = Entity::readFrom(stream);
+        entities.emplace_back(entitiesElement);
     }
     return PlayerView(myId, mapSize, fogOfWar, entityProperties, maxTickCount, maxPathfindNodes, currentTick, players, entities);
 }

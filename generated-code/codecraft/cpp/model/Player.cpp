@@ -1,17 +1,12 @@
 #include "Player.hpp"
 
-Player::Player() { }
-
 Player::Player(int id, int score, int resource) : id(id), score(score), resource(resource) { }
 
 // Read Player from input stream
 Player Player::readFrom(InputStream& stream) {
-    int id;
-    id = stream.readInt();
-    int score;
-    score = stream.readInt();
-    int resource;
-    resource = stream.readInt();
+    int id = stream.readInt();
+    int score = stream.readInt();
+    int resource = stream.readInt();
     return Player(id, score, resource);
 }
 

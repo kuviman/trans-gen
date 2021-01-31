@@ -1,17 +1,12 @@
 #include "AttackProperties.hpp"
 
-AttackProperties::AttackProperties() { }
-
 AttackProperties::AttackProperties(int attackRange, int damage, bool collectResource) : attackRange(attackRange), damage(damage), collectResource(collectResource) { }
 
 // Read AttackProperties from input stream
 AttackProperties AttackProperties::readFrom(InputStream& stream) {
-    int attackRange;
-    attackRange = stream.readInt();
-    int damage;
-    damage = stream.readInt();
-    bool collectResource;
-    collectResource = stream.readBool();
+    int attackRange = stream.readInt();
+    int damage = stream.readInt();
+    bool collectResource = stream.readBool();
     return AttackProperties(attackRange, damage, collectResource);
 }
 

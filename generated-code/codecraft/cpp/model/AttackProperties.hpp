@@ -15,8 +15,6 @@ public:
     // If true, dealing damage will collect resource from target
     bool collectResource;
 
-    AttackProperties();
-
     AttackProperties(int attackRange, int damage, bool collectResource);
 
     // Read AttackProperties from input stream

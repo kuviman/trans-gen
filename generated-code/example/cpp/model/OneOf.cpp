@@ -1,19 +1,18 @@
 #include "OneOf.hpp"
 #include <stdexcept>
 
-OneOf::OptionOne::OptionOne() { }
-
 OneOf::OptionOne::OptionOne(std::vector<int> vecInt, long long longInt) : vecInt(vecInt), longInt(longInt) { }
 
 // Read OptionOne from input stream
 OneOf::OptionOne OneOf::OptionOne::readFrom(InputStream& stream) {
-    std::vector<int> vecInt;
-    vecInt = std::vector<int>(stream.readInt());
-    for (size_t vecIntIndex = 0; vecIntIndex < vecInt.size(); vecIntIndex++) {
-        vecInt[vecIntIndex] = stream.readInt();
+    std::vector<int> vecInt = std::vector<int>();
+    size_t vecIntSize = stream.readInt();
+    vecInt.reserve(vecIntSize);
+    for (size_t vecIntIndex = 0; vecIntIndex < vecIntSize; vecIntIndex++) {
+        int vecIntElement = stream.readInt();
+        vecInt.emplace_back(vecIntElement);
     }
-    long long longInt;
-    longInt = stream.readLongLong();
+    long long longInt = stream.readLongLong();
     return OneOf::OptionOne(vecInt, longInt);
 }
 
@@ -48,14 +47,11 @@ std::string OneOf::OptionOne::toString() const {
     return ss.str();
 }
 
-OneOf::OptionTwo::OptionTwo() { }
-
 OneOf::OptionTwo::OptionTwo(int value) : value(value) { }
 
 // Read OptionTwo from input stream
 OneOf::OptionTwo OneOf::OptionTwo::readFrom(InputStream& stream) {
-    int value;
-    value = stream.readInt();
+    int value = stream.readInt();
     return OneOf::OptionTwo(value);
 }
 

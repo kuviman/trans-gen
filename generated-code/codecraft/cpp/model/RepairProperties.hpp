@@ -16,8 +16,6 @@ public:
     // Health restored in one tick
     int power;
 
-    RepairProperties();
-
     RepairProperties(std::vector<EntityType> validTargets, int power);
 
     // Read RepairProperties from input stream

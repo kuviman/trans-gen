@@ -1,29 +1,18 @@
 #include "Entity.hpp"
 
-Entity::Entity() { }
-
 Entity::Entity(int id, std::optional<int> playerId, EntityType entityType, Vec2Int position, int health, bool active) : id(id), playerId(playerId), entityType(entityType), position(position), health(health), active(active) { }
 
 // Read Entity from input stream
 Entity Entity::readFrom(InputStream& stream) {
-    int id;
-    id = stream.readInt();
-    std::optional<int> playerId;
+    int id = stream.readInt();
+    std::optional<int> playerId = std::optional<int>();
     if (stream.readBool()) {
-        int playerIdValue;
-        playerIdValue = stream.readInt();
-        playerId = playerIdValue;
-    } else {
-        playerId = std::optional<int>();
+        playerId = stream.readInt();
     }
-    EntityType entityType;
-    entityType = readEntityType(stream);
-    Vec2Int position;
-    position = Vec2Int::readFrom(stream);
-    int health;
-    health = stream.readInt();
-    bool active;
-    active = stream.readBool();
+    EntityType entityType = readEntityType(stream);
+    Vec2Int position = Vec2Int::readFrom(stream);
+    int health = stream.readInt();
+    bool active = stream.readBool();
     return Entity(id, playerId, entityType, position, health, active);
 }
 

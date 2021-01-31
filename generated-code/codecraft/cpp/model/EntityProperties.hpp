@@ -42,8 +42,6 @@ public:
     // Repair properties, if entity can repair
     std::optional<RepairProperties> repair;
 
-    EntityProperties();
-
     EntityProperties(int size, int buildScore, int destroyScore, bool canMove, int populationProvide, int populationUse, int maxHealth, int initialCost, int sightRange, int resourcePerHealth, std::optional<BuildProperties> build, std::optional<AttackProperties> attack, std::optional<RepairProperties> repair);
 
     // Read EntityProperties from input stream

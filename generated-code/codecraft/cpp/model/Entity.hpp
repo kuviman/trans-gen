@@ -25,8 +25,6 @@ public:
     // If entity is active, it can perform actions
     bool active;
 
-    Entity();
-
     Entity(int id, std::optional<int> playerId, EntityType entityType, Vec2Int position, int health, bool active);
 
     // Read Entity from input stream

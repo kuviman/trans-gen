@@ -39,8 +39,6 @@ public:
     // List of entities
     std::vector<Entity> entities;
 
-    PlayerView();
-
     PlayerView(int myId, int mapSize, bool fogOfWar, std::unordered_map<EntityType, EntityProperties> entityProperties, int maxTickCount, int maxPathfindNodes, int currentTick, std::vector<Player> players, std::vector<Entity> entities);
 
     // Read PlayerView from input stream

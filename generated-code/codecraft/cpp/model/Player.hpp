@@ -15,8 +15,6 @@ public:
     // Current amount of resource
     int resource;
 
-    Player();
-
     Player(int id, int score, int resource);
 
     // Read Player from input stream

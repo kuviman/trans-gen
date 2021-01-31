@@ -1,15 +1,11 @@
 #include "Vec2Int.hpp"
 
-Vec2Int::Vec2Int() { }
-
 Vec2Int::Vec2Int(int x, int y) : x(x), y(y) { }
 
 // Read Vec2Int from input stream
 Vec2Int Vec2Int::readFrom(InputStream& stream) {
-    int x;
-    x = stream.readInt();
-    int y;
-    y = stream.readInt();
+    int x = stream.readInt();
+    int y = stream.readInt();
     return Vec2Int(x, y);
 }
 

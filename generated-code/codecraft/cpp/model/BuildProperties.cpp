@@ -1,23 +1,19 @@
 #include "BuildProperties.hpp"
 
-BuildProperties::BuildProperties() { }
-
 BuildProperties::BuildProperties(std::vector<EntityType> options, std::optional<int> initHealth) : options(options), initHealth(initHealth) { }
 
 // Read BuildProperties from input stream
 BuildProperties BuildProperties::readFrom(InputStream& stream) {
-    std::vector<EntityType> options;
-    options = std::vector<EntityType>(stream.readInt());
-    for (size_t optionsIndex = 0; optionsIndex < options.size(); optionsIndex++) {
-        options[optionsIndex] = readEntityType(stream);
+    std::vector<EntityType> options = std::vector<EntityType>();
+    size_t optionsSize = stream.readInt();
+    options.reserve(optionsSize);
+    for (size_t optionsIndex = 0; optionsIndex < optionsSize; optionsIndex++) {
+        EntityType optionsElement = readEntityType(stream);
+        options.emplace_back(optionsElement);
     }
-    std::optional<int> initHealth;
+    std::optional<int> initHealth = std::optional<int>();
     if (stream.readBool()) {
-        int initHealthValue;
-        initHealthValue = stream.readInt();
-        initHealth = initHealthValue;
-    } else {
-        initHealth = std::optional<int>();
+        initHealth = stream.readInt();
     }
     return BuildProperties(options, initHealth);
 }

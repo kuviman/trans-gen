@@ -13,8 +13,6 @@ public:
     // `y` coordinate of the vector
     int y;
 
-    Vec2Int();
-
     Vec2Int(int x, int y);
 
     // Read Vec2Int from input stream

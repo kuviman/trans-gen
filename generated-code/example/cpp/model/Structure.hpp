@@ -15,8 +15,6 @@ public:
     // 64-bit float
     double doubleNumber;
 
-    Structure();
-
     Structure(std::string text, float floatNumber, double doubleNumber);
 
     // Read Structure from input stream
