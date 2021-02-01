@@ -6,7 +6,11 @@
 
 class TcpStream : InputStream, OutputStream {
     init(_ host: String, _ port: Int) {
-        sock = socket(AF_INET, Int32(SOCK_STREAM.rawValue), 0)
+        #if os(Linux)
+            sock = socket(AF_INET, Int32(SOCK_STREAM.rawValue), 0)
+        #else
+            sock = socket(AF_INET, SOCK_STREAM, 0)
+        #endif
         if sock == -1 {
             fatalError("Failed to create socket")
         }
@@ -16,8 +20,12 @@ class TcpStream : InputStream, OutputStream {
         }
         var hints = addrinfo()
         var servinfo: UnsafeMutablePointer<addrinfo>?
-        hints.ai_family = AF_INET;
-        hints.ai_socktype = Int32(SOCK_STREAM.rawValue);
+        hints.ai_family = AF_INET
+        #if os(Linux)
+            hints.ai_socktype = Int32(SOCK_STREAM.rawValue)
+        #else
+            hints.ai_socktype = SOCK_STREAM
+        #endif
         if getaddrinfo(host, String(port), &hints, &servinfo) != 0 {
             fatalError("Failed to get addr info")
         }
