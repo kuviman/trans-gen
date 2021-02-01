@@ -1,0 +1,9 @@
+module.exports.EntityType = require('./entity-type');
+module.exports.BuildProperties = require('./build-properties');
+module.exports.AttackProperties = require('./attack-properties');
+module.exports.RepairProperties = require('./repair-properties');
+module.exports.EntityProperties = require('./entity-properties');
+module.exports.Player = require('./player');
+module.exports.Vec2Int = require('./vec2-int');
+module.exports.Entity = require('./entity');
+module.exports.PlayerView = require('./player-view');
