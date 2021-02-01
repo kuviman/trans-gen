@@ -219,9 +219,15 @@ impl<D: Trans + PartialEq + Debug> TestableGenerator<testing::TcpReadWrite<D>> f
                 _ => unreachable!(),
             }
         }
-        vec![File {
-            path: "main.rb".to_owned(),
-            content: include_templing!("src/gens/ruby/tcp_read_write.rb.templing"),
-        }]
+        vec![
+            File {
+                path: "tcp_stream.rb".to_owned(),
+                content: include_str!("tcp_stream.rb").to_owned(),
+            },
+            File {
+                path: "main.rb".to_owned(),
+                content: include_templing!("src/gens/ruby/tcp_read_write.rb.templing"),
+            },
+        ]
     }
 }
