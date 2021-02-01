@@ -23,6 +23,7 @@ typedef ssize_t RECV_SEND_T;
 class TcpStream : public InputStream, public OutputStream {
 public:
     TcpStream(const std::string& host, int port);
+    ~TcpStream();
     void readBytes(char* buffer, size_t byteCount);
     void writeBytes(const char* buffer, size_t byteCount);
     void flush();
