@@ -27,6 +27,12 @@ class TcpStream : InputStream, OutputStream {
         freeaddrinfo(servinfo)
     }
 
+    deinit {
+        if close(sock) != 0 {
+            fatalError("Failed to close socket")
+        }
+    }
+
 	func readBytes(_ byteCount: Int) -> [Byte] {
         var byteCount = byteCount
 		var buffer = [Byte](repeating: 0x0, count: byteCount)
