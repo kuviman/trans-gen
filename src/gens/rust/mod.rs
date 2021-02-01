@@ -183,7 +183,7 @@ impl<D: Trans + PartialEq + Debug> TestableGenerator<testing::TcpReadWrite<D>> f
         let schema: &Schema = &schema;
         vec![File {
             path: "src/main.rs".to_owned(),
-            content: include_templing!("src/gens/rust/file_read_write.rs.templing"),
+            content: include_templing!("src/gens/rust/tcp_read_write.rs.templing"),
         }]
     }
 }
