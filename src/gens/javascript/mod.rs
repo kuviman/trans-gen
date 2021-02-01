@@ -171,10 +171,7 @@ impl crate::Generator for Generator {
             .replace('_', "-");
         let project_version = version;
         let mut files = HashMap::new();
-        files.insert(
-            "stream-wrapper.js".to_owned(),
-            include_str!("stream-wrapper.js").to_owned(),
-        );
+        files.insert("stream.js".to_owned(), include_str!("stream.js").to_owned());
         files.insert(
             "package.json".to_owned(),
             include_templing!("src/gens/javascript/package.json.templing").to_owned(),
@@ -241,9 +238,15 @@ impl<D: Trans + PartialEq + Debug> TestableGenerator<testing::TcpReadWrite<D>> f
                 _ => unreachable!(),
             }
         }
-        vec![File {
-            path: "main.js".to_owned(),
-            content: include_templing!("src/gens/javascript/file-read-write.js.templing"),
-        }]
+        vec![
+            File {
+                path: "tcp-stream.js".to_owned(),
+                content: include_str!("tcp-stream.js").to_owned(),
+            },
+            File {
+                path: "main.js".to_owned(),
+                content: include_templing!("src/gens/javascript/tcp-read-write.js.templing"),
+            },
+        ]
     }
 }

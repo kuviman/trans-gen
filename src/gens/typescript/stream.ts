@@ -1,39 +1,31 @@
 import os from "os";
 
-export interface Stream {
-    read(byteCount: number): Promise<Buffer>;
-    write(data: Buffer): void;
-    flush(): void;
-}
-
 const BOOL_SIZE = 1;
 const INT_SIZE = 4;
 const LONG_SIZE = 8;
 const FLOAT_SIZE = 4;
 const DOUBLE_SIZE = 8;
 
-export class StreamWrapper {
-    stream: Stream;
+export abstract class Stream {
     isLittleEndianMachine: boolean;
 
-    constructor(stream: Stream) {
-        this.stream = stream;
+    constructor() {
         this.isLittleEndianMachine = (os.endianness() === 'LE');
     }
 
-    async flush() {
-        this.stream.flush();
-    }
+    abstract read(byteCount: number): Promise<Buffer>;
+    abstract write(data: Buffer): Promise<void>;
+    abstract flush(): Promise<void>;
 
     // Reading primitives
 
     async readBool(): Promise<boolean> {
-        const buffer = await this.stream.read(BOOL_SIZE);
+        const buffer = await this.read(BOOL_SIZE);
         return !!buffer.readInt8();
     }
 
     async readInt(): Promise<number> {
-        const buffer = await this.stream.read(INT_SIZE);
+        const buffer = await this.read(INT_SIZE);
         if (this.isLittleEndianMachine) {
             return buffer.readInt32LE(0);
         }
@@ -41,7 +33,7 @@ export class StreamWrapper {
     }
 
     async readLong(): Promise<bigint> {
-        const buffer = await this.stream.read(LONG_SIZE);
+        const buffer = await this.read(LONG_SIZE);
         if (this.isLittleEndianMachine) {
             return buffer.readBigInt64LE();
         }
@@ -49,7 +41,7 @@ export class StreamWrapper {
     }
 
     async readFloat(): Promise<number> {
-        const buffer = await this.stream.read(FLOAT_SIZE);
+        const buffer = await this.read(FLOAT_SIZE);
         if (this.isLittleEndianMachine) {
             return buffer.readFloatLE();
         }
@@ -57,7 +49,7 @@ export class StreamWrapper {
     }
 
     async readDouble(): Promise<number> {
-        const buffer = await this.stream.read(DOUBLE_SIZE);
+        const buffer = await this.read(DOUBLE_SIZE);
         if (this.isLittleEndianMachine) {
             return buffer.readDoubleLE();
         }
@@ -66,7 +58,7 @@ export class StreamWrapper {
 
     async readString(): Promise<string> {
         const length = await this.readInt();
-        const buffer = await this.stream.read(length);
+        const buffer = await this.read(length);
         return buffer.toString();
     }
 
@@ -75,7 +67,7 @@ export class StreamWrapper {
     async writeBool(value: boolean) {
         const buffer = Buffer.alloc(BOOL_SIZE);
         buffer.writeInt8(value ? 1 : 0);
-        return await this.stream.write(buffer);
+        return await this.write(buffer);
     }
 
     async writeInt(value: number) {
@@ -85,7 +77,7 @@ export class StreamWrapper {
         } else {
             buffer.writeInt32BE(value);
         }
-        return await this.stream.write(buffer);
+        return await this.write(buffer);
     }
 
     async writeLong(value: bigint) {
@@ -95,7 +87,7 @@ export class StreamWrapper {
         } else {
             buffer.writeBigInt64BE(value);
         }
-        return await this.stream.write(buffer);
+        return await this.write(buffer);
     }
 
     async writeFloat(value: number) {
@@ -105,7 +97,7 @@ export class StreamWrapper {
         } else {
             buffer.writeFloatBE(value);
         }
-        return await this.stream.write(buffer);
+        return await this.write(buffer);
     }
 
     async writeDouble(value: number) {
@@ -115,12 +107,12 @@ export class StreamWrapper {
         } else {
             buffer.writeDoubleBE(value);
         }
-        return await this.stream.write(buffer);
+        return await this.write(buffer);
     }
 
     async writeString(value: string) {
         const data = Buffer.from(value);
         this.writeInt(data.length);
-        return await this.stream.write(data);
+        return await this.write(data);
     }
 }

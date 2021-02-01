@@ -194,8 +194,8 @@ impl crate::Generator for Generator {
         let project_version = version;
         let mut files = HashMap::new();
         files.insert(
-            "src/stream-wrapper.ts".to_owned(),
-            include_str!("stream-wrapper.ts").to_owned(),
+            "src/stream.ts".to_owned(),
+            include_str!("stream.ts").to_owned(),
         );
         files.insert(
             "tsconfig.json".to_owned(),
@@ -255,9 +255,15 @@ impl<D: Trans + PartialEq + Debug> TestableGenerator<testing::TcpReadWrite<D>> f
     fn extra_files(test: &testing::TcpReadWrite<D>) -> Vec<File> {
         let schema = Schema::of::<D>(&test.version);
         let schema: &Schema = &schema;
-        vec![File {
-            path: "src/main.ts".to_owned(),
-            content: include_templing!("src/gens/typescript/file-read-write.ts.templing"),
-        }]
+        vec![
+            File {
+                path: "src/tcp-stream.ts".to_owned(),
+                content: include_str!("tcp-stream.ts").to_owned(),
+            },
+            File {
+                path: "src/main.ts".to_owned(),
+                content: include_templing!("src/gens/typescript/tcp-read-write.ts.templing"),
+            },
+        ]
     }
 }

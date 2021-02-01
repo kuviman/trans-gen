@@ -1,4 +1,4 @@
 {{ imports(schema) }}
-import { StreamWrapper } from "../stream-wrapper";
+import { Stream } from "../stream";
 
 {{ struct_impl(struc, None) }}

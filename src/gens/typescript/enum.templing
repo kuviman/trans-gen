@@ -1,4 +1,4 @@
-import { StreamWrapper } from "../stream-wrapper";
+import { Stream } from "../stream";
 
 {{ doc_comment(documentation) }}
 export class {{ base_name.camel_case(conv) }} {
@@ -16,7 +16,7 @@ export class {{ base_name.camel_case(conv) }} {
     - }
 
     {{ doc_read_from(&base_name.camel_case(conv)) }}
-    static async readFrom(stream: StreamWrapper): Promise<{{ base_name.camel_case(conv) }}> {
+    static async readFrom(stream: Stream): Promise<{{ base_name.camel_case(conv) }}> {
         const tag = await stream.readInt();
         - for variant in variants {
         if (tag == {{ base_name.camel_case(conv) }}.{{ variant.name.shouty_snake_case(conv) }}.tag) {
@@ -27,7 +27,7 @@ export class {{ base_name.camel_case(conv) }} {
     }
 
     {{ doc_write_to(&base_name.camel_case(conv)) }}
-    async writeTo(stream: StreamWrapper) {
+    async writeTo(stream: Stream) {
         await stream.writeInt(this.tag);
     }
 

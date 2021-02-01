@@ -1,11 +1,12 @@
 'use strict';
 
-const StreamWrapper = require('./stream-wrapper');
+const Stream = require('./stream');
 const model = require('./model/index');
 const fs = require('fs');
 
-class FileWrapper {
+class FileStream extends Stream {
     constructor(path, flags) {
+        super();
         this.file = fs.openSync(path, flags);
     }
     async read(byteCount) {
@@ -30,11 +31,11 @@ async function run() {
     const inputFile = process.argv[2];
     const outputFile = process.argv[3];
 
-    const input = await model.{{ type_name(schema) }}.readFrom(new StreamWrapper(new FileWrapper(inputFile, 'r')));
+    const input = await model.{{ type_name(schema) }}.readFrom(new FileStream(inputFile, 'r'));
     console.log(input);
-    const outputStream = new StreamWrapper(new FileWrapper(outputFile, 'w'));
-    input.writeTo(outputStream);
-    outputStream.flush();
+    const outputStream = new FileStream(outputFile, 'w');
+    await input.writeTo(outputStream);
+    await outputStream.flush();
 }
 
 run();
