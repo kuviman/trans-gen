@@ -101,10 +101,7 @@ impl crate::Generator for Generator {
     type Options = ();
     fn new(_name: &str, _version: &str, _: ()) -> Self {
         let mut files = HashMap::new();
-        files.insert(
-            "stream_wrapper.rb".to_owned(),
-            include_str!("stream_wrapper.rb").to_owned(),
-        );
+        files.insert("stream.rb".to_owned(), include_str!("stream.rb").to_owned());
         Self {
             model_init: String::new(),
             files,
@@ -224,7 +221,7 @@ impl<D: Trans + PartialEq + Debug> TestableGenerator<testing::TcpReadWrite<D>> f
         }
         vec![File {
             path: "main.rb".to_owned(),
-            content: include_templing!("src/gens/ruby/file_read_write.rb.templing"),
+            content: include_templing!("src/gens/ruby/tcp_read_write.rb.templing"),
         }]
     }
 }
