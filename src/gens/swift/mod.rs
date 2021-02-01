@@ -195,9 +195,15 @@ impl<D: Trans + PartialEq + Debug> TestableGenerator<testing::TcpReadWrite<D>> f
     fn extra_files(test: &testing::TcpReadWrite<D>) -> Vec<File> {
         let schema = Schema::of::<D>(&test.version);
         let schema: &Schema = &schema;
-        vec![File {
-            path: "Sources/TransGenTest/main.swift".to_owned(),
-            content: include_templing!("src/gens/swift/TcpReadWrite.swift.templing"),
-        }]
+        vec![
+            File {
+                path: "Sources/TransGenTest/TcpStream.swift".to_owned(),
+                content: include_str!("TcpStream.swift").to_owned(),
+            },
+            File {
+                path: "Sources/TransGenTest/main.swift".to_owned(),
+                content: include_templing!("src/gens/swift/TcpReadWrite.swift.templing"),
+            },
+        ]
     }
 }

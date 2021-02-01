@@ -36,7 +36,7 @@ class FileInputStream : InputStream {
 	#else
 		private let file: UnsafeMutablePointer<Darwin.FILE>
 	#endif
-};
+}
 
 class FileOutputStream : OutputStream {
     init(_ path: String) {
@@ -76,19 +76,19 @@ class FileOutputStream : OutputStream {
 	#else
 		private let file: UnsafeMutablePointer<Darwin.FILE>
 	#endif
-};
+}
 
 if CommandLine.arguments.count != 3 {
 	fatalError("Pass input and output as parameters")
 }
 
-let inputFile = CommandLine.arguments[1];
+let inputFile = CommandLine.arguments[1]
 let inputStream = FileInputStream(inputFile)
 let input = {{ type_name(schema) }}.readFrom(inputStream)
 
 print(input)
 
-let outputFile = CommandLine.arguments[2];
+let outputFile = CommandLine.arguments[2]
 let outputStream = FileOutputStream(outputFile)
 input.writeTo(outputStream)
 outputStream.flush()
