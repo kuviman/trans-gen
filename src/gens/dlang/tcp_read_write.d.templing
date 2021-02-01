@@ -24,4 +24,5 @@ void main(string[] args)
     writeln(input);
     input.writeTo(stream);
     stream.flush();
+    socket.close();
 }
