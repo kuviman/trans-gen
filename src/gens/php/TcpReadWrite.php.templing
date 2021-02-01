@@ -1,56 +1,17 @@
 <?php
 
 require_once 'Model.php';
-require_once 'Stream.php';
+require_once 'TcpStream.php';
 
 if (count($argv) != 3) {
-    throw new Exception('Pass input and output as parameters');
+    throw new Exception('Pass host and as parameters');
 }
 
-class FileInputStream extends InputStream
-{
-    private $stream;
-    function __construct($path)
-    {
-        $this->stream = fopen($path, "rb");
-    }
-    function __destruct()
-    {
-        fclose($this->stream);
-    }
-    public function read($byteCount)
-    {
-        $data = fread($this->stream, $byteCount);
-        assert(strlen($data) == $byteCount);
-        return $data;
-    }
-}
+$host = $argv[1];
+$port = intval($argv[2]);
 
-class FileOutputStream extends OutputStream
-{
-    private $stream;
-    function __construct($path)
-    {
-        $this->stream = fopen($path, "wb");
-    }
-    function __destruct()
-    {
-        $this->flush();
-        fclose($this->stream);
-    }
-    public function write($bytes)
-    {
-        fwrite($this->stream, $bytes);
-    }
-    public function flush()
-    {
-        fflush($this->stream);
-    }
-}
+$tcpStream = new TcpStream($host, $port);
 
-$inputFile = $argv[1];
-$outputFile = $argv[2];
-
-$input = {{ type_name(schema) }}::readFrom(new FileInputStream($inputFile));
+$input = {{ type_name(schema) }}::readFrom($tcpStream->inputStream);
 print_r($input);
-$input->writeTo(new FileOutputStream($outputFile));
+$input->writeTo($tcpStream->outputStream);

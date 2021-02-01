@@ -220,9 +220,15 @@ impl<D: Trans + PartialEq + Debug> TestableGenerator<testing::TcpReadWrite<D>> f
                 _ => unreachable!(),
             }
         }
-        vec![File {
-            path: "Main.php".to_owned(),
-            content: include_templing!("src/gens/php/TcpReadWrite.php.templing"),
-        }]
+        vec![
+            File {
+                path: "TcpStream.php".to_owned(),
+                content: include_str!("TcpStream.php").to_owned(),
+            },
+            File {
+                path: "Main.php".to_owned(),
+                content: include_templing!("src/gens/php/TcpReadWrite.php.templing"),
+            },
+        ]
     }
 }
