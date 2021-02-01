@@ -20,4 +20,6 @@ object Runner extends App {
     val outputStream: OutputStream = new BufferedOutputStream(socket.getOutputStream())
     input.writeTo(outputStream)
     outputStream.flush()
+
+    socket.close()
 }
