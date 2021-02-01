@@ -1,23 +1,26 @@
 import java.io.*;
+import java.net.Socket;
 
 import util.StreamUtil;
 
 public class Runner {
     public static void main(String[] args) throws IOException {
         if (args.length != 2) {
-            throw new RuntimeException("Pass input and output as parameters");
+            throw new RuntimeException("Pass host and port as parameters");
         }
-        String inputFile = args[0];
-        String outputFile = args[1];
+        String host = args[0];
+        int port = Integer.parseInt(args[1]);
 
-        InputStream inputStream = new BufferedInputStream(new FileInputStream(inputFile));
+        Socket socket = new Socket(host, port);
+        socket.setTcpNoDelay(true);
+
+        InputStream inputStream = new BufferedInputStream(socket.getInputStream());
         {{ type_name(schema) }} input = {{ type_name(schema) }}.readFrom(inputStream);
 
         System.out.println(input);
 
-        OutputStream outputStream = new BufferedOutputStream(new FileOutputStream(outputFile));
+        OutputStream outputStream = new BufferedOutputStream(socket.getOutputStream());
         input.writeTo(outputStream);
         outputStream.flush();
-        outputStream.close();
     }
 }
