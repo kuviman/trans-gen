@@ -19,4 +19,6 @@ fun main(args: Array<String>) {
     val outputStream: OutputStream = BufferedOutputStream(socket.getOutputStream())
     input.writeTo(outputStream)
     outputStream.flush()
+
+    socket.close()
 }
