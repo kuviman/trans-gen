@@ -200,9 +200,15 @@ impl<D: Trans + PartialEq + Debug> TestableGenerator<testing::TcpReadWrite<D>> f
     fn extra_files(test: &testing::TcpReadWrite<D>) -> Vec<File> {
         let schema = Schema::of::<D>(&test.version);
         let schema: &Schema = &schema;
-        vec![File {
-            path: "source/app.d".to_owned(),
-            content: include_templing!("src/gens/dlang/file_read_write.d.templing"),
-        }]
+        vec![
+            File {
+                path: "source/socket_stream.d".to_owned(),
+                content: include_str!("socket_stream.d").to_owned(),
+            },
+            File {
+                path: "source/app.d".to_owned(),
+                content: include_templing!("src/gens/dlang/tcp_read_write.d.templing"),
+            },
+        ]
     }
 }
