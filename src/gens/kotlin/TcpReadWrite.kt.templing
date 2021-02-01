@@ -1,19 +1,22 @@
 import java.io.*
+import java.net.Socket
 
 fun main(args: Array<String>) {
     if (args.size != 2) {
-        throw RuntimeException("Pass input and output as parameters")
+        throw RuntimeException("Pass host and port as parameters")
     }
-    val inputFile = args[0]
-    val outputFile = args[1]
+    val host = args[0]
+    val port = Integer.parseInt(args[1])
 
-    val inputStream: InputStream = BufferedInputStream(FileInputStream(inputFile))
+    val socket = Socket(host, port);
+    socket.setTcpNoDelay(true);
+
+    val inputStream: InputStream = BufferedInputStream(socket.getInputStream())
     val input: {{ type_name(schema) }} = {{ type_name(schema) }}.readFrom(inputStream)
 
     println(input)
 
-    val outputStream: OutputStream = BufferedOutputStream(FileOutputStream(outputFile))
+    val outputStream: OutputStream = BufferedOutputStream(socket.getOutputStream())
     input.writeTo(outputStream)
     outputStream.flush()
-    outputStream.close()
 }
