@@ -227,6 +227,12 @@ jobs:
         with:
           java-version: "15"
 
+      - if: matrix.lang == 'php'
+        name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          extensions: sockets
+
       - name: Run tests
         run: |
           .\testing.exe --lang=${{ matrix.lang }}
