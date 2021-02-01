@@ -68,9 +68,9 @@ void TcpStream::readBytes(char* buffer, size_t byteCount)
 TcpStream::~TcpStream()
 {
 #ifdef _WIN32
-    if (closesocket(sock))
+    if (closesocket(sock) != 0)
 #else
-    if (close(sock))
+    if (close(sock) != 0)
 #endif
     {
         throw std::runtime_error("Failed to close socket");

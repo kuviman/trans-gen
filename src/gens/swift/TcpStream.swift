@@ -18,10 +18,10 @@ class TcpStream : InputStream, OutputStream {
         var servinfo: UnsafeMutablePointer<addrinfo>?
         hints.ai_family = AF_INET;
         hints.ai_socktype = Int32(SOCK_STREAM.rawValue);
-        if (getaddrinfo(host, String(port), &hints, &servinfo) != 0) {
+        if getaddrinfo(host, String(port), &hints, &servinfo) != 0 {
             fatalError("Failed to get addr info")
         }
-        if (connect(sock, servinfo!.pointee.ai_addr, servinfo!.pointee.ai_addrlen) == -1) {
+        if connect(sock, servinfo!.pointee.ai_addr, servinfo!.pointee.ai_addrlen) == -1 {
             fatalError("Failed to connect")
         }
         freeaddrinfo(servinfo)
