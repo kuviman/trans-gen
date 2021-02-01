@@ -223,3 +223,14 @@ impl<D: Trans + PartialEq + Debug> TestableGenerator<testing::FileReadWrite<D>> 
         }]
     }
 }
+
+impl<D: Trans + PartialEq + Debug> TestableGenerator<testing::TcpReadWrite<D>> for Generator {
+    fn extra_files(test: &testing::TcpReadWrite<D>) -> Vec<File> {
+        let schema = Schema::of::<D>(&test.version);
+        let schema: &Schema = &schema;
+        vec![File {
+            path: "main.go".to_owned(),
+            content: include_templing!("src/gens/go/file_read_write.go.templing"),
+        }]
+    }
+}

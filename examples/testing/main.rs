@@ -8,6 +8,8 @@ struct Opt {
     models: Vec<String>,
     #[structopt(long = "lang")]
     langs: Vec<String>,
+    #[structopt(long = "test")]
+    tests: Vec<String>,
     #[structopt(long)]
     generate: Option<PathBuf>,
 }
@@ -49,7 +51,7 @@ fn main() -> anyhow::Result<()> {
                     "-snapshot.json"
                 )))
                 .expect("Failed to read snapshot");
-                macro_rules! test {
+                macro_rules! test_lang {
                     ($lang:ident) => {
                         if opt.langs.is_empty() || opt.langs.contains(&stringify!($lang).to_owned())
                         {
@@ -60,22 +62,47 @@ fn main() -> anyhow::Result<()> {
                                     path.join(stringify!($lang))
                                 }
                             });
-                            let test = trans_gen::testing::FileReadWrite {
-                                snapshot: snapshot.clone(),
-                                show_stdout: $model::SHOW_STDOUT,
-                                version: $model::version(),
-                            };
-                            if let Some(path) = generate {
-                                test.generate::<trans_gen::gens::$lang::Generator>(&path)
-                                    .context(format!("Failed to generate {}", stringify!($lang)))?;
-                            } else {
-                                test.test::<trans_gen::gens::$lang::Generator>()
-                                    .context(format!("Failed to test {}", stringify!($lang)))?;
+                            macro_rules! test {
+                                ($test:ident) => {
+                                    if opt.tests.is_empty()
+                                        || opt.tests.contains(&stringify!($test).to_owned())
+                                    {
+                                        let generate = generate.as_ref().map(|path| {
+                                            if opt.tests.len() == 1 {
+                                                path.to_owned()
+                                            } else {
+                                                path.join(stringify!($test))
+                                            }
+                                        });
+                                        let test = trans_gen::testing::$test {
+                                            snapshot: snapshot.clone(),
+                                            show_stdout: $model::SHOW_STDOUT,
+                                            version: $model::version(),
+                                        };
+                                        if let Some(path) = generate {
+                                            test.generate::<trans_gen::gens::$lang::Generator>(
+                                                &path,
+                                            )
+                                            .context(format!(
+                                                "Failed to generate {}",
+                                                stringify!($lang)
+                                            ))?;
+                                        } else {
+                                            test.test::<trans_gen::gens::$lang::Generator>()
+                                                .context(format!(
+                                                    "Failed to test {}",
+                                                    stringify!($lang)
+                                                ))?;
+                                        }
+                                    }
+                                };
                             }
+                            test!(FileReadWrite);
+                            test!(TcpReadWrite);
                         }
                     };
                 }
-                trans_gen::all_runnable_gens!(test);
+                trans_gen::all_runnable_gens!(test_lang);
             }
         };
     }

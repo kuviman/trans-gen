@@ -1,8 +1,10 @@
 use super::*;
 
 mod file_read_write;
+mod tcp_read_write;
 
 pub use file_read_write::FileReadWrite;
+pub use tcp_read_write::TcpReadWrite;
 
 pub trait Test {
     fn schemas(&self) -> Vec<Arc<Schema>>;

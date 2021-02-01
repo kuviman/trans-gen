@@ -214,3 +214,23 @@ impl<D: Trans + PartialEq + Debug> TestableGenerator<testing::FileReadWrite<D>> 
         }]
     }
 }
+
+impl<D: Trans + PartialEq + Debug> TestableGenerator<testing::TcpReadWrite<D>> for Generator {
+    fn extra_files(test: &testing::TcpReadWrite<D>) -> Vec<File> {
+        let schema = Schema::of::<D>(&test.version);
+        let schema: &Schema = &schema;
+        fn type_name(schema: &Schema) -> String {
+            match schema {
+                Schema::Struct(Struct { name, .. })
+                | Schema::OneOf {
+                    base_name: name, ..
+                } => name.camel_case(conv),
+                _ => unreachable!(),
+            }
+        }
+        vec![File {
+            path: "main.py".to_owned(),
+            content: include_templing!("src/gens/python/file_read_write.py.templing"),
+        }]
+    }
+}
