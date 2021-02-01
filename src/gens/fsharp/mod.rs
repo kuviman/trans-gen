@@ -195,7 +195,7 @@ impl<D: Trans + PartialEq + Debug> TestableGenerator<testing::TcpReadWrite<D>> f
         let schema: &Schema = &schema;
         vec![File {
             path: "Runner.fs".to_owned(),
-            content: include_templing!("src/gens/fsharp/FileReadWrite.fs.templing"),
+            content: include_templing!("src/gens/fsharp/TcpReadWrite.fs.templing"),
         }]
     }
 }
