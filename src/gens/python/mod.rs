@@ -230,7 +230,7 @@ impl<D: Trans + PartialEq + Debug> TestableGenerator<testing::TcpReadWrite<D>> f
         }
         vec![File {
             path: "main.py".to_owned(),
-            content: include_templing!("src/gens/python/file_read_write.py.templing"),
+            content: include_templing!("src/gens/python/tcp_read_write.py.templing"),
         }]
     }
 }
