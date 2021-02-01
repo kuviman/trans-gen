@@ -230,7 +230,7 @@ impl<D: Trans + PartialEq + Debug> TestableGenerator<testing::TcpReadWrite<D>> f
         let schema: &Schema = &schema;
         vec![File {
             path: "main.go".to_owned(),
-            content: include_templing!("src/gens/go/file_read_write.go.templing"),
+            content: include_templing!("src/gens/go/tcp_read_write.go.templing"),
         }]
     }
 }
