@@ -4,19 +4,24 @@ require_once 'Stream.php';
 
 class TcpStream
 {
+    private $socket;
     public $inputStream;
     public $outputStream;
     function __construct($host, $port)
     {
-        $socket = socket_create(AF_INET, SOCK_STREAM, SOL_TCP);
-        if (!socket_set_option($socket, SOL_TCP, TCP_NODELAY, 1)) {
+        $this->socket = socket_create(AF_INET, SOCK_STREAM, SOL_TCP);
+        if (!socket_set_option($this->socket, SOL_TCP, TCP_NODELAY, 1)) {
             throw new Exception("Failed to set TCP_NODELAY");
         }
-        if (!socket_connect($socket, $host, $port)) {
+        if (!socket_connect($this->socket, $host, $port)) {
             throw new Exception("Failed to connect");
         }
-        $this->inputStream = new TcpInputStream($socket);
-        $this->outputStream = new TcpOutputStream($socket);
+        $this->inputStream = new TcpInputStream($this->socket);
+        $this->outputStream = new TcpOutputStream($this->socket);
+    }
+    function __destruct()
+    {
+        socket_close($this->socket);
     }
 }
 
