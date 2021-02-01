@@ -1,4 +1,5 @@
 #include "TcpStream.hpp"
+#include <cstring>
 #include <stdexcept>
 
 TcpStream::TcpStream(const std::string& host, int port)
