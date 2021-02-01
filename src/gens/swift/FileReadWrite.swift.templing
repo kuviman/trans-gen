@@ -6,12 +6,12 @@
 
 class FileInputStream : InputStream {
     init(_ path: String) {
-		file = Glibc.fopen(path, "rb")
+		file = fopen(path, "rb")
     }
 
 	func readBytes(_ byteCount: Int) -> [Byte] {
 		var buffer = [Byte](repeating: 0x0, count: byteCount)
-		Glibc.fread(&buffer, 1, byteCount, file)
+		fread(&buffer, 1, byteCount, file)
 		return buffer
     }
 
