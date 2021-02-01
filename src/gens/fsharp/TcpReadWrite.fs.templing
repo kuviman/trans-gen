@@ -13,7 +13,7 @@ module Runner =
         let host = argv.[0]
         let port = argv.[1] |> Int32.Parse
 
-        let client = new TcpClient(host, port)
+        use client = new TcpClient(host, port)
         let stream = new BufferedStream(client.GetStream())
 
         let reader = new BinaryReader(stream)
