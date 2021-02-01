@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Net.Sockets;
 
 namespace TransGenTest
 {
@@ -11,22 +12,19 @@ namespace TransGenTest
             {
                 throw new Exception("Pass input and output as parameters");
             }
-            string inputFile = args[0];
-            string outputFile = args[1]; 
+            string host = args[0];
+            int port = int.Parse(args[1]);
 
-            {{ type_name(schema) }} input;
-            using (var stream = new FileStream(inputFile, FileMode.Open))
+            using (var tcpClient = new TcpClient(host, port))
             {
-                using (var reader = new BinaryReader(stream))
+                using (var stream = new BufferedStream(tcpClient.GetStream()))
                 {
-                    input = {{ type_name(schema) }}.ReadFrom(reader);
-                }
-            }
-            Console.WriteLine(input.ToString());
-            using (var stream = new FileStream(outputFile, FileMode.Create))
-            {
-                using (var writer = new BinaryWriter(stream)) {
+                    var reader = new BinaryReader(stream);
+                    {{ type_name(schema) }} input = {{ type_name(schema) }}.ReadFrom(reader);
+                    Console.WriteLine(input.ToString());
+                    var writer = new BinaryWriter(stream);
                     input.WriteTo(writer);
+                    writer.Flush();
                 }
             }
         }
