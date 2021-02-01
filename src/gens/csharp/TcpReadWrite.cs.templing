@@ -10,7 +10,7 @@ namespace TransGenTest
         {
             if (args.Length != 2)
             {
-                throw new Exception("Pass input and output as parameters");
+                throw new Exception("Pass host and port as parameters");
             }
             string host = args[0];
             int port = int.Parse(args[1]);
