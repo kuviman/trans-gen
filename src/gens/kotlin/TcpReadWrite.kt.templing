@@ -8,8 +8,8 @@ fun main(args: Array<String>) {
     val host = args[0]
     val port = Integer.parseInt(args[1])
 
-    val socket = Socket(host, port);
-    socket.setTcpNoDelay(true);
+    val socket = Socket(host, port)
+    socket.setTcpNoDelay(true)
 
     val inputStream: InputStream = BufferedInputStream(socket.getInputStream())
     val input: {{ type_name(schema) }} = {{ type_name(schema) }}.readFrom(inputStream)
