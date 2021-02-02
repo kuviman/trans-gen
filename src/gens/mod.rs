@@ -18,6 +18,7 @@ macro_rules! all_runnable_gens {
         $macro!(typescript);
         $macro!(swift);
         $macro!(php);
+        $macro!(haskell);
     };
 }
 

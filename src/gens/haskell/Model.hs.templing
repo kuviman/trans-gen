@@ -1,0 +1,14 @@
+module Model (
+    module Model,
+    - for (index, file) in model_files.iter().enumerate() {
+    module Model.{{ file }}~
+    - if index + 1 < model_files.len() {
+        ~,
+    - } else {
+        ~ ) where
+    - }
+    - }
+
+- for file in model_files {
+import Model.{{ file }}
+- }

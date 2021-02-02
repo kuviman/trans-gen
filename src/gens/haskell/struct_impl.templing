@@ -1,0 +1,43 @@
+- let struct_name = if let Some((base_name, _)) = base {
+-   format!("{}{}", base_name.camel_case(conv), struc.name.camel_case(conv))
+- } else {
+-   struc.name.camel_case(conv)
+- }; let struct_name = &struct_name;
+data {{ struct_name }} = {{ struct_name }} {
+    - for (index, field) in struc.fields.iter().enumerate() {
+    {{ field.name.mixed_case(conv) }} :: {{ type_name(&field.schema) }}~
+    - if index + 1 < struc.fields.len() {
+        ~,
+    - } else {
+        ~ }
+    - }
+    - }
+    deriving Show
+
+instance Trans {{ struct_name }} where
+    read = do
+        - for field in &struc.fields {
+        {{ field.name.mixed_case(conv) }} <- Trans.read
+        - }
+        return {{ struct_name }} {
+            - for (index, field) in struc.fields.iter().enumerate() {
+            {{ field.name.mixed_case(conv) }}~
+            - if index + 1 < struc.fields.len() {
+                ~,
+            - } else {
+                ~ }
+            - }
+            - }
+    
+    write {{ struct_name }} {
+        - for (index, field) in struc.fields.iter().enumerate() {
+        {{ field.name.mixed_case(conv) }}~
+        - if index + 1 < struc.fields.len() {
+            ~,
+        - } else {
+            ~ } = do
+        - }
+        - }
+            - for field in &struc.fields {
+            Trans.write {{ field.name.mixed_case(conv) }}
+            - }

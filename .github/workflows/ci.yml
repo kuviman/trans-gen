@@ -84,6 +84,8 @@ jobs:
             lang: swift
           - language: PHP
             lang: php
+          - language: Haskell
+            lang: haskell
     runs-on: ubuntu-latest
     steps:
       - name: Download artifacts
@@ -147,6 +149,8 @@ jobs:
             lang: swift
           - language: PHP
             lang: php
+          - language: Haskell
+            lang: haskell
     runs-on: macos-latest
     steps:
       - name: Download artifacts
@@ -210,6 +214,8 @@ jobs:
           #   lang: swift
           - language: PHP
             lang: php
+          - language: Haskell
+            lang: haskell
     runs-on: windows-latest
     steps:
       - name: Download artifacts

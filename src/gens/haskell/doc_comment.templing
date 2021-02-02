@@ -1,0 +1,11 @@
+/**
+- for line in documentation.get("en").unwrap().lines() {
+ * {{ line }}
+- }
+- if !fields.is_empty() {
+ *
+- }
+- for field in fields {
+ * @param {{ field.name.mixed_case(conv) }} {{ field.documentation.get("en").unwrap().replace('\n', " ") }}
+- }
+ */
