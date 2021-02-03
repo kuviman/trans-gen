@@ -135,7 +135,7 @@ jobs:
       - name: Download artifacts
         uses: actions/download-artifact@v2
         with:
-          name: testing-Linux
+          name: testing-linux
 
       - name: Update testing branch
         run: |
