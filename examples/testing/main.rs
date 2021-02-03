@@ -6,7 +6,7 @@ use trans_gen::TestExt as _;
 struct Opt {
     #[structopt(long = "model")]
     models: Vec<String>,
-    #[structopt(long = "lang")]
+    #[structopt(long = "lang", long = "language")]
     langs: Vec<String>,
     #[structopt(long = "test")]
     tests: Vec<String>,
@@ -38,7 +38,12 @@ fn main() -> anyhow::Result<()> {
     }
     macro_rules! test_lang {
         ($lang:ident) => {
-            if opt.langs.is_empty() || opt.langs.contains(&stringify!($lang).to_owned()) {
+            if opt.langs.is_empty()
+                || opt.langs.contains(&stringify!($lang).to_owned())
+                || opt.langs.contains(
+                    &<trans_gen::gens::$lang::Generator as trans_gen::Generator>::NAME.to_owned(),
+                )
+            {
                 let generate = opt.generate.as_ref().map(|path| {
                     if opt.langs.len() == 1 {
                         path.to_owned()
