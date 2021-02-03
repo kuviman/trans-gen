@@ -49,7 +49,7 @@ jobs:
           path: target/release/examples/testing${{ fromJson('["", ".exe"]')[matrix.env.name == 'Windows'] }}
 
   test:
-    name: Test ${{ matrix.language.name }} ${{ matrix.test }} on ${{ matrix.model }} model (${{ matrix.env.name }})
+    name: ${{ matrix.language }} ${{ matrix.env.name }}
     needs: build-test
     strategy:
       fail-fast: false
@@ -65,51 +65,29 @@ jobs:
             short: windows
             runs-on: windows-latest
         language:
-          - name: C++
-            short: cpp
-          - name: C#
-            short: csharp
-          - name: D
-            short: dlang
-          - name: F#
-            short: fsharp
-          - name: Go
-            short: go
-          - name: Java
-            short: java
-          - name: JavaScript
-            short: javascript
-          - name: Kotlin
-            short: kotlin
-          # - name: Markdown
-          #   short: markdown
-          - name: Python
-            short: python
-          - name: Ruby
-            short: ruby
-          - name: Rust
-            short: rust
-          - name: Scala
-            short: scala
-          - name: TypeScript
-            short: typescript
-          - name: Swift
-            short: swift
-          - name: PHP
-            short: php
-          - name: Haskell
-            short: haskell
-        test:
-          - FileReadWrite
-          - TcpReadWrite
-        model:
-          - codecraft
-          - example
+          - C++
+          - C#
+          - D
+          - F#
+          - Go
+          - Java
+          - JavaScript
+          - Kotlin
+          # - Markdown
+          - Python
+          - Ruby
+          - Rust
+          - Scala
+          - TypeScript
+          - Swift
+          - PHP
+          - Haskell
         exclude:
           - env:
-              name: MacOS
-            language:
-              name: Swift
+              name: Windows
+              short: windows
+              runs-on: windows-latest
+            language: Swift
     runs-on: ${{ matrix.env.runs-on }}
     steps:
       - name: Download artifacts
@@ -120,24 +98,24 @@ jobs:
       - name: Prepare testing binary
         run: chmod +x testing
 
-      - if: matrix.lang == 'dlang'
+      - if: matrix.language == 'D'
         name: Setup D
         uses: dlang-community/setup-dlang@v1
 
-      - if: matrix.lang == 'java'
+      - if: matrix.language == 'Java'
         name: Setup Java
         uses: actions/setup-java@v1
         with:
           java-version: "15"
 
-      - if: matrix.lang == 'php'
+      - if: matrix.language == 'PHP'
         name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
           extensions: sockets
 
       - name: Run tests
-        run: ${{ fromJson('["./", ""]')[matrix.env.name == 'Windows'] }}testing --language=${{ matrix.language.short }} --test=${{ matrix.test }} --model=${{ matrix.model }}
+        run: ${{ fromJson('["./", ""]')[matrix.env.name == 'Windows'] }}testing --language=${{ matrix.language }}
 
   update-testing-branch:
     name: Update testing branch
