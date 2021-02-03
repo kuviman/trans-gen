@@ -54,19 +54,6 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        env:
-          - name: Linux
-            short: linux
-            runs-on: ubuntu-latest
-            executable: ./testing
-          - name: MacOS
-            short: macos
-            runs-on: macos-latest
-            executable: ./testing
-          - name: Windows
-            short: windows
-            runs-on: windows-latest
-            executable: .\testing.exe
         language:
           - C++
           - C#
@@ -85,12 +72,26 @@ jobs:
           - Swift
           - PHP
           - Haskell
+        env:
+          - name: Linux
+            short: linux
+            runs-on: ubuntu-latest
+            executable: ./testing
+          - name: MacOS
+            short: macos
+            runs-on: macos-latest
+            executable: ./testing
+          - name: Windows
+            short: windows
+            runs-on: windows-latest
+            executable: .\testing.exe
         exclude:
-          - env:
+          - language: Swift
+            env:
               name: Windows
               short: windows
               runs-on: windows-latest
-            language: Swift
+              executable: .\testing.exe
     runs-on: ${{ matrix.env.runs-on }}
     steps:
       - name: Download artifacts
