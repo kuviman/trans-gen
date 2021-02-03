@@ -3,8 +3,10 @@
 - } else {
 -   struc.name.camel_case(conv)
 - }; let struct_name = &struct_name;
+{{ doc_comment(&struc.documentation) }}
 data {{ struct_name }} = {{ struct_name }} {
     - for (index, field) in struc.fields.iter().enumerate() {
+    {{ doc_comment(&field.documentation) }}
     {{ field.name.mixed_case(conv) }} :: {{ type_name(&field.schema) }}~
     - if index + 1 < struc.fields.len() {
         ~,

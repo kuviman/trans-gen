@@ -9,8 +9,10 @@ import Trans (Trans)
 {{ struct_impl(variant, Some((base_name, tag))) }}
 
 - }
+{{ doc_comment(documentation) }}
 data {{ base_name.camel_case(conv) }}
     - for (index, variant) in variants.iter().enumerate() {
+    {{ doc_comment(&variant.documentation) }}
     - if index == 0 {
     = ~
     - } else {

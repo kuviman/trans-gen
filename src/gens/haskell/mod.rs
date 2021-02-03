@@ -87,20 +87,8 @@ fn type_name(schema: &Schema) -> String {
     }
 }
 
-fn doc_comment(documentation: &Documentation, fields: &[Field]) -> String {
+fn doc_comment(documentation: &Documentation) -> String {
     include_templing!("src/gens/haskell/doc_comment.templing")
-}
-
-fn doc_read_from(name: &str) -> String {
-    format!("/**\n * Read {} from input stream\n */", name)
-}
-
-fn doc_write_to(name: &str) -> String {
-    format!("/**\n * Write {} to output stream\n */", name)
-}
-
-fn doc_to_string(name: &str) -> String {
-    format!("/**\n * Get string representation of {}\n */", name)
 }
 
 fn struct_impl(struc: &Struct, base: Option<(&Name, usize)>) -> String {
