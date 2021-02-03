@@ -1,11 +1,11 @@
 module Model (
     module Model,
-    module Model.Example,
     module Model.OneOf,
     module Model.Enumeration,
-    module Model.Structure ) where
+    module Model.Structure,
+    module Model.Example ) where
 
-import Model.Example
 import Model.OneOf
 import Model.Enumeration
 import Model.Structure
+import Model.Example
