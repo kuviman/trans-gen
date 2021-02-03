@@ -1,21 +1,21 @@
 module Model (
     module Model,
-    module Model.EntityType,
-    module Model.BuildProperties,
-    module Model.AttackProperties,
     module Model.Entity,
-    module Model.PlayerView,
-    module Model.Player,
+    module Model.AttackProperties,
     module Model.RepairProperties,
-    module Model.EntityProperties,
-    module Model.Vec2Int32 ) where
+    module Model.BuildProperties,
+    module Model.Player,
+    module Model.Vec2Int32,
+    module Model.EntityType,
+    module Model.PlayerView,
+    module Model.EntityProperties ) where
 
-import Model.EntityType
-import Model.BuildProperties
-import Model.AttackProperties
 import Model.Entity
-import Model.PlayerView
-import Model.Player
+import Model.AttackProperties
 import Model.RepairProperties
-import Model.EntityProperties
+import Model.BuildProperties
+import Model.Player
 import Model.Vec2Int32
+import Model.EntityType
+import Model.PlayerView
+import Model.EntityProperties

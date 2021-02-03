@@ -5,8 +5,11 @@ import qualified Trans
 import Trans (Trans)
 import Data.Int
 
+-- | Example enumeration
 data Enumeration
+    -- | First option
     = ValueOne
+    -- | Second option
     | ValueTwo
     deriving (Eq, Ord, Show)
 

@@ -10,15 +10,25 @@ import Model.EntityProperties (EntityProperties)
 import Model.EntityType (EntityType)
 import Model.Player (Player)
 
+-- | Information available to the player
 data PlayerView = PlayerView {
+    -- | Your player's ID
     myId :: Int32,
+    -- | Size of the map
     mapSize :: Int32,
+    -- | Whether fog of war is enabled
     fogOfWar :: Bool,
+    -- | Entity properties for each entity type
     entityProperties :: Map EntityType EntityProperties,
+    -- | Max tick count for the game
     maxTickCount :: Int32,
+    -- | Max pathfind nodes when performing pathfinding in the game simulator
     maxPathfindNodes :: Int32,
+    -- | Current tick
     currentTick :: Int32,
+    -- | List of players
     players :: [Player],
+    -- | List of entities
     entities :: [Entity] }
     deriving Show
 

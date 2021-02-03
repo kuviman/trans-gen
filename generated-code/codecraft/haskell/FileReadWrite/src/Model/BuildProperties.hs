@@ -6,8 +6,11 @@ import Trans (Trans)
 import Data.Int
 import Model.EntityType (EntityType)
 
+-- | Entity's build properties
 data BuildProperties = BuildProperties {
+    -- | Valid new entity types
     options :: [EntityType],
+    -- | Initial health of new entity. If absent, it will have full health
     initHealth :: Maybe Int32 }
     deriving Show
 

@@ -7,12 +7,19 @@ import Data.Int
 import Model.EntityType (EntityType)
 import Model.Vec2Int32 (Vec2Int32)
 
+-- | Game entity
 data Entity = Entity {
+    -- | Entity's ID. Unique for each entity
     id :: Int32,
+    -- | Entity's owner player ID, if owned by a player
     playerId :: Maybe Int32,
+    -- | Entity's type
     entityType :: EntityType,
+    -- | Entity's position (corner with minimal coordinates)
     position :: Vec2Int32,
+    -- | Current health
     health :: Int32,
+    -- | If entity is active, it can perform actions
     active :: Bool }
     deriving Show
 

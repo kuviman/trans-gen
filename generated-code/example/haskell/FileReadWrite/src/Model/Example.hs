@@ -9,13 +9,21 @@ import Model.Enumeration (Enumeration)
 import Model.OneOf (OneOf)
 import Model.Structure (Structure)
 
+-- | Example
 data Example = Example {
+    -- | OneOf
     oneOf :: OneOf,
+    -- | Dictionary
     hashMap :: Map Enumeration Int32,
+    -- | Optional int
     optionalInt :: Maybe Int32,
+    -- | Optional boolean
     optionalBool :: Maybe Bool,
+    -- | Optional OneOf
     optionalOneOf :: Maybe OneOf,
+    -- | Optional struct
     optionalStruct :: Maybe Structure,
+    -- | Optional enum
     optionalEnum :: Maybe Enumeration }
     deriving Show
 

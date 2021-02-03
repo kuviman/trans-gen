@@ -5,8 +5,11 @@ import qualified Trans
 import Trans (Trans)
 import Data.Int
 
+-- | First option
 data OneOfOptionOne = OneOfOptionOne {
+    -- | List of integers
     vecInt32 :: [Int32],
+    -- | Long integer
     longInt :: Int64 }
     deriving Show
 
@@ -24,7 +27,9 @@ instance Trans OneOfOptionOne where
             Trans.write vecInt32
             Trans.write longInt
 
+-- | Second option
 data OneOfOptionTwo = OneOfOptionTwo {
+    -- | usize
     value :: Int32 }
     deriving Show
 
@@ -38,8 +43,11 @@ instance Trans OneOfOptionTwo where
         value } = do
             Trans.write value
 
+-- | Oneof example
 data OneOf
+    -- | First option
     = OptionOne OneOfOptionOne
+    -- | Second option
     | OptionTwo OneOfOptionTwo
     deriving Show
 

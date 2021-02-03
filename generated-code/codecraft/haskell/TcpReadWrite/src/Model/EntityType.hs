@@ -5,16 +5,27 @@ import qualified Trans
 import Trans (Trans)
 import Data.Int
 
+-- | Entity type
 data EntityType
+    -- | Wall, can be used to prevent enemy from moving through
     = Wall
+    -- | House, used to increase population
     | House
+    -- | Base for recruiting new builder units
     | BuilderBase
+    -- | Builder unit can build buildings
     | BuilderUnit
+    -- | Base for recruiting new melee units
     | MeleeBase
+    -- | Melee unit
     | MeleeUnit
+    -- | Base for recruiting new ranged units
     | RangedBase
+    -- | Ranged unit
     | RangedUnit
+    -- | Resource can be harvested
     | Resource
+    -- | Ranged attacking building
     | Turret
     deriving (Eq, Ord, Show)
 

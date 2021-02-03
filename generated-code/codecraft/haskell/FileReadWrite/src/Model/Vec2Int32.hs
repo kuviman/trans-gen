@@ -5,8 +5,11 @@ import qualified Trans
 import Trans (Trans)
 import Data.Int
 
+-- | 2 dimensional vector.
 data Vec2Int32 = Vec2Int32 {
+    -- | `x` coordinate of the vector
     x :: Int32,
+    -- | `y` coordinate of the vector
     y :: Int32 }
     deriving Show
 

@@ -5,9 +5,13 @@ import qualified Trans
 import Trans (Trans)
 import Data.Int
 
+-- | Player (strategy, client)
 data Player = Player {
+    -- | Player's ID
     id :: Int32,
+    -- | Current score
     score :: Int32,
+    -- | Current amount of resource
     resource :: Int32 }
     deriving Show
 

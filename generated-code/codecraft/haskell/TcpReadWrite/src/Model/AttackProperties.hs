@@ -5,9 +5,13 @@ import qualified Trans
 import Trans (Trans)
 import Data.Int
 
+-- | Entity's attack properties
 data AttackProperties = AttackProperties {
+    -- | Maximum attack range
     attackRange :: Int32,
+    -- | Damage dealt in one tick
     damage :: Int32,
+    -- | If true, dealing damage will collect resource from target
     collectResource :: Bool }
     deriving Show
 

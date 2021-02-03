@@ -5,9 +5,13 @@ import qualified Trans
 import Trans (Trans)
 
 
+-- | Example structure
 data Structure = Structure {
+    -- | Text
     text :: String,
+    -- | 32-bit float
     floatNumber :: Float,
+    -- | 64-bit float
     doubleNumber :: Double }
     deriving Show
 
