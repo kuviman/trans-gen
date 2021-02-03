@@ -10,10 +10,13 @@ jobs:
       matrix:
         env:
           - name: Linux
+            short: linux
             runs-on: ubuntu-latest
           - name: MacOS
+            short: macos
             runs-on: macos-latest
           - name: Windows
+            short: windows
             runs-on: windows-latest
     runs-on: ${{ matrix.env.runs-on }}
     steps:
@@ -42,10 +45,10 @@ jobs:
       - name: Upload artifacts
         uses: actions/upload-artifact@v2
         with:
-          name: testing-${{ matrix.os }}
-          path: target/release/examples/testing${{ fromJson('["", ".exe"]')[matrix.os == 'Windows'] }}
+          name: testing-${{ matrix.env.short }}
+          path: target/release/examples/testing${{ fromJson('["", ".exe"]')[matrix.env.name == 'Windows'] }}
 
-  test-languages-linux:
+  test:
     name: Test ${{ matrix.language.name }} ${{ matrix.test }} on ${{ matrix.model }} model (${{ matrix.env.name }})
     needs: build-test
     strategy:
@@ -53,10 +56,13 @@ jobs:
       matrix:
         env:
           - name: Linux
+            short: linux
             runs-on: ubuntu-latest
           - name: MacOS
+            short: macos
             runs-on: macos-latest
           - name: Windows
+            short: windows
             runs-on: windows-latest
         language:
           - name: C++
@@ -109,7 +115,7 @@ jobs:
       - name: Download artifacts
         uses: actions/download-artifact@v2
         with:
-          name: testing-Linux
+          name: testing-${{ matrix.env.short }}
 
       - name: Prepare testing binary
         run: chmod +x testing
@@ -131,15 +137,13 @@ jobs:
           extensions: sockets
 
       - name: Run tests
-        run: ./testing --language=${{ matrix.language.short }} --test=${{ matrix.test }} --model=${{ matrix.model }}
+        run: ${{ fromJson('["./", ""]')[matrix.env.name == 'Windows'] }}testing --language=${{ matrix.language.short }} --test=${{ matrix.test }} --model=${{ matrix.model }}
 
   update-testing-branch:
     name: Update testing branch
     needs:
       - build-test
-      - test-languages-linux
-      - test-languages-macos
-      - test-languages-windows
+      - test
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/main'
     steps:
