@@ -36,32 +36,32 @@ fn main() -> anyhow::Result<()> {
         }
         std::fs::create_dir_all(path).context("Failed to create target directory")?;
     }
-    macro_rules! test_model {
-        ($model:ident) => {
-            if opt.models.is_empty() || opt.models.contains(&stringify!($model).to_owned()) {
+    macro_rules! test_lang {
+        ($lang:ident) => {
+            if opt.langs.is_empty() || opt.langs.contains(&stringify!($lang).to_owned()) {
                 let generate = opt.generate.as_ref().map(|path| {
-                    if opt.models.len() == 1 {
+                    if opt.langs.len() == 1 {
                         path.to_owned()
                     } else {
-                        path.join(stringify!($model))
+                        path.join(stringify!($lang))
                     }
                 });
-                let snapshot: $model::Model = serde_json::from_str(include_str!(concat!(
-                    stringify!($model),
-                    "-snapshot.json"
-                )))
-                .expect("Failed to read snapshot");
-                macro_rules! test_lang {
-                    ($lang:ident) => {
-                        if opt.langs.is_empty() || opt.langs.contains(&stringify!($lang).to_owned())
+                macro_rules! test_model {
+                    ($model:ident) => {
+                        if opt.models.is_empty()
+                            || opt.models.contains(&stringify!($model).to_owned())
                         {
                             let generate = generate.as_ref().map(|path| {
-                                if opt.langs.len() == 1 {
+                                if opt.models.len() == 1 {
                                     path.to_owned()
                                 } else {
-                                    path.join(stringify!($lang))
+                                    path.join(stringify!($model))
                                 }
                             });
+                            let snapshot: $model::Model = serde_json::from_str(include_str!(
+                                concat!(stringify!($model), "-snapshot.json")
+                            ))
+                            .expect("Failed to read snapshot");
                             macro_rules! test {
                                 ($test:ident) => {
                                     if opt.tests.is_empty()
@@ -102,10 +102,10 @@ fn main() -> anyhow::Result<()> {
                         }
                     };
                 }
-                trans_gen::all_runnable_gens!(test_lang);
+                all_models!(test_model);
             }
         };
     }
-    all_models!(test_model);
+    trans_gen::all_runnable_gens!(test_lang);
     Ok(())
 }
