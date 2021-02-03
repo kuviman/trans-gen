@@ -58,12 +58,15 @@ jobs:
           - name: Linux
             short: linux
             runs-on: ubuntu-latest
+            executable: ./testing
           - name: MacOS
             short: macos
             runs-on: macos-latest
+            executable: ./testing
           - name: Windows
             short: windows
             runs-on: windows-latest
+            executable: .\testing.exe
         language:
           - C++
           - C#
@@ -115,7 +118,7 @@ jobs:
           extensions: sockets
 
       - name: Run tests
-        run: ${{ fromJson('["./", ""]')[matrix.env.name == 'Windows'] }}testing --language=${{ matrix.language }}
+        run: ${{ matrix.env.executable }} --language=${{ matrix.language }}
 
   update-testing-branch:
     name: Update testing branch
