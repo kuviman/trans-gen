@@ -25,16 +25,7 @@ fn type_name_prearray(schema: &Schema) -> String {
         Schema::Float32 => "single".to_owned(),
         Schema::Float64 => "double".to_owned(),
         Schema::String => "string".to_owned(),
-        Schema::Struct {
-            definition: Struct { name, .. },
-            ..
-        }
-        | Schema::OneOf {
-            base_name: name, ..
-        }
-        | Schema::Enum {
-            base_name: name, ..
-        } => format!("{}", name.camel_case(conv)),
+        Schema::Struct { .. } | Schema::OneOf { .. } | Schema::Enum { .. } => name_path(schema),
         Schema::Option(inner) => format!("option<{}>", type_name(inner)),
         Schema::Vec(inner) => type_name_prearray(inner),
         Schema::Map(key, value) => format!("Map<{}, {}>", type_name(key), type_name(value)),
@@ -86,6 +77,52 @@ fn struct_impl(definition: &Struct, base: Option<(&Name, usize)>) -> String {
     include_templing!("src/gens/fsharp/struct_impl.templing")
 }
 
+fn namespace_path(namespace: &Namespace) -> String {
+    namespace
+        .parts
+        .iter()
+        .map(|name| name.camel_case(conv))
+        .collect::<Vec<_>>()
+        .join(".")
+}
+
+fn namespace_path_suffix(namespace: &Namespace) -> String {
+    let namespace_path = namespace_path(namespace);
+    if namespace_path.is_empty() {
+        namespace_path
+    } else {
+        format!(".{}", namespace_path)
+    }
+}
+
+fn name_path(schema: &Schema) -> String {
+    match schema {
+        Schema::Enum {
+            namespace,
+            base_name: name,
+            ..
+        }
+        | Schema::Struct {
+            namespace,
+            definition: Struct { name, .. },
+            ..
+        }
+        | Schema::OneOf {
+            namespace,
+            base_name: name,
+            ..
+        } => {
+            let namespace_path = namespace_path(namespace);
+            if namespace_path.is_empty() {
+                name.camel_case(conv)
+            } else {
+                format!("{}.{}", namespace_path, name.camel_case(conv))
+            }
+        }
+        _ => unreachable!(),
+    }
+}
+
 impl crate::Generator for Generator {
     const NAME: &'static str = "F#";
     type Options = ();
@@ -114,7 +151,7 @@ impl crate::Generator for Generator {
                 variants,
             } => {
                 self.files.push(File {
-                    path: format!("Model/{}.fs", base_name.camel_case(conv)),
+                    path: format!("{}.fs", name_path(schema).replace('.', "/")),
                     content: include_templing!("src/gens/fsharp/enum.templing"),
                 });
             }
@@ -123,7 +160,7 @@ impl crate::Generator for Generator {
                 definition,
             } => {
                 self.files.push(File {
-                    path: format!("Model/{}.fs", definition.name.camel_case(conv)),
+                    path: format!("{}.fs", name_path(schema).replace('.', "/")),
                     content: include_templing!("src/gens/fsharp/struct.templing"),
                 });
             }
@@ -134,7 +171,7 @@ impl crate::Generator for Generator {
                 variants,
             } => {
                 self.files.push(File {
-                    path: format!("Model/{}.fs", base_name.camel_case(conv)),
+                    path: format!("{}.fs", name_path(schema).replace('.', "/")),
                     content: include_templing!("src/gens/fsharp/oneof.templing"),
                 });
             }

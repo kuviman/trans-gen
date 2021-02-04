@@ -1,5 +1,9 @@
 #nowarn "0058"
 
-namespace {{ &self.main_namespace }}.Model
+namespace {{ &self.main_namespace }}{{ namespace_path_suffix(namespace) }}
+- if !namespace_path_suffix(namespace).is_empty() {
+
+open {{ &self.main_namespace }}
+- }
 
 {{ struct_impl(definition, None) }}

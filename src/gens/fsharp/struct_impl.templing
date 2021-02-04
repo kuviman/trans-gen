@@ -2,7 +2,7 @@
 -   format!("{}{}", base_name.camel_case(conv), definition.name.camel_case(conv))
 - } else {
 -   definition.name.camel_case(conv)
-- };
+- }; let struct_name = &struct_name;
 {{ doc_comment(&definition.documentation) }}
 - if definition.fields.is_empty() {
 type {{ struct_name }} = struct end with
@@ -26,7 +26,7 @@ type {{ struct_name }} = {
 
     {{ doc_read_from(&definition.name.camel_case(conv)) }}
     - if definition.fields.is_empty() {
-    static member readFrom(reader: System.IO.BinaryReader) = new {}()
+    static member readFrom(reader: System.IO.BinaryReader) = new {{ struct_name }}()
     - } else {
     static member readFrom(reader: System.IO.BinaryReader) = {
         - for field in &definition.fields {

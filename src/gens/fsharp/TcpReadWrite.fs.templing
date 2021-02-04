@@ -17,7 +17,7 @@ module Runner =
         let stream = new BufferedStream(client.GetStream())
 
         let reader = new BinaryReader(stream)
-        let input = Model.{{ type_name(schema) }}.readFrom(reader)
+        let input = {{ type_name(schema) }}.readFrom(reader)
 
         Console.WriteLine(input)
 
