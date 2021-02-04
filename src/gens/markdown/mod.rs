@@ -13,7 +13,10 @@ fn type_name(schema: &Schema) -> String {
         Schema::Float64 => "float64".to_owned(),
         Schema::String => "string".to_owned(),
         Schema::Option(inner) => format!("Option<{}>", type_name(inner)),
-        Schema::Struct(Struct { name, .. }) => name.camel_case(conv),
+        Schema::Struct {
+            definition: Struct { name, .. },
+            ..
+        } => name.camel_case(conv),
         Schema::OneOf { base_name, .. } => base_name.camel_case(conv),
         Schema::Vec(inner) => format!("[{}]", type_name(inner)),
         Schema::Map(key_type, value_type) => {
@@ -76,15 +79,20 @@ impl crate::Generator for Generator {
     fn add_only(&mut self, schema: &Schema) {
         let language = &self.options.language;
         match schema {
-            Schema::Struct(Struct {
-                documentation,
-                name,
-                fields,
-            }) => {
+            Schema::Struct {
+                namespace,
+                definition:
+                    Struct {
+                        documentation,
+                        name,
+                        fields,
+                    },
+            } => {
                 self.parts
                     .push(include_templing!("src/gens/markdown/struct.templing"));
             }
             Schema::OneOf {
+                namespace,
                 documentation,
                 base_name,
                 variants,
@@ -93,6 +101,7 @@ impl crate::Generator for Generator {
                     .push(include_templing!("src/gens/markdown/oneof.templing"));
             }
             Schema::Enum {
+                namespace,
                 documentation,
                 base_name,
                 variants,

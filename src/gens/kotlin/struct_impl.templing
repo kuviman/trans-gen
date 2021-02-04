@@ -1,10 +1,10 @@
-{{ doc_comment(&struc.documentation) }}
+{{ doc_comment(&definition.documentation) }}
 - if let Some((base_name, _)) = base {
-class {{ struc.name.camel_case(conv) }} : {{ base_name.camel_case(conv) }} {
+class {{ definition.name.camel_case(conv) }} : {{ base_name.camel_case(conv) }} {
 - } else {
-class {{ struc.name.camel_case(conv) }} {
+class {{ definition.name.camel_case(conv) }} {
 - }
-    - for field in &struc.fields {
+    - for field in &definition.fields {
     {{ doc_comment(&field.documentation) }}
     - if lateinit(&field.schema) {
     lateinit var {{ field.name.mixed_case(conv) }}: {{ type_name(&field.schema) }}
@@ -14,33 +14,33 @@ class {{ struc.name.camel_case(conv) }} {
     - }
 
     constructor(~
-        - for (index, field) in struc.fields.iter().enumerate() {
+        - for (index, field) in definition.fields.iter().enumerate() {
             - if index != 0 {
             ~, ~
             - }
             ~{{ field.name.mixed_case(conv) }}: {{ type_name(&field.schema) }}~
         - }
     ~) {
-        - for field in &struc.fields {
+        - for field in &definition.fields {
         this.{{ field.name.mixed_case(conv) }} = {{ field.name.mixed_case(conv) }}
         - }
     }
 
-    {{ doc_write_to(&struc.name.camel_case(conv)) }}
+    {{ doc_write_to(&definition.name.camel_case(conv)) }}
     @Throws(java.io.IOException::class)
     {{# if base.is_some() { }}override {{# } }}fun writeTo(stream: java.io.OutputStream) {
         - if base.is_some() {
         StreamUtil.writeInt(stream, TAG)
         - }
-        - for field in &struc.fields {
+        - for field in &definition.fields {
         {{ write_var(&field.name.mixed_case(conv), &field.schema) }}
         - }
     }
 
-    {{ doc_to_string(&struc.name.camel_case(conv)) }}
+    {{ doc_to_string(&definition.name.camel_case(conv)) }}
     override fun toString(): String {
-        var stringBuilder = StringBuilder("{{ struc.name.camel_case(conv) }} { ")
-        - for (index, field) in struc.fields.iter().enumerate() {
+        var stringBuilder = StringBuilder("{{ definition.name.camel_case(conv) }} { ")
+        - for (index, field) in definition.fields.iter().enumerate() {
         - if index != 0 {
         stringBuilder.append(", ")
         - }
@@ -56,15 +56,15 @@ class {{ struc.name.camel_case(conv) }} {
         val TAG = {{ tag }}
 
         - }
-        {{ doc_read_from(&struc.name.camel_case(conv)) }}
+        {{ doc_read_from(&definition.name.camel_case(conv)) }}
         @Throws(java.io.IOException::class)
-        fun readFrom(stream: java.io.InputStream): {{ struc.name.camel_case(conv) }} {
-            - for field in &struc.fields {
+        fun readFrom(stream: java.io.InputStream): {{ definition.name.camel_case(conv) }} {
+            - for field in &definition.fields {
             var {{ field.name.mixed_case(conv) }}: {{ type_name(&field.schema) }}
             {{ read_var(&field.name.mixed_case(conv), &field.schema) }}
             - }
-            return {{ struc.name.camel_case(conv) }}(~
-                - for (index, field) in struc.fields.iter().enumerate() {
+            return {{ definition.name.camel_case(conv) }}(~
+                - for (index, field) in definition.fields.iter().enumerate() {
                     - if index != 0 {
                     ~, ~
                     - }

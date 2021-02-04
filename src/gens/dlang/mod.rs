@@ -21,7 +21,10 @@ fn type_name(schema: &Schema) -> String {
         Schema::Float32 => "float".to_owned(),
         Schema::Float64 => "double".to_owned(),
         Schema::String => "string".to_owned(),
-        Schema::Struct(Struct { name, .. })
+        Schema::Struct {
+            definition: Struct { name, .. },
+            ..
+        }
         | Schema::OneOf {
             base_name: name, ..
         }
@@ -60,7 +63,7 @@ fn write_var(var: &str, schema: &Schema) -> String {
     include_templing!("src/gens/dlang/write_var.templing")
 }
 
-fn struct_impl(struc: &Struct, base: Option<(&Name, usize)>) -> String {
+fn struct_impl(definition: &Struct, base: Option<(&Name, usize)>) -> String {
     include_templing!("src/gens/dlang/struct_impl.templing")
 }
 
@@ -96,6 +99,7 @@ impl crate::Generator for Generator {
     fn add_only(&mut self, schema: &Schema) {
         match schema {
             Schema::Enum {
+                namespace,
                 documentation,
                 base_name,
                 variants,
@@ -111,19 +115,23 @@ impl crate::Generator for Generator {
                     include_templing!("src/gens/dlang/enum.templing"),
                 );
             }
-            Schema::Struct(struc) => {
+            Schema::Struct {
+                namespace,
+                definition,
+            } => {
                 writeln!(
                     &mut self.model_init,
                     "public import {};",
-                    struc.name.snake_case(conv),
+                    definition.name.snake_case(conv),
                 )
                 .unwrap();
                 self.files.insert(
-                    format!("source/model/{}.d", struc.name.snake_case(conv)),
+                    format!("source/model/{}.d", definition.name.snake_case(conv)),
                     include_templing!("src/gens/dlang/struct.templing"),
                 );
             }
             Schema::OneOf {
+                namespace,
                 documentation,
                 base_name,
                 variants,

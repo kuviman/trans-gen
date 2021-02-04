@@ -92,7 +92,10 @@ pub fn generate<T: Generator>(
         }
         added.insert(schema_name, schema.clone());
         match schema {
-            Schema::Struct(Struct { fields, .. }) => {
+            Schema::Struct {
+                definition: Struct { fields, .. },
+                ..
+            } => {
                 for field in fields {
                     add(generator, added, &field.schema);
                 }

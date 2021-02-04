@@ -1,18 +1,18 @@
-{{ doc_comment(&struc.documentation) }}
+{{ doc_comment(&definition.documentation) }}
 - let full_name = if let Some((base_name, _)) = base {
-export class {{ struc.name.camel_case(conv) }} extends {{ base_name.camel_case(conv) }} {
-- format!("{}.{}", base_name.camel_case(conv), struc.name.camel_case(conv))
+export class {{ definition.name.camel_case(conv) }} extends {{ base_name.camel_case(conv) }} {
+- format!("{}.{}", base_name.camel_case(conv), definition.name.camel_case(conv))
 - } else {
-export class {{ struc.name.camel_case(conv) }} {
-- struc.name.camel_case(conv)
+export class {{ definition.name.camel_case(conv) }} {
+- definition.name.camel_case(conv)
 - };
-    - for field in &struc.fields {
+    - for field in &definition.fields {
     {{ doc_comment(&field.documentation) }}
     {{ field.name.mixed_case(conv) }}: {{ type_name(&field.schema) }}
     - }
 
     constructor(~
-    - for (index, field) in struc.fields.iter().enumerate() {
+    - for (index, field) in definition.fields.iter().enumerate() {
         - if index != 0 {
             ~, ~
         - }
@@ -22,33 +22,33 @@ export class {{ struc.name.camel_case(conv) }} {
         - if base.is_some() {
         super();
         - }
-        - for field in &struc.fields {
+        - for field in &definition.fields {
         this.{{ field.name.mixed_case(conv) }} = {{ field.name.mixed_case(conv) }};
         - }
     }
 
-    {{ doc_read_from(&struc.name.camel_case(conv)) }}
+    {{ doc_read_from(&definition.name.camel_case(conv)) }}
     static async readFrom(stream: Stream): Promise<{{ full_name }}> {
-        - for field in &struc.fields {
+        - for field in &definition.fields {
         let {{ field.name.mixed_case(conv) }};
         {{ read_var(&field.name.mixed_case(conv), &field.schema) }}
         - }
-        return new {{ struc.name.camel_case(conv) }}(~
-        - for (index, field) in struc.fields.iter().enumerate() {
+        return new {{ definition.name.camel_case(conv) }}(~
+        - for (index, field) in definition.fields.iter().enumerate() {
             ~{{field.name.mixed_case(conv)}}~
-            - if index + 1 < struc.fields.len() {
+            - if index + 1 < definition.fields.len() {
                 ~, ~
             - }
         - }
         ~)
     }
 
-    {{ doc_write_to(&struc.name.camel_case(conv)) }}
+    {{ doc_write_to(&definition.name.camel_case(conv)) }}
     async writeTo(stream: Stream) {
         - if base.is_some() {
-        await stream.writeInt({{ struc.name.camel_case(conv) }}.TAG);
+        await stream.writeInt({{ definition.name.camel_case(conv) }}.TAG);
         - }
-        - for field in &struc.fields {
+        - for field in &definition.fields {
         let {{ field.name.mixed_case(conv) }} = this.{{ field.name.mixed_case(conv) }};
         {{ write_var(&field.name.mixed_case(conv), &field.schema) }}
         - }
@@ -56,7 +56,7 @@ export class {{ struc.name.camel_case(conv) }} {
 }
 
 - if let Some((base_name, tag)) = base {
-export namespace {{ struc.name.camel_case(conv) }} {
+export namespace {{ definition.name.camel_case(conv) }} {
     export const TAG = {{ tag }};
 }
 - }

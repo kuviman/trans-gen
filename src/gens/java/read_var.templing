@@ -17,8 +17,8 @@
 - Schema::String => {
 {{ var }} = StreamUtil.readString(stream);
 - }
-- Schema::Struct(Struct { name, .. }) | Schema::OneOf { base_name: name, .. } | Schema::Enum { base_name: name, .. } => {
-{{ var }} = model.{{ name.camel_case(conv) }}.readFrom(stream);
+- Schema::Struct { .. } | Schema::OneOf { .. } | Schema::Enum { .. } => {
+{{ var }} = {{ type_name(schema) }}.readFrom(stream);
 - }
 - Schema::Option(inner) => {
 if (StreamUtil.readBoolean(stream)) {

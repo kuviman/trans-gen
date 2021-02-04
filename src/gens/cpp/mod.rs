@@ -36,7 +36,10 @@ impl Generator {
             Schema::OneOf {
                 base_name: name, ..
             } => format!("std::shared_ptr<{}>", name.camel_case(conv)),
-            Schema::Struct(Struct { name, .. })
+            Schema::Struct {
+                definition: Struct { name, .. },
+                ..
+            }
             | Schema::Enum {
                 base_name: name, ..
             } => format!("{}", name.camel_case(conv)),
@@ -85,7 +88,10 @@ impl Generator {
                 Schema::Vec(_) => {
                     result.insert("<vector>".to_owned());
                 }
-                Schema::Struct(Struct { name, .. })
+                Schema::Struct {
+                    definition: Struct { name, .. },
+                    ..
+                }
                 | Schema::OneOf {
                     base_name: name, ..
                 }
@@ -115,7 +121,10 @@ impl Generator {
             Schema::Vec(inner) => {
                 self.collect_includes(result, inner, true);
             }
-            Schema::Struct(Struct { fields, .. }) => {
+            Schema::Struct {
+                definition: Struct { fields, .. },
+                ..
+            } => {
                 for field in fields {
                     self.collect_includes(result, &field.schema, true);
                 }
@@ -157,10 +166,10 @@ impl Generator {
     fn var_to_string(&self, var: &str, schema: &Schema) -> String {
         include_templing!("src/gens/cpp/var_to_string.templing")
     }
-    fn struct_def(&self, struc: &Struct, base: Option<(&Name, usize)>) -> String {
+    fn struct_def(&self, definition: &Struct, base: Option<(&Name, usize)>) -> String {
         include_templing!("src/gens/cpp/struct_def.templing")
     }
-    fn struct_impl(&self, struc: &Struct, base: Option<(&Name, usize)>) -> String {
+    fn struct_impl(&self, definition: &Struct, base: Option<(&Name, usize)>) -> String {
         include_templing!("src/gens/cpp/struct_impl.templing")
     }
 }
@@ -206,6 +215,7 @@ impl crate::Generator for Generator {
     fn add_only(&mut self, schema: &Schema) {
         match schema {
             Schema::Enum {
+                namespace,
                 documentation,
                 base_name,
                 variants,
@@ -223,21 +233,25 @@ impl crate::Generator for Generator {
                     include_templing!("src/gens/cpp/enum-cpp.templing"),
                 );
             }
-            Schema::Struct(struc) => {
+            Schema::Struct {
+                namespace,
+                definition,
+            } => {
                 self.model_include.push_str(&format!(
                     "#include \"{}.hpp\"\n",
-                    struc.name.camel_case(conv)
+                    definition.name.camel_case(conv)
                 ));
                 self.files.insert(
-                    format!("model/{}.hpp", struc.name.camel_case(conv)),
+                    format!("model/{}.hpp", definition.name.camel_case(conv)),
                     include_templing!("src/gens/cpp/struct-hpp.templing"),
                 );
                 self.files.insert(
-                    format!("model/{}.cpp", struc.name.camel_case(conv)),
+                    format!("model/{}.cpp", definition.name.camel_case(conv)),
                     include_templing!("src/gens/cpp/struct-cpp.templing"),
                 );
             }
             Schema::OneOf {
+                namespace,
                 documentation,
                 base_name,
                 variants,
@@ -320,7 +334,7 @@ impl<D: Trans + PartialEq + Debug> TestableGenerator<testing::FileReadWrite<D>> 
         let schema: &Schema = &schema;
         fn type_name(schema: &Schema) -> String {
             match schema {
-                Schema::Struct(struc) => struc.name.camel_case(conv),
+                Schema::Struct { definition, .. } => definition.name.camel_case(conv),
                 Schema::OneOf { base_name, .. } => {
                     format!("std::shared_ptr<{}>", base_name.camel_case(conv))
                 }
@@ -340,7 +354,7 @@ impl<D: Trans + PartialEq + Debug> TestableGenerator<testing::TcpReadWrite<D>> f
         let schema: &Schema = &schema;
         fn type_name(schema: &Schema) -> String {
             match schema {
-                Schema::Struct(struc) => struc.name.camel_case(conv),
+                Schema::Struct { definition, .. } => definition.name.camel_case(conv),
                 Schema::OneOf { base_name, .. } => {
                     format!("std::shared_ptr<{}>", base_name.camel_case(conv))
                 }

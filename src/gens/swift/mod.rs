@@ -20,7 +20,10 @@ fn type_name(schema: &Schema) -> String {
         Schema::Float32 => "Float".to_owned(),
         Schema::Float64 => "Double".to_owned(),
         Schema::String => "String".to_owned(),
-        Schema::Struct(Struct { name, .. })
+        Schema::Struct {
+            definition: Struct { name, .. },
+            ..
+        }
         | Schema::OneOf {
             base_name: name, ..
         }
@@ -89,6 +92,7 @@ impl crate::Generator for Generator {
     fn add_only(&mut self, schema: &Schema) {
         match schema {
             Schema::Enum {
+                namespace,
                 documentation,
                 base_name,
                 variants,
@@ -102,17 +106,21 @@ impl crate::Generator for Generator {
                     include_templing!("src/gens/swift/enum.templing"),
                 );
             }
-            Schema::Struct(struc) => {
+            Schema::Struct {
+                namespace,
+                definition,
+            } => {
                 self.files.insert(
                     format!(
                         "Sources/{}/{}.swift",
                         self.package_name,
-                        struc.name.camel_case(conv),
+                        definition.name.camel_case(conv),
                     ),
                     include_templing!("src/gens/swift/struct.templing"),
                 );
             }
             Schema::OneOf {
+                namespace,
                 documentation,
                 base_name,
                 variants,

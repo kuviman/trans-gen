@@ -247,6 +247,7 @@ pub fn derive_trans(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
         let mut base_name =
             syn::LitStr::new(&ast.ident.to_string(), proc_macro2::Span::call_site());
         let mut generics_in_name = true;
+        let mut namespace: Option<syn::Path> = None;
         for attr in &ast.attrs {
             if let Ok(syn::Meta::List(syn::MetaList {
                 path: ref meta_path,
@@ -264,6 +265,8 @@ pub fn derive_trans(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
                             })) => {
                                 if meta_path.is_ident("rename") {
                                     base_name = lit.clone();
+                                } else if meta_path.is_ident("namespace") {
+                                    namespace = Some(syn::parse_str(&lit.value()).unwrap());
                                 }
                             }
                             syn::NestedMeta::Meta(syn::Meta::Path(ref meta_path)) => {
@@ -286,6 +289,24 @@ pub fn derive_trans(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
             }
             name
         }};
+        let namespace = match namespace {
+            Some(path) => {
+                let parts = path.segments.iter().map(|segment| {
+                    let ident = &segment.ident;
+                    quote! {
+                        Name::new(stringify!(#ident).to_owned())
+                    }
+                });
+                quote! {
+                    trans::Namespace {
+                        parts: vec![#(#parts),*],
+                    }
+                }
+            }
+            None => quote! {
+                trans::Namespace { parts: Vec::new() }
+            },
+        };
         match ast.data {
             syn::Data::Struct(syn::DataStruct { ref fields, .. }) => match fields {
                 syn::Fields::Named(_) => {
@@ -336,15 +357,18 @@ pub fn derive_trans(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
                         impl #impl_generics trans::Trans for #input_type #ty_generics #where_clause {
                             fn create_schema(version: &trans::Version) -> trans::Schema {
                                 let name = #final_name;
-                                trans::Schema::Struct(trans::Struct {
-                                    documentation: #documentation,
-                                    name: trans::Name::new(name),
-                                    fields: {
-                                        let mut fields = Vec::new();
-                                        #(#schema_fields)*
-                                        fields
+                                trans::Schema::Struct {
+                                    namespace: #namespace,
+                                    definition: trans::Struct {
+                                        documentation: #documentation,
+                                        name: trans::Name::new(name),
+                                        fields: {
+                                            let mut fields = Vec::new();
+                                            #(#schema_fields)*
+                                            fields
+                                        },
                                     },
-                                })
+                                }
                             }
                             fn write_to(&self, writer: &mut dyn std::io::Write, version: &trans::Version) -> std::io::Result<()> {
                                 let Self { #(#field_names,)* } = self;
@@ -482,6 +506,7 @@ pub fn derive_trans(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
                             fn create_schema(version: &trans::Version) -> trans::Schema {
                                 let base_name = #final_name;
                                 trans::Schema::Enum {
+                                    namespace: #namespace,
                                     documentation: #documentation,
                                     base_name: trans::Name::new(base_name),
                                     variants: {
@@ -535,6 +560,7 @@ pub fn derive_trans(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
                             fn create_schema(version: &trans::Version) -> trans::Schema {
                                 let base_name = #final_name;
                                 trans::Schema::OneOf {
+                                    namespace: #namespace,
                                     documentation: #documentation,
                                     base_name: trans::Name::new(base_name),
                                     variants: {

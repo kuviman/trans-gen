@@ -17,7 +17,7 @@ $stream->writeDouble(${{ var }});
 - Schema::String => {
 $stream->writeString(${{ var }});
 - }
-- Schema::Struct(_) | Schema::OneOf { .. } => {
+- Schema::Struct { .. } | Schema::OneOf { .. } => {
 ${{ var }}->writeTo($stream);
 - }
 - Schema::Option(inner) => {

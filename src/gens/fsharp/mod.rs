@@ -25,7 +25,10 @@ fn type_name_prearray(schema: &Schema) -> String {
         Schema::Float32 => "single".to_owned(),
         Schema::Float64 => "double".to_owned(),
         Schema::String => "string".to_owned(),
-        Schema::Struct(Struct { name, .. })
+        Schema::Struct {
+            definition: Struct { name, .. },
+            ..
+        }
         | Schema::OneOf {
             base_name: name, ..
         }
@@ -79,7 +82,7 @@ fn write_var(var: &str, schema: &Schema) -> String {
     include_templing!("src/gens/fsharp/write_var.templing")
 }
 
-fn struct_impl(struc: &Struct, base: Option<(&Name, usize)>) -> String {
+fn struct_impl(definition: &Struct, base: Option<(&Name, usize)>) -> String {
     include_templing!("src/gens/fsharp/struct_impl.templing")
 }
 
@@ -105,6 +108,7 @@ impl crate::Generator for Generator {
     fn add_only(&mut self, schema: &Schema) {
         match schema {
             Schema::Enum {
+                namespace,
                 documentation,
                 base_name,
                 variants,
@@ -114,13 +118,17 @@ impl crate::Generator for Generator {
                     content: include_templing!("src/gens/fsharp/enum.templing"),
                 });
             }
-            Schema::Struct(struc) => {
+            Schema::Struct {
+                namespace,
+                definition,
+            } => {
                 self.files.push(File {
-                    path: format!("Model/{}.fs", struc.name.camel_case(conv)),
+                    path: format!("Model/{}.fs", definition.name.camel_case(conv)),
                     content: include_templing!("src/gens/fsharp/struct.templing"),
                 });
             }
             Schema::OneOf {
+                namespace,
                 documentation,
                 base_name,
                 variants,

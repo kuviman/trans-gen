@@ -18,8 +18,8 @@
 - Schema::String => {
 {{ var_decl }} = stream.readString();
 - }
-- Schema::Struct(Struct { name, .. }) | Schema::OneOf { base_name: name, .. } => {
-{{ var_decl }} = {{ name.camel_case(conv) }}::readFrom(stream);
+- Schema::Struct { .. } | Schema::OneOf { .. } => {
+{{ var_decl }} = {{ self.type_name(schema) }}::readFrom(stream);
 - }
 - Schema::Option(inner) => {
 - if self.options.cxx_standard >= 17 {

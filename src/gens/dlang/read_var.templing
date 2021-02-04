@@ -17,8 +17,8 @@
 - Schema::String => {
 {{ var }} = reader.readString();
 - }
-- Schema::Struct(Struct { name, .. }) | Schema::OneOf { base_name: name, .. } => {
-{{ var }} = {{ name.camel_case(conv) }}.readFrom(reader);
+- Schema::Struct { .. } | Schema::OneOf { .. } => {
+{{ var }} = {{ type_name(schema) }}.readFrom(reader);
 - }
 - Schema::Option(inner) => {
 if (reader.readBool()) {

@@ -55,7 +55,7 @@ fn nullable(schema: &Schema) -> bool {
         | Schema::Float32
         | Schema::Float64
         | Schema::Enum { .. }
-        | Schema::Struct(_) => false,
+        | Schema::Struct { .. } => false,
         Schema::String
         | Schema::Option(_)
         | Schema::Vec(_)
@@ -80,7 +80,10 @@ fn type_name_prearray(schema: &Schema) -> String {
         Schema::Float32 => "float".to_owned(),
         Schema::Float64 => "double".to_owned(),
         Schema::String => "string".to_owned(),
-        Schema::Struct(Struct { name, .. })
+        Schema::Struct {
+            definition: Struct { name, .. },
+            ..
+        }
         | Schema::OneOf {
             base_name: name, ..
         }
@@ -149,7 +152,7 @@ fn var_to_string(var: &str, schema: &Schema) -> String {
     include_templing!("src/gens/csharp/var_to_string.templing")
 }
 
-fn struct_impl(struc: &Struct, base: Option<(&Name, usize)>) -> String {
+fn struct_impl(definition: &Struct, base: Option<(&Name, usize)>) -> String {
     include_templing!("src/gens/csharp/struct_impl.templing")
 }
 
@@ -177,6 +180,7 @@ impl crate::Generator for Generator {
     fn add_only(&mut self, schema: &Schema) {
         match schema {
             Schema::Enum {
+                namespace,
                 documentation,
                 base_name,
                 variants,
@@ -186,13 +190,17 @@ impl crate::Generator for Generator {
                     include_templing!("src/gens/csharp/enum.templing"),
                 );
             }
-            Schema::Struct(struc) => {
+            Schema::Struct {
+                namespace,
+                definition,
+            } => {
                 self.files.insert(
-                    format!("Model/{}.cs", struc.name.camel_case(conv)),
+                    format!("Model/{}.cs", definition.name.camel_case(conv)),
                     include_templing!("src/gens/csharp/struct.templing"),
                 );
             }
             Schema::OneOf {
+                namespace,
                 documentation,
                 base_name,
                 variants,

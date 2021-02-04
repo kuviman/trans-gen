@@ -17,7 +17,7 @@ StreamUtil.writeDouble(stream, {{ var }});
 - Schema::String => {
 StreamUtil.writeString(stream, {{ var }});
 - }
-- Schema::Struct(_) | Schema::OneOf { .. } => {
+- Schema::Struct { .. } | Schema::OneOf { .. } => {
 {{ var }}.writeTo(stream);
 - }
 - Schema::Option(inner) => {

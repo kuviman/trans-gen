@@ -16,7 +16,10 @@ fn type_name(schema: &Schema) -> String {
         Schema::Float64 => "f64".to_owned(),
         Schema::String => "String".to_owned(),
         Schema::Option(inner) => format!("Option<{}>", type_name(inner)),
-        Schema::Struct(Struct { name, .. }) => name.camel_case(conv),
+        Schema::Struct {
+            definition: Struct { name, .. },
+            ..
+        } => name.camel_case(conv),
         Schema::OneOf { base_name, .. } => base_name.camel_case(conv),
         Schema::Vec(inner) => format!("Vec<{}>", type_name(inner)),
         Schema::Map(key_type, value_type) => format!(
@@ -83,17 +86,22 @@ impl crate::Generator for Generator {
     }
     fn add_only(&mut self, schema: &Schema) {
         match schema {
-            Schema::Struct(Struct {
-                documentation,
-                name,
-                fields,
-            }) => {
+            Schema::Struct {
+                namespace,
+                definition:
+                    Struct {
+                        documentation,
+                        name,
+                        fields,
+                    },
+            } => {
                 self.types.insert(
                     name.snake_case(conv),
                     include_templing!("src/gens/rust/struct.templing"),
                 );
             }
             Schema::OneOf {
+                namespace,
                 base_name,
                 variants,
                 documentation,
@@ -104,6 +112,7 @@ impl crate::Generator for Generator {
                 );
             }
             Schema::Enum {
+                namespace,
                 base_name,
                 variants,
                 documentation,

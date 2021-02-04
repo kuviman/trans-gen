@@ -5,7 +5,7 @@ stringBuilder.append({{ var }})
 - Schema::String => {
 stringBuilder.append('"' + {{ var }} + '"')
 - }
-- Schema::Struct(_) | Schema::OneOf { .. } => {
+- Schema::Struct { .. } | Schema::OneOf { .. } => {
 stringBuilder.append({{ var }})
 - }
 - Schema::Option(inner) => {

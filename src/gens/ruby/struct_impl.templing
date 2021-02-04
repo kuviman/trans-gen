@@ -1,34 +1,34 @@
-{{ doc_comment(&struc.documentation) }}
-class {{ struc.name.camel_case(conv) }}
+{{ doc_comment(&definition.documentation) }}
+class {{ definition.name.camel_case(conv) }}
     - if let Some((_, tag)) = base {
     TAG = {{ tag }}
 
     - }
-    - for field in &struc.fields {
+    - for field in &definition.fields {
     {{ doc_comment(&field.documentation) }}
     attr_accessor :{{ field.name.snake_case(conv) }}
     - }
 
     def initialize(~
-    - for (index, field) in struc.fields.iter().enumerate() {
+    - for (index, field) in definition.fields.iter().enumerate() {
     - if index != 0 {
         ~, ~
     - }
         ~{{ field.name.snake_case(conv) }}~
     - }
     ~)
-    - for field in &struc.fields {
+    - for field in &definition.fields {
         @{{ field.name.snake_case(conv) }} = {{ field.name.snake_case(conv) }}
     - }
     end
 
-    {{ doc_read_from(&struc.name.camel_case(conv)) }}
+    {{ doc_read_from(&definition.name.camel_case(conv)) }}
     def self.read_from(stream)
-        - for field in &struc.fields {
+        - for field in &definition.fields {
         {{ read_var(&field.name.snake_case(conv), &field.schema) }}
         - }
-        {{ struc.name.camel_case(conv) }}.new(~
-        - for (index, field) in struc.fields.iter().enumerate() {
+        {{ definition.name.camel_case(conv) }}.new(~
+        - for (index, field) in definition.fields.iter().enumerate() {
         - if index != 0 {
             ~, ~
         - }
@@ -37,19 +37,19 @@ class {{ struc.name.camel_case(conv) }}
         ~)
     end
 
-    {{ doc_write_to(&struc.name.camel_case(conv)) }}
+    {{ doc_write_to(&definition.name.camel_case(conv)) }}
     def write_to(stream)
         - if base.is_some() {
         stream.write_int(TAG)
         - }
-        - for field in &struc.fields {
+        - for field in &definition.fields {
         {{ write_var(&format!("@{}", field.name.snake_case(conv)), &field.schema) }}
         - }
     end
 
     def to_s
-        string_result = "{{ struc.name.camel_case(conv) }} { "
-        - for (index, field) in struc.fields.iter().enumerate() {
+        string_result = "{{ definition.name.camel_case(conv) }} { "
+        - for (index, field) in definition.fields.iter().enumerate() {
         - if index != 0 {
         string_result += ", "
         - }

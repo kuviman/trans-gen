@@ -17,8 +17,8 @@ reader.ReadDouble()
 - Schema::String => {
 reader.ReadInt32() |> reader.ReadBytes |> System.Text.Encoding.UTF8.GetString
 - }
-- Schema::Struct(Struct { name, .. }) | Schema::OneOf { base_name: name, .. } => {
-{{ name.camel_case(conv) }}.readFrom reader;
+- Schema::Struct { .. } | Schema::OneOf { .. } => {
+{{ type_name(schema) }}.readFrom reader;
 - }
 - Schema::Option(inner) => {
 match reader.ReadBoolean() with

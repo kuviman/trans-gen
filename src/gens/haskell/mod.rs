@@ -11,10 +11,13 @@ pub struct Generator {
 
 fn imports(schema: &Schema) -> String {
     let mut imports = BTreeSet::new();
-    fn add_imports_struct(struc: &Struct, imports: &mut BTreeSet<String>) {
+    fn add_imports_struct(definition: &Struct, imports: &mut BTreeSet<String>) {
         fn add_imports(schema: &Schema, imports: &mut BTreeSet<String>) {
             match schema {
-                Schema::Struct(Struct { name, .. })
+                Schema::Struct {
+                    definition: Struct { name, .. },
+                    ..
+                }
                 | Schema::OneOf {
                     base_name: name, ..
                 }
@@ -44,13 +47,13 @@ fn imports(schema: &Schema) -> String {
                 Schema::Bool | Schema::Float32 | Schema::Float64 | Schema::String => {}
             }
         }
-        for field in &struc.fields {
+        for field in &definition.fields {
             add_imports(&field.schema, imports);
         }
     }
     match schema {
-        Schema::Struct(struc) => {
-            add_imports_struct(struc, &mut imports);
+        Schema::Struct { definition, .. } => {
+            add_imports_struct(definition, &mut imports);
         }
         Schema::OneOf { variants, .. } => {
             imports.insert("Data.Int".to_owned());
@@ -74,7 +77,10 @@ fn type_name(schema: &Schema) -> String {
         Schema::Float32 => "Float".to_owned(),
         Schema::Float64 => "Double".to_owned(),
         Schema::String => "String".to_owned(),
-        Schema::Struct(Struct { name, .. })
+        Schema::Struct {
+            definition: Struct { name, .. },
+            ..
+        }
         | Schema::OneOf {
             base_name: name, ..
         }
@@ -91,7 +97,7 @@ fn doc_comment(documentation: &Documentation) -> String {
     include_templing!("src/gens/haskell/doc_comment.templing")
 }
 
-fn struct_impl(struc: &Struct, base: Option<(&Name, usize)>) -> String {
+fn struct_impl(definition: &Struct, base: Option<(&Name, usize)>) -> String {
     include_templing!("src/gens/haskell/struct_impl.templing")
 }
 
@@ -145,6 +151,7 @@ impl crate::Generator for Generator {
     fn add_only(&mut self, schema: &Schema) {
         match schema {
             Schema::Enum {
+                namespace,
                 base_name,
                 variants,
                 documentation,
@@ -154,13 +161,17 @@ impl crate::Generator for Generator {
                     include_templing!("src/gens/haskell/enum.templing"),
                 );
             }
-            Schema::Struct(struc) => {
+            Schema::Struct {
+                namespace,
+                definition,
+            } => {
                 self.files.insert(
-                    format!("src/Model/{}.hs", struc.name.camel_case(conv)),
+                    format!("src/Model/{}.hs", definition.name.camel_case(conv)),
                     include_templing!("src/gens/haskell/struct.templing"),
                 );
             }
             Schema::OneOf {
+                namespace,
                 base_name,
                 variants,
                 documentation,

@@ -148,12 +148,12 @@ fn test_struct_variant_versions() {
 
     let schema_v1 = Schema::of::<Test>(&v1);
     assert!(
-        matches!(schema_v1.as_ref(), Schema::Struct(Struct { fields, ..}) if fields.len() == 2 )
+        matches!(schema_v1.as_ref(), Schema::Struct{ definition: Struct { fields, .. }, .. } if fields.len() == 2 )
     );
 
     let schema_v2 = Schema::of::<Test>(&v2);
     assert!(
-        matches!(schema_v2.as_ref(), Schema::Struct(Struct { fields, ..}) if fields.len() == 3 )
+        matches!(schema_v2.as_ref(), Schema::Struct { definition: Struct { fields, .. }, .. } if fields.len() == 3 )
     );
 
     let test = Test {
@@ -177,4 +177,33 @@ fn test_struct_variant_versions() {
     deserialize::<Test>(&v2, &serialize(&v1, &test).unwrap())
         .ensure_err_kind(std::io::ErrorKind::UnexpectedEof)
         .unwrap();
+}
+
+#[test]
+fn test_namespace() {
+    #[derive(Trans)]
+    enum Test {
+        Variant1 { field: i32 },
+        Variant2 { field: i32 },
+    }
+    assert!(
+        matches!(Schema::of::<Test>(&version()).as_ref(), Schema::OneOf { namespace, .. } if namespace.parts == vec![] )
+    );
+    #[derive(Trans)]
+    #[trans(namespace = "foo")]
+    struct TestFoo {
+        field: i32,
+    }
+    assert!(
+        matches!(Schema::of::<TestFoo>(&version()).as_ref(), Schema::Struct { namespace, .. } if namespace.parts == vec![Name::new("foo".to_owned())] )
+    );
+    #[derive(Trans)]
+    #[trans(namespace = "foo::bar")]
+    enum TestFooBar {
+        Variant1,
+        Variant2,
+    }
+    assert!(
+        matches!(Schema::of::<TestFooBar>(&version()).as_ref(), Schema::Enum { namespace, .. } if namespace.parts == vec![Name::new("foo".to_owned()), Name::new("bar".to_owned())] )
+    );
 }

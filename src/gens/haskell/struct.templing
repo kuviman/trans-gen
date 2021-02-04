@@ -1,8 +1,8 @@
-module Model.{{ struc.name.camel_case(conv) }} where
+module Model.{{ definition.name.camel_case(conv) }} where
 
 import Prelude hiding (id)
 import qualified Trans
 import Trans (Trans)
 {{ imports(schema) }}
 
-{{ struct_impl(struc, None) }}
+{{ struct_impl(definition, None) }}

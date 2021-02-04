@@ -77,6 +77,11 @@ pub struct EnumVariant {
 }
 
 #[derive(Debug, PartialEq, Eq, Hash, Clone)]
+pub struct Namespace {
+    pub parts: Vec<Name>,
+}
+
+#[derive(Debug, PartialEq, Eq, Hash, Clone)]
 pub enum Schema {
     Bool,
     Int32,
@@ -84,8 +89,12 @@ pub enum Schema {
     Float32,
     Float64,
     String,
-    Struct(Struct),
+    Struct {
+        namespace: Namespace,
+        definition: Struct,
+    },
     OneOf {
+        namespace: Namespace,
         documentation: Documentation,
         base_name: Name,
         variants: Vec<Struct>,
@@ -94,6 +103,7 @@ pub enum Schema {
     Vec(Arc<Schema>),
     Map(Arc<Schema>, Arc<Schema>),
     Enum {
+        namespace: Namespace,
         documentation: Documentation,
         base_name: Name,
         variants: Vec<EnumVariant>,
@@ -109,7 +119,10 @@ impl Schema {
             Schema::Float32 => Name("Float32".to_owned()),
             Schema::Float64 => Name("Float64".to_owned()),
             Schema::String => Name("String".to_owned()),
-            Schema::Struct(Struct { name, .. }) => name.clone(),
+            Schema::Struct {
+                definition: Struct { name, .. },
+                ..
+            } => name.clone(),
             Schema::OneOf { base_name, .. } => base_name.to_owned(),
             Schema::Option(inner) => Name(format!("Opt{}", inner.full_name().0)),
             Schema::Vec(inner) => Name(format!("Vec{}", inner.full_name().0)),
@@ -124,7 +137,7 @@ impl Schema {
             Self::Bool | Self::Int32 | Self::Int64 | Self::String => true,
             Self::Float32 | Self::Float64 => false,
             Self::Option(_) => false,
-            Self::Struct(struc) => struc.hashable(),
+            Self::Struct { definition, .. } => definition.hashable(),
             Self::OneOf { .. } => false,
             Self::Vec(_) => false,
             Self::Map(_, _) => false,

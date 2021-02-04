@@ -20,7 +20,10 @@ fn type_name(schema: &Schema) -> String {
         Schema::Float32 => "Float".to_owned(),
         Schema::Float64 => "Double".to_owned(),
         Schema::String => "String".to_owned(),
-        Schema::Struct(Struct { name, .. })
+        Schema::Struct {
+            definition: Struct { name, .. },
+            ..
+        }
         | Schema::OneOf {
             base_name: name, ..
         }
@@ -42,7 +45,7 @@ fn default_value(schema: &Schema) -> String {
         Schema::Float64 => "0.0".to_owned(),
         Schema::Option(_) => "null".to_owned(),
         Schema::String
-        | Schema::Struct(_)
+        | Schema::Struct { .. }
         | Schema::OneOf { .. }
         | Schema::Enum { .. }
         | Schema::Vec(_)
@@ -59,7 +62,7 @@ fn lateinit(schema: &Schema) -> bool {
         | Schema::Float64
         | Schema::Option(_) => false,
         Schema::String
-        | Schema::Struct(_)
+        | Schema::Struct { .. }
         | Schema::OneOf { .. }
         | Schema::Enum { .. }
         | Schema::Vec(_)
@@ -103,7 +106,7 @@ fn var_to_string(var: &str, schema: &Schema) -> String {
     include_templing!("src/gens/kotlin/var_to_string.templing")
 }
 
-fn struct_impl(struc: &Struct, base: Option<(&Name, usize)>) -> String {
+fn struct_impl(definition: &Struct, base: Option<(&Name, usize)>) -> String {
     include_templing!("src/gens/kotlin/struct_impl.templing")
 }
 
@@ -135,6 +138,7 @@ impl crate::Generator for Generator {
     fn add_only(&mut self, schema: &Schema) {
         match schema {
             Schema::Enum {
+                namespace,
                 documentation,
                 base_name,
                 variants,
@@ -144,13 +148,20 @@ impl crate::Generator for Generator {
                     include_templing!("src/gens/kotlin/enum.templing"),
                 );
             }
-            Schema::Struct(struc) => {
+            Schema::Struct {
+                namespace,
+                definition,
+            } => {
                 self.files.insert(
-                    format!("src/main/kotlin/model/{}.kt", struc.name.camel_case(conv)),
+                    format!(
+                        "src/main/kotlin/model/{}.kt",
+                        definition.name.camel_case(conv)
+                    ),
                     include_templing!("src/gens/kotlin/struct.templing"),
                 );
             }
             Schema::OneOf {
+                namespace,
                 documentation,
                 base_name,
                 variants,

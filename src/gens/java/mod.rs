@@ -39,7 +39,10 @@ fn type_name_prearray(schema: &Schema) -> String {
         Schema::Float32 => "float".to_owned(),
         Schema::Float64 => "double".to_owned(),
         Schema::String => "String".to_owned(),
-        Schema::Struct(Struct { name, .. })
+        Schema::Struct {
+            definition: Struct { name, .. },
+            ..
+        }
         | Schema::OneOf {
             base_name: name, ..
         }
@@ -106,7 +109,7 @@ fn var_to_string(var: &str, schema: &Schema) -> String {
     include_templing!("src/gens/java/var_to_string.templing")
 }
 
-fn struct_impl(struc: &Struct, base: Option<(&Name, usize)>) -> String {
+fn struct_impl(definition: &Struct, base: Option<(&Name, usize)>) -> String {
     include_templing!("src/gens/java/struct_impl.templing")
 }
 
@@ -138,6 +141,7 @@ impl crate::Generator for Generator {
     fn add_only(&mut self, schema: &Schema) {
         match schema {
             Schema::Enum {
+                namespace,
                 documentation,
                 base_name,
                 variants,
@@ -147,13 +151,20 @@ impl crate::Generator for Generator {
                     include_templing!("src/gens/java/enum.templing"),
                 );
             }
-            Schema::Struct(struc) => {
+            Schema::Struct {
+                namespace,
+                definition,
+            } => {
                 self.files.insert(
-                    format!("src/main/java/model/{}.java", struc.name.camel_case(conv)),
+                    format!(
+                        "src/main/java/model/{}.java",
+                        definition.name.camel_case(conv)
+                    ),
                     include_templing!("src/gens/java/struct.templing"),
                 );
             }
             Schema::OneOf {
+                namespace,
                 documentation,
                 base_name,
                 variants,

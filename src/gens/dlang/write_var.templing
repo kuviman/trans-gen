@@ -2,7 +2,7 @@
 - Schema::Bool | Schema::Int32 | Schema::Int64 | Schema::Float32 | Schema::Float64 | Schema::String => {
 writer.write({{ var }});
 - }
-- Schema::Struct(_) | Schema::OneOf { .. } => {
+- Schema::Struct { .. } | Schema::OneOf { .. } => {
 {{ var }}.writeTo(writer);
 - }
 - Schema::Option(inner) => {

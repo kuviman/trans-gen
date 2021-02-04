@@ -21,7 +21,10 @@ fn type_name(schema: &Schema) -> String {
         Schema::Float64 => "number".to_owned(),
         Schema::String => "string".to_owned(),
         Schema::Option(inner) => format!("{} | null", type_name(inner)),
-        Schema::Struct(Struct { name, .. }) => name.camel_case(conv),
+        Schema::Struct {
+            definition: Struct { name, .. },
+            ..
+        } => name.camel_case(conv),
         Schema::OneOf { base_name, .. } => base_name.camel_case(conv),
         Schema::Vec(inner) => format!("Array<{}>", type_name(inner)),
         Schema::Map(key_type, value_type) => {
@@ -33,10 +36,13 @@ fn type_name(schema: &Schema) -> String {
 
 fn imports(schema: &Schema) -> String {
     let mut imports = BTreeSet::new();
-    fn add_imports_struct(struc: &Struct, imports: &mut BTreeSet<Name>) {
+    fn add_imports_struct(definition: &Struct, imports: &mut BTreeSet<Name>) {
         fn add_imports(schema: &Schema, imports: &mut BTreeSet<Name>) {
             match schema {
-                Schema::Struct(Struct { name, .. })
+                Schema::Struct {
+                    definition: Struct { name, .. },
+                    ..
+                }
                 | Schema::OneOf {
                     base_name: name, ..
                 }
@@ -63,13 +69,13 @@ fn imports(schema: &Schema) -> String {
                 | Schema::String => {}
             }
         }
-        for field in &struc.fields {
+        for field in &definition.fields {
             add_imports(&field.schema, imports);
         }
     }
     match schema {
-        Schema::Struct(struc) => {
-            add_imports_struct(struc, &mut imports);
+        Schema::Struct { definition, .. } => {
+            add_imports_struct(definition, &mut imports);
         }
         Schema::OneOf { variants, .. } => {
             for variant in variants {
@@ -109,7 +115,7 @@ fn write_var(var: &str, schema: &Schema) -> String {
     include_templing!("src/gens/typescript/write_var.templing")
 }
 
-fn struct_impl(struc: &Struct, base: Option<(&Name, usize)>) -> String {
+fn struct_impl(definition: &Struct, base: Option<(&Name, usize)>) -> String {
     include_templing!("src/gens/typescript/struct_impl.templing")
 }
 
@@ -121,6 +127,7 @@ impl Generator {
     fn add_only(&mut self, schema: &Schema) -> anyhow::Result<()> {
         match schema {
             Schema::Enum {
+                namespace,
                 documentation,
                 base_name,
                 variants,
@@ -138,21 +145,25 @@ impl Generator {
                     include_templing!("src/gens/typescript/enum.templing"),
                 );
             }
-            Schema::Struct(struc) => {
+            Schema::Struct {
+                namespace,
+                definition,
+            } => {
                 writeln!(
                     self.index_file,
                     "import {{ {} }} from './{}';\nexport {{ {} }};",
-                    struc.name.camel_case(conv),
-                    file_name(&struc.name),
-                    struc.name.camel_case(conv),
+                    definition.name.camel_case(conv),
+                    file_name(&definition.name),
+                    definition.name.camel_case(conv),
                 )
                 .unwrap();
                 self.files.insert(
-                    format!("src/model/{}.ts", file_name(&struc.name)),
+                    format!("src/model/{}.ts", file_name(&definition.name)),
                     include_templing!("src/gens/typescript/struct.templing"),
                 );
             }
             Schema::OneOf {
+                namespace,
                 documentation,
                 base_name,
                 variants,

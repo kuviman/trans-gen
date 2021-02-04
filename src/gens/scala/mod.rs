@@ -20,7 +20,10 @@ fn type_name(schema: &Schema) -> String {
         Schema::Float32 => "Float".to_owned(),
         Schema::Float64 => "Double".to_owned(),
         Schema::String => "String".to_owned(),
-        Schema::Struct(Struct { name, .. })
+        Schema::Struct {
+            definition: Struct { name, .. },
+            ..
+        }
         | Schema::OneOf {
             base_name: name, ..
         }
@@ -61,7 +64,7 @@ fn var_to_string(var: &str, schema: &Schema) -> String {
     include_templing!("src/gens/scala/var_to_string.templing")
 }
 
-fn struct_impl(struc: &Struct, base: Option<(&Name, usize)>) -> String {
+fn struct_impl(definition: &Struct, base: Option<(&Name, usize)>) -> String {
     include_templing!("src/gens/scala/struct_impl.templing")
 }
 
@@ -93,6 +96,7 @@ impl crate::Generator for Generator {
     fn add_only(&mut self, schema: &Schema) {
         match schema {
             Schema::Enum {
+                namespace,
                 base_name,
                 variants,
                 documentation,
@@ -102,13 +106,20 @@ impl crate::Generator for Generator {
                     include_templing!("src/gens/scala/enum.templing"),
                 );
             }
-            Schema::Struct(struc) => {
+            Schema::Struct {
+                namespace,
+                definition,
+            } => {
                 self.files.insert(
-                    format!("src/main/scala/model/{}.scala", struc.name.camel_case(conv)),
+                    format!(
+                        "src/main/scala/model/{}.scala",
+                        definition.name.camel_case(conv)
+                    ),
                     include_templing!("src/gens/scala/struct.templing"),
                 );
             }
             Schema::OneOf {
+                namespace,
                 base_name,
                 variants,
                 documentation,

@@ -1,6 +1,6 @@
-{{ doc_comment(&struc.documentation, &struc.fields) }}
-case class {{ struc.name.camel_case(conv) }}(~
-    - for (index, field) in struc.fields.iter().enumerate() {
+{{ doc_comment(&definition.documentation, &definition.fields) }}
+case class {{ definition.name.camel_case(conv) }}(~
+    - for (index, field) in definition.fields.iter().enumerate() {
     - if index != 0 {
     ~, ~
     - }
@@ -11,20 +11,20 @@ case class {{ struc.name.camel_case(conv) }}(~
     ~ extends {{ base_name.camel_case(conv) }}~
 - }
 ~ {
-    {{ doc_write_to(&struc.name.camel_case(conv)) }}
+    {{ doc_write_to(&definition.name.camel_case(conv)) }}
     {{# if base.is_some() { }}override {{# } }}def writeTo(stream: java.io.OutputStream) {
         - if base.is_some() {
-        StreamUtil.writeInt(stream, {{ struc.name.camel_case(conv) }}.TAG)
+        StreamUtil.writeInt(stream, {{ definition.name.camel_case(conv) }}.TAG)
         - }
-        - for field in &struc.fields {
+        - for field in &definition.fields {
         {{ write_var(&field.name.mixed_case(conv), &field.schema) }}
         - }
     }
 
-    {{ doc_to_string(&struc.name.camel_case(conv)) }}
+    {{ doc_to_string(&definition.name.camel_case(conv)) }}
     override def toString(): String = {
-        var stringBuilder = new StringBuilder("{{ struc.name.camel_case(conv) }} { ")
-        - for (index, field) in struc.fields.iter().enumerate() {
+        var stringBuilder = new StringBuilder("{{ definition.name.camel_case(conv) }} { ")
+        - for (index, field) in definition.fields.iter().enumerate() {
         - if index != 0 {
         stringBuilder.append(", ")
         - }
@@ -36,15 +36,15 @@ case class {{ struc.name.camel_case(conv) }}(~
     }
 }
 
-object {{ struc.name.camel_case(conv) }} {
+object {{ definition.name.camel_case(conv) }} {
     - if let Some((_, tag)) = base {
     val TAG: Int = {{ tag }}
 
     - }
-    {{ doc_read_from(&struc.name.camel_case(conv)) }}
-    def readFrom(stream: java.io.InputStream): {{ struc.name.camel_case(conv) }} = {{ struc.name.camel_case(conv) }}(
-        - for (index, field) in struc.fields.iter().enumerate() {
-        {{ read_var(&field.schema) }}{{# if index + 1 < struc.fields.len() { }},{{# } }}
+    {{ doc_read_from(&definition.name.camel_case(conv)) }}
+    def readFrom(stream: java.io.InputStream): {{ definition.name.camel_case(conv) }} = {{ definition.name.camel_case(conv) }}(
+        - for (index, field) in definition.fields.iter().enumerate() {
+        {{ read_var(&field.schema) }}{{# if index + 1 < definition.fields.len() { }},{{# } }}
         - }
     )
 }

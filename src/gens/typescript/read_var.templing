@@ -17,7 +17,7 @@
 - Schema::String => {
 {{ var }} = await stream.readString();
 - }
-- Schema::Struct(Struct { name, .. }) | Schema::OneOf { base_name: name, .. } | Schema::Enum { base_name: name, .. } => {
+- Schema::Struct{definition:Struct{name,..},..} | Schema::OneOf { base_name: name, .. } | Schema::Enum { base_name: name, .. } => {
 {{ var }} = await {{ name.camel_case(conv) }}.readFrom(stream);
 - }
 - Schema::Option(inner) => {

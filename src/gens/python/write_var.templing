@@ -17,7 +17,7 @@ stream.write_double({{ var }})
 - Schema::String => {
 stream.write_string({{ var }})
 - }
-- Schema::Struct(_) | Schema::OneOf { .. } => {
+- Schema::Struct { .. } | Schema::OneOf { .. } => {
 {{ var }}.write_to(stream)
 - }
 - Schema::Option(inner) => {

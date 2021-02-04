@@ -1,14 +1,14 @@
-{{ doc_comment(&struc.documentation) }}
+{{ doc_comment(&definition.documentation) }}
 - if let Some((base_name, _)) = base {
-public static class {{ struc.name.camel_case(conv) }} extends {{ base_name.camel_case(conv) }} {
+public static class {{ definition.name.camel_case(conv) }} extends {{ base_name.camel_case(conv) }} {
 - } else {
-public class {{ struc.name.camel_case(conv) }} {
+public class {{ definition.name.camel_case(conv) }} {
 - }
     - if let Some((_, tag)) = base {
     public static final int TAG = {{ tag }};
 
     - }
-    - for field in &struc.fields {
+    - for field in &definition.fields {
     {{ doc_comment(&field.documentation) }}
     private {{ type_name(&field.schema) }} {{ field.name.mixed_case(conv) }};
 
@@ -23,27 +23,27 @@ public class {{ struc.name.camel_case(conv) }} {
     }
     - }
 
-    public {{ struc.name.camel_case(conv) }}(~
-    - for (index, field) in struc.fields.iter().enumerate() {
+    public {{ definition.name.camel_case(conv) }}(~
+    - for (index, field) in definition.fields.iter().enumerate() {
         - if index != 0 {
             ~, ~
         - }
         ~{{ type_name(&field.schema) }} {{ field.name.mixed_case(conv) }}~
     - }
     ~) {
-        - for field in &struc.fields {
+        - for field in &definition.fields {
         this.{{ field.name.mixed_case(conv) }} = {{ field.name.mixed_case(conv) }};
         - }
     }
 
-    {{ doc_read_from(&struc.name.camel_case(conv)) }}
-    public static {{ struc.name.camel_case(conv) }} readFrom(java.io.InputStream stream) throws java.io.IOException {
-        - for field in &struc.fields {
+    {{ doc_read_from(&definition.name.camel_case(conv)) }}
+    public static {{ definition.name.camel_case(conv) }} readFrom(java.io.InputStream stream) throws java.io.IOException {
+        - for field in &definition.fields {
         {{ type_name(&field.schema) }} {{ field.name.mixed_case(conv) }};
         {{ read_var(&field.name.mixed_case(conv), &field.schema) }}
         - }
-        return new {{ struc.name.camel_case(conv) }}(~
-        - for (index, field) in struc.fields.iter().enumerate() {
+        return new {{ definition.name.camel_case(conv) }}(~
+        - for (index, field) in definition.fields.iter().enumerate() {
             - if index != 0 {
                 ~, ~
             - }
@@ -52,7 +52,7 @@ public class {{ struc.name.camel_case(conv) }} {
         ~);
     }
 
-    {{ doc_write_to(&struc.name.camel_case(conv)) }}
+    {{ doc_write_to(&definition.name.camel_case(conv)) }}
     - if base.is_some() {
     @Override
     - }
@@ -60,16 +60,16 @@ public class {{ struc.name.camel_case(conv) }} {
         - if base.is_some() {
         StreamUtil.writeInt(stream, TAG);
         - }
-        - for field in &struc.fields {
+        - for field in &definition.fields {
         {{ write_var(&field.name.mixed_case(conv), &field.schema) }}
         - }
     }
 
-    {{ doc_to_string(&struc.name.camel_case(conv)) }}
+    {{ doc_to_string(&definition.name.camel_case(conv)) }}
     @Override
     public String toString() {
-        StringBuilder stringBuilder = new StringBuilder("{{ struc.name.camel_case(conv) }} { ");
-        - for (index, field) in struc.fields.iter().enumerate() {
+        StringBuilder stringBuilder = new StringBuilder("{{ definition.name.camel_case(conv) }} { ");
+        - for (index, field) in definition.fields.iter().enumerate() {
         - if index != 0 {
         stringBuilder.append(", ");
         - }

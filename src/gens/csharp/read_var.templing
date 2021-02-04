@@ -17,8 +17,8 @@
 - Schema::String => {
 {{ var }} = System.Text.Encoding.UTF8.GetString(reader.ReadBytes(reader.ReadInt32()));
 - }
-- Schema::Struct(Struct { name, .. }) | Schema::OneOf { base_name: name, .. } => {
-{{ var }} = Model.{{ name.camel_case(conv) }}.ReadFrom(reader);
+- Schema::Struct { .. } | Schema::OneOf { .. } => {
+{{ var }} = {{ type_name(schema) }}.ReadFrom(reader);
 - }
 - Schema::Option(inner) => {
 if (reader.ReadBoolean())

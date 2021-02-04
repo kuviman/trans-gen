@@ -1,5 +1,5 @@
 - match schema {
-- Schema::Bool | Schema::Int32 | Schema::Int64 | Schema::Float32 | Schema::Float64 | Schema::Struct(_) | Schema::OneOf { .. } => {
+- Schema::Bool | Schema::Int32 | Schema::Int64 | Schema::Float32 | Schema::Float64 | Schema::Struct { .. } | Schema::OneOf { .. } => {
 stringResult += {{ var }}.ToString();
 - }
 - Schema::String => {

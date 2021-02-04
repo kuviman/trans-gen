@@ -17,7 +17,10 @@ fn type_name(schema: &Schema) -> String {
         Schema::Float32 => "float32".to_owned(),
         Schema::Float64 => "float64".to_owned(),
         Schema::String => "string".to_owned(),
-        Schema::Struct(Struct { name, .. })
+        Schema::Struct {
+            definition: Struct { name, .. },
+            ..
+        }
         | Schema::OneOf {
             base_name: name, ..
         }
@@ -43,12 +46,12 @@ fn needs_stream(schema: &Schema) -> bool {
             | Schema::Vec(_)
             | Schema::Map(_, _)
             | Schema::Option(_) => true,
-            Schema::Struct(_) => false,
+            Schema::Struct { .. } => false,
             Schema::OneOf { .. } => false,
         }
     }
-    fn struct_need_stream(struc: &Struct) -> bool {
-        struc
+    fn struct_need_stream(definition: &Struct) -> bool {
+        definition
             .fields
             .iter()
             .any(|field| needs_stream_inner(&field.schema))
@@ -64,7 +67,7 @@ fn needs_stream(schema: &Schema) -> bool {
         | Schema::Vec(_)
         | Schema::Map(_, _)
         | Schema::Option(_) => true,
-        Schema::Struct(struc) => struct_need_stream(struc),
+        Schema::Struct { definition, .. } => struct_need_stream(definition),
         Schema::OneOf { .. } => true,
     }
 }
@@ -103,7 +106,7 @@ fn var_to_string(var: &str, schema: &Schema) -> String {
     include_templing!("src/gens/go/var_to_string.templing")
 }
 
-fn struct_impl(struc: &Struct, base: Option<(&Name, usize)>) -> String {
+fn struct_impl(definition: &Struct, base: Option<(&Name, usize)>) -> String {
     include_templing!("src/gens/go/struct_impl.templing")
 }
 
@@ -135,6 +138,7 @@ impl crate::Generator for Generator {
     fn add_only(&mut self, schema: &Schema) {
         match schema {
             Schema::Enum {
+                namespace,
                 documentation,
                 base_name,
                 variants,
@@ -144,13 +148,17 @@ impl crate::Generator for Generator {
                     include_templing!("src/gens/go/enum.templing"),
                 );
             }
-            Schema::Struct(struc) => {
+            Schema::Struct {
+                namespace,
+                definition,
+            } => {
                 self.files.insert(
-                    format!("model/{}.go", struc.name.snake_case(conv)),
+                    format!("model/{}.go", definition.name.snake_case(conv)),
                     include_templing!("src/gens/go/struct.templing"),
                 );
             }
             Schema::OneOf {
+                namespace,
                 documentation,
                 base_name,
                 variants,

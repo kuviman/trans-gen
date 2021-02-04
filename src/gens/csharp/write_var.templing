@@ -8,7 +8,7 @@ var {{ data_var }} = System.Text.Encoding.UTF8.GetBytes({{ var }});
 writer.Write({{ data_var }}.Length);
 writer.Write({{ data_var }});
 - }
-- Schema::Struct(_) | Schema::OneOf { .. } => {
+- Schema::Struct { .. } | Schema::OneOf { .. } => {
 {{ var }}.WriteTo(writer);
 - }
 - Schema::Option(inner) => {

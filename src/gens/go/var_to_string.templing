@@ -5,7 +5,7 @@ stringResult += fmt.Sprint({{ var }})
 - Schema::String => {
 stringResult += "\"" + {{ var }} + "\""
 - }
-- Schema::Struct(_) | Schema::OneOf { .. } => {
+- Schema::Struct { .. } | Schema::OneOf { .. } => {
 stringResult += {{ var }}.String()
 - }
 - Schema::Option(inner) => {

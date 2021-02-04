@@ -6,4 +6,4 @@ import . "{{ &self.mod_name }}/stream"
 - }
 import "fmt"
 
-{{ struct_impl(struc, None) }}
+{{ struct_impl(definition, None) }}

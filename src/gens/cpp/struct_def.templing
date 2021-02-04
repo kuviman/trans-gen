@@ -2,13 +2,13 @@
 -     format!(
 -         "{}::{}",
 -         base_name.camel_case(conv),
--         struc.name.camel_case(conv),
+-         definition.name.camel_case(conv),
 -     )
 - } else {
--     struc.name.camel_case(conv)
+-     definition.name.camel_case(conv)
 - };
 - let full_name = &full_name;
-{{ self.doc_comment(&struc.documentation) }}
+{{ self.doc_comment(&definition.documentation) }}
 class {{ full_name }}~
 - if let Some((base_name, _)) = base {
 ~ : public {{ base_name.camel_case(conv) }}~
@@ -19,13 +19,13 @@ public:
     static const int TAG = {{ tag }};
 
     - }
-    - for field in &struc.fields {
+    - for field in &definition.fields {
     {{ self.doc_comment(&field.documentation) }}
     {{ self.type_name(&field.schema) }} {{ field.name.mixed_case(conv) }};
     - }
 
-    {{ struc.name.camel_case(conv) }}(~
-        - for (index, field) in struc.fields.iter().enumerate() {
+    {{ definition.name.camel_case(conv) }}(~
+        - for (index, field) in definition.fields.iter().enumerate() {
         - if index != 0 {
         ~, ~
         - }
@@ -33,20 +33,20 @@ public:
         - }
     ~);
 
-    {{ self.doc_read_from(&struc.name.camel_case(conv)) }}
-    static {{ struc.name.camel_case(conv) }} readFrom(InputStream& stream);
+    {{ self.doc_read_from(&definition.name.camel_case(conv)) }}
+    static {{ definition.name.camel_case(conv) }} readFrom(InputStream& stream);
 
-    {{ self.doc_write_to(&struc.name.camel_case(conv)) }}
+    {{ self.doc_write_to(&definition.name.camel_case(conv)) }}
     void writeTo(OutputStream& stream) const;
 
-    {{ self.doc_to_string(&struc.name.camel_case(conv)) }}
+    {{ self.doc_to_string(&definition.name.camel_case(conv)) }}
     std::string toString() const;
-    - if struc.hashable() {
+    - if definition.hashable() {
 
-    bool operator ==(const {{ struc.name.camel_case(conv) }}& other) const;
+    bool operator ==(const {{ definition.name.camel_case(conv) }}& other) const;
     - }
 };
-- if struc.hashable() {
+- if definition.hashable() {
 
 namespace std {
     template<>

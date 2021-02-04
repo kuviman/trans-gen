@@ -1,8 +1,8 @@
-#ifndef __MODEL_{{ struc.name.shouty_snake_case(conv) }}_HPP__
-#define __MODEL_{{ struc.name.shouty_snake_case(conv) }}_HPP__
+#ifndef __MODEL_{{ definition.name.shouty_snake_case(conv) }}_HPP__
+#define __MODEL_{{ definition.name.shouty_snake_case(conv) }}_HPP__
 
 {{ self.includes(schema) }}
 
-{{ self.struct_def(struc, None) }}
+{{ self.struct_def(definition, None) }}
 
 #endif

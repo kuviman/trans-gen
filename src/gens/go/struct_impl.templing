@@ -1,17 +1,17 @@
 - let struct_name = match base {
--   Some((base_name, _)) => format!("{}{}", base_name.camel_case(conv), struc.name.camel_case(conv)),
--   None => struc.name.camel_case(conv),
+-   Some((base_name, _)) => format!("{}{}", base_name.camel_case(conv), definition.name.camel_case(conv)),
+-   None => definition.name.camel_case(conv),
 - }; let struct_name = Name::new(struct_name);
-{{ doc_comment(&struc.documentation) }}
+{{ doc_comment(&definition.documentation) }}
 type {{ struct_name.camel_case(conv) }} struct {
-    - for field in &struc.fields {
+    - for field in &definition.fields {
     {{ doc_comment(&field.documentation) }}
     {{ field.name.camel_case(conv) }} {{ type_name(&field.schema) }}
     - }
 }
 
 func New{{ struct_name.camel_case(conv) }}(~
-- for (index, field) in struc.fields.iter().enumerate() {
+- for (index, field) in definition.fields.iter().enumerate() {
 - if index != 0 {
     ~, ~
 - }
@@ -19,40 +19,40 @@ func New{{ struct_name.camel_case(conv) }}(~
 - }
 ~) {{ struct_name.camel_case(conv) }} {
     return {{ struct_name.camel_case(conv) }} {
-        - for field in &struc.fields {
+        - for field in &definition.fields {
         {{ field.name.camel_case(conv) }}: {{ field.name.mixed_case(conv) }},
         - }
     }
 }
 
-{{ doc_read_from(&struc.name.camel_case(conv)) }}
+{{ doc_read_from(&definition.name.camel_case(conv)) }}
 func Read{{ struct_name.camel_case(conv) }}(reader io.Reader) {{ struct_name.camel_case(conv) }} {
-    - for field in &struc.fields {
+    - for field in &definition.fields {
     var {{ field.name.mixed_case(conv) }} {{ type_name(&field.schema) }}
     {{ read_var(&field.name.mixed_case(conv), &field.schema) }}
     - }
     return {{ struct_name.camel_case(conv) }} {
-        - for field in &struc.fields {
+        - for field in &definition.fields {
         {{ field.name.camel_case(conv) }}: {{ field.name.mixed_case(conv) }},
         - }
     }
 }
 
-{{ doc_write_to(&struc.name.camel_case(conv)) }}
+{{ doc_write_to(&definition.name.camel_case(conv)) }}
 func ({{ struct_name.mixed_case(conv) }} {{ struct_name.camel_case(conv) }}) Write(writer io.Writer) {
     - if let Some((_, tag)) = base {
     WriteInt32(writer, {{ tag }})
     - }
-    - for field in &struc.fields {
+    - for field in &definition.fields {
     {{ field.name.mixed_case(conv) }} := {{ struct_name.mixed_case(conv) }}.{{ field.name.camel_case(conv) }}
     {{ write_var(&field.name.mixed_case(conv), &field.schema) }}
     - }
 }
 
-{{ doc_to_string(&struc.name.camel_case(conv)) }}
+{{ doc_to_string(&definition.name.camel_case(conv)) }}
 func ({{ struct_name.mixed_case(conv) }} {{ struct_name.camel_case(conv) }}) String() string {
     stringResult := "{ "
-    - for (index, field) in struc.fields.iter().enumerate() {
+    - for (index, field) in definition.fields.iter().enumerate() {
     - if index != 0 {
     stringResult += ", "
     - }

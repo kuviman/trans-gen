@@ -14,10 +14,13 @@ pub struct Generator {
 
 fn imports(schema: &Schema) -> String {
     let mut imports = BTreeSet::new();
-    fn add_imports_struct(struc: &Struct, imports: &mut BTreeSet<Name>) {
+    fn add_imports_struct(definition: &Struct, imports: &mut BTreeSet<Name>) {
         fn add_for_field(schema: &Schema, imports: &mut BTreeSet<Name>) {
             match schema {
-                Schema::Struct(Struct { name, .. })
+                Schema::Struct {
+                    definition: Struct { name, .. },
+                    ..
+                }
                 | Schema::OneOf {
                     base_name: name, ..
                 }
@@ -44,13 +47,13 @@ fn imports(schema: &Schema) -> String {
                 | Schema::String => {}
             }
         }
-        for field in &struc.fields {
+        for field in &definition.fields {
             add_for_field(&field.schema, imports);
         }
     }
     match schema {
-        Schema::Struct(struc) => {
-            add_imports_struct(struc, &mut imports);
+        Schema::Struct { definition, .. } => {
+            add_imports_struct(definition, &mut imports);
         }
         Schema::OneOf { variants, .. } => {
             for variant in variants {
@@ -92,7 +95,7 @@ fn var_to_string(var: &str, schema: &Schema) -> String {
     include_templing!("src/gens/ruby/var_to_string.templing")
 }
 
-fn struct_impl(struc: &Struct, base: Option<(&Name, usize)>) -> String {
+fn struct_impl(definition: &Struct, base: Option<(&Name, usize)>) -> String {
     include_templing!("src/gens/ruby/struct_impl.templing")
 }
 
@@ -119,6 +122,7 @@ impl crate::Generator for Generator {
     fn add_only(&mut self, schema: &Schema) {
         match schema {
             Schema::Enum {
+                namespace,
                 documentation,
                 base_name,
                 variants,
@@ -134,19 +138,23 @@ impl crate::Generator for Generator {
                     include_templing!("src/gens/ruby/enum.templing"),
                 );
             }
-            Schema::Struct(struc) => {
+            Schema::Struct {
+                namespace,
+                definition,
+            } => {
                 writeln!(
                     &mut self.model_init,
                     "require_relative 'model/{}'",
-                    struc.name.snake_case(conv),
+                    definition.name.snake_case(conv),
                 )
                 .unwrap();
                 self.files.insert(
-                    format!("model/{}.rb", struc.name.snake_case(conv)),
+                    format!("model/{}.rb", definition.name.snake_case(conv)),
                     include_templing!("src/gens/ruby/struct.templing"),
                 );
             }
             Schema::OneOf {
+                namespace,
                 documentation,
                 base_name,
                 variants,
@@ -192,7 +200,10 @@ impl<D: Trans + PartialEq + Debug> TestableGenerator<testing::FileReadWrite<D>> 
         let schema: &Schema = &schema;
         fn type_name(schema: &Schema) -> String {
             match schema {
-                Schema::Struct(Struct { name, .. })
+                Schema::Struct {
+                    definition: Struct { name, .. },
+                    ..
+                }
                 | Schema::OneOf {
                     base_name: name, ..
                 } => name.camel_case(conv),
@@ -212,7 +223,10 @@ impl<D: Trans + PartialEq + Debug> TestableGenerator<testing::TcpReadWrite<D>> f
         let schema: &Schema = &schema;
         fn type_name(schema: &Schema) -> String {
             match schema {
-                Schema::Struct(Struct { name, .. })
+                Schema::Struct {
+                    definition: Struct { name, .. },
+                    ..
+                }
                 | Schema::OneOf {
                     base_name: name, ..
                 } => name.camel_case(conv),

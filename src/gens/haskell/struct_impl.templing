@@ -1,14 +1,14 @@
 - let struct_name = if let Some((base_name, _)) = base {
--   format!("{}{}", base_name.camel_case(conv), struc.name.camel_case(conv))
+-   format!("{}{}", base_name.camel_case(conv), definition.name.camel_case(conv))
 - } else {
--   struc.name.camel_case(conv)
+-   definition.name.camel_case(conv)
 - }; let struct_name = &struct_name;
-{{ doc_comment(&struc.documentation) }}
+{{ doc_comment(&definition.documentation) }}
 data {{ struct_name }} = {{ struct_name }} {
-    - for (index, field) in struc.fields.iter().enumerate() {
+    - for (index, field) in definition.fields.iter().enumerate() {
     {{ doc_comment(&field.documentation) }}
     {{ field.name.mixed_case(conv) }} :: {{ type_name(&field.schema) }}~
-    - if index + 1 < struc.fields.len() {
+    - if index + 1 < definition.fields.len() {
         ~,
     - } else {
         ~ }
@@ -18,13 +18,13 @@ data {{ struct_name }} = {{ struct_name }} {
 
 instance Trans {{ struct_name }} where
     read = do
-        - for field in &struc.fields {
+        - for field in &definition.fields {
         {{ field.name.mixed_case(conv) }} <- Trans.read
         - }
         return {{ struct_name }} {
-            - for (index, field) in struc.fields.iter().enumerate() {
+            - for (index, field) in definition.fields.iter().enumerate() {
             {{ field.name.mixed_case(conv) }}~
-            - if index + 1 < struc.fields.len() {
+            - if index + 1 < definition.fields.len() {
                 ~,
             - } else {
                 ~ }
@@ -32,14 +32,14 @@ instance Trans {{ struct_name }} where
             - }
     
     write {{ struct_name }} {
-        - for (index, field) in struc.fields.iter().enumerate() {
+        - for (index, field) in definition.fields.iter().enumerate() {
         {{ field.name.mixed_case(conv) }}~
-        - if index + 1 < struc.fields.len() {
+        - if index + 1 < definition.fields.len() {
             ~,
         - } else {
             ~ } = do
         - }
         - }
-            - for field in &struc.fields {
+            - for field in &definition.fields {
             Trans.write {{ field.name.mixed_case(conv) }}
             - }

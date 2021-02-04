@@ -17,7 +17,7 @@ WriteFloat64(writer, {{ var }})
 - Schema::String => {
 WriteString(writer, {{ var }})
 - }
-- Schema::Struct(_) | Schema::OneOf { .. } => {
+- Schema::Struct { .. } | Schema::OneOf { .. } => {
 {{ var }}.Write(writer)
 - }
 - Schema::Option(inner) => {

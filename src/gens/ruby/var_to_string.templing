@@ -6,7 +6,7 @@ string_result += {{ var }}.to_s
 - Schema::String => {
 string_result += {{ var }}.dump
 - }
-- Schema::Struct(_) | Schema::OneOf { .. } => {
+- Schema::Struct { .. } | Schema::OneOf { .. } => {
 string_result += {{ var }}.to_s
 - }
 - Schema::Option(inner) => {

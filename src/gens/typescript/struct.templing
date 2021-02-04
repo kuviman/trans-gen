@@ -1,4 +1,4 @@
 {{ imports(schema) }}
 import { Stream } from "../stream";
 
-{{ struct_impl(struc, None) }}
+{{ struct_impl(definition, None) }}
