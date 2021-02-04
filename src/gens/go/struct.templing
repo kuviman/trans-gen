@@ -1,9 +1,5 @@
-package model
+package {{ package_name(schema) }}
 
-import "io"
-- if needs_stream(schema) {
-import . "{{ &self.mod_name }}/stream"
-- }
-import "fmt"
+{{ self.imports(schema) }}
 
 {{ struct_impl(definition, None) }}

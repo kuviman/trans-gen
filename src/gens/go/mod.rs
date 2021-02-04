@@ -110,6 +110,156 @@ fn struct_impl(definition: &Struct, base: Option<(&Name, usize)>) -> String {
     include_templing!("src/gens/go/struct_impl.templing")
 }
 
+fn namespace_path(namespace: &Namespace) -> Option<String> {
+    if namespace.parts.is_empty() {
+        None
+    } else {
+        Some(
+            namespace
+                .parts
+                .iter()
+                .map(|name| name.snake_case(conv))
+                .collect::<Vec<_>>()
+                .join("/"),
+        )
+    }
+}
+
+fn namespace_path_for(schema: &Schema) -> String {
+    match schema {
+        Schema::Struct { namespace, .. }
+        | Schema::OneOf { namespace, .. }
+        | Schema::Enum { namespace, .. } => {
+            namespace_path(namespace).unwrap_or("common".to_owned())
+        }
+        _ => unreachable!(),
+    }
+}
+
+fn package_name(schema: &Schema) -> String {
+    match schema {
+        Schema::Enum {
+            namespace,
+            base_name: name,
+            ..
+        }
+        | Schema::Struct {
+            namespace,
+            definition: Struct { name, .. },
+            ..
+        }
+        | Schema::OneOf {
+            namespace,
+            base_name: name,
+            ..
+        } => namespace
+            .parts
+            .last()
+            .map(|name| name.snake_case(conv))
+            .unwrap_or("common".to_owned()),
+        _ => unreachable!(),
+    }
+}
+
+fn file_name(schema: &Schema) -> String {
+    match schema {
+        Schema::Enum {
+            namespace,
+            base_name: name,
+            ..
+        }
+        | Schema::Struct {
+            namespace,
+            definition: Struct { name, .. },
+            ..
+        }
+        | Schema::OneOf {
+            namespace,
+            base_name: name,
+            ..
+        } => format!(
+            "{}/{}",
+            namespace_path(namespace).unwrap_or("common".to_owned()),
+            name.snake_case(conv),
+        ),
+        _ => unreachable!(),
+    }
+}
+
+impl Generator {
+    fn imports(&self, schema: &Schema) -> String {
+        let mut imports: BTreeSet<String> = BTreeSet::new();
+        fn add_imports_struct(mod_name: &str, definition: &Struct, imports: &mut BTreeSet<String>) {
+            fn add_imports(mod_name: &str, schema: &Schema, imports: &mut BTreeSet<String>) {
+                match schema {
+                    Schema::Struct { namespace, .. }
+                    | Schema::OneOf { namespace, .. }
+                    | Schema::Enum { namespace, .. } => {
+                        imports.insert(format!(
+                            ". \"{}/{}\"",
+                            mod_name,
+                            namespace_path(namespace).unwrap_or("common".to_owned()),
+                        ));
+                    }
+                    Schema::Option(inner) => {
+                        add_imports(mod_name, inner, imports);
+                    }
+                    Schema::Vec(inner) => {
+                        add_imports(mod_name, inner, imports);
+                    }
+                    Schema::Map(key_type, value_type) => {
+                        add_imports(mod_name, key_type, imports);
+                        add_imports(mod_name, value_type, imports);
+                    }
+                    Schema::Bool
+                    | Schema::Int32
+                    | Schema::Int64
+                    | Schema::Float32
+                    | Schema::Float64 => {
+                        imports.insert("\"fmt\"".to_owned());
+                    }
+                    Schema::String => {}
+                }
+            }
+            for field in &definition.fields {
+                add_imports(mod_name, &field.schema, imports);
+            }
+        }
+        match schema {
+            Schema::Struct { definition, .. } => {
+                add_imports_struct(&self.mod_name, definition, &mut imports);
+            }
+            Schema::OneOf { variants, .. } => {
+                for variant in variants {
+                    add_imports_struct(&self.mod_name, variant, &mut imports);
+                }
+            }
+            _ => {}
+        }
+        match schema {
+            Schema::Struct { namespace, .. }
+            | Schema::OneOf { namespace, .. }
+            | Schema::Enum { namespace, .. } => {
+                imports.remove(&format!(
+                    ". \"{}/{}\"",
+                    &self.mod_name,
+                    namespace_path(namespace).unwrap_or("common".to_owned()),
+                ));
+            }
+            _ => unreachable!(),
+        }
+        imports.insert("\"io\"".to_owned());
+        if needs_stream(schema) {
+            imports.insert(format!(". \"{}/stream\"", self.mod_name));
+        }
+        imports
+            .into_iter()
+            .map(|import| format!("import {}", import))
+            .collect::<Vec<_>>()
+            .join("\n")
+    }
+}
+
 impl crate::Generator for Generator {
     const NAME: &'static str = "Go";
     type Options = ();
@@ -144,7 +294,7 @@ impl crate::Generator for Generator {
                 variants,
             } => {
                 self.files.insert(
-                    format!("model/{}.go", base_name.snake_case(conv)),
+                    format!("{}.go", file_name(schema)),
                     include_templing!("src/gens/go/enum.templing"),
                 );
             }
@@ -153,7 +303,7 @@ impl crate::Generator for Generator {
                 definition,
             } => {
                 self.files.insert(
-                    format!("model/{}.go", definition.name.snake_case(conv)),
+                    format!("{}.go", file_name(schema)),
                     include_templing!("src/gens/go/struct.templing"),
                 );
             }
@@ -164,7 +314,7 @@ impl crate::Generator for Generator {
                 variants,
             } => {
                 self.files.insert(
-                    format!("model/{}.go", base_name.snake_case(conv)),
+                    format!("{}.go", file_name(schema)),
                     include_templing!("src/gens/go/oneof.templing"),
                 );
             }

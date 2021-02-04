@@ -2,7 +2,7 @@ package main
 
 import (
 	"bufio"
-	. "trans_gen_test/model"
+	. "trans_gen_test/{{ namespace_path_for(schema) }}"
 	"os"
 	"fmt"
 )

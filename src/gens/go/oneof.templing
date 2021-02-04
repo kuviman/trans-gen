@@ -1,10 +1,6 @@
-package model
+package {{ package_name(schema) }}
 
-import "io"
-- if needs_stream(schema) {
-import . "{{ &self.mod_name }}/stream"
-- }
-import "fmt"
+{{ self.imports(schema) }}
 
 {{ doc_comment(documentation) }}
 type {{ base_name.camel_case(conv) }} interface {

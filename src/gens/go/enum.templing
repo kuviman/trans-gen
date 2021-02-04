@@ -1,7 +1,6 @@
-package model
+package {{ package_name(schema) }}
 
-import "io"
-import . "{{ &self.mod_name }}/stream"
+{{ self.imports(schema) }}
 
 {{ doc_comment(documentation) }}
 type {{ base_name.camel_case(conv) }} int32
