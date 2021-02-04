@@ -19,7 +19,7 @@
 {{ var_decl }} = stream.readString();
 - }
 - Schema::Struct { .. } | Schema::OneOf { .. } => {
-{{ var_decl }} = {{ self.type_name(schema) }}::readFrom(stream);
+{{ var_decl }} = {{ name_path(schema) }}::readFrom(stream);
 - }
 - Schema::Option(inner) => {
 - if self.options.cxx_standard >= 17 {

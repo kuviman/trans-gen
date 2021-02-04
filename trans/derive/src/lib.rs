@@ -294,7 +294,7 @@ pub fn derive_trans(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
                 let parts = path.segments.iter().map(|segment| {
                     let ident = &segment.ident;
                     quote! {
-                        Name::new(stringify!(#ident).to_owned())
+                        trans::Name::new(stringify!(#ident).to_owned())
                     }
                 });
                 quote! {

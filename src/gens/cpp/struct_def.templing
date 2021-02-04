@@ -46,12 +46,3 @@ public:
     bool operator ==(const {{ definition.name.camel_case(conv) }}& other) const;
     - }
 };
-- if definition.hashable() {
-
-namespace std {
-    template<>
-    struct hash<{{ full_name }}> {
-        size_t operator ()(const {{ full_name }}& value) const;
-    };
-}
-- }

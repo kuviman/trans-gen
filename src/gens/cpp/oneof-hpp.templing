@@ -3,6 +3,10 @@
 
 {{ self.includes(schema) }}
 
+- if let Some(path) = namespace_path(namespace) {
+namespace {{ path }} {
+
+- }
 {{ self.doc_comment(documentation) }}
 class {{ base_name.camel_case(conv) }} {
 public:
@@ -25,4 +29,8 @@ public:
 {{ self.struct_def(variant, Some((base_name, tag))) }}
 - }
 
+- if namespace_path(namespace).is_some() {
+}
+
+- }
 #endif

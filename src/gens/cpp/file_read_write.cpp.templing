@@ -2,7 +2,7 @@
 #include <iostream>
 #include <stdexcept>
 
-#include "model/Model.hpp"
+#include "{{ file_name(schema) }}.hpp"
 
 class FileInputStream : public InputStream {
 public:
@@ -47,10 +47,10 @@ int main(int argc, char* argv[])
     char* output_file = argv[2];
 
     FileInputStream fileInputStream(input_file);
-    {{ type_name(schema) }} input = {{ type_name(schema) }}::readFrom(fileInputStream);
-    std::cout << input.toString() << std::endl;
+    {{ type_name(schema) }} input = {{ name_path(schema) }}::readFrom(fileInputStream);
+    std::cout << input{{ access }}toString() << std::endl;
     FileOutputStream fileOutputStream(output_file);
-    input.writeTo(fileOutputStream);
+    input{{ access }}writeTo(fileOutputStream);
 
     return 0;
 }

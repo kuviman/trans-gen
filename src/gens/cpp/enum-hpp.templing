@@ -1,8 +1,12 @@
 #ifndef __MODEL_{{ base_name.shouty_snake_case(conv) }}_HPP__
 #define __MODEL_{{ base_name.shouty_snake_case(conv) }}_HPP__
 
-#include "../Stream.hpp"
+#include "Stream.hpp"
 
+- if let Some(path) = namespace_path(namespace) {
+namespace {{ path }} {
+
+- }
 {{ self.doc_comment(documentation) }}
 enum class {{ base_name.camel_case(conv) }} {
     - for (index, variant) in variants.iter().enumerate() {
@@ -17,4 +21,8 @@ enum class {{ base_name.camel_case(conv) }} {
 {{ self.doc_to_string(&base_name.camel_case(conv)) }}
 std::string {{ base_name.mixed_case(conv) }}ToString({{ base_name.camel_case(conv) }} value);
 
+- if namespace_path(namespace).is_some() {
+}
+
+- }
 #endif

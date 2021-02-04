@@ -55,6 +55,17 @@ impl From<HashMap<String, String>> for GenResult {
     }
 }
 
+impl From<BTreeMap<String, String>> for GenResult {
+    fn from(file_map: BTreeMap<String, String>) -> Self {
+        Self {
+            files: file_map
+                .into_iter()
+                .map(|(path, content)| File { path, content })
+                .collect(),
+        }
+    }
+}
+
 impl From<Vec<File>> for GenResult {
     fn from(files: Vec<File>) -> Self {
         Self { files }

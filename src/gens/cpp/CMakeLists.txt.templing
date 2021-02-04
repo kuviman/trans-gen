@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.5)
-set (CMAKE_CXX_STANDARD {{ options.cxx_standard }})
-project({{ project_name }})
+set (CMAKE_CXX_STANDARD {{ self.options.cxx_standard }})
+project({{ self.project_name.snake_case(conv) }})
 
 # OS and compiler checks.
 if(WIN32)
@@ -8,8 +8,17 @@ if(WIN32)
     SET(PROJECT_LIBS Ws2_32.lib)
 endif()
 
-file(GLOB HEADERS "*.hpp" "model/*.hpp")
+set(HEADERS
+- for file in header_files {
+    "{{ file }}"
+- }
+)
+set (SRC
+- for file in source_files {
+    "{{ file }}"
+- }
+)
 SET_SOURCE_FILES_PROPERTIES(${HEADERS} PROPERTIES HEADER_FILE_ONLY TRUE)
-file(GLOB SRC "*.cpp" "model/*.cpp")
-add_executable({{ project_name }} ${HEADERS} ${SRC})
-TARGET_LINK_LIBRARIES({{ project_name }} ${PROJECT_LIBS})
+include_directories(".")
+add_executable({{ self.project_name.snake_case(conv) }} ${HEADERS} ${SRC})
+TARGET_LINK_LIBRARIES({{ self.project_name.snake_case(conv) }} ${PROJECT_LIBS})

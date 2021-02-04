@@ -1,6 +1,10 @@
 #include "{{ base_name.camel_case(conv) }}.hpp"
 #include <stdexcept>
 
+- if let Some(path) = namespace_path(namespace) {
+namespace {{ path }} {
+
+- }
 {{ self.doc_read_from(&base_name.camel_case(conv)) }}
 {{ base_name.camel_case(conv) }} read{{ base_name.camel_case(conv) }}(InputStream& stream) {
     switch (stream.readInt()) {
@@ -24,3 +28,7 @@ std::string {{ base_name.mixed_case(conv) }}ToString({{ base_name.camel_case(con
         throw std::runtime_error("Impossible happened");
     }
 }
+- if namespace_path(namespace).is_some() {
+
+}
+- }

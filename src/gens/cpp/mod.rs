@@ -19,9 +19,52 @@ impl Default for Options {
 }
 
 pub struct Generator {
-    files: HashMap<String, String>,
-    model_include: String,
+    project_name: Name,
+    files: BTreeMap<String, String>,
     options: Options,
+}
+
+fn namespace_path(namespace: &Namespace) -> Option<String> {
+    if namespace.parts.is_empty() {
+        None
+    } else {
+        Some(
+            namespace
+                .parts
+                .iter()
+                .map(|name| name.snake_case(conv))
+                .collect::<Vec<_>>()
+                .join("::"),
+        )
+    }
+}
+
+fn name_path(schema: &Schema) -> String {
+    match schema {
+        Schema::Enum {
+            namespace,
+            base_name: name,
+            ..
+        }
+        | Schema::Struct {
+            namespace,
+            definition: Struct { name, .. },
+            ..
+        }
+        | Schema::OneOf {
+            namespace,
+            base_name: name,
+            ..
+        } => match namespace_path(namespace) {
+            Some(path) => format!("{}::{}", path, name.camel_case(conv)),
+            None => name.camel_case(conv),
+        },
+        _ => unreachable!(),
+    }
+}
+
+fn file_name(schema: &Schema) -> String {
+    name_path(schema).replace("::", "/")
 }
 
 impl Generator {
@@ -33,16 +76,8 @@ impl Generator {
             Schema::Float32 => "float".to_owned(),
             Schema::Float64 => "double".to_owned(),
             Schema::String => "std::string".to_owned(),
-            Schema::OneOf {
-                base_name: name, ..
-            } => format!("std::shared_ptr<{}>", name.camel_case(conv)),
-            Schema::Struct {
-                definition: Struct { name, .. },
-                ..
-            }
-            | Schema::Enum {
-                base_name: name, ..
-            } => format!("{}", name.camel_case(conv)),
+            Schema::OneOf { .. } => format!("std::shared_ptr<{}>", name_path(schema)),
+            Schema::Struct { .. } | Schema::Enum { .. } => name_path(schema),
             Schema::Option(inner) => {
                 if self.options.cxx_standard >= 17 {
                     format!("std::optional<{}>", self.type_name(inner))
@@ -62,7 +97,7 @@ impl Generator {
         let mut includes = BTreeSet::new();
         includes.insert("<string>".to_owned());
         includes.insert("<sstream>".to_owned());
-        includes.insert("\"../Stream.hpp\"".to_owned());
+        includes.insert("\"Stream.hpp\"".to_owned());
         self.collect_includes(&mut includes, schema, false);
         include_templing!("src/gens/cpp/includes.templing")
     }
@@ -88,18 +123,9 @@ impl Generator {
                 Schema::Vec(_) => {
                     result.insert("<vector>".to_owned());
                 }
-                Schema::Struct {
-                    definition: Struct { name, .. },
-                    ..
-                }
-                | Schema::OneOf {
-                    base_name: name, ..
-                }
-                | Schema::Enum {
-                    base_name: name, ..
-                } => {
+                Schema::Struct { .. } | Schema::OneOf { .. } | Schema::Enum { .. } => {
                     result.insert("<stdexcept>".to_owned());
-                    result.insert(format!("\"{}.hpp\"", name.camel_case(conv)));
+                    result.insert(format!("\"{}.hpp\"", file_name(schema)));
                 }
             }
         }
@@ -178,9 +204,7 @@ impl crate::Generator for Generator {
     const NAME: &'static str = "C++";
     type Options = Options;
     fn new(name: &str, _version: &str, options: Options) -> Self {
-        let project_name = name;
-
-        let mut files = HashMap::new();
+        let mut files = BTreeMap::new();
         files.insert(
             "Stream.hpp".to_owned(),
             include_str!("Stream.hpp").to_owned(),
@@ -189,27 +213,21 @@ impl crate::Generator for Generator {
             "Stream.cpp".to_owned(),
             include_str!("Stream.cpp").to_owned(),
         );
-        files.insert(
-            "CMakeLists.txt".to_owned(),
-            include_templing!("src/gens/cpp/CMakeLists.txt.templing"),
-        );
         Self {
+            project_name: Name::new(name.to_owned()),
             files,
-            model_include: "#ifndef _MODEL_HPP_\n#define _MODEL_HPP_\n\n".to_owned(),
             options,
         }
     }
     fn generate(self, extra_files: Vec<File>) -> GenResult {
-        let Self {
-            mut files,
-            mut model_include,
-            ..
-        } = self;
-        model_include.push_str("\n#endif\n");
-        files.insert("model/Model.hpp".to_owned(), model_include.to_owned());
+        let Self { mut files, .. } = self;
         for file in extra_files {
             files.insert(file.path, file.content);
         }
+        let source_files = files.keys().filter(|file| file.ends_with(".cpp"));
+        let header_files = files.keys().filter(|file| file.ends_with(".hpp"));
+        let cmakelists = include_templing!("src/gens/cpp/CMakeLists.txt.templing");
+        files.insert("CMakeLists.txt".to_owned(), cmakelists);
         files.into()
     }
     fn add_only(&mut self, schema: &Schema) {
@@ -220,16 +238,12 @@ impl crate::Generator for Generator {
                 base_name,
                 variants,
             } => {
-                self.model_include.push_str(&format!(
-                    "#include \"{}.hpp\"\n",
-                    base_name.camel_case(conv)
-                ));
                 self.files.insert(
-                    format!("model/{}.hpp", base_name.camel_case(conv)),
+                    format!("{}.hpp", file_name(schema)),
                     include_templing!("src/gens/cpp/enum-hpp.templing"),
                 );
                 self.files.insert(
-                    format!("model/{}.cpp", base_name.camel_case(conv)),
+                    format!("{}.cpp", file_name(schema)),
                     include_templing!("src/gens/cpp/enum-cpp.templing"),
                 );
             }
@@ -237,16 +251,12 @@ impl crate::Generator for Generator {
                 namespace,
                 definition,
             } => {
-                self.model_include.push_str(&format!(
-                    "#include \"{}.hpp\"\n",
-                    definition.name.camel_case(conv)
-                ));
                 self.files.insert(
-                    format!("model/{}.hpp", definition.name.camel_case(conv)),
+                    format!("{}.hpp", file_name(schema)),
                     include_templing!("src/gens/cpp/struct-hpp.templing"),
                 );
                 self.files.insert(
-                    format!("model/{}.cpp", definition.name.camel_case(conv)),
+                    format!("{}.cpp", file_name(schema)),
                     include_templing!("src/gens/cpp/struct-cpp.templing"),
                 );
             }
@@ -256,16 +266,12 @@ impl crate::Generator for Generator {
                 base_name,
                 variants,
             } => {
-                self.model_include.push_str(&format!(
-                    "#include \"{}.hpp\"\n",
-                    base_name.camel_case(conv)
-                ));
                 self.files.insert(
-                    format!("model/{}.hpp", base_name.camel_case(conv)),
+                    format!("{}.hpp", file_name(schema)),
                     include_templing!("src/gens/cpp/oneof-hpp.templing"),
                 );
                 self.files.insert(
-                    format!("model/{}.cpp", base_name.camel_case(conv)),
+                    format!("{}.cpp", file_name(schema)),
                     include_templing!("src/gens/cpp/oneof-cpp.templing"),
                 );
             }
@@ -334,13 +340,14 @@ impl<D: Trans + PartialEq + Debug> TestableGenerator<testing::FileReadWrite<D>> 
         let schema: &Schema = &schema;
         fn type_name(schema: &Schema) -> String {
             match schema {
-                Schema::Struct { definition, .. } => definition.name.camel_case(conv),
-                Schema::OneOf { base_name, .. } => {
-                    format!("std::shared_ptr<{}>", base_name.camel_case(conv))
-                }
-                _ => unreachable!(),
+                Schema::OneOf { .. } => format!("std::shared_ptr<{}>", name_path(schema)),
+                _ => name_path(schema),
             }
         }
+        let access = match schema {
+            Schema::OneOf { .. } => "->",
+            _ => ".",
+        };
         vec![File {
             path: "main.cpp".to_owned(),
             content: include_templing!("src/gens/cpp/file_read_write.cpp.templing"),
@@ -354,13 +361,14 @@ impl<D: Trans + PartialEq + Debug> TestableGenerator<testing::TcpReadWrite<D>> f
         let schema: &Schema = &schema;
         fn type_name(schema: &Schema) -> String {
             match schema {
-                Schema::Struct { definition, .. } => definition.name.camel_case(conv),
-                Schema::OneOf { base_name, .. } => {
-                    format!("std::shared_ptr<{}>", base_name.camel_case(conv))
-                }
-                _ => unreachable!(),
+                Schema::OneOf { .. } => format!("std::shared_ptr<{}>", name_path(schema)),
+                _ => name_path(schema),
             }
         }
+        let access = match schema {
+            Schema::OneOf { .. } => "->",
+            _ => ".",
+        };
         vec![
             File {
                 path: "TcpStream.hpp".to_owned(),

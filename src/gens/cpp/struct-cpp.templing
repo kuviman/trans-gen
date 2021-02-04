@@ -1,3 +1,21 @@
 #include "{{ definition.name.camel_case(conv) }}.hpp"
 
+- if let Some(path) = namespace_path(namespace) {
+namespace {{ path }} {
+
+- }
 {{ self.struct_impl(definition, None) }}
+- if namespace_path(namespace).is_some() {
+
+}
+- }
+- if definition.hashable() {
+
+size_t std::hash<{{ name_path(schema) }}>::operator ()(const {{ name_path(schema) }}& value) const {
+    size_t result = 0;
+    - for field in &definition.fields {
+    result ^= std::hash<{{ self.type_name(&field.schema) }}>{}(value.{{ field.name.mixed_case(conv) }}) + 0x9e3779b9 + (result << 6) + (result >> 2);
+    - }
+    return result;
+}
+- }

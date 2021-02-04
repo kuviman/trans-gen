@@ -1,5 +1,9 @@
 #include "{{ base_name.camel_case(conv) }}.hpp"
 #include <stdexcept>
+- if let Some(path) = namespace_path(namespace) {
+
+namespace {{ path }} {
+- }
 - for (tag, variant) in variants.iter().enumerate() {
 
 {{ self.struct_impl(variant, Some((base_name, tag))) }}
@@ -18,3 +22,7 @@ std::shared_ptr<{{ base_name.camel_case(conv) }}> {{ base_name.camel_case(conv) 
         throw std::runtime_error("Unexpected tag value");
     }
 }
+- if namespace_path(namespace).is_some() {
+
+}
+- }

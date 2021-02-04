@@ -15,14 +15,18 @@
         - }
         ~{{ self.type_name(&field.schema) }} {{ field.name.mixed_case(conv) }}~
     - }
-~) : ~
-    - for (index, field) in definition.fields.iter().enumerate() {
-        - if index != 0 {
-            ~, ~
+- if definition.fields.is_empty() {
+    ~) { }
+- } else {
+    ~) : ~
+        - for (index, field) in definition.fields.iter().enumerate() {
+            - if index != 0 {
+                ~, ~
+            - }
+            ~{{ field.name.mixed_case(conv) }}({{ field.name.mixed_case(conv) }})~
         - }
-        ~{{ field.name.mixed_case(conv) }}({{ field.name.mixed_case(conv) }})~
-    - }
-~ { }
+    ~ { }
+- }
 
 {{ self.doc_read_from(&definition.name.camel_case(conv)) }}
 {{ full_name }} {{ full_name }}::readFrom(InputStream& stream) {
@@ -73,16 +77,9 @@ bool {{ full_name }}::operator ==(const {{ full_name }}& other) const {
         - }
         ~{{ field.name.mixed_case(conv) }} == other.{{ field.name.mixed_case(conv) }}~
     - }
-    ~;
-}
-- }
-- if definition.hashable() {
-
-size_t std::hash<{{ full_name }}>::operator ()(const {{ full_name }}& value) const {
-    size_t result = 0;
-    - for field in &definition.fields {
-    result ^= std::hash<{{ self.type_name(&field.schema) }}>{}(value.{{ field.name.mixed_case(conv) }}) + 0x9e3779b9 + (result << 6) + (result >> 2);
+    - if definition.fields.is_empty() {
+        ~true~
     - }
-    return result;
+    ~;
 }
 - }

@@ -1,7 +1,7 @@
 #include <iostream>
 #include <stdexcept>
 
-#include "model/Model.hpp"
+#include "{{ file_name(schema) }}.hpp"
 #include "TcpStream.hpp"
 
 int main(int argc, char* argv[])
@@ -13,9 +13,9 @@ int main(int argc, char* argv[])
     int port = atoi(argv[2]);
 
     TcpStream tcpStream(host, port);
-    {{ type_name(schema) }} input = {{ type_name(schema) }}::readFrom(tcpStream);
-    std::cout << input.toString() << std::endl;
-    input.writeTo(tcpStream);
+    {{ type_name(schema) }} input = {{ name_path(schema) }}::readFrom(tcpStream);
+    std::cout << input{{ access }}toString() << std::endl;
+    input{{ access }}writeTo(tcpStream);
     tcpStream.flush();
 
     return 0;
