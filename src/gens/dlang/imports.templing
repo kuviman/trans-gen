@@ -1,0 +1,3 @@
+- for path in &imports {
+import {{ path }};
+- }

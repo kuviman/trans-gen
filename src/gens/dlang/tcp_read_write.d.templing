@@ -1,9 +1,9 @@
-import model;
 import socket_stream;
 import std.stdio;
 import std.socket;
 import std.conv;
 import std.exception;
+import {{ module_path(schema) }};
 
 void main(string[] args)
 {

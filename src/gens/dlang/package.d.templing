@@ -1,0 +1,9 @@
+module {{ package_name }};
+
+- for package in &package.inner_packages {
+public static import {{ package }};
+- }
+
+- for r#type in &package.types {
+public import {{ r#type }};
+- }

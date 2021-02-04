@@ -8,9 +8,59 @@ fn conv(name: &str) -> String {
         .replace("Params", "Parameters")
 }
 
+#[derive(Default)]
+struct Package {
+    inner_packages: BTreeSet<String>,
+    types: BTreeSet<String>,
+}
+
 pub struct Generator {
-    model_init: String,
+    packages: HashMap<String, Package>,
     files: HashMap<String, String>,
+}
+
+fn imports(schema: &Schema) -> String {
+    let mut imports = BTreeSet::new();
+    fn add_imports_struct(definition: &Struct, imports: &mut BTreeSet<String>) {
+        fn add_imports(schema: &Schema, imports: &mut BTreeSet<String>) {
+            match schema {
+                Schema::Struct { .. } | Schema::OneOf { .. } | Schema::Enum { .. } => {
+                    imports.insert(module_path(schema));
+                }
+                Schema::Option(inner) => {
+                    add_imports(inner, imports);
+                }
+                Schema::Vec(inner) => {
+                    add_imports(inner, imports);
+                }
+                Schema::Map(key_type, value_type) => {
+                    add_imports(key_type, imports);
+                    add_imports(value_type, imports);
+                }
+                Schema::Bool
+                | Schema::Int32
+                | Schema::Int64
+                | Schema::Float32
+                | Schema::Float64
+                | Schema::String => {}
+            }
+        }
+        for field in &definition.fields {
+            add_imports(&field.schema, imports);
+        }
+    }
+    match schema {
+        Schema::Struct { definition, .. } => {
+            add_imports_struct(definition, &mut imports);
+        }
+        Schema::OneOf { variants, .. } => {
+            for variant in variants {
+                add_imports_struct(variant, &mut imports);
+            }
+        }
+        _ => {}
+    }
+    include_templing!("src/gens/dlang/imports.templing")
 }
 
 fn type_name(schema: &Schema) -> String {
@@ -22,15 +72,23 @@ fn type_name(schema: &Schema) -> String {
         Schema::Float64 => "double".to_owned(),
         Schema::String => "string".to_owned(),
         Schema::Struct {
+            namespace,
             definition: Struct { name, .. },
             ..
         }
         | Schema::OneOf {
-            base_name: name, ..
+            namespace,
+            base_name: name,
+            ..
         }
         | Schema::Enum {
-            base_name: name, ..
-        } => name.camel_case(conv),
+            namespace,
+            base_name: name,
+            ..
+        } => match namespace_path(namespace) {
+            Some(path) => format!("{}.{}", path, name.camel_case(conv)),
+            None => name.camel_case(conv),
+        },
         Schema::Option(inner) => format!("Nullable!({})", type_name(inner)),
         Schema::Vec(inner) => format!("{}[]", type_name(inner)),
         Schema::Map(key, value) => format!("{}[{}]", type_name(value), type_name(key),),
@@ -67,6 +125,78 @@ fn struct_impl(definition: &Struct, base: Option<(&Name, usize)>) -> String {
     include_templing!("src/gens/dlang/struct_impl.templing")
 }
 
+fn namespace_path(namespace: &Namespace) -> Option<String> {
+    if namespace.parts.is_empty() {
+        None
+    } else {
+        Some(
+            namespace
+                .parts
+                .iter()
+                .map(|name| name.snake_case(conv))
+                .collect::<Vec<_>>()
+                .join("."),
+        )
+    }
+}
+
+fn file_name(schema: &Schema) -> String {
+    match schema {
+        Schema::Enum {
+            namespace,
+            base_name: name,
+            ..
+        }
+        | Schema::Struct {
+            namespace,
+            definition: Struct { name, .. },
+            ..
+        }
+        | Schema::OneOf {
+            namespace,
+            base_name: name,
+            ..
+        } => match namespace_path(namespace) {
+            Some(path) => format!("{}/{}", path.replace('.', "/"), name.snake_case(conv)),
+            None => name.snake_case(conv),
+        },
+        _ => unreachable!(),
+    }
+}
+
+fn module_path(schema: &Schema) -> String {
+    file_name(schema).replace('/', ".")
+}
+
+impl Generator {
+    fn insert_package(&mut self, namespace: &Namespace, schema: &Schema) {
+        let mut parent: Option<String> = None;
+        for part in &namespace.parts {
+            let package = match &parent {
+                Some(parent) => {
+                    format!("{}.{}", parent, part.snake_case(conv))
+                }
+                None => part.snake_case(conv),
+            };
+            if let Some(parent) = parent {
+                self.packages
+                    .entry(parent)
+                    .or_default()
+                    .inner_packages
+                    .insert(package.clone());
+            }
+            parent = Some(package);
+        }
+        if let Some(package) = parent {
+            self.packages
+                .entry(package)
+                .or_default()
+                .types
+                .insert(module_path(schema));
+        }
+    }
+}
+
 impl crate::Generator for Generator {
     const NAME: &'static str = "D";
     type Options = ();
@@ -82,14 +212,16 @@ impl crate::Generator for Generator {
             include_templing!("src/gens/dlang/dub.json.templing"),
         );
         Self {
-            model_init: String::new(),
+            packages: HashMap::new(),
             files,
         }
     }
     fn generate(mut self, extra_files: Vec<File>) -> GenResult {
-        if !self.model_init.is_empty() {
-            self.files
-                .insert("source/model/package.d".to_owned(), self.model_init);
+        for (package_name, package) in self.packages {
+            self.files.insert(
+                format!("source/{}/package.d", package_name.replace('.', "/")),
+                include_templing!("src/gens/dlang/package.d.templing"),
+            );
         }
         for file in extra_files {
             self.files.insert(file.path, file.content);
@@ -104,14 +236,9 @@ impl crate::Generator for Generator {
                 base_name,
                 variants,
             } => {
-                writeln!(
-                    &mut self.model_init,
-                    "public import {};",
-                    base_name.snake_case(conv),
-                )
-                .unwrap();
+                self.insert_package(namespace, schema);
                 self.files.insert(
-                    format!("source/model/{}.d", base_name.snake_case(conv)),
+                    format!("source/{}.d", file_name(schema)),
                     include_templing!("src/gens/dlang/enum.templing"),
                 );
             }
@@ -119,14 +246,9 @@ impl crate::Generator for Generator {
                 namespace,
                 definition,
             } => {
-                writeln!(
-                    &mut self.model_init,
-                    "public import {};",
-                    definition.name.snake_case(conv),
-                )
-                .unwrap();
+                self.insert_package(namespace, schema);
                 self.files.insert(
-                    format!("source/model/{}.d", definition.name.snake_case(conv)),
+                    format!("source/{}.d", file_name(schema)),
                     include_templing!("src/gens/dlang/struct.templing"),
                 );
             }
@@ -136,14 +258,9 @@ impl crate::Generator for Generator {
                 base_name,
                 variants,
             } => {
-                writeln!(
-                    &mut self.model_init,
-                    "public import {};",
-                    base_name.snake_case(conv),
-                )
-                .unwrap();
+                self.insert_package(namespace, schema);
                 self.files.insert(
-                    format!("source/model/{}.d", base_name.snake_case(conv)),
+                    format!("source/{}.d", file_name(schema)),
                     include_templing!("src/gens/dlang/oneof.templing"),
                 );
             }

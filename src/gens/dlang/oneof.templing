@@ -1,7 +1,9 @@
-import model;
+module {{ module_path(schema) }};
+
 import stream;
 import std.conv;
 import std.typecons : Nullable;
+{{ imports(schema) }}
 
 {{ doc_comment(documentation) }}
 abstract class {{ base_name.camel_case(conv) }} {

@@ -1,6 +1,8 @@
-import model;
+module {{ module_path(schema) }};
+
 import stream;
 import std.conv;
 import std.typecons : Nullable;
+{{ imports(schema) }}
 
 {{ struct_impl(definition, None) }}

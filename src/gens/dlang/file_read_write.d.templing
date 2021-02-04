@@ -1,8 +1,8 @@
-import model;
 import stream;
 import std.stdio;
 import std.conv;
 import std.exception;
+import {{ module_path(schema) }};
 
 class FileStream : Stream
 {
