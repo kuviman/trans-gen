@@ -1,4 +1,4 @@
-namespace {{ &self.main_namespace }}.Model
+namespace {{ &self.main_namespace }}{{ namespace_path_suffix(namespace) }}
 {
     {{ doc_comment(documentation) }}
     public enum {{ base_name.camel_case(conv) }}

@@ -30,14 +30,16 @@ pub struct GenResult {
 }
 
 impl GenResult {
-    pub fn write_to<P: AsRef<Path>>(&self, target_dir: P) -> std::io::Result<()> {
+    pub fn write_to<P: AsRef<Path>>(&self, target_dir: P) -> anyhow::Result<()> {
         let target_dir = target_dir.as_ref();
         for file in &self.files {
             if let Some(parent) = Path::new(&file.path).parent() {
-                std::fs::create_dir_all(target_dir.join(parent))?;
+                std::fs::create_dir_all(target_dir.join(parent))
+                    .context(format!("Failed to create directory {:?}", parent))?;
             }
             use std::io::Write;
-            std::fs::File::create(target_dir.join(&file.path))?
+            std::fs::File::create(target_dir.join(&file.path))
+                .context(format!("Failed to create {:?}", file.path))?
                 .write_all(file.content.as_bytes())?;
         }
         Ok(())

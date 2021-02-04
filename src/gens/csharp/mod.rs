@@ -80,16 +80,7 @@ fn type_name_prearray(schema: &Schema) -> String {
         Schema::Float32 => "float".to_owned(),
         Schema::Float64 => "double".to_owned(),
         Schema::String => "string".to_owned(),
-        Schema::Struct {
-            definition: Struct { name, .. },
-            ..
-        }
-        | Schema::OneOf {
-            base_name: name, ..
-        }
-        | Schema::Enum {
-            base_name: name, ..
-        } => format!("Model.{}", name.camel_case(conv)),
+        Schema::Struct { .. } | Schema::OneOf { .. } | Schema::Enum { .. } => name_path(schema),
         Schema::Option(inner) => {
             if nullable(inner) {
                 type_name(inner)
@@ -156,6 +147,52 @@ fn struct_impl(definition: &Struct, base: Option<(&Name, usize)>) -> String {
     include_templing!("src/gens/csharp/struct_impl.templing")
 }
 
+fn namespace_path(namespace: &Namespace) -> String {
+    namespace
+        .parts
+        .iter()
+        .map(|name| name.camel_case(conv))
+        .collect::<Vec<_>>()
+        .join(".")
+}
+
+fn namespace_path_suffix(namespace: &Namespace) -> String {
+    let namespace_path = namespace_path(namespace);
+    if namespace_path.is_empty() {
+        namespace_path
+    } else {
+        format!(".{}", namespace_path)
+    }
+}
+
+fn name_path(schema: &Schema) -> String {
+    match schema {
+        Schema::Enum {
+            namespace,
+            base_name: name,
+            ..
+        }
+        | Schema::Struct {
+            namespace,
+            definition: Struct { name, .. },
+            ..
+        }
+        | Schema::OneOf {
+            namespace,
+            base_name: name,
+            ..
+        } => {
+            let namespace_path = namespace_path(namespace);
+            if namespace_path.is_empty() {
+                name.camel_case(conv)
+            } else {
+                format!("{}.{}", namespace_path, name.camel_case(conv))
+            }
+        }
+        _ => unreachable!(),
+    }
+}
+
 impl crate::Generator for Generator {
     const NAME: &'static str = "C#";
     type Options = ();
@@ -186,7 +223,7 @@ impl crate::Generator for Generator {
                 variants,
             } => {
                 self.files.insert(
-                    format!("Model/{}.cs", base_name.camel_case(conv)),
+                    format!("{}.cs", name_path(schema).replace('.', "/")),
                     include_templing!("src/gens/csharp/enum.templing"),
                 );
             }
@@ -195,7 +232,7 @@ impl crate::Generator for Generator {
                 definition,
             } => {
                 self.files.insert(
-                    format!("Model/{}.cs", definition.name.camel_case(conv)),
+                    format!("{}.cs", name_path(schema).replace('.', "/")),
                     include_templing!("src/gens/csharp/struct.templing"),
                 );
             }
@@ -206,7 +243,7 @@ impl crate::Generator for Generator {
                 variants,
             } => {
                 self.files.insert(
-                    format!("Model/{}.cs", base_name.camel_case(conv)),
+                    format!("{}.cs", name_path(schema).replace('.', "/")),
                     include_templing!("src/gens/csharp/oneof.templing"),
                 );
             }

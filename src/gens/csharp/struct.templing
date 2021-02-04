@@ -1,4 +1,4 @@
-namespace {{ &self.main_namespace }}.Model
+namespace {{ &self.main_namespace }}{{ namespace_path_suffix(namespace) }}
 {
     {{ struct_impl(definition, None) }}
 }
