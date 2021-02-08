@@ -1,5 +1,7 @@
 <?php
 
-{{ imports(schema) }}
+namespace {{ namespace_path(schema) }} {
+    {{ imports(schema) }}
 
-{{ struct_impl(definition, None) }}
+    {{ struct_impl(definition, None) }}
+}

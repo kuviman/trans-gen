@@ -1,8 +1,9 @@
 <?php
 
-{{ imports(schema) }}
+namespace {{ namespace_path(schema) }} {
+    
+    {{ imports(schema) }}
 
-namespace {
     {{ doc_comment(documentation) }}
     abstract class {{ base_name.camel_case(conv) }}
     {
@@ -14,8 +15,8 @@ namespace {
         {
             $tag = $stream->readInt32();
             - for variant in variants {
-            if ($tag == {{ base_name.camel_case(conv) }}\{{ variant.name.camel_case(conv) }}::TAG) {
-                return {{ base_name.camel_case(conv) }}\{{ variant.name.camel_case(conv) }}::readFrom($stream);
+            if ($tag == {{ type_name(schema) }}\{{ variant.name.camel_case(conv) }}::TAG) {
+                return {{ type_name(schema) }}\{{ variant.name.camel_case(conv) }}::readFrom($stream);
             }
             - }
             throw new Exception('Unexpected tag value');
@@ -23,11 +24,11 @@ namespace {
     }
 }
 
-namespace {{ base_name.camel_case(conv) }} {
+namespace {{ &type_name(schema)[1..] }} {
     - for (tag, variant) in variants.iter().enumerate() {
     - if tag != 0 {
 
     - }
-    {{ struct_impl(variant, Some((base_name, tag))) }}
+    {{ struct_impl(variant, Some((schema, tag))) }}
     - }
 }

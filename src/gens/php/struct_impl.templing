@@ -1,6 +1,6 @@
 {{ doc_comment(&definition.documentation) }}
-- if let Some((base_name, _)) = base {
-class {{ definition.name.camel_case(conv) }} extends \{{ base_name.camel_case(conv) }}
+- if let Some((base, _)) = base {
+class {{ definition.name.camel_case(conv) }} extends {{ type_name(base) }}
 - } else {
 class {{ definition.name.camel_case(conv) }}
 - }

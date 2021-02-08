@@ -8,26 +8,16 @@ fn conv(name: &str) -> String {
 }
 
 pub struct Generator {
-    model_php: String,
     files: HashMap<String, String>,
 }
 
 fn imports(schema: &Schema) -> String {
     let mut imports = BTreeSet::new();
-    fn add_imports_struct(definition: &Struct, imports: &mut BTreeSet<Name>) {
-        fn add_imports(schema: &Schema, imports: &mut BTreeSet<Name>) {
+    fn add_imports_struct(definition: &Struct, imports: &mut BTreeSet<String>) {
+        fn add_imports(schema: &Schema, imports: &mut BTreeSet<String>) {
             match schema {
-                Schema::Struct {
-                    definition: Struct { name, .. },
-                    ..
-                }
-                | Schema::OneOf {
-                    base_name: name, ..
-                }
-                | Schema::Enum {
-                    base_name: name, ..
-                } => {
-                    imports.insert(name.clone());
+                Schema::Struct { .. } | Schema::OneOf { .. } | Schema::Enum { .. } => {
+                    imports.insert(file_name(schema));
                 }
                 Schema::Option(inner) => {
                     add_imports(inner, imports);
@@ -93,8 +83,35 @@ fn write_var(var: &str, schema: &Schema) -> String {
     include_templing!("src/gens/php/write_var.templing")
 }
 
-fn struct_impl(definition: &Struct, base: Option<(&Name, usize)>) -> String {
+fn struct_impl(definition: &Struct, base: Option<(&Schema, usize)>) -> String {
     include_templing!("src/gens/php/struct_impl.templing")
+}
+
+fn file_name(schema: &Schema) -> String {
+    schema
+        .namespace()
+        .unwrap()
+        .parts
+        .iter()
+        .chain(std::iter::once(schema.name().unwrap()))
+        .map(|name| name.camel_case(conv))
+        .collect::<Vec<String>>()
+        .join("/")
+}
+
+fn namespace_path(schema: &Schema) -> String {
+    schema
+        .namespace()
+        .unwrap()
+        .parts
+        .iter()
+        .map(|name| name.camel_case(conv))
+        .collect::<Vec<String>>()
+        .join("\\")
+}
+
+fn type_name(schema: &Schema) -> String {
+    format!("\\{}", file_name(schema).replace('/', "\\"))
 }
 
 impl crate::Generator for Generator {
@@ -106,15 +123,9 @@ impl crate::Generator for Generator {
             "Stream.php".to_owned(),
             include_str!("Stream.php").to_owned(),
         );
-        Self {
-            model_php: "<?php\n\n".to_owned(),
-            files,
-        }
+        Self { files }
     }
     fn generate(mut self, extra_files: Vec<File>) -> GenResult {
-        if !self.model_php.is_empty() {
-            self.files.insert("Model.php".to_owned(), self.model_php);
-        }
         for file in extra_files {
             self.files.insert(file.path, file.content);
         }
@@ -128,14 +139,8 @@ impl crate::Generator for Generator {
                 base_name,
                 variants,
             } => {
-                writeln!(
-                    &mut self.model_php,
-                    "require_once 'model/{}.php';",
-                    base_name.camel_case(conv),
-                )
-                .unwrap();
                 self.files.insert(
-                    format!("model/{}.php", base_name.camel_case(conv)),
+                    format!("{}.php", file_name(schema)),
                     include_templing!("src/gens/php/enum.templing"),
                 );
             }
@@ -143,14 +148,8 @@ impl crate::Generator for Generator {
                 namespace,
                 definition,
             } => {
-                writeln!(
-                    &mut self.model_php,
-                    "require_once 'model/{}.php';",
-                    definition.name.camel_case(conv),
-                )
-                .unwrap();
                 self.files.insert(
-                    format!("model/{}.php", definition.name.camel_case(conv)),
+                    format!("{}.php", file_name(schema)),
                     include_templing!("src/gens/php/struct.templing"),
                 );
             }
@@ -160,14 +159,8 @@ impl crate::Generator for Generator {
                 base_name,
                 variants,
             } => {
-                writeln!(
-                    &mut self.model_php,
-                    "require_once 'model/{}.php';",
-                    base_name.camel_case(conv),
-                )
-                .unwrap();
                 self.files.insert(
-                    format!("model/{}.php", base_name.camel_case(conv)),
+                    format!("{}.php", file_name(schema)),
                     include_templing!("src/gens/php/oneof.templing"),
                 );
             }
@@ -199,18 +192,6 @@ impl<D: Trans + PartialEq + Debug> TestableGenerator<testing::FileReadWrite<D>> 
     fn extra_files(test: &testing::FileReadWrite<D>) -> Vec<File> {
         let schema = Schema::of::<D>(&test.version);
         let schema: &Schema = &schema;
-        fn type_name(schema: &Schema) -> String {
-            match schema {
-                Schema::Struct {
-                    definition: Struct { name, .. },
-                    ..
-                }
-                | Schema::OneOf {
-                    base_name: name, ..
-                } => name.camel_case(conv),
-                _ => unreachable!(),
-            }
-        }
         vec![File {
             path: "Main.php".to_owned(),
             content: include_templing!("src/gens/php/FileReadWrite.php.templing"),
@@ -222,18 +203,6 @@ impl<D: Trans + PartialEq + Debug> TestableGenerator<testing::TcpReadWrite<D>> f
     fn extra_files(test: &testing::TcpReadWrite<D>) -> Vec<File> {
         let schema = Schema::of::<D>(&test.version);
         let schema: &Schema = &schema;
-        fn type_name(schema: &Schema) -> String {
-            match schema {
-                Schema::Struct {
-                    definition: Struct { name, .. },
-                    ..
-                }
-                | Schema::OneOf {
-                    base_name: name, ..
-                } => name.camel_case(conv),
-                _ => unreachable!(),
-            }
-        }
         vec![
             File {
                 path: "TcpStream.php".to_owned(),
