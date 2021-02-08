@@ -9,6 +9,49 @@ pub struct Generator {
     files: HashMap<String, String>,
 }
 
+fn namespace_path(namespace: &Namespace) -> Option<String> {
+    if namespace.parts.is_empty() {
+        None
+    } else {
+        Some(
+            namespace
+                .parts
+                .iter()
+                .map(|name| name.camel_case(conv))
+                .collect::<Vec<_>>()
+                .join("."),
+        )
+    }
+}
+
+fn file_path(schema: &Schema) -> String {
+    module_name(schema).replace('.', "/")
+}
+
+fn module_name(schema: &Schema) -> String {
+    match schema {
+        Schema::Struct {
+            namespace,
+            definition: Struct { name, .. },
+            ..
+        }
+        | Schema::OneOf {
+            namespace,
+            base_name: name,
+            ..
+        }
+        | Schema::Enum {
+            namespace,
+            base_name: name,
+            ..
+        } => match namespace_path(namespace) {
+            None => name.camel_case(conv),
+            Some(path) => format!("{}.{}", path, name.camel_case(conv)),
+        },
+        _ => unreachable!(),
+    }
+}
+
 fn imports(schema: &Schema) -> String {
     let mut imports = BTreeSet::new();
     fn add_imports_struct(definition: &Struct, imports: &mut BTreeSet<String>) {
@@ -25,8 +68,8 @@ fn imports(schema: &Schema) -> String {
                     base_name: name, ..
                 } => {
                     imports.insert(format!(
-                        "Model.{} ({})",
-                        name.camel_case(conv),
+                        "{} ({})",
+                        module_name(schema),
                         name.camel_case(conv)
                     ));
                 }
@@ -141,8 +184,8 @@ impl crate::Generator for Generator {
                 None
             })
             .collect();
-        let model_hs = include_templing!("src/gens/haskell/Model.hs.templing");
-        self.files.insert("src/Model.hs".to_owned(), model_hs);
+        // let model_hs = include_templing!("src/gens/haskell/Model.hs.templing");
+        // self.files.insert("src/Model.hs".to_owned(), model_hs);
         for file in extra_files {
             self.files.insert(file.path, file.content);
         }
@@ -157,7 +200,7 @@ impl crate::Generator for Generator {
                 documentation,
             } => {
                 self.files.insert(
-                    format!("src/Model/{}.hs", base_name.camel_case(conv)),
+                    format!("src/{}.hs", file_path(schema)),
                     include_templing!("src/gens/haskell/enum.templing"),
                 );
             }
@@ -166,7 +209,7 @@ impl crate::Generator for Generator {
                 definition,
             } => {
                 self.files.insert(
-                    format!("src/Model/{}.hs", definition.name.camel_case(conv)),
+                    format!("src/{}.hs", file_path(schema)),
                     include_templing!("src/gens/haskell/struct.templing"),
                 );
             }
@@ -177,7 +220,7 @@ impl crate::Generator for Generator {
                 documentation,
             } => {
                 self.files.insert(
-                    format!("src/Model/{}.hs", base_name.camel_case(conv)),
+                    format!("src/{}.hs", file_path(schema)),
                     include_templing!("src/gens/haskell/oneof.templing"),
                 );
             }

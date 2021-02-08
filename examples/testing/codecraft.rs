@@ -392,7 +392,7 @@ pub enum DebugCommand<G: Game> {
     Add {
         /// Data to add
         #[trans_doc = "ru:Данные для добавления"]
-        data: G::DebugData,
+        debug_data: G::DebugData,
     },
     /// Clear current tick's debug data
     #[trans_doc = "ru:Очистить отладочные данные текущего тика"]

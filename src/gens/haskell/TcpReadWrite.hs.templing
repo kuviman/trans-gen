@@ -1,4 +1,3 @@
-import Model
 import qualified Trans
 import Data.Binary.Get (runGet)
 import Data.Binary.Put (runPut)
@@ -7,6 +6,7 @@ import qualified System.Environment
 import qualified Control.Exception as CE
 import Network.Socket
 import Network.Socket.ByteString.Lazy as SBS
+import {{ module_name(schema) }}
 
 runTCPClient :: HostName -> ServiceName -> (Socket -> IO a) -> IO a
 runTCPClient host port client = withSocketsDo $ do

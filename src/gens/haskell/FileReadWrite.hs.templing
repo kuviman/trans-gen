@@ -1,9 +1,9 @@
-import Model
 import qualified Trans
 import Data.Binary.Get (runGet)
 import Data.Binary.Put (runPut)
 import qualified Data.ByteString.Lazy as BS
 import qualified System.Environment
+import {{ module_name(schema) }}
 
 main :: IO ()
 main = do

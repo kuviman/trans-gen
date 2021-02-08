@@ -4,7 +4,12 @@
 -   definition.name.camel_case(conv)
 - }; let struct_name = &struct_name;
 {{ doc_comment(&definition.documentation) }}
-data {{ struct_name }} = {{ struct_name }} {
+data {{ struct_name }} = {{ struct_name }}~
+    - if definition.fields.is_empty() {
+        ~ { }
+    - } else {
+        ~ {
+    - }
     - for (index, field) in definition.fields.iter().enumerate() {
     {{ doc_comment(&field.documentation) }}
     {{ field.name.mixed_case(conv) }} :: {{ type_name(&field.schema) }}~
@@ -21,7 +26,12 @@ instance Trans {{ struct_name }} where
         - for field in &definition.fields {
         {{ field.name.mixed_case(conv) }} <- Trans.read
         - }
-        return {{ struct_name }} {
+        return {{ struct_name }}~
+            - if definition.fields.is_empty() {
+                ~ { }
+            - } else {
+                ~ {
+            - }
             - for (index, field) in definition.fields.iter().enumerate() {
             {{ field.name.mixed_case(conv) }}~
             - if index + 1 < definition.fields.len() {
@@ -31,7 +41,12 @@ instance Trans {{ struct_name }} where
             - }
             - }
     
-    write {{ struct_name }} {
+    write {{ struct_name }}~
+        - if definition.fields.is_empty() {
+            ~ { } = do
+        - } else {
+            ~ {
+        - }
         - for (index, field) in definition.fields.iter().enumerate() {
         {{ field.name.mixed_case(conv) }}~
         - if index + 1 < definition.fields.len() {
@@ -42,4 +57,7 @@ instance Trans {{ struct_name }} where
         - }
             - for field in &definition.fields {
             Trans.write {{ field.name.mixed_case(conv) }}
+            - }
+            - if definition.fields.is_empty() {
+            return ()
             - }

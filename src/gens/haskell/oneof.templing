@@ -1,4 +1,4 @@
-module Model.{{ base_name.camel_case(conv) }} where
+module {{ module_name(schema) }} where
 
 import Prelude hiding (id)
 import qualified Trans
