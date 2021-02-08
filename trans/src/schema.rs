@@ -144,6 +144,29 @@ impl Schema {
             Self::Enum { .. } => true,
         }
     }
+    pub fn name(&self) -> Option<&Name> {
+        match self {
+            Self::Struct {
+                definition: Struct { name, .. },
+                ..
+            }
+            | Self::Enum {
+                base_name: name, ..
+            }
+            | Self::OneOf {
+                base_name: name, ..
+            } => Some(name),
+            _ => None,
+        }
+    }
+    pub fn namespace(&self) -> Option<&Namespace> {
+        match self {
+            Self::Struct { namespace, .. }
+            | Self::Enum { namespace, .. }
+            | Self::OneOf { namespace, .. } => Some(namespace),
+            _ => None,
+        }
+    }
     pub fn of<T: Trans>(version: &Version) -> Arc<Schema> {
         static MAP: Lazy<Mutex<HashMap<Version, HashSet<Arc<Schema>>>>> =
             Lazy::new(|| Mutex::new(HashMap::new()));

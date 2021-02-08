@@ -1,8 +1,8 @@
 'use strict';
 
 const Stream = require('./stream');
-const model = require('./model/index');
 const fs = require('fs');
+const {{ schema.name().unwrap().camel_case(conv) }} = require('./{{ file_name(schema) }}');
 
 class FileStream extends Stream {
     constructor(path, flags) {
@@ -31,7 +31,7 @@ async function run() {
     const inputFile = process.argv[2];
     const outputFile = process.argv[3];
 
-    const input = await model.{{ type_name(schema) }}.readFrom(new FileStream(inputFile, 'r'));
+    const input = await {{ schema.name().unwrap().camel_case(conv) }}.readFrom(new FileStream(inputFile, 'r'));
     console.log(input);
     const outputStream = new FileStream(outputFile, 'w');
     await input.writeTo(outputStream);

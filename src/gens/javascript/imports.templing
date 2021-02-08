@@ -1,3 +1,3 @@
-- for name in &imports {
-const {{ name.camel_case(conv) }} = require('./{{ file_name(name) }}');
+- for (name, path) in &imports {
+const {{ name.camel_case(conv) }} = require.main.require('./{{ path }}');
 - }

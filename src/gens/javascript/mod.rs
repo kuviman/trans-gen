@@ -9,25 +9,15 @@ fn conv(name: &str) -> String {
 
 pub struct Generator {
     files: HashMap<String, String>,
-    index_file: String,
 }
 
 fn imports(schema: &Schema) -> String {
     let mut imports = BTreeSet::new();
-    fn add_imports_struct(definition: &Struct, imports: &mut BTreeSet<Name>) {
-        fn add_imports(schema: &Schema, imports: &mut BTreeSet<Name>) {
+    fn add_imports_struct(definition: &Struct, imports: &mut BTreeSet<(Name, String)>) {
+        fn add_imports(schema: &Schema, imports: &mut BTreeSet<(Name, String)>) {
             match schema {
-                Schema::Struct {
-                    definition: Struct { name, .. },
-                    ..
-                }
-                | Schema::OneOf {
-                    base_name: name, ..
-                }
-                | Schema::Enum {
-                    base_name: name, ..
-                } => {
-                    imports.insert(name.clone());
+                Schema::Struct { .. } | Schema::OneOf { .. } | Schema::Enum { .. } => {
+                    imports.insert((schema.name().unwrap().clone(), file_name(schema)));
                 }
                 Schema::Option(inner) => {
                     add_imports(inner, imports);
@@ -97,8 +87,21 @@ fn struct_impl(definition: &Struct, base: Option<(&Name, usize)>) -> String {
     include_templing!("src/gens/javascript/struct_impl.templing")
 }
 
-fn file_name(name: &Name) -> String {
-    name.snake_case(conv).replace('_', "-")
+fn file_name(schema: &Schema) -> String {
+    let mut result = String::new();
+    for part in schema
+        .namespace()
+        .unwrap()
+        .parts
+        .iter()
+        .chain(std::iter::once(schema.name().unwrap()))
+    {
+        if !result.is_empty() {
+            result.push('/');
+        }
+        result.push_str(&part.snake_case(conv).replace('_', "-"));
+    }
+    result
 }
 
 impl Generator {
@@ -110,15 +113,8 @@ impl Generator {
                 base_name,
                 variants,
             } => {
-                writeln!(
-                    self.index_file,
-                    "module.exports.{} = require('./{}');",
-                    base_name.camel_case(conv),
-                    file_name(base_name),
-                )
-                .unwrap();
                 self.files.insert(
-                    format!("model/{}.js", file_name(base_name)),
+                    format!("{}.js", file_name(schema)),
                     include_templing!("src/gens/javascript/enum.templing"),
                 );
             }
@@ -126,15 +122,8 @@ impl Generator {
                 namespace,
                 definition,
             } => {
-                writeln!(
-                    self.index_file,
-                    "module.exports.{} = require('./{}');",
-                    definition.name.camel_case(conv),
-                    file_name(&definition.name),
-                )
-                .unwrap();
                 self.files.insert(
-                    format!("model/{}.js", file_name(&definition.name)),
+                    format!("{}.js", file_name(schema)),
                     include_templing!("src/gens/javascript/struct.templing"),
                 );
             }
@@ -144,15 +133,8 @@ impl Generator {
                 base_name,
                 variants,
             } => {
-                writeln!(
-                    self.index_file,
-                    "module.exports.{} = require('./{}');",
-                    base_name.camel_case(conv),
-                    file_name(base_name),
-                )
-                .unwrap();
                 self.files.insert(
-                    format!("model/{}.js", file_name(base_name)),
+                    format!("{}.js", file_name(schema)),
                     include_templing!("src/gens/javascript/oneof.templing"),
                 );
             }
@@ -184,14 +166,9 @@ impl crate::Generator for Generator {
             "package.json".to_owned(),
             include_templing!("src/gens/javascript/package.json.templing").to_owned(),
         );
-        Self {
-            files,
-            index_file: String::new(),
-        }
+        Self { files }
     }
     fn generate(mut self, extra_files: Vec<File>) -> GenResult {
-        self.files
-            .insert("model/index.js".to_owned(), self.index_file);
         for file in extra_files {
             self.files.insert(file.path, file.content);
         }
@@ -217,18 +194,6 @@ impl<D: Trans + PartialEq + Debug> TestableGenerator<testing::FileReadWrite<D>> 
     fn extra_files(test: &testing::FileReadWrite<D>) -> Vec<File> {
         let schema = Schema::of::<D>(&test.version);
         let schema: &Schema = &schema;
-        fn type_name(schema: &Schema) -> String {
-            match schema {
-                Schema::Struct {
-                    definition: Struct { name, .. },
-                    ..
-                }
-                | Schema::OneOf {
-                    base_name: name, ..
-                } => name.camel_case(conv),
-                _ => unreachable!(),
-            }
-        }
         vec![File {
             path: "main.js".to_owned(),
             content: include_templing!("src/gens/javascript/file-read-write.js.templing"),
@@ -240,18 +205,6 @@ impl<D: Trans + PartialEq + Debug> TestableGenerator<testing::TcpReadWrite<D>> f
     fn extra_files(test: &testing::TcpReadWrite<D>) -> Vec<File> {
         let schema = Schema::of::<D>(&test.version);
         let schema: &Schema = &schema;
-        fn type_name(schema: &Schema) -> String {
-            match schema {
-                Schema::Struct {
-                    definition: Struct { name, .. },
-                    ..
-                }
-                | Schema::OneOf {
-                    base_name: name, ..
-                } => name.camel_case(conv),
-                _ => unreachable!(),
-            }
-        }
         vec![
             File {
                 path: "tcp-stream.js".to_owned(),
