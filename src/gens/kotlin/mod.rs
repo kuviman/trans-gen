@@ -9,30 +9,53 @@ fn conv(name: &str) -> String {
 }
 
 pub struct Generator {
+    main_package: String,
     files: HashMap<String, String>,
 }
 
-fn type_name(schema: &Schema) -> String {
+fn namespace_path(namespace: &Namespace) -> Option<String> {
+    if namespace.parts.is_empty() {
+        None
+    } else {
+        Some(
+            namespace
+                .parts
+                .iter()
+                .map(|name| name.snake_case(conv))
+                .collect::<Vec<_>>()
+                .join("."),
+        )
+    }
+}
+
+fn namespace_path_suffix(namespace: &Namespace) -> String {
+    match namespace_path(namespace) {
+        None => String::new(),
+        Some(path) => format!(".{}", path),
+    }
+}
+
+fn file_name(schema: &Schema) -> String {
     match schema {
-        Schema::Bool => "Boolean".to_owned(),
-        Schema::Int32 => "Int".to_owned(),
-        Schema::Int64 => "Long".to_owned(),
-        Schema::Float32 => "Float".to_owned(),
-        Schema::Float64 => "Double".to_owned(),
-        Schema::String => "String".to_owned(),
-        Schema::Struct {
+        Schema::Enum {
+            namespace,
+            base_name: name,
+            ..
+        }
+        | Schema::Struct {
+            namespace,
             definition: Struct { name, .. },
             ..
         }
         | Schema::OneOf {
-            base_name: name, ..
-        }
-        | Schema::Enum {
-            base_name: name, ..
-        } => format!("model.{}", name.camel_case(conv)),
-        Schema::Option(inner) => format!("{}?", type_name(inner)),
-        Schema::Vec(inner) => format!("Array<{}>", type_name(inner)),
-        Schema::Map(key, value) => format!("MutableMap<{}, {}>", type_name(key), type_name(value)),
+            namespace,
+            base_name: name,
+            ..
+        } => match namespace_path(namespace) {
+            None => name.camel_case(conv),
+            Some(path) => format!("{}/{}", path.replace('.', "/"), name.camel_case(conv)),
+        },
+        _ => unreachable!(),
     }
 }
 
@@ -94,20 +117,49 @@ fn doc_to_string(name: &str) -> String {
     format!("/**\n * Get string representation of {}\n */", name)
 }
 
-fn read_var(var: &str, schema: &Schema) -> String {
-    include_templing!("src/gens/kotlin/read_var.templing")
-}
-
-fn write_var(var: &str, schema: &Schema) -> String {
-    include_templing!("src/gens/kotlin/write_var.templing")
-}
-
-fn var_to_string(var: &str, schema: &Schema) -> String {
-    include_templing!("src/gens/kotlin/var_to_string.templing")
-}
-
-fn struct_impl(definition: &Struct, base: Option<(&Name, usize)>) -> String {
-    include_templing!("src/gens/kotlin/struct_impl.templing")
+impl Generator {
+    fn type_name(&self, schema: &Schema) -> String {
+        match schema {
+            Schema::Bool => "Boolean".to_owned(),
+            Schema::Int32 => "Int".to_owned(),
+            Schema::Int64 => "Long".to_owned(),
+            Schema::Float32 => "Float".to_owned(),
+            Schema::Float64 => "Double".to_owned(),
+            Schema::String => "String".to_owned(),
+            Schema::Struct { .. } | Schema::OneOf { .. } | Schema::Enum { .. } => {
+                format!(
+                    "{}{}.{}",
+                    self.main_package,
+                    namespace_path_suffix(schema.namespace().unwrap()),
+                    schema.name().unwrap().camel_case(conv)
+                )
+            }
+            Schema::Option(inner) => format!("{}?", self.type_name(inner)),
+            Schema::Vec(inner) => format!("Array<{}>", self.type_name(inner)),
+            Schema::Map(key, value) => {
+                format!(
+                    "MutableMap<{}, {}>",
+                    self.type_name(key),
+                    self.type_name(value)
+                )
+            }
+        }
+    }
+    fn read_var(&self, var: &str, schema: &Schema) -> String {
+        include_templing!("src/gens/kotlin/read_var.templing")
+    }
+    fn write_var(&self, var: &str, schema: &Schema) -> String {
+        include_templing!("src/gens/kotlin/write_var.templing")
+    }
+    fn var_to_string(&self, var: &str, schema: &Schema) -> String {
+        include_templing!("src/gens/kotlin/var_to_string.templing")
+    }
+    fn struct_impl(&self, definition: &Struct, base: Option<(&Name, usize)>) -> String {
+        include_templing!("src/gens/kotlin/struct_impl.templing")
+    }
+    fn package(&self, namespace: &Namespace) -> String {
+        format!("{}{}", &self.main_package, namespace_path_suffix(namespace))
+    }
 }
 
 impl crate::Generator for Generator {
@@ -118,16 +170,20 @@ impl crate::Generator for Generator {
             .snake_case(conv)
             .replace('_', "-");
         let project_name = &project_name;
+        let main_package = Name::new(name.to_owned()).snake_case(conv);
         let mut files = HashMap::new();
         files.insert(
             "pom.xml".to_owned(),
             include_templing!("src/gens/kotlin/pom.xml.templing"),
         );
         files.insert(
-            "src/main/kotlin/util/StreamUtil.kt".to_owned(),
-            include_str!("StreamUtil.kt").to_owned(),
+            format!("src/main/kotlin/{}/util/StreamUtil.kt", main_package),
+            include_str!("StreamUtil.kt").replace("main_package", &main_package),
         );
-        Self { files }
+        Self {
+            main_package,
+            files,
+        }
     }
     fn generate(mut self, extra_files: Vec<File>) -> GenResult {
         for file in extra_files {
@@ -144,7 +200,11 @@ impl crate::Generator for Generator {
                 variants,
             } => {
                 self.files.insert(
-                    format!("src/main/kotlin/model/{}.kt", base_name.camel_case(conv)),
+                    format!(
+                        "src/main/kotlin/{}/{}.kt",
+                        self.main_package,
+                        file_name(schema),
+                    ),
                     include_templing!("src/gens/kotlin/enum.templing"),
                 );
             }
@@ -154,8 +214,9 @@ impl crate::Generator for Generator {
             } => {
                 self.files.insert(
                     format!(
-                        "src/main/kotlin/model/{}.kt",
-                        definition.name.camel_case(conv)
+                        "src/main/kotlin/{}/{}.kt",
+                        self.main_package,
+                        file_name(schema),
                     ),
                     include_templing!("src/gens/kotlin/struct.templing"),
                 );
@@ -167,7 +228,11 @@ impl crate::Generator for Generator {
                 variants,
             } => {
                 self.files.insert(
-                    format!("src/main/kotlin/model/{}.kt", base_name.camel_case(conv)),
+                    format!(
+                        "src/main/kotlin/{}/{}.kt",
+                        self.main_package,
+                        file_name(schema),
+                    ),
                     include_templing!("src/gens/kotlin/oneof.templing"),
                 );
             }
@@ -222,8 +287,15 @@ impl<D: Trans + PartialEq + Debug> TestableGenerator<testing::FileReadWrite<D>> 
     fn extra_files(test: &testing::FileReadWrite<D>) -> Vec<File> {
         let schema = Schema::of::<D>(&test.version);
         let schema: &Schema = &schema;
+        fn type_name(schema: &Schema) -> String {
+            format!(
+                "trans_gen_test{}.{}",
+                namespace_path_suffix(schema.namespace().unwrap()),
+                schema.name().unwrap().camel_case(conv),
+            )
+        }
         vec![File {
-            path: "src/main/kotlin/Runner.kt".to_owned(),
+            path: "src/main/kotlin/trans_gen_test/Runner.kt".to_owned(),
             content: include_templing!("src/gens/kotlin/FileReadWrite.kt.templing"),
         }]
     }
@@ -233,8 +305,15 @@ impl<D: Trans + PartialEq + Debug> TestableGenerator<testing::TcpReadWrite<D>> f
     fn extra_files(test: &testing::TcpReadWrite<D>) -> Vec<File> {
         let schema = Schema::of::<D>(&test.version);
         let schema: &Schema = &schema;
+        fn type_name(schema: &Schema) -> String {
+            format!(
+                "trans_gen_test{}.{}",
+                namespace_path_suffix(schema.namespace().unwrap()),
+                schema.name().unwrap().camel_case(conv),
+            )
+        }
         vec![File {
-            path: "src/main/kotlin/Runner.kt".to_owned(),
+            path: "src/main/kotlin/trans_gen_test/Runner.kt".to_owned(),
             content: include_templing!("src/gens/kotlin/TcpReadWrite.kt.templing"),
         }]
     }

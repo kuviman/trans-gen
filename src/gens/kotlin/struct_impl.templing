@@ -7,9 +7,9 @@ class {{ definition.name.camel_case(conv) }} {
     - for field in &definition.fields {
     {{ doc_comment(&field.documentation) }}
     - if lateinit(&field.schema) {
-    lateinit var {{ field.name.mixed_case(conv) }}: {{ type_name(&field.schema) }}
+    lateinit var {{ field.name.mixed_case(conv) }}: {{ self.type_name(&field.schema) }}
     - } else {
-    var {{ field.name.mixed_case(conv) }}: {{ type_name(&field.schema) }} = {{ default_value(&field.schema) }}
+    var {{ field.name.mixed_case(conv) }}: {{ self.type_name(&field.schema) }} = {{ default_value(&field.schema) }}
     - }
     - }
 
@@ -18,7 +18,7 @@ class {{ definition.name.camel_case(conv) }} {
             - if index != 0 {
             ~, ~
             - }
-            ~{{ field.name.mixed_case(conv) }}: {{ type_name(&field.schema) }}~
+            ~{{ field.name.mixed_case(conv) }}: {{ self.type_name(&field.schema) }}~
         - }
     ~) {
         - for field in &definition.fields {
@@ -33,7 +33,7 @@ class {{ definition.name.camel_case(conv) }} {
         StreamUtil.writeInt(stream, TAG)
         - }
         - for field in &definition.fields {
-        {{ write_var(&field.name.mixed_case(conv), &field.schema) }}
+        {{ self.write_var(&field.name.mixed_case(conv), &field.schema) }}
         - }
     }
 
@@ -45,7 +45,7 @@ class {{ definition.name.camel_case(conv) }} {
         stringBuilder.append(", ")
         - }
         stringBuilder.append("{{ field.name.mixed_case(conv) }}: ")
-        {{ var_to_string(&field.name.mixed_case(conv), &field.schema) }}
+        {{ self.var_to_string(&field.name.mixed_case(conv), &field.schema) }}
         - }
         stringBuilder.append(" }")
         return stringBuilder.toString()
@@ -60,8 +60,8 @@ class {{ definition.name.camel_case(conv) }} {
         @Throws(java.io.IOException::class)
         fun readFrom(stream: java.io.InputStream): {{ definition.name.camel_case(conv) }} {
             - for field in &definition.fields {
-            var {{ field.name.mixed_case(conv) }}: {{ type_name(&field.schema) }}
-            {{ read_var(&field.name.mixed_case(conv), &field.schema) }}
+            var {{ field.name.mixed_case(conv) }}: {{ self.type_name(&field.schema) }}
+            {{ self.read_var(&field.name.mixed_case(conv), &field.schema) }}
             - }
             return {{ definition.name.camel_case(conv) }}(~
                 - for (index, field) in definition.fields.iter().enumerate() {

@@ -1,6 +1,6 @@
-package model
+package {{ self.package(namespace) }}
 
-import util.StreamUtil
+import {{ &self.main_package }}.util.StreamUtil
 
 {{ doc_comment(documentation) }}
 abstract class {{ base_name.camel_case(conv) }} {
@@ -22,6 +22,6 @@ abstract class {{ base_name.camel_case(conv) }} {
     }
     - for (tag, variant) in variants.iter().enumerate() {
 
-    {{ struct_impl(variant, Some((base_name, tag))) }}
+    {{ self.struct_impl(variant, Some((base_name, tag))) }}
     - }
 }

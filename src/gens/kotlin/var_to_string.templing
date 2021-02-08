@@ -20,7 +20,7 @@ for ({{ element_var }} in {{ var }}) {
     if ({{ index_var }} != 0) {
         stringBuilder.append(", ")
     }
-    {{ var_to_string(element_var, inner) }}
+    {{ self.var_to_string(element_var, inner) }}
     {{ index_var }}++
 }
 stringBuilder.append(" ]")
