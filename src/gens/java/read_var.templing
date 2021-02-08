@@ -18,22 +18,22 @@
 {{ var }} = StreamUtil.readString(stream);
 - }
 - Schema::Struct { .. } | Schema::OneOf { .. } | Schema::Enum { .. } => {
-{{ var }} = {{ type_name(schema) }}.readFrom(stream);
+{{ var }} = {{ self.type_name(schema) }}.readFrom(stream);
 - }
 - Schema::Option(inner) => {
 if (StreamUtil.readBoolean(stream)) {
-    {{ read_var(var, inner) }}
+    {{ self.read_var(var, inner) }}
 } else {
     {{ var }} = null;
 }
 - }
 - Schema::Vec(inner) => {
-{{ var }} = new {{ type_name_prearray(inner) }}[StreamUtil.readInt(stream)]{{ type_name_postarray(inner) }};
+{{ var }} = new {{ self.type_name_prearray(inner) }}[StreamUtil.readInt(stream)]{{ self.type_name_postarray(inner) }};
 - let index_var = format!("{}Index", var); let index_var = &index_var;
 for (int {{ index_var }} = 0; {{ index_var }} < {{ var }}.length; {{ index_var }}++) {
     - let element_var = format!("{}Element", var); let element_var = &element_var;
-    {{ type_name(inner) }} {{ element_var }};
-    {{ read_var(element_var, inner) }}
+    {{ self.type_name(inner) }} {{ element_var }};
+    {{ self.read_var(element_var, inner) }}
     {{ var }}[{{ index_var }}] = {{ element_var }};
 }
 - }
@@ -45,10 +45,10 @@ int {{ size_var }} = StreamUtil.readInt(stream);
 for (int {{ index_var }} = 0; {{ index_var }} < {{ size_var }}; {{ index_var }}++) {
     - let key_var = format!("{}Key", var); let key_var = &key_var;
     - let value_var = format!("{}Value", var); let value_var = &value_var;
-    {{ type_name(key_type) }} {{ key_var }};
-    {{ read_var(key_var, key_type) }}
-    {{ type_name(value_type) }} {{ value_var }};
-    {{ read_var(value_var, value_type) }}
+    {{ self.type_name(key_type) }} {{ key_var }};
+    {{ self.read_var(key_var, key_type) }}
+    {{ self.type_name(value_type) }} {{ value_var }};
+    {{ self.read_var(value_var, value_type) }}
     {{ var }}.put({{ key_var }}, {{ value_var }});
 }
 - }

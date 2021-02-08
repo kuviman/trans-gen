@@ -1,6 +1,6 @@
-package model;
+package {{ self.package(namespace) }};
 
-import util.StreamUtil;
+import {{ &self.main_package }}.util.StreamUtil;
 
 {{ doc_comment(documentation) }}
 public enum {{ base_name.camel_case(conv) }} {

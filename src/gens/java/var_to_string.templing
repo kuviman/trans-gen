@@ -19,8 +19,8 @@ for (int {{ index_var }} = 0; {{ index_var }} < {{ var }}.length; {{ index_var }
     if ({{ index_var }} != 0) {
         stringBuilder.append(", ");
     }
-    {{ type_name(inner) }} {{ element_var }} = {{ var }}[{{ index_var }}];
-    {{ var_to_string(element_var, inner) }}
+    {{ self.type_name(inner) }} {{ element_var }} = {{ var }}[{{ index_var }}];
+    {{ self.var_to_string(element_var, inner) }}
 }
 stringBuilder.append(" ]");
 - }

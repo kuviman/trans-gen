@@ -1,5 +1,5 @@
-package model;
+package {{ self.package(namespace) }};
 
-import util.StreamUtil;
+import {{ &self.main_package }}.util.StreamUtil;
 
-{{ struct_impl(definition, None) }}
+{{ self.struct_impl(definition, None) }}

@@ -10,15 +10,15 @@ public class {{ definition.name.camel_case(conv) }} {
     - }
     - for field in &definition.fields {
     {{ doc_comment(&field.documentation) }}
-    private {{ type_name(&field.schema) }} {{ field.name.mixed_case(conv) }};
+    private {{ self.type_name(&field.schema) }} {{ field.name.mixed_case(conv) }};
 
     {{ doc_comment(&field.documentation) }}
-    public {{ type_name(&field.schema) }} {{ getter_prefix(&field.schema) }}{{ field.name.camel_case(conv) }}() {
+    public {{ self.type_name(&field.schema) }} {{ getter_prefix(&field.schema) }}{{ field.name.camel_case(conv) }}() {
         return {{ field.name.mixed_case(conv) }};
     }
 
     {{ doc_comment(&field.documentation) }}
-    public void set{{ field.name.camel_case(conv) }}({{ type_name(&field.schema) }} value) {
+    public void set{{ field.name.camel_case(conv) }}({{ self.type_name(&field.schema) }} value) {
         this.{{ field.name.mixed_case(conv) }} = value;
     }
     - }
@@ -28,7 +28,7 @@ public class {{ definition.name.camel_case(conv) }} {
         - if index != 0 {
             ~, ~
         - }
-        ~{{ type_name(&field.schema) }} {{ field.name.mixed_case(conv) }}~
+        ~{{ self.type_name(&field.schema) }} {{ field.name.mixed_case(conv) }}~
     - }
     ~) {
         - for field in &definition.fields {
@@ -39,8 +39,8 @@ public class {{ definition.name.camel_case(conv) }} {
     {{ doc_read_from(&definition.name.camel_case(conv)) }}
     public static {{ definition.name.camel_case(conv) }} readFrom(java.io.InputStream stream) throws java.io.IOException {
         - for field in &definition.fields {
-        {{ type_name(&field.schema) }} {{ field.name.mixed_case(conv) }};
-        {{ read_var(&field.name.mixed_case(conv), &field.schema) }}
+        {{ self.type_name(&field.schema) }} {{ field.name.mixed_case(conv) }};
+        {{ self.read_var(&field.name.mixed_case(conv), &field.schema) }}
         - }
         return new {{ definition.name.camel_case(conv) }}(~
         - for (index, field) in definition.fields.iter().enumerate() {
@@ -61,7 +61,7 @@ public class {{ definition.name.camel_case(conv) }} {
         StreamUtil.writeInt(stream, TAG);
         - }
         - for field in &definition.fields {
-        {{ write_var(&field.name.mixed_case(conv), &field.schema) }}
+        {{ self.write_var(&field.name.mixed_case(conv), &field.schema) }}
         - }
     }
 
@@ -74,7 +74,7 @@ public class {{ definition.name.camel_case(conv) }} {
         stringBuilder.append(", ");
         - }
         stringBuilder.append("{{ field.name.mixed_case(conv) }}: ");
-        {{ var_to_string(&field.name.mixed_case(conv), &field.schema) }}
+        {{ self.var_to_string(&field.name.mixed_case(conv), &field.schema) }}
         - }
         stringBuilder.append(" }");
         return stringBuilder.toString();

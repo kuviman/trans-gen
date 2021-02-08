@@ -9,61 +9,8 @@ fn conv(name: &str) -> String {
 }
 
 pub struct Generator {
+    main_package: String,
     files: HashMap<String, String>,
-}
-
-fn type_name(schema: &Schema) -> String {
-    format!(
-        "{}{}",
-        type_name_prearray(schema),
-        type_name_postarray(schema),
-    )
-}
-
-fn type_name_obj(schema: &Schema) -> String {
-    match schema {
-        Schema::Bool => "Boolean".to_owned(),
-        Schema::Int32 => "Integer".to_owned(),
-        Schema::Int64 => "Long".to_owned(),
-        Schema::Float32 => "Float".to_owned(),
-        Schema::Float64 => "Double".to_owned(),
-        _ => type_name(schema),
-    }
-}
-
-fn type_name_prearray(schema: &Schema) -> String {
-    match schema {
-        Schema::Bool => "boolean".to_owned(),
-        Schema::Int32 => "int".to_owned(),
-        Schema::Int64 => "long".to_owned(),
-        Schema::Float32 => "float".to_owned(),
-        Schema::Float64 => "double".to_owned(),
-        Schema::String => "String".to_owned(),
-        Schema::Struct {
-            definition: Struct { name, .. },
-            ..
-        }
-        | Schema::OneOf {
-            base_name: name, ..
-        }
-        | Schema::Enum {
-            base_name: name, ..
-        } => format!("model.{}", name.camel_case(conv)),
-        Schema::Option(inner) => type_name_obj(inner),
-        Schema::Vec(inner) => type_name_prearray(inner),
-        Schema::Map(key, value) => format!(
-            "java.util.Map<{}, {}>",
-            type_name_obj(key),
-            type_name_obj(value)
-        ),
-    }
-}
-
-fn type_name_postarray(schema: &Schema) -> String {
-    match schema {
-        Schema::Vec(inner) => format!("[]{}", type_name_postarray(inner)),
-        _ => String::new(),
-    }
 }
 
 fn getter_prefix(schema: &Schema) -> &'static str {
@@ -97,20 +44,115 @@ fn doc_to_string(name: &str) -> String {
     format!("/**\n * Get string representation of {}\n */", name)
 }
 
-fn read_var(var: &str, schema: &Schema) -> String {
-    include_templing!("src/gens/java/read_var.templing")
+fn namespace_path(namespace: &Namespace) -> Option<String> {
+    if namespace.parts.is_empty() {
+        None
+    } else {
+        Some(
+            namespace
+                .parts
+                .iter()
+                .map(|name| name.snake_case(conv))
+                .collect::<Vec<_>>()
+                .join("."),
+        )
+    }
 }
 
-fn write_var(var: &str, schema: &Schema) -> String {
-    include_templing!("src/gens/java/write_var.templing")
+fn namespace_path_suffix(namespace: &Namespace) -> String {
+    match namespace_path(namespace) {
+        None => String::new(),
+        Some(path) => format!(".{}", path),
+    }
 }
 
-fn var_to_string(var: &str, schema: &Schema) -> String {
-    include_templing!("src/gens/java/var_to_string.templing")
+fn file_name(schema: &Schema) -> String {
+    match schema {
+        Schema::Enum {
+            namespace,
+            base_name: name,
+            ..
+        }
+        | Schema::Struct {
+            namespace,
+            definition: Struct { name, .. },
+            ..
+        }
+        | Schema::OneOf {
+            namespace,
+            base_name: name,
+            ..
+        } => match namespace_path(namespace) {
+            None => name.camel_case(conv),
+            Some(path) => format!("{}/{}", path.replace('.', "/"), name.camel_case(conv)),
+        },
+        _ => unreachable!(),
+    }
 }
 
-fn struct_impl(definition: &Struct, base: Option<(&Name, usize)>) -> String {
-    include_templing!("src/gens/java/struct_impl.templing")
+impl Generator {
+    fn type_name(&self, schema: &Schema) -> String {
+        format!(
+            "{}{}",
+            self.type_name_prearray(schema),
+            self.type_name_postarray(schema),
+        )
+    }
+    fn type_name_obj(&self, schema: &Schema) -> String {
+        match schema {
+            Schema::Bool => "Boolean".to_owned(),
+            Schema::Int32 => "Integer".to_owned(),
+            Schema::Int64 => "Long".to_owned(),
+            Schema::Float32 => "Float".to_owned(),
+            Schema::Float64 => "Double".to_owned(),
+            _ => self.type_name(schema),
+        }
+    }
+    fn type_name_prearray(&self, schema: &Schema) -> String {
+        match schema {
+            Schema::Bool => "boolean".to_owned(),
+            Schema::Int32 => "int".to_owned(),
+            Schema::Int64 => "long".to_owned(),
+            Schema::Float32 => "float".to_owned(),
+            Schema::Float64 => "double".to_owned(),
+            Schema::String => "String".to_owned(),
+            Schema::Struct { .. } | Schema::OneOf { .. } | Schema::Enum { .. } => {
+                format!(
+                    "{}.{}",
+                    self.main_package,
+                    file_name(schema).replace('/', "."),
+                )
+            }
+            Schema::Option(inner) => self.type_name_obj(inner),
+            Schema::Vec(inner) => self.type_name_prearray(inner),
+            Schema::Map(key, value) => format!(
+                "java.util.Map<{}, {}>",
+                self.type_name_obj(key),
+                self.type_name_obj(value)
+            ),
+        }
+    }
+    fn type_name_postarray(&self, schema: &Schema) -> String {
+        match schema {
+            Schema::Vec(inner) => format!("[]{}", self.type_name_postarray(inner)),
+            _ => String::new(),
+        }
+    }
+    fn read_var(&self, var: &str, schema: &Schema) -> String {
+        include_templing!("src/gens/java/read_var.templing")
+    }
+    fn write_var(&self, var: &str, schema: &Schema) -> String {
+        include_templing!("src/gens/java/write_var.templing")
+    }
+    fn var_to_string(&self, var: &str, schema: &Schema) -> String {
+        include_templing!("src/gens/java/var_to_string.templing")
+    }
+    fn struct_impl(&self, definition: &Struct, base: Option<(&Name, usize)>) -> String {
+        include_templing!("src/gens/java/struct_impl.templing")
+    }
+    fn package(&self, namespace: &Namespace) -> String {
+        format!("{}{}", &self.main_package, namespace_path_suffix(namespace))
+    }
 }
 
 impl crate::Generator for Generator {
@@ -121,16 +163,21 @@ impl crate::Generator for Generator {
             .snake_case(conv)
             .replace('_', "-");
         let project_name = &project_name;
+        let main_package = Name::new(name.to_owned()).snake_case(conv);
         let mut files = HashMap::new();
         files.insert(
             "pom.xml".to_owned(),
             include_templing!("src/gens/java/pom.xml.templing"),
         );
         files.insert(
-            "src/main/java/util/StreamUtil.java".to_owned(),
-            include_str!("StreamUtil.java").to_owned(),
+            format!("src/main/java/{}/util/StreamUtil.java", main_package),
+            include_str!("StreamUtil.java")
+                .replace("package util;", &format!("package {}.util;", main_package)),
         );
-        Self { files }
+        Self {
+            main_package,
+            files,
+        }
     }
     fn generate(mut self, extra_files: Vec<File>) -> GenResult {
         for file in extra_files {
@@ -147,7 +194,11 @@ impl crate::Generator for Generator {
                 variants,
             } => {
                 self.files.insert(
-                    format!("src/main/java/model/{}.java", base_name.camel_case(conv)),
+                    format!(
+                        "src/main/java/{}/{}.java",
+                        self.main_package,
+                        file_name(schema)
+                    ),
                     include_templing!("src/gens/java/enum.templing"),
                 );
             }
@@ -157,8 +208,9 @@ impl crate::Generator for Generator {
             } => {
                 self.files.insert(
                     format!(
-                        "src/main/java/model/{}.java",
-                        definition.name.camel_case(conv)
+                        "src/main/java/{}/{}.java",
+                        self.main_package,
+                        file_name(schema)
                     ),
                     include_templing!("src/gens/java/struct.templing"),
                 );
@@ -170,7 +222,11 @@ impl crate::Generator for Generator {
                 variants,
             } => {
                 self.files.insert(
-                    format!("src/main/java/model/{}.java", base_name.camel_case(conv)),
+                    format!(
+                        "src/main/java/{}/{}.java",
+                        self.main_package,
+                        file_name(schema)
+                    ),
                     include_templing!("src/gens/java/oneof.templing"),
                 );
             }
@@ -225,8 +281,32 @@ impl<D: Trans + PartialEq + Debug> TestableGenerator<testing::FileReadWrite<D>> 
     fn extra_files(test: &testing::FileReadWrite<D>) -> Vec<File> {
         let schema = Schema::of::<D>(&test.version);
         let schema: &Schema = &schema;
+        fn type_name(schema: &Schema) -> String {
+            match schema {
+                Schema::Struct {
+                    namespace,
+                    definition: Struct { name, .. },
+                    ..
+                }
+                | Schema::Enum {
+                    namespace,
+                    base_name: name,
+                    ..
+                }
+                | Schema::OneOf {
+                    namespace,
+                    base_name: name,
+                    ..
+                } => format!(
+                    "trans_gen_test{}.{}",
+                    namespace_path_suffix(namespace),
+                    name.camel_case(conv),
+                ),
+                _ => unreachable!(),
+            }
+        }
         vec![File {
-            path: "src/main/java/Runner.java".to_owned(),
+            path: "src/main/java/trans_gen_test/Runner.java".to_owned(),
             content: include_templing!("src/gens/java/FileReadWrite.java.templing"),
         }]
     }
@@ -236,8 +316,32 @@ impl<D: Trans + PartialEq + Debug> TestableGenerator<testing::TcpReadWrite<D>> f
     fn extra_files(test: &testing::TcpReadWrite<D>) -> Vec<File> {
         let schema = Schema::of::<D>(&test.version);
         let schema: &Schema = &schema;
+        fn type_name(schema: &Schema) -> String {
+            match schema {
+                Schema::Struct {
+                    namespace,
+                    definition: Struct { name, .. },
+                    ..
+                }
+                | Schema::Enum {
+                    namespace,
+                    base_name: name,
+                    ..
+                }
+                | Schema::OneOf {
+                    namespace,
+                    base_name: name,
+                    ..
+                } => format!(
+                    "trans_gen_test{}.{}",
+                    namespace_path_suffix(namespace),
+                    name.camel_case(conv),
+                ),
+                _ => unreachable!(),
+            }
+        }
         vec![File {
-            path: "src/main/java/Runner.java".to_owned(),
+            path: "src/main/java/trans_gen_test/Runner.java".to_owned(),
             content: include_templing!("src/gens/java/TcpReadWrite.java.templing"),
         }]
     }

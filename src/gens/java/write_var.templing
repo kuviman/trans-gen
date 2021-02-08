@@ -25,26 +25,26 @@ if ({{ var }} == null) {
     StreamUtil.writeBoolean(stream, false);
 } else {
     StreamUtil.writeBoolean(stream, true);
-    {{ write_var(var, inner) }}
+    {{ self.write_var(var, inner) }}
 }
 - }
 - Schema::Vec(inner) => {
 StreamUtil.writeInt(stream, {{ var }}.length);
 - let element_var = format!("{}Element", var); let element_var = &element_var;
-for ({{ type_name(inner) }} {{ element_var }} : {{ var }}) {
-    {{ write_var(element_var, inner) }}
+for ({{ self.type_name(inner) }} {{ element_var }} : {{ var }}) {
+    {{ self.write_var(element_var, inner) }}
 }
 - }
 - Schema::Map(key_type, value_type) => {
 StreamUtil.writeInt(stream, {{ var }}.size());
 - let entry_var = format!("{}Entry", var); let entry_var = &entry_var;
-for (java.util.Map.Entry<{{ type_name_obj(key_type) }}, {{ type_name_obj(value_type) }}> {{ entry_var }} : {{ var }}.entrySet()) {
+for (java.util.Map.Entry<{{ self.type_name_obj(key_type) }}, {{ self.type_name_obj(value_type) }}> {{ entry_var }} : {{ var }}.entrySet()) {
     - let key_var = format!("{}Key", var); let key_var = &key_var;
-    {{ type_name(key_type) }} {{ key_var }} = {{ entry_var }}.getKey();
-    {{ write_var(key_var, key_type) }}
+    {{ self.type_name(key_type) }} {{ key_var }} = {{ entry_var }}.getKey();
+    {{ self.write_var(key_var, key_type) }}
     - let value_var = format!("{}Value", var); let value_var = &value_var;
-    {{ type_name(value_type) }} {{ value_var }} = {{ entry_var }}.getValue();
-    {{ write_var(value_var, value_type) }}
+    {{ self.type_name(value_type) }} {{ value_var }} = {{ entry_var }}.getValue();
+    {{ self.write_var(value_var, value_type) }}
 }
 - }
 - Schema::Enum { .. } => {
