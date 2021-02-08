@@ -59,40 +59,6 @@ fn file_name(schema: &Schema) -> String {
     }
 }
 
-fn default_value(schema: &Schema) -> String {
-    match schema {
-        Schema::Bool => "false".to_owned(),
-        Schema::Int32 => "0".to_owned(),
-        Schema::Int64 => "0L".to_owned(),
-        Schema::Float32 => "0.0f".to_owned(),
-        Schema::Float64 => "0.0".to_owned(),
-        Schema::Option(_) => "null".to_owned(),
-        Schema::String
-        | Schema::Struct { .. }
-        | Schema::OneOf { .. }
-        | Schema::Enum { .. }
-        | Schema::Vec(_)
-        | Schema::Map(_, _) => unreachable!(),
-    }
-}
-
-fn lateinit(schema: &Schema) -> bool {
-    match schema {
-        Schema::Bool
-        | Schema::Int32
-        | Schema::Int64
-        | Schema::Float32
-        | Schema::Float64
-        | Schema::Option(_) => false,
-        Schema::String
-        | Schema::Struct { .. }
-        | Schema::OneOf { .. }
-        | Schema::Enum { .. }
-        | Schema::Vec(_)
-        | Schema::Map(_, _) => true,
-    }
-}
-
 fn doc_comment(documentation: &Documentation) -> String {
     let mut result = String::new();
     result.push_str("/**\n");

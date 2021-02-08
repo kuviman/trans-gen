@@ -6,11 +6,7 @@ class {{ definition.name.camel_case(conv) }} {
 - }
     - for field in &definition.fields {
     {{ doc_comment(&field.documentation) }}
-    - if lateinit(&field.schema) {
-    lateinit var {{ field.name.mixed_case(conv) }}: {{ self.type_name(&field.schema) }}
-    - } else {
-    var {{ field.name.mixed_case(conv) }}: {{ self.type_name(&field.schema) }} = {{ default_value(&field.schema) }}
-    - }
+    var {{ field.name.mixed_case(conv) }}: {{ self.type_name(&field.schema) }}
     - }
 
     constructor(~
