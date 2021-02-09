@@ -1,6 +1,6 @@
 import java.io._
 import java.net.Socket
-import util.StreamUtil
+import trans_gen_test.util.StreamUtil
 
 object Runner extends App {
     if (args.size != 2) {

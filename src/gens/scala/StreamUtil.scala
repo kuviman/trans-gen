@@ -1,4 +1,4 @@
-package util
+package main_package.util
 
 import java.io.{IOException, InputStream, OutputStream}
 import java.nio.charset.StandardCharsets

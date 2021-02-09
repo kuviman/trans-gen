@@ -1,5 +1,5 @@
 import java.io._
-import util.StreamUtil
+import trans_gen_test.util.StreamUtil
 
 object Runner extends App {
     if (args.size != 2) {

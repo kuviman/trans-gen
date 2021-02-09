@@ -25,21 +25,21 @@ StreamUtil.writeString(stream, {{ var }})
     case None => StreamUtil.writeBoolean(stream, false)
     case Some(value) => {
         StreamUtil.writeBoolean(stream, true)
-        {{ write_var("value", inner) }}
+        {{ self.write_var("value", inner) }}
     }
 }
 - }
 - Schema::Vec(inner) => {
 StreamUtil.writeInt(stream, {{ var }}.length)
 {{ var }}.foreach { value =>
-    {{ write_var("value", inner) }}
+    {{ self.write_var("value", inner) }}
 }
 - }
 - Schema::Map(key_type, value_type) => {
 StreamUtil.writeInt(stream, {{ var }}.size)
 {{ var }}.foreach { case (key, value) =>
-    {{ write_var("key", key_type) }}
-    {{ write_var("value", value_type) }}
+    {{ self.write_var("key", key_type) }}
+    {{ self.write_var("value", value_type) }}
 }
 - }
 - }

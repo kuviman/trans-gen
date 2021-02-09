@@ -1,6 +1,6 @@
-package model
+package {{ self.package(schema) }}
 
-import util.StreamUtil
+import {{ &self.main_package }}.util.StreamUtil
 
 {{ doc_comment(documentation, &[]) }}
 sealed abstract class {{ base_name.camel_case(conv) }} (val tag: Int) {

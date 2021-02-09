@@ -4,7 +4,7 @@ case class {{ definition.name.camel_case(conv) }}(~
     - if index != 0 {
     ~, ~
     - }
-    ~{{ field.name.mixed_case(conv) }}: {{ type_name(&field.schema) }}~
+    ~{{ field.name.mixed_case(conv) }}: {{ self.type_name(&field.schema) }}~
     - }
 ~)~
 - if let Some((base_name, _)) = base {
@@ -17,7 +17,7 @@ case class {{ definition.name.camel_case(conv) }}(~
         StreamUtil.writeInt(stream, {{ definition.name.camel_case(conv) }}.TAG)
         - }
         - for field in &definition.fields {
-        {{ write_var(&field.name.mixed_case(conv), &field.schema) }}
+        {{ self.write_var(&field.name.mixed_case(conv), &field.schema) }}
         - }
     }
 
@@ -29,7 +29,7 @@ case class {{ definition.name.camel_case(conv) }}(~
         stringBuilder.append(", ")
         - }
         stringBuilder.append("{{ field.name.mixed_case(conv) }}: ")
-        {{ var_to_string(&field.name.mixed_case(conv), &field.schema) }}
+        {{ self.var_to_string(&field.name.mixed_case(conv), &field.schema) }}
         - }
         stringBuilder.append(" }")
         stringBuilder.toString()
@@ -44,7 +44,7 @@ object {{ definition.name.camel_case(conv) }} {
     {{ doc_read_from(&definition.name.camel_case(conv)) }}
     def readFrom(stream: java.io.InputStream): {{ definition.name.camel_case(conv) }} = {{ definition.name.camel_case(conv) }}(
         - for (index, field) in definition.fields.iter().enumerate() {
-        {{ read_var(&field.schema) }}{{# if index + 1 < definition.fields.len() { }},{{# } }}
+        {{ self.read_var(&field.schema) }}{{# if index + 1 < definition.fields.len() { }},{{# } }}
         - }
     )
 }

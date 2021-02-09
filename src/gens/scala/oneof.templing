@@ -1,6 +1,6 @@
-package model
+package {{ self.package(schema) }}
 
-import util.StreamUtil
+import {{ &self.main_package }}.util.StreamUtil
 
 {{ doc_comment(documentation, &[]) }}
 sealed trait {{ base_name.camel_case(conv) }} {
@@ -10,7 +10,7 @@ sealed trait {{ base_name.camel_case(conv) }} {
 
 object {{ base_name.camel_case(conv) }} {
     - for (tag, variant) in variants.iter().enumerate() {
-    {{ struct_impl(variant, Some((base_name, tag))) }}
+    {{ self.struct_impl(variant, Some((base_name, tag))) }}
 
     - }
     {{ doc_read_from(&base_name.camel_case(conv)) }}
