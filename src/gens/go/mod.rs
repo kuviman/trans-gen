@@ -137,28 +137,13 @@ fn namespace_path_for(schema: &Schema) -> String {
 }
 
 fn package_name(schema: &Schema) -> String {
-    match schema {
-        Schema::Enum {
-            namespace,
-            base_name: name,
-            ..
-        }
-        | Schema::Struct {
-            namespace,
-            definition: Struct { name, .. },
-            ..
-        }
-        | Schema::OneOf {
-            namespace,
-            base_name: name,
-            ..
-        } => namespace
-            .parts
-            .last()
-            .map(|name| name.snake_case(conv))
-            .unwrap_or("common".to_owned()),
-        _ => unreachable!(),
-    }
+    schema
+        .namespace()
+        .unwrap()
+        .parts
+        .last()
+        .map(|name| name.snake_case(conv))
+        .unwrap_or("common".to_owned())
 }
 
 fn file_name(schema: &Schema) -> String {
@@ -288,30 +273,27 @@ impl crate::Generator for Generator {
     fn add_only(&mut self, schema: &Schema) {
         match schema {
             Schema::Enum {
-                namespace,
                 documentation,
                 base_name,
                 variants,
+                ..
             } => {
                 self.files.insert(
                     format!("{}.go", file_name(schema)),
                     include_templing!("src/gens/go/enum.templing"),
                 );
             }
-            Schema::Struct {
-                namespace,
-                definition,
-            } => {
+            Schema::Struct { definition, .. } => {
                 self.files.insert(
                     format!("{}.go", file_name(schema)),
                     include_templing!("src/gens/go/struct.templing"),
                 );
             }
             Schema::OneOf {
-                namespace,
                 documentation,
                 base_name,
                 variants,
+                ..
             } => {
                 self.files.insert(
                     format!("{}.go", file_name(schema)),

@@ -108,30 +108,27 @@ impl Generator {
     fn add_only(&mut self, schema: &Schema) -> anyhow::Result<()> {
         match schema {
             Schema::Enum {
-                namespace,
                 documentation,
                 base_name,
                 variants,
+                ..
             } => {
                 self.files.insert(
                     format!("{}.js", file_name(schema)),
                     include_templing!("src/gens/javascript/enum.templing"),
                 );
             }
-            Schema::Struct {
-                namespace,
-                definition,
-            } => {
+            Schema::Struct { definition, .. } => {
                 self.files.insert(
                     format!("{}.js", file_name(schema)),
                     include_templing!("src/gens/javascript/struct.templing"),
                 );
             }
             Schema::OneOf {
-                namespace,
                 documentation,
                 base_name,
                 variants,
+                ..
             } => {
                 self.files.insert(
                     format!("{}.js", file_name(schema)),

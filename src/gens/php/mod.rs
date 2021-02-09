@@ -134,30 +134,27 @@ impl crate::Generator for Generator {
     fn add_only(&mut self, schema: &Schema) {
         match schema {
             Schema::Enum {
-                namespace,
                 documentation,
                 base_name,
                 variants,
+                ..
             } => {
                 self.files.insert(
                     format!("{}.php", file_name(schema)),
                     include_templing!("src/gens/php/enum.templing"),
                 );
             }
-            Schema::Struct {
-                namespace,
-                definition,
-            } => {
+            Schema::Struct { definition, .. } => {
                 self.files.insert(
                     format!("{}.php", file_name(schema)),
                     include_templing!("src/gens/php/struct.templing"),
                 );
             }
             Schema::OneOf {
-                namespace,
                 documentation,
                 base_name,
                 variants,
+                ..
             } => {
                 self.files.insert(
                     format!("{}.php", file_name(schema)),

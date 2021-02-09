@@ -172,20 +172,6 @@ impl crate::Generator for Generator {
         Self { files }
     }
     fn generate(mut self, extra_files: Vec<File>) -> GenResult {
-        let model_files: Vec<_> = self
-            .files
-            .keys()
-            .filter_map(|file| {
-                if let Some(name) = file.strip_prefix("src/Model/") {
-                    if let Some(name) = name.strip_suffix(".hs") {
-                        return Some(name);
-                    }
-                }
-                None
-            })
-            .collect();
-        // let model_hs = include_templing!("src/gens/haskell/Model.hs.templing");
-        // self.files.insert("src/Model.hs".to_owned(), model_hs);
         for file in extra_files {
             self.files.insert(file.path, file.content);
         }
@@ -194,30 +180,27 @@ impl crate::Generator for Generator {
     fn add_only(&mut self, schema: &Schema) {
         match schema {
             Schema::Enum {
-                namespace,
                 base_name,
                 variants,
                 documentation,
+                ..
             } => {
                 self.files.insert(
                     format!("src/{}.hs", file_path(schema)),
                     include_templing!("src/gens/haskell/enum.templing"),
                 );
             }
-            Schema::Struct {
-                namespace,
-                definition,
-            } => {
+            Schema::Struct { definition, .. } => {
                 self.files.insert(
                     format!("src/{}.hs", file_path(schema)),
                     include_templing!("src/gens/haskell/struct.templing"),
                 );
             }
             Schema::OneOf {
-                namespace,
                 base_name,
                 variants,
                 documentation,
+                ..
             } => {
                 self.files.insert(
                     format!("src/{}.hs", file_path(schema)),

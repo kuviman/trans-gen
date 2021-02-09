@@ -173,10 +173,10 @@ impl crate::Generator for Generator {
     fn add_only(&mut self, schema: &Schema) {
         match schema {
             Schema::Enum {
-                namespace,
                 documentation,
                 base_name,
                 variants,
+                ..
             } => {
                 self.insert_package(schema);
                 self.files.insert(
@@ -184,10 +184,7 @@ impl crate::Generator for Generator {
                     include_templing!("src/gens/python/enum.templing"),
                 );
             }
-            Schema::Struct {
-                namespace,
-                definition,
-            } => {
+            Schema::Struct { definition, .. } => {
                 self.insert_package(schema);
                 self.files.insert(
                     format!("{}.py", file_name(schema)),
@@ -195,10 +192,10 @@ impl crate::Generator for Generator {
                 );
             }
             Schema::OneOf {
-                namespace,
                 documentation,
                 base_name,
                 variants,
+                ..
             } => {
                 self.insert_package(schema);
                 self.files.insert(
