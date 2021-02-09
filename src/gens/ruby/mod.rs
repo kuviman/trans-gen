@@ -7,27 +7,24 @@ fn conv(name: &str) -> String {
         .replace("Float64", "Double")
 }
 
+#[derive(Default)]
+struct Package {
+    inner_packages: BTreeSet<String>,
+    types: BTreeSet<Name>,
+}
+
 pub struct Generator {
-    model_init: String,
+    packages: HashMap<String, Package>,
     files: HashMap<String, String>,
 }
 
 fn imports(schema: &Schema) -> String {
     let mut imports = BTreeSet::new();
-    fn add_imports_struct(definition: &Struct, imports: &mut BTreeSet<Name>) {
-        fn add_for_field(schema: &Schema, imports: &mut BTreeSet<Name>) {
+    fn add_imports_struct(definition: &Struct, imports: &mut BTreeSet<String>) {
+        fn add_for_field(schema: &Schema, imports: &mut BTreeSet<String>) {
             match schema {
-                Schema::Struct {
-                    definition: Struct { name, .. },
-                    ..
-                }
-                | Schema::OneOf {
-                    base_name: name, ..
-                }
-                | Schema::Enum {
-                    base_name: name, ..
-                } => {
-                    imports.insert(name.clone());
+                Schema::Struct { .. } | Schema::OneOf { .. } | Schema::Enum { .. } => {
+                    imports.insert(file_name(schema));
                 }
                 Schema::Option(inner) => {
                     add_for_field(inner, imports);
@@ -99,6 +96,82 @@ fn struct_impl(definition: &Struct, base: Option<(&Name, usize)>) -> String {
     include_templing!("src/gens/ruby/struct_impl.templing")
 }
 
+fn file_name(schema: &Schema) -> String {
+    schema
+        .namespace()
+        .unwrap()
+        .parts
+        .iter()
+        .chain(std::iter::once(schema.name().unwrap()))
+        .map(|name| name.snake_case(conv))
+        .collect::<Vec<String>>()
+        .join("/")
+}
+
+fn type_name(schema: &Schema) -> String {
+    schema
+        .namespace()
+        .unwrap()
+        .parts
+        .iter()
+        .chain(std::iter::once(schema.name().unwrap()))
+        .map(|name| name.camel_case(conv))
+        .collect::<Vec<String>>()
+        .join("::")
+}
+
+fn modules_pre(schema: &Schema) -> String {
+    schema
+        .namespace()
+        .unwrap()
+        .parts
+        .iter()
+        .map(|name| format!("module {}", name.camel_case(conv)))
+        .collect::<Vec<String>>()
+        .join("\n")
+}
+
+fn modules_end(schema: &Schema) -> String {
+    schema
+        .namespace()
+        .unwrap()
+        .parts
+        .iter()
+        .map(|_| "end".to_owned())
+        .collect::<Vec<String>>()
+        .join("\n")
+}
+
+impl Generator {
+    fn insert_package(&mut self, schema: &Schema) {
+        let namespace = schema.namespace().unwrap();
+        let mut parent: Option<String> = None;
+        for part in &namespace.parts {
+            let package = match &parent {
+                Some(parent) => {
+                    format!("{}.{}", parent, part.snake_case(conv))
+                }
+                None => part.snake_case(conv),
+            };
+            if let Some(parent) = parent {
+                self.packages
+                    .entry(parent)
+                    .or_default()
+                    .inner_packages
+                    .insert(part.snake_case(conv));
+            }
+            parent = Some(package);
+        }
+        if let Some(package) = parent {
+            self.packages
+                .entry(package)
+                .or_default()
+                .types
+                .insert(schema.name().unwrap().clone());
+        }
+    }
+}
+
 impl crate::Generator for Generator {
     const NAME: &'static str = "Ruby";
     type Options = ();
@@ -106,13 +179,16 @@ impl crate::Generator for Generator {
         let mut files = HashMap::new();
         files.insert("stream.rb".to_owned(), include_str!("stream.rb").to_owned());
         Self {
-            model_init: String::new(),
+            packages: HashMap::new(),
             files,
         }
     }
     fn generate(mut self, extra_files: Vec<File>) -> GenResult {
-        if !self.model_init.is_empty() {
-            self.files.insert("model.rb".to_owned(), self.model_init);
+        for (package_name, package) in self.packages {
+            self.files.insert(
+                format!("{}.rb", package_name.replace('.', "/")),
+                include_templing!("src/gens/ruby/package.rb.templing"),
+            );
         }
         for file in extra_files {
             self.files.insert(file.path, file.content);
@@ -127,14 +203,9 @@ impl crate::Generator for Generator {
                 base_name,
                 variants,
             } => {
-                writeln!(
-                    &mut self.model_init,
-                    "require_relative 'model/{}'",
-                    base_name.snake_case(conv),
-                )
-                .unwrap();
+                self.insert_package(schema);
                 self.files.insert(
-                    format!("model/{}.rb", base_name.snake_case(conv)),
+                    format!("{}.rb", file_name(schema)),
                     include_templing!("src/gens/ruby/enum.templing"),
                 );
             }
@@ -142,14 +213,9 @@ impl crate::Generator for Generator {
                 namespace,
                 definition,
             } => {
-                writeln!(
-                    &mut self.model_init,
-                    "require_relative 'model/{}'",
-                    definition.name.snake_case(conv),
-                )
-                .unwrap();
+                self.insert_package(schema);
                 self.files.insert(
-                    format!("model/{}.rb", definition.name.snake_case(conv)),
+                    format!("{}.rb", file_name(schema)),
                     include_templing!("src/gens/ruby/struct.templing"),
                 );
             }
@@ -159,14 +225,9 @@ impl crate::Generator for Generator {
                 base_name,
                 variants,
             } => {
-                writeln!(
-                    &mut self.model_init,
-                    "require_relative 'model/{}'",
-                    base_name.snake_case(conv),
-                )
-                .unwrap();
+                self.insert_package(schema);
                 self.files.insert(
-                    format!("model/{}.rb", base_name.snake_case(conv)),
+                    format!("{}.rb", file_name(schema)),
                     include_templing!("src/gens/ruby/oneof.templing"),
                 );
             }
@@ -198,18 +259,6 @@ impl<D: Trans + PartialEq + Debug> TestableGenerator<testing::FileReadWrite<D>> 
     fn extra_files(test: &testing::FileReadWrite<D>) -> Vec<File> {
         let schema = Schema::of::<D>(&test.version);
         let schema: &Schema = &schema;
-        fn type_name(schema: &Schema) -> String {
-            match schema {
-                Schema::Struct {
-                    definition: Struct { name, .. },
-                    ..
-                }
-                | Schema::OneOf {
-                    base_name: name, ..
-                } => name.camel_case(conv),
-                _ => unreachable!(),
-            }
-        }
         vec![File {
             path: "main.rb".to_owned(),
             content: include_templing!("src/gens/ruby/file_read_write.rb.templing"),
@@ -221,18 +270,6 @@ impl<D: Trans + PartialEq + Debug> TestableGenerator<testing::TcpReadWrite<D>> f
     fn extra_files(test: &testing::TcpReadWrite<D>) -> Vec<File> {
         let schema = Schema::of::<D>(&test.version);
         let schema: &Schema = &schema;
-        fn type_name(schema: &Schema) -> String {
-            match schema {
-                Schema::Struct {
-                    definition: Struct { name, .. },
-                    ..
-                }
-                | Schema::OneOf {
-                    base_name: name, ..
-                } => name.camel_case(conv),
-                _ => unreachable!(),
-            }
-        }
         vec![
             File {
                 path: "tcp_stream.rb".to_owned(),

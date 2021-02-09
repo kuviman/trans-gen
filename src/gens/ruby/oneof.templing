@@ -1,5 +1,7 @@
 {{ imports(schema) }}
 
+{{ modules_pre(schema) }}
+
 {{ doc_comment(documentation) }}
 class {{ base_name.camel_case(conv) }}
     {{ doc_read_from(&base_name.camel_case(conv)) }}
@@ -17,3 +19,5 @@ class {{ base_name.camel_case(conv) }}
     {{ struct_impl(variant, Some((base_name, tag))) }}
     - }
 end
+
+{{ modules_end(schema) }}

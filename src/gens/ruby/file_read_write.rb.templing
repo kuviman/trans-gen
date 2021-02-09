@@ -1,6 +1,6 @@
 require 'stringio'
 require_relative 'stream'
-require_relative 'model'
+require_relative '{{ file_name(schema) }}'
 
 class FileStream < Stream
     def initialize(path, mode)

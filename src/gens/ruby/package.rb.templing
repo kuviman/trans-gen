@@ -1,0 +1,8 @@
+- let current = package_name.split('.').last().unwrap();
+- for package in &package.inner_packages {
+require_relative '{{ current }}/{{ package }}'
+- }
+
+- for name in &package.types {
+require_relative '{{ current }}/{{ name.snake_case(conv) }}'
+- }

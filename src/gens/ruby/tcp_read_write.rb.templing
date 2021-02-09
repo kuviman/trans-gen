@@ -1,5 +1,5 @@
 require_relative 'tcp_stream'
-require_relative 'model'
+require_relative '{{ file_name(schema) }}'
 
 if ARGV.length != 2
     raise "Pass host and port as parameters"

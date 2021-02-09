@@ -1,3 +1,5 @@
+{{ modules_pre(schema) }}
+
 {{ doc_comment(documentation) }}
 module {{ base_name.camel_case(conv) }}
 - for (index, variant) in variants.iter().enumerate() {
@@ -27,3 +29,5 @@ module {{ base_name.camel_case(conv) }}
         self.to_s(value)
     end
 end
+
+{{ modules_end(schema) }}

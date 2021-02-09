@@ -1,3 +1,7 @@
 {{ imports(schema) }}
 
+{{ modules_pre(schema) }}
+
 {{ struct_impl(definition, None) }}
+
+{{ modules_end(schema) }}
