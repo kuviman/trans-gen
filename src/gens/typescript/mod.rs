@@ -9,7 +9,6 @@ fn conv(name: &str) -> String {
 
 pub struct Generator {
     files: HashMap<String, String>,
-    index_file: String,
 }
 
 fn type_name(schema: &Schema) -> String {
@@ -36,20 +35,11 @@ fn type_name(schema: &Schema) -> String {
 
 fn imports(schema: &Schema) -> String {
     let mut imports = BTreeSet::new();
-    fn add_imports_struct(definition: &Struct, imports: &mut BTreeSet<Name>) {
-        fn add_imports(schema: &Schema, imports: &mut BTreeSet<Name>) {
+    fn add_imports_struct(definition: &Struct, imports: &mut BTreeSet<(Name, String)>) {
+        fn add_imports(schema: &Schema, imports: &mut BTreeSet<(Name, String)>) {
             match schema {
-                Schema::Struct {
-                    definition: Struct { name, .. },
-                    ..
-                }
-                | Schema::OneOf {
-                    base_name: name, ..
-                }
-                | Schema::Enum {
-                    base_name: name, ..
-                } => {
-                    imports.insert(name.clone());
+                Schema::Struct { .. } | Schema::OneOf { .. } | Schema::Enum { .. } => {
+                    imports.insert((schema.name().unwrap().clone(), file_name(schema)));
                 }
                 Schema::Option(inner) => {
                     add_imports(inner, imports);
@@ -119,65 +109,51 @@ fn struct_impl(definition: &Struct, base: Option<(&Name, usize)>) -> String {
     include_templing!("src/gens/typescript/struct_impl.templing")
 }
 
-fn file_name(name: &Name) -> String {
-    name.snake_case(conv).replace('_', "-")
+fn file_name(schema: &Schema) -> String {
+    let mut result = String::new();
+    for part in schema
+        .namespace()
+        .unwrap()
+        .parts
+        .iter()
+        .chain(std::iter::once(schema.name().unwrap()))
+    {
+        if !result.is_empty() {
+            result.push('/');
+        }
+        result.push_str(&part.snake_case(conv).replace('_', "-"));
+    }
+    result
 }
 
 impl Generator {
     fn add_only(&mut self, schema: &Schema) -> anyhow::Result<()> {
         match schema {
             Schema::Enum {
-                namespace,
                 documentation,
                 base_name,
                 variants,
+                ..
             } => {
-                writeln!(
-                    self.index_file,
-                    "import {{ {} }} from './{}';\nexport {{ {} }};",
-                    base_name.camel_case(conv),
-                    file_name(base_name),
-                    base_name.camel_case(conv),
-                )
-                .unwrap();
                 self.files.insert(
-                    format!("src/model/{}.ts", file_name(base_name)),
+                    format!("src/{}.ts", file_name(schema)),
                     include_templing!("src/gens/typescript/enum.templing"),
                 );
             }
-            Schema::Struct {
-                namespace,
-                definition,
-            } => {
-                writeln!(
-                    self.index_file,
-                    "import {{ {} }} from './{}';\nexport {{ {} }};",
-                    definition.name.camel_case(conv),
-                    file_name(&definition.name),
-                    definition.name.camel_case(conv),
-                )
-                .unwrap();
+            Schema::Struct { definition, .. } => {
                 self.files.insert(
-                    format!("src/model/{}.ts", file_name(&definition.name)),
+                    format!("src/{}.ts", file_name(schema)),
                     include_templing!("src/gens/typescript/struct.templing"),
                 );
             }
             Schema::OneOf {
-                namespace,
                 documentation,
                 base_name,
                 variants,
+                ..
             } => {
-                writeln!(
-                    self.index_file,
-                    "import {{ {} }} from './{}';\nexport {{ {} }};",
-                    base_name.camel_case(conv),
-                    file_name(base_name),
-                    base_name.camel_case(conv),
-                )
-                .unwrap();
                 self.files.insert(
-                    format!("src/model/{}.ts", file_name(base_name)),
+                    format!("src/{}.ts", file_name(schema)),
                     include_templing!("src/gens/typescript/oneof.templing"),
                 );
             }
@@ -216,16 +192,47 @@ impl crate::Generator for Generator {
             "package.json".to_owned(),
             include_templing!("src/gens/typescript/package.json.templing").to_owned(),
         );
-        Self {
-            files,
-            index_file: String::new(),
-        }
+        Self { files }
     }
     fn generate(mut self, extra_files: Vec<File>) -> GenResult {
-        self.files
-            .insert("src/model/index.ts".to_owned(), self.index_file);
         for file in extra_files {
             self.files.insert(file.path, file.content);
+        }
+        // Replace absolute imports with relative
+        for (source_path, content) in &mut self.files {
+            *content = content
+                .lines()
+                .map(|line| {
+                    if line.starts_with("import") {
+                        let end = line.rfind('"').unwrap();
+                        let start = line[..end].rfind('"').unwrap();
+                        let path = &line[start + 1..end];
+                        if let Some(path) = path.strip_prefix("@") {
+                            let path = format!("src/{}", path);
+                            let source_path = source_path.split('/').collect::<Vec<&str>>();
+                            let path = path.split('/').collect::<Vec<&str>>();
+                            let mut source_path = &source_path[..source_path.len() - 1];
+                            let mut path = &path[..];
+                            while !source_path.is_empty() && source_path[0] == path[0] {
+                                source_path = &source_path[1..];
+                                path = &path[1..];
+                            }
+                            let mut path = source_path
+                                .iter()
+                                .map(|_| "..")
+                                .chain(path.iter().map(|&s| s))
+                                .collect::<Vec<&str>>()
+                                .join("/");
+                            if !path.starts_with("..") {
+                                path = format!("./{}", path);
+                            }
+                            return format!("{}\"{}\"{}", &line[..start], path, &line[end + 1..]);
+                        }
+                    }
+                    line.to_owned()
+                })
+                .collect::<Vec<String>>()
+                .join("\n")
         }
         self.files.into()
     }

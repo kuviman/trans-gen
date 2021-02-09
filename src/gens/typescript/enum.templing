@@ -1,4 +1,4 @@
-import { Stream } from "../stream";
+import { Stream } from "@stream";
 
 {{ doc_comment(documentation) }}
 export class {{ base_name.camel_case(conv) }} {

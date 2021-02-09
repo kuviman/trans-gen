@@ -1,5 +1,5 @@
-import { TcpStream } from "./tcp-stream";
-import * as model from "./model";
+import { TcpStream } from "@tcp-stream";
+import { {{ schema.name().unwrap().camel_case(conv) }} } from "@{{ file_name(schema) }}";
 
 async function run() {
     if (process.argv.length != 4) {
@@ -11,7 +11,7 @@ async function run() {
 
     let tcpStream = new TcpStream(host, port);
 
-    const input = await model.{{ type_name(schema) }}.readFrom(tcpStream);
+    const input = await {{ type_name(schema) }}.readFrom(tcpStream);
     console.log(input);
     await input.writeTo(tcpStream);
     await tcpStream.flush();

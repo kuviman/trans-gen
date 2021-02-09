@@ -3,7 +3,7 @@ pub use trans;
 use anyhow::{anyhow, Context as _};
 use serde::{Deserialize, Serialize};
 use std::collections::{BTreeMap, BTreeSet, HashMap};
-use std::fmt::{Debug, Write};
+use std::fmt::Debug;
 use std::path::Path;
 use std::process::Command;
 use std::sync::Arc;

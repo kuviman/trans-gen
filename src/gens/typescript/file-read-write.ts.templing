@@ -1,6 +1,6 @@
-import { Stream } from "./stream";
-import * as model from "./model";
+import { Stream } from "@stream";
 import fs from "fs";
+import { {{ schema.name().unwrap().camel_case(conv) }} } from "@{{ file_name(schema) }}";
 
 class FileStream extends Stream {
     file: number;
@@ -32,7 +32,7 @@ async function run() {
     const inputFile = process.argv[2];
     const outputFile = process.argv[3];
 
-    const input = await model.{{ type_name(schema) }}.readFrom(new FileStream(inputFile, 'r'));
+    const input = await {{ type_name(schema) }}.readFrom(new FileStream(inputFile, 'r'));
     console.log(input);
     const outputStream = new FileStream(outputFile, 'w');
     await input.writeTo(outputStream);
