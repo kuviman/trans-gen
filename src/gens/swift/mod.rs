@@ -62,6 +62,18 @@ fn write_var(var: &str, schema: &Schema) -> String {
     include_templing!("src/gens/swift/write_var.templing")
 }
 
+fn file_name(schema: &Schema) -> String {
+    schema
+        .namespace()
+        .unwrap()
+        .parts
+        .iter()
+        .chain(std::iter::once(schema.name().unwrap()))
+        .map(|name| name.camel_case(conv))
+        .collect::<Vec<String>>()
+        .join("/")
+}
+
 impl crate::Generator for Generator {
     const NAME: &'static str = "Swift";
     type Options = ();
@@ -92,45 +104,30 @@ impl crate::Generator for Generator {
     fn add_only(&mut self, schema: &Schema) {
         match schema {
             Schema::Enum {
-                namespace,
                 documentation,
                 base_name,
                 variants,
+                ..
             } => {
                 self.files.insert(
-                    format!(
-                        "Sources/{}/{}.swift",
-                        self.package_name,
-                        base_name.camel_case(conv),
-                    ),
+                    format!("Sources/{}/{}.swift", self.package_name, file_name(schema)),
                     include_templing!("src/gens/swift/enum.templing"),
                 );
             }
-            Schema::Struct {
-                namespace,
-                definition,
-            } => {
+            Schema::Struct { definition, .. } => {
                 self.files.insert(
-                    format!(
-                        "Sources/{}/{}.swift",
-                        self.package_name,
-                        definition.name.camel_case(conv),
-                    ),
+                    format!("Sources/{}/{}.swift", self.package_name, file_name(schema)),
                     include_templing!("src/gens/swift/struct.templing"),
                 );
             }
             Schema::OneOf {
-                namespace,
                 documentation,
                 base_name,
                 variants,
+                ..
             } => {
                 self.files.insert(
-                    format!(
-                        "Sources/{}/{}.swift",
-                        self.package_name,
-                        base_name.camel_case(conv),
-                    ),
+                    format!("Sources/{}/{}.swift", self.package_name, file_name(schema)),
                     include_templing!("src/gens/swift/oneof.templing"),
                 );
             }
