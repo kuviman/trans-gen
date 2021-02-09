@@ -4,7 +4,7 @@ fn conv(name: &str) -> String {
     name.to_owned()
 }
 
-fn type_name(schema: &Schema) -> String {
+fn type_name_relative(from: &Schema, schema: &Schema) -> String {
     match schema {
         Schema::Bool => "boolean".to_owned(),
         Schema::Int32 => "int32".to_owned(),
@@ -12,17 +12,28 @@ fn type_name(schema: &Schema) -> String {
         Schema::Float32 => "float32".to_owned(),
         Schema::Float64 => "float64".to_owned(),
         Schema::String => "string".to_owned(),
-        Schema::Option(inner) => format!("Option<{}>", type_name(inner)),
-        Schema::Struct {
-            definition: Struct { name, .. },
-            ..
-        } => name.camel_case(conv),
-        Schema::OneOf { base_name, .. } => base_name.camel_case(conv),
-        Schema::Vec(inner) => format!("[{}]", type_name(inner)),
-        Schema::Map(key_type, value_type) => {
-            format!("Map<{} -> {}>", type_name(key_type), type_name(value_type))
+        Schema::Option(inner) => format!("Option<{}>", type_name_relative(from, inner)),
+        Schema::Struct { .. } | Schema::OneOf { .. } | Schema::Enum { .. } => {
+            let source = from.namespace().unwrap().parts.clone();
+            let target = schema.namespace().unwrap().parts.clone();
+            let prefix = if target.starts_with(&source) {
+                &target[source.len()..]
+            } else {
+                &target[..]
+            };
+            prefix
+                .iter()
+                .chain(std::iter::once(schema.name().unwrap()))
+                .map(|name| name.camel_case(conv))
+                .collect::<Vec<String>>()
+                .join("::")
         }
-        Schema::Enum { base_name, .. } => base_name.camel_case(conv),
+        Schema::Vec(inner) => format!("[{}]", type_name_relative(from, inner)),
+        Schema::Map(key_type, value_type) => format!(
+            "Map<{} -> {}>",
+            type_name_relative(from, key_type),
+            type_name_relative(from, value_type)
+        ),
     }
 }
 
@@ -54,22 +65,57 @@ impl Default for Options {
 }
 
 pub struct Generator {
-    parts: Vec<String>,
+    namespaces: BTreeMap<Namespace, Vec<String>>,
     options: Options,
 }
+
+impl Generator {
+    fn push(&mut self, namespace: &Namespace, content: String) {
+        self.namespaces
+            .entry(namespace.clone())
+            .or_default()
+            .push(content);
+    }
+}
+
 impl crate::Generator for Generator {
     const NAME: &'static str = "Markdown";
     type Options = Options;
     fn new(_name: &str, _version: &str, options: Options) -> Self {
         Self {
-            parts: Vec::new(),
+            namespaces: BTreeMap::new(),
             options,
         }
     }
     fn generate(self, extra_files: Vec<File>) -> GenResult {
+        let options = self.options;
         let mut files = vec![File {
             path: "doc.md".to_owned(),
-            content: self.parts.join("\n\n"),
+            content: self
+                .namespaces
+                .into_iter()
+                .map(|(namespace, parts)| {
+                    format!(
+                        "## {}\n\n{}",
+                        if namespace.parts.is_empty() {
+                            match options.language.as_str() {
+                                "ru" => "Общее",
+                                "en" | _ => "Common",
+                            }
+                            .to_owned()
+                        } else {
+                            namespace
+                                .parts
+                                .iter()
+                                .map(|part| part.camel_case(conv))
+                                .collect::<Vec<String>>()
+                                .join("::")
+                        },
+                        parts.join("\n\n")
+                    )
+                })
+                .collect::<Vec<String>>()
+                .join("\n\n"),
         }];
         for file in extra_files {
             files.push(file);
@@ -88,8 +134,8 @@ impl crate::Generator for Generator {
                         fields,
                     },
             } => {
-                self.parts
-                    .push(include_templing!("src/gens/markdown/struct.templing"));
+                let content = include_templing!("src/gens/markdown/struct.templing");
+                self.push(namespace, content);
             }
             Schema::OneOf {
                 namespace,
@@ -97,8 +143,8 @@ impl crate::Generator for Generator {
                 base_name,
                 variants,
             } => {
-                self.parts
-                    .push(include_templing!("src/gens/markdown/oneof.templing"));
+                let content = include_templing!("src/gens/markdown/oneof.templing");
+                self.push(namespace, content);
             }
             Schema::Enum {
                 namespace,
@@ -106,8 +152,8 @@ impl crate::Generator for Generator {
                 base_name,
                 variants,
             } => {
-                self.parts
-                    .push(include_templing!("src/gens/markdown/enum.templing"));
+                let content = include_templing!("src/gens/markdown/enum.templing");
+                self.push(namespace, content);
             }
             Schema::Bool
             | Schema::Int32

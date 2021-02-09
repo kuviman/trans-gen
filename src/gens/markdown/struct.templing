@@ -1,4 +1,4 @@
-## `{{ name.camel_case(conv) }}`
+### `{{ name.camel_case(conv) }}`
 
 {{ self.options.get_doc(documentation, &format!("{:?} not documented in {:?}", name, language)) }}
 
@@ -12,5 +12,5 @@ Fields:
 - }
 
 - for field in fields {
-* `{{ field.name.snake_case(conv) }}`: `{{ type_name(&field.schema) }}` &mdash; {{ self.options.get_doc(&field.documentation, &format!("{:?}::{:?} not documented in {:?}", name, field.name, language)) }}
+* `{{ field.name.snake_case(conv) }}`: `{{ type_name_relative(schema, &field.schema) }}` &mdash; {{ self.options.get_doc(&field.documentation, &format!("{:?}::{:?} not documented in {:?}", name, field.name, language)) }}
 - }

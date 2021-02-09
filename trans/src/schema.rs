@@ -76,7 +76,7 @@ pub struct EnumVariant {
     pub name: Name,
 }
 
-#[derive(Debug, PartialEq, Eq, Hash, Clone)]
+#[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Clone)]
 pub struct Namespace {
     pub parts: Vec<Name>,
 }
