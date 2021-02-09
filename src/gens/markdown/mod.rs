@@ -121,3 +121,27 @@ impl crate::Generator for Generator {
         }
     }
 }
+
+impl RunnableGenerator for Generator {
+    fn is_runnable() -> bool {
+        false
+    }
+    fn build_local(_path: &Path) -> anyhow::Result<()> {
+        unreachable!()
+    }
+    fn run_local(_path: &Path) -> anyhow::Result<Command> {
+        unreachable!()
+    }
+}
+
+impl<D: Trans + PartialEq + Debug> TestableGenerator<testing::FileReadWrite<D>> for Generator {
+    fn extra_files(_test: &testing::FileReadWrite<D>) -> Vec<File> {
+        vec![]
+    }
+}
+
+impl<D: Trans + PartialEq + Debug> TestableGenerator<testing::TcpReadWrite<D>> for Generator {
+    fn extra_files(_test: &testing::TcpReadWrite<D>) -> Vec<File> {
+        vec![]
+    }
+}

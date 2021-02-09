@@ -25,7 +25,7 @@ macro_rules! all_runnable_gens {
 #[macro_export]
 macro_rules! all_gens {
     ($macro:ident) => {
-        all_runnable_gens!($macro);
+        $crate::all_runnable_gens!($macro);
         $macro!(markdown);
     };
 }

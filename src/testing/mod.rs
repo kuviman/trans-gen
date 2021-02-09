@@ -30,6 +30,9 @@ impl<T: Test> TestExt for T {
         Ok(())
     }
     fn test<G: TestableGenerator<Self>>(&self) -> anyhow::Result<()> {
+        if !G::is_runnable() {
+            return Ok(());
+        }
         let tempdir = tempfile::tempdir().context("Failed to create temp dir")?;
         let path = tempdir.as_ref();
         self.generate::<G>(path)?;

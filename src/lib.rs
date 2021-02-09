@@ -83,6 +83,9 @@ pub trait Generator {
 }
 
 pub trait RunnableGenerator: Generator {
+    fn is_runnable() -> bool {
+        true
+    }
     fn build_local(path: &Path) -> anyhow::Result<()>;
     fn run_local(path: &Path) -> anyhow::Result<Command>;
 }

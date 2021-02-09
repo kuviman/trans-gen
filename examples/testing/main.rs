@@ -111,6 +111,6 @@ fn main() -> anyhow::Result<()> {
             }
         };
     }
-    trans_gen::all_runnable_gens!(test_lang);
+    trans_gen::all_gens!(test_lang);
     Ok(())
 }
