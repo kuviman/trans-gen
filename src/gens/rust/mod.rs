@@ -16,18 +16,21 @@ fn type_name(schema: &Schema) -> String {
         Schema::Float64 => "f64".to_owned(),
         Schema::String => "String".to_owned(),
         Schema::Option(inner) => format!("Option<{}>", type_name(inner)),
-        Schema::Struct {
-            definition: Struct { name, .. },
-            ..
-        } => name.camel_case(conv),
-        Schema::OneOf { base_name, .. } => base_name.camel_case(conv),
+        Schema::Struct { .. } | Schema::OneOf { .. } | Schema::Enum { .. } => schema
+            .namespace()
+            .unwrap()
+            .parts
+            .iter()
+            .map(|name| name.snake_case(conv))
+            .chain(std::iter::once(schema.name().unwrap().camel_case(conv)))
+            .collect::<Vec<String>>()
+            .join("::"),
         Schema::Vec(inner) => format!("Vec<{}>", type_name(inner)),
         Schema::Map(key_type, value_type) => format!(
             "std::collections::HashMap<{}, {}>",
             type_name(key_type),
             type_name(value_type)
         ),
-        Schema::Enum { base_name, .. } => base_name.camel_case(conv),
     }
 }
 
@@ -41,24 +44,88 @@ fn doc_comment(documentation: &Documentation) -> String {
     result.trim().to_owned()
 }
 
+fn file_name(schema: &Schema) -> String {
+    schema
+        .namespace()
+        .unwrap()
+        .parts
+        .iter()
+        .chain(std::iter::once(schema.name().unwrap()))
+        .map(|name| name.snake_case(conv))
+        .collect::<Vec<String>>()
+        .join("/")
+}
+
+#[derive(Default)]
+struct Package {
+    inner_packages: BTreeSet<String>,
+    types: BTreeSet<Name>,
+}
+
 pub struct Generator {
+    packages: HashMap<String, Package>,
     crate_name: String,
     crate_version: String,
-    types: BTreeMap<String, String>,
+    files: HashMap<String, String>,
 }
+
+impl Generator {
+    fn insert_package(&mut self, schema: &Schema) {
+        let namespace = schema.namespace().unwrap();
+        let mut parent: Option<String> = None;
+        for part in &namespace.parts {
+            let package = match &parent {
+                Some(parent) => {
+                    format!("{}::{}", parent, part.snake_case(conv))
+                }
+                None => part.snake_case(conv),
+            };
+            self.packages
+                .entry(parent.unwrap_or("lib.rs".to_owned()))
+                .or_default()
+                .inner_packages
+                .insert(part.snake_case(conv));
+            parent = Some(package);
+        }
+        self.packages
+            .entry(parent.unwrap_or("lib.rs".to_owned()))
+            .or_default()
+            .types
+            .insert(schema.name().unwrap().clone());
+    }
+}
+
 impl crate::Generator for Generator {
     const NAME: &'static str = "Rust";
     type Options = ();
     fn new(name: &str, version: &str, _: ()) -> Self {
         Self {
-            crate_name: format!("{}-model", name),
+            packages: HashMap::new(),
+            crate_name: Name::new(name.to_owned())
+                .snake_case(conv)
+                .replace('_', "-"),
             crate_version: version.to_owned(),
-            types: BTreeMap::new(),
+            files: HashMap::new(),
         }
     }
     fn generate(self, extra_files: Vec<File>) -> GenResult {
         let mut files = HashMap::new();
-        let types = self.types.keys();
+        for (package_name, package) in self.packages {
+            let mut content = include_templing!("src/gens/rust/mod.rs.templing");
+            if package_name == "lib.rs" {
+                content = format!("pub mod trans;\n\n{}", content);
+            } else {
+                content = format!("use super::*;\n\n{}", content);
+            }
+            files.insert(
+                if package_name == "lib.rs" {
+                    "src/lib.rs".to_owned()
+                } else {
+                    format!("src/{}/mod.rs", package_name.replace("::", "/"))
+                },
+                content,
+            );
+        }
         let Self {
             crate_name,
             crate_version,
@@ -69,15 +136,11 @@ impl crate::Generator for Generator {
             include_templing!("src/gens/rust/Cargo.toml.templing"),
         );
         files.insert(
-            "src/model/mod.rs".to_owned(),
-            include_templing!("src/gens/rust/mod.rs.templing"),
-        );
-        files.insert(
             "src/trans.rs".to_owned(),
             include_str!("trans.rs").to_owned(),
         );
-        for (name, content) in self.types {
-            files.insert(format!("src/model/{}.rs", name), content);
+        for (path, content) in self.files {
+            files.insert(path, content);
         }
         for file in extra_files {
             files.insert(file.path, file.content);
@@ -87,38 +150,41 @@ impl crate::Generator for Generator {
     fn add_only(&mut self, schema: &Schema) {
         match schema {
             Schema::Struct {
-                namespace,
                 definition:
                     Struct {
                         documentation,
                         name,
                         fields,
                     },
+                ..
             } => {
-                self.types.insert(
-                    name.snake_case(conv),
+                self.insert_package(schema);
+                self.files.insert(
+                    format!("src/{}.rs", file_name(schema)),
                     include_templing!("src/gens/rust/struct.templing"),
                 );
             }
             Schema::OneOf {
-                namespace,
                 base_name,
                 variants,
                 documentation,
+                ..
             } => {
-                self.types.insert(
-                    base_name.snake_case(conv),
+                self.insert_package(schema);
+                self.files.insert(
+                    format!("src/{}.rs", file_name(schema)),
                     include_templing!("src/gens/rust/oneof.templing"),
                 );
             }
             Schema::Enum {
-                namespace,
                 base_name,
                 variants,
                 documentation,
+                ..
             } => {
-                self.types.insert(
-                    base_name.snake_case(conv),
+                self.insert_package(schema);
+                self.files.insert(
+                    format!("src/{}.rs", file_name(schema)),
                     include_templing!("src/gens/rust/enum.templing"),
                 );
             }

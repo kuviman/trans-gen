@@ -1,7 +1,6 @@
 use anyhow::Context;
 
-mod model;
-mod trans;
+use trans_gen_test::*;
 
 fn main() -> anyhow::Result<()> {
     let mut args = std::env::args();
@@ -18,7 +17,7 @@ fn main() -> anyhow::Result<()> {
     let mut input_stream = std::io::BufReader::new(stream.try_clone()?);
     let mut output_stream = std::io::BufWriter::new(stream.try_clone()?);
 
-    let input: model::{{ type_name(schema) }} =
+    let input: {{ type_name(schema) }} =
         trans::Trans::read_from(&mut input_stream).context("Failed to read input")?;
     println!("{:?}", input);
     trans::Trans::write_to(&input, &mut output_stream).context("Failed to write output")?;

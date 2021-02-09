@@ -1,6 +1,8 @@
-use crate::trans;
+- for package in &package.inner_packages {
+pub mod {{ package }};
+- }
 
-- for mod_name in types {
-mod {{mod_name}};
-pub use self::{{mod_name}}::*;
+- for name in package.types.iter().map(|name| name.snake_case(conv)) {
+mod {{ &name }};
+pub use self::{{ &name }}::*;
 - }
