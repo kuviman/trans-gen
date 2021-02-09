@@ -1,3 +1,0 @@
-- for name in &imports {
-from .{{ name.snake_case(conv) }} import {{ name.camel_case(conv) }}
-- }

@@ -1,0 +1,7 @@
+- for package in &package.inner_packages {
+import {{ package }}
+- }
+
+- for name in &package.types {
+from .{{ name.snake_case(conv) }} import {{ name.camel_case(conv) }}
+- }

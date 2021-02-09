@@ -1,4 +1,4 @@
-import model
+from {{ file_name(schema).replace('/', ".") }} import {{ schema.name().unwrap().camel_case(conv) }}
 from stream_wrapper import StreamWrapper
 import sys
 import socket
@@ -16,7 +16,7 @@ if __name__ == "__main__":
     sock.connect((host, port))
     stream = StreamWrapper(sock.makefile('rwb'))
 
-    input = model.{{ type_name(schema) }}.read_from(stream)
+    input = {{ schema.name().unwrap().camel_case(conv) }}.read_from(stream)
     print(repr(input))
     input.write_to(stream)
     stream.flush()
