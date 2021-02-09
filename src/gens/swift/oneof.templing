@@ -6,6 +6,9 @@ enum {{ base_name.camel_case(conv) }} {
     - for field in &variant.fields {
     /// - {{ field.name.mixed_case(conv) }}: {{ field.documentation.get("en").unwrap().replace('\n', " ") }}
     - }
+    - if variant.fields.is_empty() {
+    case {{ variant.name.mixed_case(conv) }}
+    - } else {
     case {{ variant.name.mixed_case(conv) }}(~
         - for (index, field) in variant.fields.iter().enumerate() {
         - if index != 0 {
@@ -14,6 +17,7 @@ enum {{ base_name.camel_case(conv) }} {
         ~{{ field.name.mixed_case(conv) }}: {{ type_name(&field.schema) }}~
         - }
     ~)
+    - }
 
     - }
     {{ doc_read_from(&base_name.camel_case(conv)) }}
@@ -25,6 +29,9 @@ enum {{ base_name.camel_case(conv) }} {
                 var {{ field.name.mixed_case(conv) }}: {{ type_name(&field.schema) }}
                 {{ read_var(&field.name.mixed_case(conv), &field.schema) }}
                 - }
+                - if variant.fields.is_empty() {
+                return {{ base_name.camel_case(conv) }}.{{ variant.name.mixed_case(conv) }}
+                - } else {
                 return {{ base_name.camel_case(conv) }}.{{ variant.name.mixed_case(conv) }}(~
                     - for (index, field) in variant.fields.iter().enumerate() {
                     - if index != 0 {
@@ -33,6 +40,7 @@ enum {{ base_name.camel_case(conv) }} {
                     ~{{ field.name.mixed_case(conv) }}: {{ field.name.mixed_case(conv) }}~
                     - }
                 ~)
+                - }
             - }
             default:
                 fatalError("Unexpected tag value")
@@ -43,6 +51,9 @@ enum {{ base_name.camel_case(conv) }} {
     func writeTo<S: OutputStream>(_ stream: S) {
         switch self {
             - for (tag, variant) in variants.iter().enumerate() {
+            - if variant.fields.is_empty() {
+            case .{{ variant.name.mixed_case(conv) }}:
+            - } else {
             case let .{{ variant.name.mixed_case(conv) }}(~
                 - for (index, field) in variant.fields.iter().enumerate() {
                 - if index != 0 {
@@ -51,6 +62,7 @@ enum {{ base_name.camel_case(conv) }} {
                 ~{{ field.name.mixed_case(conv) }}~
                 - }
             ~):
+            - }
                 stream.writeInt32({{ tag }})
                 - for field in &variant.fields {
                 {{ write_var(&field.name.mixed_case(conv), &field.schema) }}
