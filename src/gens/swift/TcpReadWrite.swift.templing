@@ -4,12 +4,15 @@ if CommandLine.arguments.count != 3 {
 
 let host = CommandLine.arguments[1]
 let port = Int(CommandLine.arguments[2])!
+let stdout = CommandLine.arguments[3] == "true"
 
 let tcpStream = TcpStream(host, port)
 
-let input = {{ type_name(schema) }}.readFrom(tcpStream)
-
-print(input)
-
-input.writeTo(tcpStream)
-tcpStream.flush()
+while tcpStream.readBool() {
+	let input = {{ type_name(schema) }}.readFrom(tcpStream)
+	if stdout {
+		print(input)
+	}
+	input.writeTo(tcpStream)
+	tcpStream.flush()
+}
