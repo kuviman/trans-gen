@@ -11,7 +11,7 @@ impl<D: Trans + PartialEq + Debug> Test for TcpReadWrite<D> {
     fn schemas(&self) -> Vec<Arc<Schema>> {
         vec![Schema::of::<D>(&self.version)]
     }
-    fn run_test(&self, mut run_code: Command) -> anyhow::Result<()> {
+    fn run_test(&self, mut run_code: Command) -> anyhow::Result<TestRunResult> {
         use std::io::Write as _;
         if !self.show_stdout {
             run_code.stdout(std::process::Stdio::null());
@@ -78,9 +78,9 @@ impl<D: Trans + PartialEq + Debug> Test for TcpReadWrite<D> {
         if !child_status.success() {
             anyhow::bail!("Child process exited with {}", child_status);
         }
-        let running_duration = std::time::Instant::now().duration_since(start_time);
-        println!("Run duration: {}", format_duration(running_duration));
+        let run_duration = std::time::Instant::now().duration_since(start_time);
+        println!("Run duration: {}", format_duration(run_duration));
         println!("Test finished successfully");
-        Ok(())
+        Ok(TestRunResult { run_duration })
     }
 }

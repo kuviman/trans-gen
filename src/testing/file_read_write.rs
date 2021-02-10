@@ -11,7 +11,7 @@ impl<D: Trans + PartialEq + Debug> Test for FileReadWrite<D> {
     fn schemas(&self) -> Vec<Arc<Schema>> {
         vec![Schema::of::<D>(&self.version)]
     }
-    fn run_test(&self, mut run_code: Command) -> anyhow::Result<()> {
+    fn run_test(&self, mut run_code: Command) -> anyhow::Result<TestRunResult> {
         let tempdir = tempfile::tempdir().context("Failed to create temp dir")?;
         let path = tempdir.as_ref();
         let input_file = path.join("input.trans");
@@ -31,8 +31,8 @@ impl<D: Trans + PartialEq + Debug> Test for FileReadWrite<D> {
             .arg(self.repeat.to_string())
             .run(self.show_stdout)
             .context("Failed to run code")?;
-        let running_duration = std::time::Instant::now().duration_since(start_time);
-        println!("Run duration: {}", format_duration(running_duration));
+        let run_duration = std::time::Instant::now().duration_since(start_time);
+        println!("Run duration: {}", format_duration(run_duration));
         let output: D = trans::Trans::read_from(
             &mut std::io::BufReader::new(
                 std::fs::File::open(&output_file).context("Failed to open output file")?,
@@ -48,6 +48,6 @@ impl<D: Trans + PartialEq + Debug> Test for FileReadWrite<D> {
             );
         }
         println!("Test finished successfully");
-        Ok(())
+        Ok(TestRunResult { run_duration })
     }
 }

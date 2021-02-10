@@ -1,4 +1,5 @@
 use anyhow::Context as _;
+use std::collections::BTreeMap;
 use std::path::PathBuf;
 use trans_gen::TestExt as _;
 
@@ -20,6 +21,8 @@ struct Opt {
     show_stdout: bool,
     #[structopt(long)]
     verbose: bool,
+    #[structopt(long)]
+    save_results: Option<PathBuf>,
 }
 
 macro_rules! all_models {
@@ -44,6 +47,10 @@ fn main() -> anyhow::Result<()> {
         }
         std::fs::create_dir_all(path).context("Failed to create target directory")?;
     }
+    let mut results: BTreeMap<
+        String,
+        BTreeMap<String, BTreeMap<String, trans_gen::testing::TestResult>>,
+    > = BTreeMap::new();
     macro_rules! test_lang {
         ($lang:ident) => {
             if !(opt.exclude_langs.contains(&stringify!($lang).to_owned())
@@ -108,13 +115,14 @@ fn main() -> anyhow::Result<()> {
                                             ))?;
                                         } else {
                                             println!("Testing {}::{}::{}", <trans_gen::gens::$lang::Generator as trans_gen::Generator>::NAME, stringify!($model), stringify!($test));
-                                            test.test::<trans_gen::gens::$lang::Generator>(
+                                            let result = test.test::<trans_gen::gens::$lang::Generator>(
                                                 opt.verbose,
-                                            )
-                                            .context(format!(
-                                                "Failed to test {}",
-                                                stringify!($lang)
-                                            ))?;
+                                            ).context("Test failed")?;
+                                            if results.entry(<trans_gen::gens::$lang::Generator as trans_gen::Generator>::NAME.to_owned()).or_default()
+                                                .entry(stringify!($model).to_owned()).or_default()
+                                                .insert(stringify!($test).to_owned(), result).is_some() {
+                                                panic!("WTF");
+                                            }
                                         }
                                     }
                                 };
@@ -129,5 +137,8 @@ fn main() -> anyhow::Result<()> {
         };
     }
     trans_gen::all_gens!(test_lang);
+    if let Some(path) = opt.save_results {
+        serde_json::to_writer_pretty(std::fs::File::create(path).unwrap(), &results).unwrap();
+    }
     Ok(())
 }
