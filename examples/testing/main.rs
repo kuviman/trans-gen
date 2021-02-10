@@ -8,6 +8,8 @@ struct Opt {
     models: Vec<String>,
     #[structopt(long = "language")]
     langs: Vec<String>,
+    #[structopt(long = "exclude-language")]
+    exclude_langs: Vec<String>,
     #[structopt(long = "test")]
     tests: Vec<String>,
     #[structopt(long, default_value = "1")]
@@ -44,11 +46,16 @@ fn main() -> anyhow::Result<()> {
     }
     macro_rules! test_lang {
         ($lang:ident) => {
-            if opt.langs.is_empty()
-                || opt.langs.contains(&stringify!($lang).to_owned())
-                || opt.langs.contains(
+            if !(opt.exclude_langs.contains(&stringify!($lang).to_owned())
+                || opt.exclude_langs.contains(
                     &<trans_gen::gens::$lang::Generator as trans_gen::Generator>::NAME.to_owned(),
-                )
+                ))
+                && (opt.langs.is_empty()
+                    || opt.langs.contains(&stringify!($lang).to_owned())
+                    || opt.langs.contains(
+                        &<trans_gen::gens::$lang::Generator as trans_gen::Generator>::NAME
+                            .to_owned(),
+                    ))
             {
                 let generate = opt.generate.as_ref().map(|path| {
                     if opt.langs.len() == 1 {
@@ -100,6 +107,7 @@ fn main() -> anyhow::Result<()> {
                                                 stringify!($lang)
                                             ))?;
                                         } else {
+                                            println!("Testing {}::{}::{}", <trans_gen::gens::$lang::Generator as trans_gen::Generator>::NAME, stringify!($model), stringify!($test));
                                             test.test::<trans_gen::gens::$lang::Generator>(
                                                 opt.verbose,
                                             )
