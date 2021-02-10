@@ -1,7 +1,3 @@
-if CommandLine.arguments.count != 3 {
-	fatalError("Pass host and port as parameters")
-}
-
 let host = CommandLine.arguments[1]
 let port = Int(CommandLine.arguments[2])!
 let stdout = CommandLine.arguments[3] == "true"
