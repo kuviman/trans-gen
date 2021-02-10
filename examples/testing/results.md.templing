@@ -1,0 +1,24 @@
+- let sample = results.values().next().unwrap();
+| Language ~
+- for (model, tests) in sample {
+    - for test in tests.keys() {
+        ~| {{ model }}::{{ test }} ~
+    - }
+- }
+~|
+| - ~
+- for tests in sample.values() {
+    - for _ in tests.values() {
+        ~| --- ~
+    - }
+- }
+~|
+- for (language, results) in &results {
+| {{ language }} ~
+- for tests in results.values() {
+    - for result in tests.values() {
+        ~| {{ format_duration(result.run.run_duration) }} ~
+    - }
+- }
+~|
+- }

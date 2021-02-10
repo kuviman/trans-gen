@@ -8,21 +8,33 @@ pub use tcp_read_write::TcpReadWrite;
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct TestRunResult {
-    run_duration: std::time::Duration,
+    pub run_duration: std::time::Duration,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct TestResult {
-    build_duration: std::time::Duration,
-    run: TestRunResult,
+    pub build_duration: std::time::Duration,
+    pub run: TestRunResult,
 }
 
 impl TestResult {
-    fn fake() -> Self {
+    pub fn fake() -> Self {
         Self {
             build_duration: std::time::Duration::from_millis(0),
             run: TestRunResult {
                 run_duration: std::time::Duration::from_millis(0),
+            },
+        }
+    }
+    pub fn into_average(self, n: usize) -> Self {
+        Self {
+            build_duration: std::time::Duration::from_secs_f64(
+                self.build_duration.as_secs_f64() / n as f64,
+            ),
+            run: TestRunResult {
+                run_duration: std::time::Duration::from_secs_f64(
+                    self.run.run_duration.as_secs_f64() / n as f64,
+                ),
             },
         }
     }

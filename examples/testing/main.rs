@@ -1,6 +1,8 @@
 use anyhow::Context as _;
 use std::collections::BTreeMap;
 use std::path::PathBuf;
+use templing::*;
+use trans_gen::util::*;
 use trans_gen::TestExt as _;
 
 #[derive(structopt::StructOpt)]
@@ -115,9 +117,10 @@ fn main() -> anyhow::Result<()> {
                                             let result = test.test::<trans_gen::gens::$lang::Generator>(
                                                 opt.verbose,
                                             ).context("Test failed")?;
+                                            let average_result = result.into_average(opt.repeat);
                                             if results.entry(<trans_gen::gens::$lang::Generator as trans_gen::Generator>::NAME.to_owned()).or_default()
                                                 .entry(stringify!($model).to_owned()).or_default()
-                                                .insert(stringify!($test).to_owned(), result).is_some() {
+                                                .insert(stringify!($test).to_owned(), average_result).is_some() {
                                                 panic!("WTF");
                                             }
                                         }
@@ -135,7 +138,20 @@ fn main() -> anyhow::Result<()> {
     }
     trans_gen::all_gens!(test_lang);
     if let Some(path) = opt.save_results {
-        serde_json::to_writer_pretty(std::fs::File::create(path).unwrap(), &results).unwrap();
+        if let Some(ext) = path.extension() {
+            if ext == "json" {
+                serde_json::to_writer_pretty(std::fs::File::create(path).unwrap(), &results)
+                    .unwrap();
+            } else if ext == "md" {
+                std::fs::write(
+                    path,
+                    include_templing!("examples/testing/results.md.templing"),
+                )
+                .context("Failed to write results")?;
+            } else {
+                anyhow::bail!("Unexpected results extension {:?}", ext);
+            }
+        }
     }
     Ok(())
 }

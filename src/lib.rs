@@ -10,7 +10,7 @@ use std::sync::Arc;
 use templing::*;
 use trans::*;
 
-mod util;
+pub mod util;
 use util::*;
 
 pub mod gens;
