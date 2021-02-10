@@ -31,7 +31,7 @@ impl<D: Trans + PartialEq + Debug> Test for TcpReadWrite<D> {
                 Ok(result) => break result,
                 Err(ref e) if e.kind() == std::io::ErrorKind::WouldBlock => {
                     accept_try += 1;
-                    if accept_try > 10 {
+                    if accept_try > 100 {
                         anyhow::bail!("Timeout accepting connection");
                     }
                     std::thread::sleep(std::time::Duration::from_millis(100));
