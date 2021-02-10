@@ -19,7 +19,7 @@ instance Trans Enumeration where
         return $ case tag of
             0 -> ValueOne
             1 -> ValueTwo
-
+            
     write ValueOne =
         Trans.write (0 :: Int32)
     write ValueTwo =

@@ -33,7 +33,7 @@ class OptionOne(OneOf):
             vec_int.append(vec_int_element)
         long_int = stream.read_long()
         return OptionOne(vec_int, long_int)
-
+    
     def write_to(self, stream):
         """Write OptionOne to output stream
         """
@@ -42,7 +42,7 @@ class OptionOne(OneOf):
         for element in self.vec_int:
             stream.write_int(element)
         stream.write_long(self.long_int)
-
+    
     def __repr__(self):
         return "OptionOne(" + \
             repr(self.vec_int) + \
@@ -67,13 +67,13 @@ class OptionTwo(OneOf):
         """
         value = stream.read_int()
         return OptionTwo(value)
-
+    
     def write_to(self, stream):
         """Write OptionTwo to output stream
         """
         stream.write_int(self.TAG)
         stream.write_int(self.value)
-
+    
     def __repr__(self):
         return "OptionTwo(" + \
             repr(self.value) + \

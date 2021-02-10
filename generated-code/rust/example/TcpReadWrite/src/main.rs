@@ -21,7 +21,9 @@ fn main() -> anyhow::Result<()> {
     while trans::Trans::read_from(&mut input_stream)? {
         let input: Example =
             trans::Trans::read_from(&mut input_stream).context("Failed to read input")?;
-        println!("{:?}", input);
+        if stdout {
+            println!("{:?}", input);
+        }
         trans::Trans::write_to(&input, &mut output_stream).context("Failed to write output")?;
         std::io::Write::flush(&mut output_stream)?;
     }

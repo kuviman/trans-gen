@@ -22,7 +22,7 @@ abstract class MessageGameModel {
                 throw new Exception("Unexpected tag value");
         }
     }
-
+    
     /// Client message
     static class Client : MessageGameModel {
         static const int TAG = 0;
@@ -49,7 +49,7 @@ abstract class MessageGameModel {
             message.writeTo(writer);
         }
     }
-
+    
     /// Server message
     static class Server : MessageGameModel {
         static const int TAG = 1;

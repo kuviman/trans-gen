@@ -37,7 +37,7 @@ class EntityAction:
         else:
             repair_action = None
         return EntityAction(move_action, build_action, attack_action, repair_action)
-
+    
     def write_to(self, stream):
         """Write EntityAction to output stream
         """
@@ -61,7 +61,7 @@ class EntityAction:
         else:
             stream.write_bool(True)
             self.repair_action.write_to(stream)
-
+    
     def __repr__(self):
         return "EntityAction(" + \
             repr(self.move_action) + \

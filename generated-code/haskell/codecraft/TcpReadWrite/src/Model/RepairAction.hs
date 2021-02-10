@@ -16,7 +16,7 @@ instance Trans RepairAction where
         target <- Trans.read
         return RepairAction {
             target }
-
+    
     write RepairAction {
         target } = do
             Trans.write target

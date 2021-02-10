@@ -38,7 +38,7 @@ namespace  {
             $doubleNumber = $stream->readDouble();
             return new Structure($text, $floatNumber, $doubleNumber);
         }
-    
+        
         /**
          * Write Structure to output stream
          */

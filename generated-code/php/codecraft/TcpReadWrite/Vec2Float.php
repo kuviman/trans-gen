@@ -32,7 +32,7 @@ namespace  {
             $y = $stream->readFloat32();
             return new Vec2Float($x, $y);
         }
-    
+        
         /**
          * Write Vec2Float to output stream
          */

@@ -90,7 +90,7 @@ namespace  {
             }
             return new Example($oneOf, $hashMap, $optionalInt, $optionalBool, $optionalOneOf, $optionalStruct, $optionalEnum);
         }
-    
+        
         /**
          * Write Example to output stream
          */

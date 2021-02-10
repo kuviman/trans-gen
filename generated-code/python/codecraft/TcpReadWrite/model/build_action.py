@@ -17,13 +17,13 @@ class BuildAction:
         entity_type = EntityType(stream.read_int())
         position = Vec2Int.read_from(stream)
         return BuildAction(entity_type, position)
-
+    
     def write_to(self, stream):
         """Write BuildAction to output stream
         """
         stream.write_int(self.entity_type)
         self.position.write_to(stream)
-
+    
     def __repr__(self):
         return "BuildAction(" + \
             repr(self.entity_type) + \

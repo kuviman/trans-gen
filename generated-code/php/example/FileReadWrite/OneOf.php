@@ -1,7 +1,7 @@
 <?php
 
 namespace  {
-
+    
     
 
     /**
@@ -68,7 +68,7 @@ namespace OneOf {
             $longInt = $stream->readInt64();
             return new OptionOne($vecInt, $longInt);
         }
-    
+        
         /**
          * Write OptionOne to output stream
          */
@@ -108,7 +108,7 @@ namespace OneOf {
             $value = $stream->readInt32();
             return new OptionTwo($value);
         }
-    
+        
         /**
          * Write OptionTwo to output stream
          */

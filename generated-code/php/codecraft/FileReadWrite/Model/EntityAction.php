@@ -63,7 +63,7 @@ namespace Model {
             }
             return new EntityAction($moveAction, $buildAction, $attackAction, $repairAction);
         }
-    
+        
         /**
          * Write EntityAction to output stream
          */

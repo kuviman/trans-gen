@@ -24,7 +24,7 @@ instance Trans AttackProperties where
             attackRange,
             damage,
             collectResource }
-
+    
     write AttackProperties {
         attackRange,
         damage,

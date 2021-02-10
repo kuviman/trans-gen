@@ -24,7 +24,7 @@ abstract class DebugData {
                 throw new Exception("Unexpected tag value");
         }
     }
-
+    
     /// Log some text
     static class Log : DebugData {
         static const int TAG = 0;
@@ -51,7 +51,7 @@ abstract class DebugData {
             writer.write(text);
         }
     }
-
+    
     /// Draw primitives
     static class Primitives : DebugData {
         static const int TAG = 1;
@@ -92,7 +92,7 @@ abstract class DebugData {
             writer.write(cast(int)(primitiveType));
         }
     }
-
+    
     /// Draw text
     static class PlacedText : DebugData {
         static const int TAG = 2;

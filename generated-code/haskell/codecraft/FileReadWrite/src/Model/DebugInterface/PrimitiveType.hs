@@ -19,7 +19,7 @@ instance Trans PrimitiveType where
         return $ case tag of
             0 -> Lines
             1 -> Triangles
-
+            
     write Lines =
         Trans.write (0 :: Int32)
     write Triangles =

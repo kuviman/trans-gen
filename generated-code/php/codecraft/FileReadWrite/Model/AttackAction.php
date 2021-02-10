@@ -40,7 +40,7 @@ namespace Model {
             }
             return new AttackAction($target, $autoAttack);
         }
-    
+        
         /**
          * Write AttackAction to output stream
          */

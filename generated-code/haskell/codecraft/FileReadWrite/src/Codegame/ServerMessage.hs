@@ -21,7 +21,7 @@ instance Trans ServerMessageGetAction where
         return ServerMessageGetAction {
             playerView,
             debugAvailable }
-
+    
     write ServerMessageGetAction {
         playerView,
         debugAvailable } = do
@@ -35,7 +35,7 @@ data ServerMessageFinish = ServerMessageFinish { }
 instance Trans ServerMessageFinish where
     read = do
         return ServerMessageFinish { }
-
+    
     write ServerMessageFinish { } = do
             return ()
 
@@ -50,7 +50,7 @@ instance Trans ServerMessageDebugUpdate where
         playerView <- Trans.read
         return ServerMessageDebugUpdate {
             playerView }
-
+    
     write ServerMessageDebugUpdate {
         playerView } = do
             Trans.write playerView
@@ -72,7 +72,7 @@ instance Trans ServerMessage where
             0 -> GetAction <$> Trans.read
             1 -> Finish <$> Trans.read
             2 -> DebugUpdate <$> Trans.read
-
+    
     write (GetAction value) = do
         Trans.write (0 :: Int32)
         Trans.write value

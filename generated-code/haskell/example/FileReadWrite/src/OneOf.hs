@@ -20,7 +20,7 @@ instance Trans OneOfOptionOne where
         return OneOfOptionOne {
             vecInt32,
             longInt }
-
+    
     write OneOfOptionOne {
         vecInt32,
         longInt } = do
@@ -38,7 +38,7 @@ instance Trans OneOfOptionTwo where
         value <- Trans.read
         return OneOfOptionTwo {
             value }
-
+    
     write OneOfOptionTwo {
         value } = do
             Trans.write value
@@ -57,7 +57,7 @@ instance Trans OneOf where
         case tag of
             0 -> OptionOne <$> Trans.read
             1 -> OptionTwo <$> Trans.read
-
+    
     write (OptionOne value) = do
         Trans.write (0 :: Int32)
         Trans.write value

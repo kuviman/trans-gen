@@ -21,7 +21,7 @@ abstract class OneOf {
                 throw new Exception("Unexpected tag value");
         }
     }
-
+    
     /// First option
     static class OptionOne : OneOf {
         static const int TAG = 0;
@@ -62,7 +62,7 @@ abstract class OneOf {
             writer.write(longInt);
         }
     }
-
+    
     /// Second option
     static class OptionTwo : OneOf {
         static const int TAG = 1;

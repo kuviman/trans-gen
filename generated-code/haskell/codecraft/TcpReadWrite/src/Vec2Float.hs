@@ -20,7 +20,7 @@ instance Trans Vec2Float where
         return Vec2Float {
             x,
             y }
-
+    
     write Vec2Float {
         x,
         y } = do

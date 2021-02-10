@@ -26,7 +26,7 @@ namespace Model {
             $target = $stream->readInt32();
             return new RepairAction($target);
         }
-    
+        
         /**
          * Write RepairAction to output stream
          */

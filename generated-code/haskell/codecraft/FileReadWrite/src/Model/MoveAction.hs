@@ -24,7 +24,7 @@ instance Trans MoveAction where
             target,
             findClosestPosition,
             breakThrough }
-
+    
     write MoveAction {
         target,
         findClosestPosition,

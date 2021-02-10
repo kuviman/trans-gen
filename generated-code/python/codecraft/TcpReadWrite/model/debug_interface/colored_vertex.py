@@ -23,7 +23,7 @@ class ColoredVertex:
         screen_offset = Vec2Float.read_from(stream)
         color = Color.read_from(stream)
         return ColoredVertex(world_pos, screen_offset, color)
-
+    
     def write_to(self, stream):
         """Write ColoredVertex to output stream
         """
@@ -34,7 +34,7 @@ class ColoredVertex:
             self.world_pos.write_to(stream)
         self.screen_offset.write_to(stream)
         self.color.write_to(stream)
-
+    
     def __repr__(self):
         return "ColoredVertex(" + \
             repr(self.world_pos) + \

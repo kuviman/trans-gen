@@ -93,7 +93,7 @@ namespace Model {
             }
             return new PlayerView($myId, $mapSize, $fogOfWar, $entityProperties, $maxTickCount, $maxPathfindNodes, $currentTick, $players, $entities);
         }
-    
+        
         /**
          * Write PlayerView to output stream
          */

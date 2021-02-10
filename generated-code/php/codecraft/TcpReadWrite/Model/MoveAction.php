@@ -38,7 +38,7 @@ namespace Model {
             $breakThrough = $stream->readBool();
             return new MoveAction($target, $findClosestPosition, $breakThrough);
         }
-    
+        
         /**
          * Write MoveAction to output stream
          */

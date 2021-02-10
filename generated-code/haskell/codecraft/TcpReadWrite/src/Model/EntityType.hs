@@ -43,7 +43,7 @@ instance Trans EntityType where
             7 -> RangedUnit
             8 -> Resource
             9 -> Turret
-
+            
     write Wall =
         Trans.write (0 :: Int32)
     write House =

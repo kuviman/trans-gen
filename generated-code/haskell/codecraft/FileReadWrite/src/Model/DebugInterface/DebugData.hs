@@ -18,7 +18,7 @@ instance Trans DebugDataLog where
         text <- Trans.read
         return DebugDataLog {
             text }
-
+    
     write DebugDataLog {
         text } = do
             Trans.write text
@@ -38,7 +38,7 @@ instance Trans DebugDataPrimitives where
         return DebugDataPrimitives {
             vertices,
             primitiveType }
-
+    
     write DebugDataPrimitives {
         vertices,
         primitiveType } = do
@@ -68,7 +68,7 @@ instance Trans DebugDataPlacedText where
             text,
             alignment,
             size }
-
+    
     write DebugDataPlacedText {
         vertex,
         text,
@@ -96,7 +96,7 @@ instance Trans DebugData where
             0 -> Log <$> Trans.read
             1 -> Primitives <$> Trans.read
             2 -> PlacedText <$> Trans.read
-
+    
     write (Log value) = do
         Trans.write (0 :: Int32)
         Trans.write value

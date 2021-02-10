@@ -18,7 +18,7 @@ instance Trans Action where
         entityActions <- Trans.read
         return Action {
             entityActions }
-
+    
     write Action {
         entityActions } = do
             Trans.write entityActions

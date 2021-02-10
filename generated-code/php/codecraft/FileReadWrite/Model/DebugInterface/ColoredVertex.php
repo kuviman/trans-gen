@@ -43,7 +43,7 @@ namespace Model\DebugInterface {
             $color = \Color::readFrom($stream);
             return new ColoredVertex($worldPos, $screenOffset, $color);
         }
-    
+        
         /**
          * Write ColoredVertex to output stream
          */

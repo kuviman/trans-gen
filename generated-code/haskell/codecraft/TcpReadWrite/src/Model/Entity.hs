@@ -38,7 +38,7 @@ instance Trans Entity where
             position,
             health,
             active }
-
+    
     write Entity {
         id,
         playerId,

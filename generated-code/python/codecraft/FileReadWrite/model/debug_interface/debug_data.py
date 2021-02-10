@@ -32,13 +32,13 @@ class Log(DebugData):
         """
         text = stream.read_string()
         return Log(text)
-
+    
     def write_to(self, stream):
         """Write Log to output stream
         """
         stream.write_int(self.TAG)
         stream.write_string(self.text)
-
+    
     def __repr__(self):
         return "Log(" + \
             repr(self.text) + \
@@ -67,7 +67,7 @@ class Primitives(DebugData):
             vertices.append(vertices_element)
         primitive_type = PrimitiveType(stream.read_int())
         return Primitives(vertices, primitive_type)
-
+    
     def write_to(self, stream):
         """Write Primitives to output stream
         """
@@ -76,7 +76,7 @@ class Primitives(DebugData):
         for element in self.vertices:
             element.write_to(stream)
         stream.write_int(self.primitive_type)
-
+    
     def __repr__(self):
         return "Primitives(" + \
             repr(self.vertices) + \
@@ -110,7 +110,7 @@ class PlacedText(DebugData):
         alignment = stream.read_float()
         size = stream.read_float()
         return PlacedText(vertex, text, alignment, size)
-
+    
     def write_to(self, stream):
         """Write PlacedText to output stream
         """
@@ -119,7 +119,7 @@ class PlacedText(DebugData):
         stream.write_string(self.text)
         stream.write_float(self.alignment)
         stream.write_float(self.size)
-
+    
     def __repr__(self):
         return "PlacedText(" + \
             repr(self.vertex) + \

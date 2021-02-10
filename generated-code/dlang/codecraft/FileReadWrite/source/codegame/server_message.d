@@ -23,7 +23,7 @@ abstract class ServerMessage {
                 throw new Exception("Unexpected tag value");
         }
     }
-
+    
     /// Get action for next tick
     static class GetAction : ServerMessage {
         static const int TAG = 0;
@@ -56,7 +56,7 @@ abstract class ServerMessage {
             writer.write(debugAvailable);
         }
     }
-
+    
     /// Signifies end of the game
     static class Finish : ServerMessage {
         static const int TAG = 1;
@@ -74,7 +74,7 @@ abstract class ServerMessage {
             writer.write(TAG);
         }
     }
-
+    
     /// Debug update
     static class DebugUpdate : ServerMessage {
         static const int TAG = 2;

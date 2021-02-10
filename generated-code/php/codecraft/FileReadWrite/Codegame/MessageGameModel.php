@@ -1,7 +1,7 @@
 <?php
 
 namespace Codegame {
-
+    
     require_once 'Codegame/ClientMessage.php';
     require_once 'Codegame/ServerMessage.php';
 
@@ -58,7 +58,7 @@ namespace Codegame\MessageGameModel {
             $message = \Codegame\ClientMessage::readFrom($stream);
             return new Client($message);
         }
-    
+        
         /**
          * Write Client to output stream
          */
@@ -94,7 +94,7 @@ namespace Codegame\MessageGameModel {
             $message = \Codegame\ServerMessage::readFrom($stream);
             return new Server($message);
         }
-    
+        
         /**
          * Write Server to output stream
          */

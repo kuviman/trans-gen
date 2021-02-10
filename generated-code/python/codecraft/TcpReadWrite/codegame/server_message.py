@@ -34,14 +34,14 @@ class GetAction(ServerMessage):
         player_view = PlayerView.read_from(stream)
         debug_available = stream.read_bool()
         return GetAction(player_view, debug_available)
-
+    
     def write_to(self, stream):
         """Write GetAction to output stream
         """
         stream.write_int(self.TAG)
         self.player_view.write_to(stream)
         stream.write_bool(self.debug_available)
-
+    
     def __repr__(self):
         return "GetAction(" + \
             repr(self.player_view) + \
@@ -64,12 +64,12 @@ class Finish(ServerMessage):
         """Read Finish from input stream
         """
         return Finish()
-
+    
     def write_to(self, stream):
         """Write Finish to output stream
         """
         stream.write_int(self.TAG)
-
+    
     def __repr__(self):
         return "Finish(" + \
             ")"
@@ -91,13 +91,13 @@ class DebugUpdate(ServerMessage):
         """
         player_view = PlayerView.read_from(stream)
         return DebugUpdate(player_view)
-
+    
     def write_to(self, stream):
         """Write DebugUpdate to output stream
         """
         stream.write_int(self.TAG)
         self.player_view.write_to(stream)
-
+    
     def __repr__(self):
         return "DebugUpdate(" + \
             repr(self.player_view) + \

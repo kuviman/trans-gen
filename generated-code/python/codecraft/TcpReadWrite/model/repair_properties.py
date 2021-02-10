@@ -19,7 +19,7 @@ class RepairProperties:
             valid_targets.append(valid_targets_element)
         power = stream.read_int()
         return RepairProperties(valid_targets, power)
-
+    
     def write_to(self, stream):
         """Write RepairProperties to output stream
         """
@@ -27,7 +27,7 @@ class RepairProperties:
         for element in self.valid_targets:
             stream.write_int(element)
         stream.write_int(self.power)
-
+    
     def __repr__(self):
         return "RepairProperties(" + \
             repr(self.valid_targets) + \

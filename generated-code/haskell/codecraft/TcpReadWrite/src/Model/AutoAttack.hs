@@ -21,7 +21,7 @@ instance Trans AutoAttack where
         return AutoAttack {
             pathfindRange,
             validTargets }
-
+    
     write AutoAttack {
         pathfindRange,
         validTargets } = do

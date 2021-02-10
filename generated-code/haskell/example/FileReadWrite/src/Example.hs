@@ -44,7 +44,7 @@ instance Trans Example where
             optionalOneOf,
             optionalStruct,
             optionalEnum }
-
+    
     write Example {
         oneOf,
         hashMap,

@@ -17,14 +17,14 @@ class AttackProperties:
         damage = stream.read_int()
         collect_resource = stream.read_bool()
         return AttackProperties(attack_range, damage, collect_resource)
-
+    
     def write_to(self, stream):
         """Write AttackProperties to output stream
         """
         stream.write_int(self.attack_range)
         stream.write_int(self.damage)
         stream.write_bool(self.collect_resource)
-
+    
     def __repr__(self):
         return "AttackProperties(" + \
             repr(self.attack_range) + \

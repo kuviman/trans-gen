@@ -50,7 +50,7 @@ class PlayerView:
             entities_element = Entity.read_from(stream)
             entities.append(entities_element)
         return PlayerView(my_id, map_size, fog_of_war, entity_properties, max_tick_count, max_pathfind_nodes, current_tick, players, entities)
-
+    
     def write_to(self, stream):
         """Write PlayerView to output stream
         """
@@ -70,7 +70,7 @@ class PlayerView:
         stream.write_int(len(self.entities))
         for element in self.entities:
             element.write_to(stream)
-
+    
     def __repr__(self):
         return "PlayerView(" + \
             repr(self.my_id) + \

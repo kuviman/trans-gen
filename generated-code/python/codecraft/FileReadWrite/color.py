@@ -20,7 +20,7 @@ class Color:
         b = stream.read_float()
         a = stream.read_float()
         return Color(r, g, b, a)
-
+    
     def write_to(self, stream):
         """Write Color to output stream
         """
@@ -28,7 +28,7 @@ class Color:
         stream.write_float(self.g)
         stream.write_float(self.b)
         stream.write_float(self.a)
-
+    
     def __repr__(self):
         return "Color(" + \
             repr(self.r) + \

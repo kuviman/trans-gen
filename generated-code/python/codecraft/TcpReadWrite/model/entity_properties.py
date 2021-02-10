@@ -60,7 +60,7 @@ class EntityProperties:
         else:
             repair = None
         return EntityProperties(size, build_score, destroy_score, can_move, population_provide, population_use, max_health, initial_cost, sight_range, resource_per_health, build, attack, repair)
-
+    
     def write_to(self, stream):
         """Write EntityProperties to output stream
         """
@@ -89,7 +89,7 @@ class EntityProperties:
         else:
             stream.write_bool(True)
             self.repair.write_to(stream)
-
+    
     def __repr__(self):
         return "EntityProperties(" + \
             repr(self.size) + \

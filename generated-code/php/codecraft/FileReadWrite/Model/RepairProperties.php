@@ -37,7 +37,7 @@ namespace Model {
             $power = $stream->readInt32();
             return new RepairProperties($validTargets, $power);
         }
-    
+        
         /**
          * Write RepairProperties to output stream
          */

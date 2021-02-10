@@ -22,7 +22,7 @@ class AttackAction:
         else:
             auto_attack = None
         return AttackAction(target, auto_attack)
-
+    
     def write_to(self, stream):
         """Write AttackAction to output stream
         """
@@ -36,7 +36,7 @@ class AttackAction:
         else:
             stream.write_bool(True)
             self.auto_attack.write_to(stream)
-
+    
     def __repr__(self):
         return "AttackAction(" + \
             repr(self.target) + \

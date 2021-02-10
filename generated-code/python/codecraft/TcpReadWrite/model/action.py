@@ -17,7 +17,7 @@ class Action:
             entity_actions_value = EntityAction.read_from(stream)
             entity_actions[entity_actions_key] = entity_actions_value
         return Action(entity_actions)
-
+    
     def write_to(self, stream):
         """Write Action to output stream
         """
@@ -25,7 +25,7 @@ class Action:
         for key, value in self.entity_actions.items():
             stream.write_int(key)
             value.write_to(stream)
-
+    
     def __repr__(self):
         return "Action(" + \
             repr(self.entity_actions) + \

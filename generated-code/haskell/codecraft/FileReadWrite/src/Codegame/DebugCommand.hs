@@ -17,7 +17,7 @@ instance Trans DebugCommandAdd where
         debugData <- Trans.read
         return DebugCommandAdd {
             debugData }
-
+    
     write DebugCommandAdd {
         debugData } = do
             Trans.write debugData
@@ -29,7 +29,7 @@ data DebugCommandClear = DebugCommandClear { }
 instance Trans DebugCommandClear where
     read = do
         return DebugCommandClear { }
-
+    
     write DebugCommandClear { } = do
             return ()
 
@@ -44,7 +44,7 @@ instance Trans DebugCommandSetAutoFlush where
         enable <- Trans.read
         return DebugCommandSetAutoFlush {
             enable }
-
+    
     write DebugCommandSetAutoFlush {
         enable } = do
             Trans.write enable
@@ -56,7 +56,7 @@ data DebugCommandFlush = DebugCommandFlush { }
 instance Trans DebugCommandFlush where
     read = do
         return DebugCommandFlush { }
-
+    
     write DebugCommandFlush { } = do
             return ()
 
@@ -80,7 +80,7 @@ instance Trans DebugCommand where
             1 -> Clear <$> Trans.read
             2 -> SetAutoFlush <$> Trans.read
             3 -> Flush <$> Trans.read
-
+    
     write (Add value) = do
         Trans.write (0 :: Int32)
         Trans.write value

@@ -20,7 +20,7 @@ instance Trans Vec2Int32 where
         return Vec2Int32 {
             x,
             y }
-
+    
     write Vec2Int32 {
         x,
         y } = do

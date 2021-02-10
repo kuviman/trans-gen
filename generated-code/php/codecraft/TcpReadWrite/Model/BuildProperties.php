@@ -41,7 +41,7 @@ namespace Model {
             }
             return new BuildProperties($options, $initHealth);
         }
-    
+        
         /**
          * Write BuildProperties to output stream
          */

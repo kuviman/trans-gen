@@ -112,7 +112,7 @@ namespace Model {
             }
             return new EntityProperties($size, $buildScore, $destroyScore, $canMove, $populationProvide, $populationUse, $maxHealth, $initialCost, $sightRange, $resourcePerHealth, $build, $attack, $repair);
         }
-    
+        
         /**
          * Write EntityProperties to output stream
          */

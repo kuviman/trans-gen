@@ -32,7 +32,7 @@ namespace  {
             $y = $stream->readInt32();
             return new Vec2Int($x, $y);
         }
-    
+        
         /**
          * Write Vec2Int to output stream
          */

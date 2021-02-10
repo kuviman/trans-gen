@@ -44,7 +44,7 @@ namespace  {
             $a = $stream->readFloat32();
             return new Color($r, $g, $b, $a);
         }
-    
+        
         /**
          * Write Color to output stream
          */

@@ -61,7 +61,7 @@ namespace Model {
             $active = $stream->readBool();
             return new Entity($id, $playerId, $entityType, $position, $health, $active);
         }
-    
+        
         /**
          * Write Entity to output stream
          */

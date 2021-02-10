@@ -14,13 +14,13 @@ class Vec2Float:
         x = stream.read_float()
         y = stream.read_float()
         return Vec2Float(x, y)
-
+    
     def write_to(self, stream):
         """Write Vec2Float to output stream
         """
         stream.write_float(self.x)
         stream.write_float(self.y)
-
+    
     def __repr__(self):
         return "Vec2Float(" + \
             repr(self.x) + \

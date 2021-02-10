@@ -24,7 +24,7 @@ instance Trans Player where
             id,
             score,
             resource }
-
+    
     write Player {
         id,
         score,

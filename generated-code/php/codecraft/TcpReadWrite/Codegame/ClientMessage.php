@@ -1,7 +1,7 @@
 <?php
 
 namespace Codegame {
-
+    
     require_once 'Codegame/DebugCommand.php';
     require_once 'Model/Action.php';
 
@@ -64,7 +64,7 @@ namespace Codegame\ClientMessage {
             $command = \Codegame\DebugCommand::readFrom($stream);
             return new DebugMessage($command);
         }
-    
+        
         /**
          * Write DebugMessage to output stream
          */
@@ -100,7 +100,7 @@ namespace Codegame\ClientMessage {
             $action = \Model\Action::readFrom($stream);
             return new ActionMessage($action);
         }
-    
+        
         /**
          * Write ActionMessage to output stream
          */
@@ -130,7 +130,7 @@ namespace Codegame\ClientMessage {
         {
             return new DebugUpdateDone();
         }
-    
+        
         /**
          * Write DebugUpdateDone to output stream
          */
@@ -159,7 +159,7 @@ namespace Codegame\ClientMessage {
         {
             return new RequestDebugState();
         }
-    
+        
         /**
          * Write RequestDebugState to output stream
          */

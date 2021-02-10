@@ -32,7 +32,7 @@ class Entity:
         health = stream.read_int()
         active = stream.read_bool()
         return Entity(id, player_id, entity_type, position, health, active)
-
+    
     def write_to(self, stream):
         """Write Entity to output stream
         """
@@ -46,7 +46,7 @@ class Entity:
         self.position.write_to(stream)
         stream.write_int(self.health)
         stream.write_bool(self.active)
-
+    
     def __repr__(self):
         return "Entity(" + \
             repr(self.id) + \

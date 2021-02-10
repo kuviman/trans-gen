@@ -34,13 +34,13 @@ class DebugMessage(ClientMessage):
         """
         command = DebugCommand.read_from(stream)
         return DebugMessage(command)
-
+    
     def write_to(self, stream):
         """Write DebugMessage to output stream
         """
         stream.write_int(self.TAG)
         self.command.write_to(stream)
-
+    
     def __repr__(self):
         return "DebugMessage(" + \
             repr(self.command) + \
@@ -63,13 +63,13 @@ class ActionMessage(ClientMessage):
         """
         action = Action.read_from(stream)
         return ActionMessage(action)
-
+    
     def write_to(self, stream):
         """Write ActionMessage to output stream
         """
         stream.write_int(self.TAG)
         self.action.write_to(stream)
-
+    
     def __repr__(self):
         return "ActionMessage(" + \
             repr(self.action) + \
@@ -90,12 +90,12 @@ class DebugUpdateDone(ClientMessage):
         """Read DebugUpdateDone from input stream
         """
         return DebugUpdateDone()
-
+    
     def write_to(self, stream):
         """Write DebugUpdateDone to output stream
         """
         stream.write_int(self.TAG)
-
+    
     def __repr__(self):
         return "DebugUpdateDone(" + \
             ")"
@@ -115,12 +115,12 @@ class RequestDebugState(ClientMessage):
         """Read RequestDebugState from input stream
         """
         return RequestDebugState()
-
+    
     def write_to(self, stream):
         """Write RequestDebugState to output stream
         """
         stream.write_int(self.TAG)
-
+    
     def __repr__(self):
         return "RequestDebugState(" + \
             ")"

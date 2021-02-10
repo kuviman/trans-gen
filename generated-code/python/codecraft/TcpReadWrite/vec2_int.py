@@ -14,13 +14,13 @@ class Vec2Int:
         x = stream.read_int()
         y = stream.read_int()
         return Vec2Int(x, y)
-
+    
     def write_to(self, stream):
         """Write Vec2Int to output stream
         """
         stream.write_int(self.x)
         stream.write_int(self.y)
-
+    
     def __repr__(self):
         return "Vec2Int(" + \
             repr(self.x) + \

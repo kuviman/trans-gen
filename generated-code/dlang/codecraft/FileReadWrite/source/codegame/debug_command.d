@@ -25,7 +25,7 @@ abstract class DebugCommand {
                 throw new Exception("Unexpected tag value");
         }
     }
-
+    
     /// Add debug data to current tick
     static class Add : DebugCommand {
         static const int TAG = 0;
@@ -52,7 +52,7 @@ abstract class DebugCommand {
             debugData.writeTo(writer);
         }
     }
-
+    
     /// Clear current tick's debug data
     static class Clear : DebugCommand {
         static const int TAG = 1;
@@ -70,7 +70,7 @@ abstract class DebugCommand {
             writer.write(TAG);
         }
     }
-
+    
     /// Enable/disable auto performing of commands
     static class SetAutoFlush : DebugCommand {
         static const int TAG = 2;
@@ -97,7 +97,7 @@ abstract class DebugCommand {
             writer.write(enable);
         }
     }
-
+    
     /// Perform all previously sent commands
     static class Flush : DebugCommand {
         static const int TAG = 3;

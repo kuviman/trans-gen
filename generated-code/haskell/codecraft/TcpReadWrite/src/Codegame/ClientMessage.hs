@@ -18,7 +18,7 @@ instance Trans ClientMessageDebugMessage where
         command <- Trans.read
         return ClientMessageDebugMessage {
             command }
-
+    
     write ClientMessageDebugMessage {
         command } = do
             Trans.write command
@@ -34,7 +34,7 @@ instance Trans ClientMessageActionMessage where
         action <- Trans.read
         return ClientMessageActionMessage {
             action }
-
+    
     write ClientMessageActionMessage {
         action } = do
             Trans.write action
@@ -46,7 +46,7 @@ data ClientMessageDebugUpdateDone = ClientMessageDebugUpdateDone { }
 instance Trans ClientMessageDebugUpdateDone where
     read = do
         return ClientMessageDebugUpdateDone { }
-
+    
     write ClientMessageDebugUpdateDone { } = do
             return ()
 
@@ -57,7 +57,7 @@ data ClientMessageRequestDebugState = ClientMessageRequestDebugState { }
 instance Trans ClientMessageRequestDebugState where
     read = do
         return ClientMessageRequestDebugState { }
-
+    
     write ClientMessageRequestDebugState { } = do
             return ()
 
@@ -81,7 +81,7 @@ instance Trans ClientMessage where
             1 -> ActionMessage <$> Trans.read
             2 -> DebugUpdateDone <$> Trans.read
             3 -> RequestDebugState <$> Trans.read
-
+    
     write (DebugMessage value) = do
         Trans.write (0 :: Int32)
         Trans.write value

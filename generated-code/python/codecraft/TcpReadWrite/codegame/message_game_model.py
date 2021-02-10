@@ -30,13 +30,13 @@ class Client(MessageGameModel):
         """
         message = ClientMessage.read_from(stream)
         return Client(message)
-
+    
     def write_to(self, stream):
         """Write Client to output stream
         """
         stream.write_int(self.TAG)
         self.message.write_to(stream)
-
+    
     def __repr__(self):
         return "Client(" + \
             repr(self.message) + \
@@ -59,13 +59,13 @@ class Server(MessageGameModel):
         """
         message = ServerMessage.read_from(stream)
         return Server(message)
-
+    
     def write_to(self, stream):
         """Write Server to output stream
         """
         stream.write_int(self.TAG)
         self.message.write_to(stream)
-
+    
     def __repr__(self):
         return "Server(" + \
             repr(self.message) + \

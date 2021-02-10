@@ -28,7 +28,7 @@ instance Trans Color where
             g,
             b,
             a }
-
+    
     write Color {
         r,
         g,

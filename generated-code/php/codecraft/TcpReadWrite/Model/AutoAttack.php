@@ -37,7 +37,7 @@ namespace Model {
             }
             return new AutoAttack($pathfindRange, $validTargets);
         }
-    
+        
         /**
          * Write AutoAttack to output stream
          */

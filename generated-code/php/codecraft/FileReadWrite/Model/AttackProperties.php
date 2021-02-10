@@ -38,7 +38,7 @@ namespace Model {
             $collectResource = $stream->readBool();
             return new AttackProperties($attackRange, $damage, $collectResource);
         }
-    
+        
         /**
          * Write AttackProperties to output stream
          */

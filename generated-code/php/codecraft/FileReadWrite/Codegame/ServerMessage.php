@@ -1,7 +1,7 @@
 <?php
 
 namespace Codegame {
-
+    
     require_once 'Model/PlayerView.php';
 
     /**
@@ -66,7 +66,7 @@ namespace Codegame\ServerMessage {
             $debugAvailable = $stream->readBool();
             return new GetAction($playerView, $debugAvailable);
         }
-    
+        
         /**
          * Write GetAction to output stream
          */
@@ -97,7 +97,7 @@ namespace Codegame\ServerMessage {
         {
             return new Finish();
         }
-    
+        
         /**
          * Write Finish to output stream
          */
@@ -132,7 +132,7 @@ namespace Codegame\ServerMessage {
             $playerView = \Model\PlayerView::readFrom($stream);
             return new DebugUpdate($playerView);
         }
-    
+        
         /**
          * Write DebugUpdate to output stream
          */

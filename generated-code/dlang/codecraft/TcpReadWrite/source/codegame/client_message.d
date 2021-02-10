@@ -26,7 +26,7 @@ abstract class ClientMessage {
                 throw new Exception("Unexpected tag value");
         }
     }
-
+    
     /// Ask app to perform new debug command
     static class DebugMessage : ClientMessage {
         static const int TAG = 0;
@@ -53,7 +53,7 @@ abstract class ClientMessage {
             command.writeTo(writer);
         }
     }
-
+    
     /// Reply for ServerMessage::GetAction
     static class ActionMessage : ClientMessage {
         static const int TAG = 1;
@@ -80,7 +80,7 @@ abstract class ClientMessage {
             action.writeTo(writer);
         }
     }
-
+    
     /// Signifies finish of the debug update
     static class DebugUpdateDone : ClientMessage {
         static const int TAG = 2;
@@ -98,7 +98,7 @@ abstract class ClientMessage {
             writer.write(TAG);
         }
     }
-
+    
     /// Request debug state from the app
     static class RequestDebugState : ClientMessage {
         static const int TAG = 3;

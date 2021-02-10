@@ -53,7 +53,7 @@ instance Trans PlayerView where
             currentTick,
             players,
             entities }
-
+    
     write PlayerView {
         myId,
         mapSize,

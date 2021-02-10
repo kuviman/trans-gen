@@ -17,14 +17,14 @@ class Structure:
         float_number = stream.read_float()
         double_number = stream.read_double()
         return Structure(text, float_number, double_number)
-
+    
     def write_to(self, stream):
         """Write Structure to output stream
         """
         stream.write_string(self.text)
         stream.write_float(self.float_number)
         stream.write_double(self.double_number)
-
+    
     def __repr__(self):
         return "Structure(" + \
             repr(self.text) + \

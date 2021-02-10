@@ -21,7 +21,7 @@ instance Trans AttackAction where
         return AttackAction {
             target,
             autoAttack }
-
+    
     write AttackAction {
         target,
         autoAttack } = do

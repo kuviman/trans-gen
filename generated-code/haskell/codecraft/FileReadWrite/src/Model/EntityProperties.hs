@@ -67,7 +67,7 @@ instance Trans EntityProperties where
             build,
             attack,
             repair }
-
+    
     write EntityProperties {
         size,
         buildScore,

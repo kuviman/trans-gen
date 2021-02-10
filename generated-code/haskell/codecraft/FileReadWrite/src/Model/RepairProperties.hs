@@ -21,7 +21,7 @@ instance Trans RepairProperties where
         return RepairProperties {
             validTargets,
             power }
-
+    
     write RepairProperties {
         validTargets,
         power } = do

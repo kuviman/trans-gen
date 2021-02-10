@@ -24,7 +24,7 @@ instance Trans Structure where
             text,
             floatNumber,
             doubleNumber }
-
+    
     write Structure {
         text,
         floatNumber,

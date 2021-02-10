@@ -52,7 +52,7 @@ class Example:
         else:
             optional_enum = None
         return Example(one_of, hash_map, optional_int, optional_bool, optional_one_of, optional_struct, optional_enum)
-
+    
     def write_to(self, stream):
         """Write Example to output stream
         """
@@ -86,7 +86,7 @@ class Example:
         else:
             stream.write_bool(True)
             stream.write_int(self.optional_enum)
-
+    
     def __repr__(self):
         return "Example(" + \
             repr(self.one_of) + \

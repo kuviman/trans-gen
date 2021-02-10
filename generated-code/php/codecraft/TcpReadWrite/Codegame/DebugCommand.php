@@ -1,7 +1,7 @@
 <?php
 
 namespace Codegame {
-
+    
     require_once 'Model/DebugInterface/DebugData.php';
 
     /**
@@ -63,7 +63,7 @@ namespace Codegame\DebugCommand {
             $debugData = \Model\DebugInterface\DebugData::readFrom($stream);
             return new Add($debugData);
         }
-    
+        
         /**
          * Write Add to output stream
          */
@@ -93,7 +93,7 @@ namespace Codegame\DebugCommand {
         {
             return new Clear();
         }
-    
+        
         /**
          * Write Clear to output stream
          */
@@ -128,7 +128,7 @@ namespace Codegame\DebugCommand {
             $enable = $stream->readBool();
             return new SetAutoFlush($enable);
         }
-    
+        
         /**
          * Write SetAutoFlush to output stream
          */
@@ -158,7 +158,7 @@ namespace Codegame\DebugCommand {
         {
             return new Flush();
         }
-    
+        
         /**
          * Write Flush to output stream
          */

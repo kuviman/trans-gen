@@ -22,7 +22,7 @@ class BuildProperties:
         else:
             init_health = None
         return BuildProperties(options, init_health)
-
+    
     def write_to(self, stream):
         """Write BuildProperties to output stream
         """
@@ -34,7 +34,7 @@ class BuildProperties:
         else:
             stream.write_bool(True)
             stream.write_int(self.init_health)
-
+    
     def __repr__(self):
         return "BuildProperties(" + \
             repr(self.options) + \

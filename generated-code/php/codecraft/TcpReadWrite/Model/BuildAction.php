@@ -33,7 +33,7 @@ namespace Model {
             $position = \Vec2Int::readFrom($stream);
             return new BuildAction($entityType, $position);
         }
-    
+        
         /**
          * Write BuildAction to output stream
          */

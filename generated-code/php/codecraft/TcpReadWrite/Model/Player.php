@@ -38,7 +38,7 @@ namespace Model {
             $resource = $stream->readInt32();
             return new Player($id, $score, $resource);
         }
-    
+        
         /**
          * Write Player to output stream
          */

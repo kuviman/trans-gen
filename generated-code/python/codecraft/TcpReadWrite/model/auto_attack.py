@@ -19,7 +19,7 @@ class AutoAttack:
             valid_targets_element = EntityType(stream.read_int())
             valid_targets.append(valid_targets_element)
         return AutoAttack(pathfind_range, valid_targets)
-
+    
     def write_to(self, stream):
         """Write AutoAttack to output stream
         """
@@ -27,7 +27,7 @@ class AutoAttack:
         stream.write_int(len(self.valid_targets))
         for element in self.valid_targets:
             stream.write_int(element)
-
+    
     def __repr__(self):
         return "AutoAttack(" + \
             repr(self.pathfind_range) + \

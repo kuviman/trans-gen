@@ -1,7 +1,7 @@
 <?php
 
 namespace Model\DebugInterface {
-
+    
     require_once 'Model/DebugInterface/ColoredVertex.php';
     require_once 'Model/DebugInterface/PrimitiveType.php';
 
@@ -61,7 +61,7 @@ namespace Model\DebugInterface\DebugData {
             $text = $stream->readString();
             return new Log($text);
         }
-    
+        
         /**
          * Write Log to output stream
          */
@@ -108,7 +108,7 @@ namespace Model\DebugInterface\DebugData {
             $primitiveType = \Model\DebugInterface\PrimitiveType::readFrom($stream);
             return new Primitives($vertices, $primitiveType);
         }
-    
+        
         /**
          * Write Primitives to output stream
          */
@@ -166,7 +166,7 @@ namespace Model\DebugInterface\DebugData {
             $size = $stream->readFloat32();
             return new PlacedText($vertex, $text, $alignment, $size);
         }
-    
+        
         /**
          * Write PlacedText to output stream
          */

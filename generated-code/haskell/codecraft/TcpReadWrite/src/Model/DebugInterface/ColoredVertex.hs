@@ -25,7 +25,7 @@ instance Trans ColoredVertex where
             worldPos,
             screenOffset,
             color }
-
+    
     write ColoredVertex {
         worldPos,
         screenOffset,

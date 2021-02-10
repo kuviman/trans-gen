@@ -33,13 +33,13 @@ class Add(DebugCommand):
         """
         debug_data = DebugData.read_from(stream)
         return Add(debug_data)
-
+    
     def write_to(self, stream):
         """Write Add to output stream
         """
         stream.write_int(self.TAG)
         self.debug_data.write_to(stream)
-
+    
     def __repr__(self):
         return "Add(" + \
             repr(self.debug_data) + \
@@ -60,12 +60,12 @@ class Clear(DebugCommand):
         """Read Clear from input stream
         """
         return Clear()
-
+    
     def write_to(self, stream):
         """Write Clear to output stream
         """
         stream.write_int(self.TAG)
-
+    
     def __repr__(self):
         return "Clear(" + \
             ")"
@@ -87,13 +87,13 @@ class SetAutoFlush(DebugCommand):
         """
         enable = stream.read_bool()
         return SetAutoFlush(enable)
-
+    
     def write_to(self, stream):
         """Write SetAutoFlush to output stream
         """
         stream.write_int(self.TAG)
         stream.write_bool(self.enable)
-
+    
     def __repr__(self):
         return "SetAutoFlush(" + \
             repr(self.enable) + \
@@ -114,12 +114,12 @@ class Flush(DebugCommand):
         """Read Flush from input stream
         """
         return Flush()
-
+    
     def write_to(self, stream):
         """Write Flush to output stream
         """
         stream.write_int(self.TAG)
-
+    
     def __repr__(self):
         return "Flush(" + \
             ")"

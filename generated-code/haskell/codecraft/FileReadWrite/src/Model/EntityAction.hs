@@ -31,7 +31,7 @@ instance Trans EntityAction where
             buildAction,
             attackAction,
             repairAction }
-
+    
     write EntityAction {
         moveAction,
         buildAction,

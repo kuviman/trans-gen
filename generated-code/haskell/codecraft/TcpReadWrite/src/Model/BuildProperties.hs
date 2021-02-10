@@ -21,7 +21,7 @@ instance Trans BuildProperties where
         return BuildProperties {
             options,
             initHealth }
-
+    
     write BuildProperties {
         options,
         initHealth } = do

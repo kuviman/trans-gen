@@ -18,7 +18,7 @@ instance Trans MessageGameModelClient where
         message <- Trans.read
         return MessageGameModelClient {
             message }
-
+    
     write MessageGameModelClient {
         message } = do
             Trans.write message
@@ -34,7 +34,7 @@ instance Trans MessageGameModelServer where
         message <- Trans.read
         return MessageGameModelServer {
             message }
-
+    
     write MessageGameModelServer {
         message } = do
             Trans.write message
@@ -53,7 +53,7 @@ instance Trans MessageGameModel where
         case tag of
             0 -> Client <$> Trans.read
             1 -> Server <$> Trans.read
-
+    
     write (Client value) = do
         Trans.write (0 :: Int32)
         Trans.write value

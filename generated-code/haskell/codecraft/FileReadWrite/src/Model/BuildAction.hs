@@ -21,7 +21,7 @@ instance Trans BuildAction where
         return BuildAction {
             entityType,
             position }
-
+    
     write BuildAction {
         entityType,
         position } = do
