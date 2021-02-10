@@ -3,10 +3,6 @@
 require_once '{{ file_name(schema) }}.php';
 require_once 'Stream.php';
 
-if (count($argv) != 3) {
-    throw new Exception('Pass input and output as parameters');
-}
-
 class FileInputStream extends InputStream
 {
     private $stream;
@@ -50,7 +46,12 @@ class FileOutputStream extends OutputStream
 
 $inputFile = $argv[1];
 $outputFile = $argv[2];
+$repeat = intval($argv[3]);
 
-$input = {{ type_name(schema) }}::readFrom(new FileInputStream($inputFile));
-print_r($input);
-$input->writeTo(new FileOutputStream($outputFile));
+for ($i = 0; $i < $repeat; $i++) {
+    $input = {{ type_name(schema) }}::readFrom(new FileInputStream($inputFile));
+    if ($repeat == 1) {
+        print_r($input);
+    }
+    $input->writeTo(new FileOutputStream($outputFile));
+}
