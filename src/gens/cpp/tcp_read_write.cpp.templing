@@ -6,17 +6,19 @@
 
 int main(int argc, char* argv[])
 {
-    if (argc != 3) {
-        throw std::runtime_error("Pass host and port as parameters");
-    }
     char* host = argv[1];
     int port = atoi(argv[2]);
+    bool show_stdout = strcmp(argv[3], "true") == 0;
 
     TcpStream tcpStream(host, port);
-    {{ type_name(schema) }} input = {{ name_path(schema) }}::readFrom(tcpStream);
-    std::cout << input{{ access }}toString() << std::endl;
-    input{{ access }}writeTo(tcpStream);
-    tcpStream.flush();
+    while (tcpStream.readBool()) {
+        {{ type_name(schema) }} input = {{ name_path(schema) }}::readFrom(tcpStream);
+        if (show_stdout) {
+            std::cout << input{{ access }}toString() << std::endl;
+        }
+        input{{ access }}writeTo(tcpStream);
+        tcpStream.flush();
+    }
 
     return 0;
 }
