@@ -5,23 +5,24 @@ import trans_gen_test.util.StreamUtil;
 
 public class Runner {
     public static void main(String[] args) throws IOException {
-        if (args.length != 2) {
-            throw new RuntimeException("Pass host and port as parameters");
-        }
         String host = args[0];
         int port = Integer.parseInt(args[1]);
+        boolean stdout = Boolean.parseBoolean(args[2]);
 
         Socket socket = new Socket(host, port);
         socket.setTcpNoDelay(true);
 
         InputStream inputStream = new BufferedInputStream(socket.getInputStream());
-        {{ type_name(schema) }} input = {{ type_name(schema) }}.readFrom(inputStream);
-
-        System.out.println(input);
-
         OutputStream outputStream = new BufferedOutputStream(socket.getOutputStream());
-        input.writeTo(outputStream);
-        outputStream.flush();
+
+        while (StreamUtil.readBoolean(inputStream)) {
+            {{ type_name(schema) }} input = {{ type_name(schema) }}.readFrom(inputStream);
+            if (stdout) {
+                System.out.println(input);
+            }
+            input.writeTo(outputStream);
+            outputStream.flush();
+        }
 
         socket.close();
     }

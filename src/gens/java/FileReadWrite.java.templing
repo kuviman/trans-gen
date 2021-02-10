@@ -4,20 +4,20 @@ import trans_gen_test.util.StreamUtil;
 
 public class Runner {
     public static void main(String[] args) throws IOException {
-        if (args.length != 2) {
-            throw new RuntimeException("Pass input and output as parameters");
-        }
         String inputFile = args[0];
         String outputFile = args[1];
+        int repeat = Integer.parseInt(args[2]);
 
-        InputStream inputStream = new BufferedInputStream(new FileInputStream(inputFile));
-        {{ type_name(schema) }} input = {{ type_name(schema) }}.readFrom(inputStream);
-
-        System.out.println(input);
-
-        OutputStream outputStream = new BufferedOutputStream(new FileOutputStream(outputFile));
-        input.writeTo(outputStream);
-        outputStream.flush();
-        outputStream.close();
+        for (int i = 0; i < repeat; i++) {
+            InputStream inputStream = new BufferedInputStream(new FileInputStream(inputFile));
+            {{ type_name(schema) }} input = {{ type_name(schema) }}.readFrom(inputStream);
+            if (repeat == 1) {
+                System.out.println(input);
+            }
+            OutputStream outputStream = new BufferedOutputStream(new FileOutputStream(outputFile));
+            input.writeTo(outputStream);
+            outputStream.flush();
+            outputStream.close();
+        }
     }
 }
