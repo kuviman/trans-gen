@@ -326,7 +326,7 @@ fn project_name(path: &Path) -> anyhow::Result<String> {
 }
 
 impl RunnableGenerator for Generator {
-    fn build_local(path: &Path) -> anyhow::Result<()> {
+    fn build_local(path: &Path, verbose: bool) -> anyhow::Result<()> {
         command("go")
             .arg("build")
             .arg("-o")
@@ -336,7 +336,7 @@ impl RunnableGenerator for Generator {
                 if cfg!(windows) { ".exe" } else { "" }
             ))
             .current_dir(path)
-            .run()
+            .run(verbose)
     }
     fn run_local(path: &Path) -> anyhow::Result<Command> {
         let mut command = command(

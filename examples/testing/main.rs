@@ -15,7 +15,9 @@ struct Opt {
     #[structopt(long)]
     generate: Option<PathBuf>,
     #[structopt(long)]
-    show_stdout: Option<bool>,
+    show_stdout: bool,
+    #[structopt(long)]
+    verbose: bool,
 }
 
 macro_rules! all_models {
@@ -85,13 +87,7 @@ fn main() -> anyhow::Result<()> {
                                         });
                                         let test = trans_gen::testing::$test {
                                             snapshot: snapshot.clone(),
-                                            show_stdout: opt.show_stdout.unwrap_or(
-                                                if opt.repeat == 1 {
-                                                    $model::SHOW_STDOUT
-                                                } else {
-                                                    false
-                                                },
-                                            ),
+                                            show_stdout: opt.show_stdout,
                                             version: $model::version(),
                                             repeat: opt.repeat,
                                         };
@@ -104,11 +100,13 @@ fn main() -> anyhow::Result<()> {
                                                 stringify!($lang)
                                             ))?;
                                         } else {
-                                            test.test::<trans_gen::gens::$lang::Generator>()
-                                                .context(format!(
-                                                    "Failed to test {}",
-                                                    stringify!($lang)
-                                                ))?;
+                                            test.test::<trans_gen::gens::$lang::Generator>(
+                                                opt.verbose,
+                                            )
+                                            .context(format!(
+                                                "Failed to test {}",
+                                                stringify!($lang)
+                                            ))?;
                                         }
                                     }
                                 };

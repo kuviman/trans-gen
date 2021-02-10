@@ -261,7 +261,7 @@ impl crate::Generator for Generator {
 }
 
 impl RunnableGenerator for Generator {
-    fn build_local(path: &Path) -> anyhow::Result<()> {
+    fn build_local(path: &Path, verbose: bool) -> anyhow::Result<()> {
         command("dotnet")
             .current_dir(path)
             .arg("publish")
@@ -269,7 +269,7 @@ impl RunnableGenerator for Generator {
             .arg("Release")
             .arg("-o")
             .arg(".")
-            .run()
+            .run(verbose)
     }
     fn run_local(path: &Path) -> anyhow::Result<Command> {
         fn project_name(path: &Path) -> anyhow::Result<String> {

@@ -620,7 +620,6 @@ impl Game for GameModel {
 }
 
 pub type Model = Message<GameModel>;
-pub const SHOW_STDOUT: bool = false;
 pub fn version() -> trans::Version {
     trans::version()
 }

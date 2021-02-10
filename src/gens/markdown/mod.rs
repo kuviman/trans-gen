@@ -172,7 +172,7 @@ impl RunnableGenerator for Generator {
     fn is_runnable() -> bool {
         false
     }
-    fn build_local(_path: &Path) -> anyhow::Result<()> {
+    fn build_local(_path: &Path, _verbose: bool) -> anyhow::Result<()> {
         unreachable!()
     }
     fn run_local(_path: &Path) -> anyhow::Result<Command> {

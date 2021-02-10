@@ -289,20 +289,20 @@ impl crate::Generator for Generator {
 }
 
 impl RunnableGenerator for Generator {
-    fn build_local(path: &Path) -> anyhow::Result<()> {
+    fn build_local(path: &Path, verbose: bool) -> anyhow::Result<()> {
         command("cmake")
             .current_dir(path)
             .arg("-DCMAKE_BUILD_TYPE=RELEASE")
             .arg("-DCMAKE_VERBOSE_MAKEFILE=ON")
             .arg(".")
-            .run()?;
+            .run(verbose)?;
         command("cmake")
             .current_dir(path)
             .arg("--build")
             .arg(".")
             .arg("--config")
             .arg("Release")
-            .run()?;
+            .run(verbose)?;
         Ok(())
     }
     fn run_local(path: &Path) -> anyhow::Result<Command> {

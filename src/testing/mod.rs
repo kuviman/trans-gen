@@ -13,7 +13,7 @@ pub trait Test {
 
 pub trait TestExt: Test {
     fn generate<G: TestableGenerator<Self>>(&self, path: &Path) -> anyhow::Result<()>;
-    fn test<G: TestableGenerator<Self>>(&self) -> anyhow::Result<()>;
+    fn test<G: TestableGenerator<Self>>(&self, verbose: bool) -> anyhow::Result<()>;
 }
 
 impl<T: Test> TestExt for T {
@@ -29,7 +29,7 @@ impl<T: Test> TestExt for T {
         .context("Failed to write generated code")?;
         Ok(())
     }
-    fn test<G: TestableGenerator<Self>>(&self) -> anyhow::Result<()> {
+    fn test<G: TestableGenerator<Self>>(&self, verbose: bool) -> anyhow::Result<()> {
         if !G::is_runnable() {
             return Ok(());
         }
@@ -37,7 +37,7 @@ impl<T: Test> TestExt for T {
         let path = tempdir.as_ref();
         self.generate::<G>(path)?;
         let start_time = std::time::Instant::now();
-        G::build_local(path).context("Failed to build locally")?;
+        G::build_local(path, verbose).context("Failed to build locally")?;
         let running_duration = std::time::Instant::now().duration_since(start_time);
         println!("Build duration: {}", format_duration(running_duration));
         self.run_test(G::run_local(path).context("Failed to figure out running command")?)

@@ -15,6 +15,7 @@ impl<D: Trans + PartialEq + Debug> Test for TcpReadWrite<D> {
         use std::io::Write as _;
         if !self.show_stdout {
             run_code.stdout(std::process::Stdio::null());
+            run_code.stderr(std::process::Stdio::null());
         }
         let port: u16 = 31001;
         let listener =
