@@ -51,7 +51,7 @@ jobs:
   test:
     name: ${{ matrix.language }} ${{ matrix.env.name }}
     needs: build-test
-    continue-on-error: ${{ matrix.language == "Haskell" }}
+    continue-on-error: ${{ matrix.language == 'Haskell' }}
     strategy:
       fail-fast: false
       matrix:
