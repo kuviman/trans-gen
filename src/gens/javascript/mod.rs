@@ -178,7 +178,7 @@ impl crate::Generator for Generator {
 
 impl RunnableGenerator for Generator {
     fn build_local(path: &Path, verbose: bool) -> anyhow::Result<()> {
-        command("npm").arg("install").current_dir(path).run(verbose)
+        command("npm").arg("install").current_dir(path).show_output(verbose).run()
     }
     fn run_local(path: &Path) -> anyhow::Result<Command> {
         let mut command = command("node");

@@ -3,7 +3,6 @@ use super::*;
 pub struct FileReadWrite<D> {
     pub version: Version,
     pub snapshot: D,
-    pub show_stdout: bool,
     pub repeat: usize,
 }
 
@@ -11,7 +10,7 @@ impl<D: Trans + PartialEq + Debug> Test for FileReadWrite<D> {
     fn schemas(&self) -> Vec<Arc<Schema>> {
         vec![Schema::of::<D>(&self.version)]
     }
-    fn run_test(&self, mut run_code: Command) -> anyhow::Result<TestRunResult> {
+    fn run_test(&self, mut run_code: Command, verbose: bool) -> anyhow::Result<TestRunResult> {
         let tempdir = tempfile::tempdir().context("Failed to create temp dir")?;
         let path = tempdir.as_ref();
         let input_file = path.join("input.trans");
@@ -29,7 +28,8 @@ impl<D: Trans + PartialEq + Debug> Test for FileReadWrite<D> {
             .arg(&input_file)
             .arg(&output_file)
             .arg(self.repeat.to_string())
-            .run(self.show_stdout)
+            .show_stdout(format!("{:?}", self.snapshot).len() < 1000 && verbose)
+            .run()
             .context("Failed to run code")?;
         let run_duration = std::time::Instant::now().duration_since(start_time);
         println!("Run duration: {}", format_duration(run_duration));

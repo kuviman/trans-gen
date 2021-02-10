@@ -226,7 +226,8 @@ impl RunnableGenerator for Generator {
             .arg("--local-bin-path=bin")
             .arg("install")
             .current_dir(path)
-            .run(verbose)
+            .show_output(verbose)
+            .run()
     }
     fn run_local(path: &Path) -> anyhow::Result<Command> {
         fn project_name(path: &Path) -> anyhow::Result<String> {

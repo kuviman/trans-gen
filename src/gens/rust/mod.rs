@@ -75,9 +75,7 @@ impl Generator {
         let mut parent: Option<String> = None;
         for part in &namespace.parts {
             let package = match &parent {
-                Some(parent) => {
-                    format!("{}::{}", parent, part.snake_case(conv))
-                }
+                Some(parent) => format!("{}::{}", parent, part.snake_case(conv)),
                 None => part.snake_case(conv),
             };
             self.packages
@@ -207,7 +205,8 @@ impl RunnableGenerator for Generator {
             .arg("build")
             .arg("--release")
             .current_dir(path)
-            .run(verbose)
+            .show_output(verbose)
+            .run()
     }
     fn run_local(path: &Path) -> anyhow::Result<Command> {
         fn package_name(path: &Path) -> anyhow::Result<String> {

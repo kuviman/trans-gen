@@ -336,7 +336,7 @@ impl RunnableGenerator for Generator {
                 if cfg!(windows) { ".exe" } else { "" }
             ))
             .current_dir(path)
-            .run(verbose)
+            .show_output(verbose).run()
     }
     fn run_local(path: &Path) -> anyhow::Result<Command> {
         let mut command = command(

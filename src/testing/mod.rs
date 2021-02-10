@@ -30,7 +30,7 @@ impl TestResult {
 
 pub trait Test {
     fn schemas(&self) -> Vec<Arc<Schema>>;
-    fn run_test(&self, run_code: Command) -> anyhow::Result<TestRunResult>;
+    fn run_test(&self, run_code: Command, verbose: bool) -> anyhow::Result<TestRunResult>;
 }
 
 pub trait TestExt: Test {
@@ -63,7 +63,10 @@ impl<T: Test> TestExt for T {
         let build_duration = std::time::Instant::now().duration_since(build_start_time);
         println!("Build duration: {}", format_duration(build_duration));
         let run_result = self
-            .run_test(G::run_local(path).context("Failed to figure out running command")?)
+            .run_test(
+                G::run_local(path).context("Failed to figure out running command")?,
+                verbose,
+            )
             .context("Failed to run test")?;
         Ok(TestResult {
             build_duration,

@@ -18,8 +18,6 @@ struct Opt {
     #[structopt(long)]
     generate: Option<PathBuf>,
     #[structopt(long)]
-    show_stdout: bool,
-    #[structopt(long)]
     verbose: bool,
     #[structopt(long)]
     save_results: Option<PathBuf>,
@@ -101,7 +99,6 @@ fn main() -> anyhow::Result<()> {
                                         });
                                         let test = trans_gen::testing::$test {
                                             snapshot: snapshot.clone(),
-                                            show_stdout: opt.show_stdout,
                                             version: $model::version(),
                                             repeat: opt.repeat,
                                         };

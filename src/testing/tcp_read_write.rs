@@ -3,7 +3,6 @@ use super::*;
 pub struct TcpReadWrite<D> {
     pub version: Version,
     pub snapshot: D,
-    pub show_stdout: bool,
     pub repeat: usize,
 }
 
@@ -11,12 +10,9 @@ impl<D: Trans + PartialEq + Debug> Test for TcpReadWrite<D> {
     fn schemas(&self) -> Vec<Arc<Schema>> {
         vec![Schema::of::<D>(&self.version)]
     }
-    fn run_test(&self, mut run_code: Command) -> anyhow::Result<TestRunResult> {
+    fn run_test(&self, mut run_code: Command, verbose: bool) -> anyhow::Result<TestRunResult> {
         use std::io::Write as _;
-        if !self.show_stdout {
-            run_code.stdout(std::process::Stdio::null());
-            run_code.stderr(std::process::Stdio::null());
-        }
+        let show_stdout = format!("{:?}", self.snapshot).len() < 1000 && verbose;
         let port: u16 = 31001;
         let listener =
             std::net::TcpListener::bind(("127.0.0.1", port)).context("Failed to bind tcp port")?;
@@ -24,7 +20,8 @@ impl<D: Trans + PartialEq + Debug> Test for TcpReadWrite<D> {
         let mut child = run_code
             .arg("127.0.0.1")
             .arg(port.to_string())
-            .arg(self.show_stdout.to_string())
+            .arg(show_stdout.to_string())
+            .show_stdout(show_stdout)
             .spawn()
             .context("Failed to spawn code")?;
         let mut accept_try = 0;

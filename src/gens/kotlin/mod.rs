@@ -92,23 +92,19 @@ impl Generator {
             Schema::Float32 => "Float".to_owned(),
             Schema::Float64 => "Double".to_owned(),
             Schema::String => "String".to_owned(),
-            Schema::Struct { .. } | Schema::OneOf { .. } | Schema::Enum { .. } => {
-                format!(
-                    "{}{}.{}",
-                    self.main_package,
-                    namespace_path_suffix(schema.namespace().unwrap()),
-                    schema.name().unwrap().camel_case(conv)
-                )
-            }
+            Schema::Struct { .. } | Schema::OneOf { .. } | Schema::Enum { .. } => format!(
+                "{}{}.{}",
+                self.main_package,
+                namespace_path_suffix(schema.namespace().unwrap()),
+                schema.name().unwrap().camel_case(conv)
+            ),
             Schema::Option(inner) => format!("{}?", self.type_name(inner)),
             Schema::Vec(inner) => format!("Array<{}>", self.type_name(inner)),
-            Schema::Map(key, value) => {
-                format!(
-                    "MutableMap<{}, {}>",
-                    self.type_name(key),
-                    self.type_name(value)
-                )
-            }
+            Schema::Map(key, value) => format!(
+                "MutableMap<{}, {}>",
+                self.type_name(key),
+                self.type_name(value)
+            ),
         }
     }
     fn read_var(&self, var: &str, schema: &Schema) -> String {
@@ -221,7 +217,8 @@ impl RunnableGenerator for Generator {
             .arg("package")
             .arg("--batch-mode")
             .current_dir(path)
-            .run(verbose)
+            .show_output(verbose)
+            .run()
     }
     fn run_local(path: &Path) -> anyhow::Result<Command> {
         fn project_name(path: &Path) -> anyhow::Result<String> {

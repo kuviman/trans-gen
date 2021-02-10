@@ -246,12 +246,14 @@ impl RunnableGenerator for Generator {
         command("npm")
             .arg("install")
             .current_dir(path)
-            .run(verbose)?;
+            .show_output(verbose)
+            .run()?;
         command("npm")
             .arg("run")
             .arg("build")
             .current_dir(path)
-            .run(verbose)?;
+            .show_output(verbose)
+            .run()?;
         Ok(())
     }
     fn run_local(path: &Path) -> anyhow::Result<Command> {

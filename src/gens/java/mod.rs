@@ -116,13 +116,11 @@ impl Generator {
             Schema::Float32 => "float".to_owned(),
             Schema::Float64 => "double".to_owned(),
             Schema::String => "String".to_owned(),
-            Schema::Struct { .. } | Schema::OneOf { .. } | Schema::Enum { .. } => {
-                format!(
-                    "{}.{}",
-                    self.main_package,
-                    file_name(schema).replace('/', "."),
-                )
-            }
+            Schema::Struct { .. } | Schema::OneOf { .. } | Schema::Enum { .. } => format!(
+                "{}.{}",
+                self.main_package,
+                file_name(schema).replace('/', "."),
+            ),
             Schema::Option(inner) => self.type_name_obj(inner),
             Schema::Vec(inner) => self.type_name_prearray(inner),
             Schema::Map(key, value) => format!(
@@ -249,7 +247,8 @@ impl RunnableGenerator for Generator {
             .arg("package")
             .arg("--batch-mode")
             .current_dir(path)
-            .run(verbose)
+            .show_output(verbose)
+            .run()
     }
     fn run_local(path: &Path) -> anyhow::Result<Command> {
         fn project_name(path: &Path) -> anyhow::Result<String> {

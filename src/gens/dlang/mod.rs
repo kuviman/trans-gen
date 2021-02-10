@@ -284,7 +284,7 @@ impl RunnableGenerator for Generator {
             .arg("-b")
             .arg("release")
             .current_dir(path)
-            .run(verbose)
+            .show_output(verbose).run()
     }
     fn run_local(path: &Path) -> anyhow::Result<Command> {
         let project_name = serde_json::from_str::<serde_json::Value>(

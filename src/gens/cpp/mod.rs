@@ -295,14 +295,16 @@ impl RunnableGenerator for Generator {
             .arg("-DCMAKE_BUILD_TYPE=RELEASE")
             .arg("-DCMAKE_VERBOSE_MAKEFILE=ON")
             .arg(".")
-            .run(verbose)?;
+            .show_output(verbose)
+            .run()?;
         command("cmake")
             .current_dir(path)
             .arg("--build")
             .arg(".")
             .arg("--config")
             .arg("Release")
-            .run(verbose)?;
+            .show_output(verbose)
+            .run()?;
         Ok(())
     }
     fn run_local(path: &Path) -> anyhow::Result<Command> {

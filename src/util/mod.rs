@@ -16,20 +16,36 @@ pub fn command(cmd: &str) -> Command {
 }
 
 pub trait CommandExt {
-    fn run(&mut self, show_output: bool) -> anyhow::Result<()>;
+    fn run(&mut self) -> anyhow::Result<()>;
+    fn show_stdout(&mut self, show: bool) -> &mut Self;
+    fn show_stderr(&mut self, show: bool) -> &mut Self;
+    fn show_output(&mut self, show: bool) -> &mut Self;
 }
 
 impl CommandExt for Command {
-    fn run(&mut self, show_output: bool) -> anyhow::Result<()> {
-        if !show_output {
-            self.stderr(std::process::Stdio::null());
-            self.stdout(std::process::Stdio::null());
-        }
+    fn run(&mut self) -> anyhow::Result<()> {
         let status = self.status().context("Failed to execute process")?;
         if !status.success() {
             anyhow::bail!("Process exited with {}", status);
         }
         Ok(())
+    }
+    fn show_stdout(&mut self, show: bool) -> &mut Self {
+        self.stdout(if show {
+            std::process::Stdio::inherit()
+        } else {
+            std::process::Stdio::null()
+        })
+    }
+    fn show_stderr(&mut self, show: bool) -> &mut Self {
+        self.stderr(if show {
+            std::process::Stdio::inherit()
+        } else {
+            std::process::Stdio::null()
+        })
+    }
+    fn show_output(&mut self, show: bool) -> &mut Self {
+        self.show_stdout(show).show_stderr(show)
     }
 }
 
