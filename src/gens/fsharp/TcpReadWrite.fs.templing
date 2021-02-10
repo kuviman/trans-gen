@@ -8,21 +8,21 @@ module Runner =
 
     [<EntryPoint>]
     let main argv =
-        if argv.Length <> 2 then
-            failwith "Pass host and port as parameters"
         let host = argv.[0]
         let port = argv.[1] |> Int32.Parse
+        let stdout = argv.[2] |> Boolean.Parse
 
         use client = new TcpClient(host, port)
         let stream = new BufferedStream(client.GetStream())
 
         let reader = new BinaryReader(stream)
-        let input = {{ type_name(schema) }}.readFrom(reader)
-
-        Console.WriteLine(input)
-
         let writer = new BinaryWriter(stream)
-        input.writeTo(writer)
-        writer.Flush()
+
+        while reader.ReadBoolean() do
+            let input = {{ type_name(schema) }}.readFrom(reader)
+            if stdout then
+                Console.WriteLine(input)
+            input.writeTo(writer)
+            writer.Flush()
 
         0
