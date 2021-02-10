@@ -10,7 +10,7 @@ pub struct PlayerView {
     /// Whether fog of war is enabled
     pub fog_of_war: bool,
     /// Entity properties for each entity type
-    pub entity_properties: std::collections::HashMap<EntityType, EntityProperties>,
+    pub entity_properties: std::collections::HashMap<model::EntityType, model::EntityProperties>,
     /// Max tick count for the game
     pub max_tick_count: i32,
     /// Max pathfind nodes when performing pathfinding in the game simulator
@@ -18,9 +18,9 @@ pub struct PlayerView {
     /// Current tick
     pub current_tick: i32,
     /// List of players
-    pub players: Vec<Player>,
+    pub players: Vec<model::Player>,
     /// List of entities
-    pub entities: Vec<Entity>,
+    pub entities: Vec<model::Entity>,
 }
 
 impl trans::Trans for PlayerView {
@@ -40,12 +40,12 @@ impl trans::Trans for PlayerView {
         let my_id: i32 = trans::Trans::read_from(reader)?;
         let map_size: i32 = trans::Trans::read_from(reader)?;
         let fog_of_war: bool = trans::Trans::read_from(reader)?;
-        let entity_properties: std::collections::HashMap<EntityType, EntityProperties> = trans::Trans::read_from(reader)?;
+        let entity_properties: std::collections::HashMap<model::EntityType, model::EntityProperties> = trans::Trans::read_from(reader)?;
         let max_tick_count: i32 = trans::Trans::read_from(reader)?;
         let max_pathfind_nodes: i32 = trans::Trans::read_from(reader)?;
         let current_tick: i32 = trans::Trans::read_from(reader)?;
-        let players: Vec<Player> = trans::Trans::read_from(reader)?;
-        let entities: Vec<Entity> = trans::Trans::read_from(reader)?;
+        let players: Vec<model::Player> = trans::Trans::read_from(reader)?;
+        let entities: Vec<model::Entity> = trans::Trans::read_from(reader)?;
         Ok(Self {
             my_id,
             map_size,

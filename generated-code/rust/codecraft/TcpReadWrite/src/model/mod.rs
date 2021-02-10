@@ -1,20 +1,34 @@
-use crate::trans;
+use super::*;
 
+pub mod debug_interface;
+
+mod action;
+pub use self::action::*;
+mod attack_action;
+pub use self::attack_action::*;
 mod attack_properties;
 pub use self::attack_properties::*;
+mod auto_attack;
+pub use self::auto_attack::*;
+mod build_action;
+pub use self::build_action::*;
 mod build_properties;
 pub use self::build_properties::*;
 mod entity;
 pub use self::entity::*;
+mod entity_action;
+pub use self::entity_action::*;
 mod entity_properties;
 pub use self::entity_properties::*;
 mod entity_type;
 pub use self::entity_type::*;
+mod move_action;
+pub use self::move_action::*;
 mod player;
 pub use self::player::*;
 mod player_view;
 pub use self::player_view::*;
+mod repair_action;
+pub use self::repair_action::*;
 mod repair_properties;
 pub use self::repair_properties::*;
-mod vec2_i32;
-pub use self::vec2_i32::*;

@@ -1,5 +1,5 @@
-import { Stream } from './stream';
-import { Socket } from 'net';
+import { Stream } from "./stream";
+import { Socket } from "net";
 
 export class TcpStream extends Stream {
     private socket: Socket;

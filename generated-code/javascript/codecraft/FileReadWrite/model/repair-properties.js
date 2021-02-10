@@ -1,4 +1,4 @@
-const EntityType = require('./entity-type');
+const EntityType = require.main.require('./model/entity-type');
 /**
  * Entity's repair properties
  */

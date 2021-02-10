@@ -1,17 +1,18 @@
 <?php
 
-require_once 'Model.php';
+require_once 'Example.php';
 require_once 'TcpStream.php';
-
-if (count($argv) != 3) {
-    throw new Exception('Pass host and as parameters');
-}
 
 $host = $argv[1];
 $port = intval($argv[2]);
+$stdout = $argv[3] == "true";
 
 $tcpStream = new TcpStream($host, $port);
-
-$input = Example::readFrom($tcpStream->inputStream);
-print_r($input);
-$input->writeTo($tcpStream->outputStream);
+while ($tcpStream->inputStream->readBool()) {
+    $input = \Example::readFrom($tcpStream->inputStream);
+    if ($stdout) {
+        print_r($input);
+    }
+    $input->writeTo($tcpStream->outputStream);
+    $tcpStream->outputStream->flush();
+}

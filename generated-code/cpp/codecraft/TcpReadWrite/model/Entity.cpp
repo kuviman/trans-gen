@@ -1,6 +1,8 @@
 #include "Entity.hpp"
 
-Entity::Entity(int id, std::optional<int> playerId, EntityType entityType, Vec2Int position, int health, bool active) : id(id), playerId(playerId), entityType(entityType), position(position), health(health), active(active) { }
+namespace model {
+
+Entity::Entity(int id, std::optional<int> playerId, model::EntityType entityType, Vec2Int position, int health, bool active) : id(id), playerId(playerId), entityType(entityType), position(position), health(health), active(active) { }
 
 // Read Entity from input stream
 Entity Entity::readFrom(InputStream& stream) {
@@ -9,7 +11,7 @@ Entity Entity::readFrom(InputStream& stream) {
     if (stream.readBool()) {
         playerId = stream.readInt();
     }
-    EntityType entityType = readEntityType(stream);
+    model::EntityType entityType = readEntityType(stream);
     Vec2Int position = Vec2Int::readFrom(stream);
     int health = stream.readInt();
     bool active = stream.readBool();
@@ -60,4 +62,6 @@ std::string Entity::toString() const {
     ss << active;
     ss << " }";
     return ss.str();
+}
+
 }

@@ -1,5 +1,7 @@
-require_relative 'entity_type'
-require_relative 'vec2_int'
+require './model/entity_type'
+require './vec2_int'
+
+module Model
 
 # Game entity
 class Entity
@@ -33,7 +35,7 @@ class Entity
         else
             player_id = nil
         end
-        entity_type = EntityType.read_from(stream)
+        entity_type = Model::EntityType.read_from(stream)
         position = Vec2Int.read_from(stream)
         health = stream.read_int()
         active = stream.read_bool()
@@ -85,4 +87,6 @@ class Entity
     def to_str
         to_s
     end
+end
+
 end

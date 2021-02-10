@@ -24,11 +24,11 @@ pub struct EntityProperties {
     /// Amount of resource added to enemy able to collect resource on dealing damage for 1 health point
     pub resource_per_health: i32,
     /// Build properties, if entity can build
-    pub build: Option<BuildProperties>,
+    pub build: Option<model::BuildProperties>,
     /// Attack properties, if entity can attack
-    pub attack: Option<AttackProperties>,
+    pub attack: Option<model::AttackProperties>,
     /// Repair properties, if entity can repair
-    pub repair: Option<RepairProperties>,
+    pub repair: Option<model::RepairProperties>,
 }
 
 impl trans::Trans for EntityProperties {
@@ -59,9 +59,9 @@ impl trans::Trans for EntityProperties {
         let initial_cost: i32 = trans::Trans::read_from(reader)?;
         let sight_range: i32 = trans::Trans::read_from(reader)?;
         let resource_per_health: i32 = trans::Trans::read_from(reader)?;
-        let build: Option<BuildProperties> = trans::Trans::read_from(reader)?;
-        let attack: Option<AttackProperties> = trans::Trans::read_from(reader)?;
-        let repair: Option<RepairProperties> = trans::Trans::read_from(reader)?;
+        let build: Option<model::BuildProperties> = trans::Trans::read_from(reader)?;
+        let attack: Option<model::AttackProperties> = trans::Trans::read_from(reader)?;
+        let repair: Option<model::RepairProperties> = trans::Trans::read_from(reader)?;
         Ok(Self {
             size,
             build_score,

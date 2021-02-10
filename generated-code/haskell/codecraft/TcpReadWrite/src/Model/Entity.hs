@@ -5,7 +5,7 @@ import qualified Trans
 import Trans (Trans)
 import Data.Int
 import Model.EntityType (EntityType)
-import Model.Vec2Int32 (Vec2Int32)
+import Vec2Int32 (Vec2Int32)
 
 -- | Game entity
 data Entity = Entity {

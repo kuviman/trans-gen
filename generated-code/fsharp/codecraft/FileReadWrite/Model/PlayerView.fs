@@ -2,6 +2,8 @@
 
 namespace TransGenTest.Model
 
+open TransGenTest
+
 /// Information available to the player
 type PlayerView = {
     /// Your player's ID
@@ -11,7 +13,7 @@ type PlayerView = {
     /// Whether fog of war is enabled
     FogOfWar: bool;
     /// Entity properties for each entity type
-    EntityProperties: Map<EntityType, EntityProperties>;
+    EntityProperties: Map<Model.EntityType, Model.EntityProperties>;
     /// Max tick count for the game
     MaxTickCount: int;
     /// Max pathfind nodes when performing pathfinding in the game simulator
@@ -19,9 +21,9 @@ type PlayerView = {
     /// Current tick
     CurrentTick: int;
     /// List of players
-    Players: Player[];
+    Players: Model.Player[];
     /// List of entities
-    Entities: Entity[];
+    Entities: Model.Entity[];
 } with
 
     /// Write PlayerView to writer
@@ -50,13 +52,13 @@ type PlayerView = {
         FogOfWar = reader.ReadBoolean()
         EntityProperties = [for _ in 1 .. reader.ReadInt32() do
                                let key = reader.ReadInt32() |> enum
-                               let value = EntityProperties.readFrom reader;
+                               let value = Model.EntityProperties.readFrom reader;
                                yield (key, value) ] |> Map.ofList
         MaxTickCount = reader.ReadInt32()
         MaxPathfindNodes = reader.ReadInt32()
         CurrentTick = reader.ReadInt32()
         Players = [|for _ in 1 .. reader.ReadInt32() do
-                      yield Player.readFrom reader; |]
+                      yield Model.Player.readFrom reader; |]
         Entities = [|for _ in 1 .. reader.ReadInt32() do
-                       yield Entity.readFrom reader; |]
+                       yield Model.Entity.readFrom reader; |]
     }

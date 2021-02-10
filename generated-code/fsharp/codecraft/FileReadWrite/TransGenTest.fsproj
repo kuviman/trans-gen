@@ -7,15 +7,31 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <Compile Include="Vec2Single.fs" />
+        <Compile Include="Color.fs" />
+        <Compile Include="Model/DebugInterface/ColoredVertex.fs" />
+        <Compile Include="Model/DebugInterface/PrimitiveType.fs" />
+        <Compile Include="Model/DebugInterface/DebugData.fs" />
+        <Compile Include="Codegame/DebugCommand.fs" />
+        <Compile Include="Vec2Int.fs" />
+        <Compile Include="Model/MoveAction.fs" />
         <Compile Include="Model/EntityType.fs" />
+        <Compile Include="Model/BuildAction.fs" />
+        <Compile Include="Model/AutoAttack.fs" />
+        <Compile Include="Model/AttackAction.fs" />
+        <Compile Include="Model/RepairAction.fs" />
+        <Compile Include="Model/EntityAction.fs" />
+        <Compile Include="Model/Action.fs" />
+        <Compile Include="Codegame/ClientMessage.fs" />
         <Compile Include="Model/BuildProperties.fs" />
         <Compile Include="Model/AttackProperties.fs" />
         <Compile Include="Model/RepairProperties.fs" />
         <Compile Include="Model/EntityProperties.fs" />
         <Compile Include="Model/Player.fs" />
-        <Compile Include="Model/Vec2Int.fs" />
         <Compile Include="Model/Entity.fs" />
         <Compile Include="Model/PlayerView.fs" />
+        <Compile Include="Codegame/ServerMessage.fs" />
+        <Compile Include="Codegame/MessageGameModel.fs" />
         <Compile Include="Runner.fs" />
     </ItemGroup>
 

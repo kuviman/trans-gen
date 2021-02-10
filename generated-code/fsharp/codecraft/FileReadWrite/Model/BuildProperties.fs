@@ -2,10 +2,12 @@
 
 namespace TransGenTest.Model
 
+open TransGenTest
+
 /// Entity's build properties
 type BuildProperties = {
     /// Valid new entity types
-    Options: EntityType[];
+    Options: Model.EntityType[];
     /// Initial health of new entity. If absent, it will have full health
     InitHealth: option<int>;
 } with

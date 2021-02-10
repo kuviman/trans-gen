@@ -1,8 +1,8 @@
 package model
 
+import "fmt"
 import "io"
 import . "trans_gen_test/stream"
-import "fmt"
 
 // Information available to the player
 type PlayerView struct {

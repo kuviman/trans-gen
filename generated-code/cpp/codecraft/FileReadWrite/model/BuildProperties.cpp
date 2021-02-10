@@ -1,14 +1,16 @@
 #include "BuildProperties.hpp"
 
-BuildProperties::BuildProperties(std::vector<EntityType> options, std::optional<int> initHealth) : options(options), initHealth(initHealth) { }
+namespace model {
+
+BuildProperties::BuildProperties(std::vector<model::EntityType> options, std::optional<int> initHealth) : options(options), initHealth(initHealth) { }
 
 // Read BuildProperties from input stream
 BuildProperties BuildProperties::readFrom(InputStream& stream) {
-    std::vector<EntityType> options = std::vector<EntityType>();
+    std::vector<model::EntityType> options = std::vector<model::EntityType>();
     size_t optionsSize = stream.readInt();
     options.reserve(optionsSize);
     for (size_t optionsIndex = 0; optionsIndex < optionsSize; optionsIndex++) {
-        EntityType optionsElement = readEntityType(stream);
+        model::EntityType optionsElement = readEntityType(stream);
         options.emplace_back(optionsElement);
     }
     std::optional<int> initHealth = std::optional<int>();
@@ -21,7 +23,7 @@ BuildProperties BuildProperties::readFrom(InputStream& stream) {
 // Write BuildProperties to output stream
 void BuildProperties::writeTo(OutputStream& stream) const {
     stream.write((int)(options.size()));
-    for (const EntityType& optionsElement : options) {
+    for (const model::EntityType& optionsElement : options) {
         stream.write((int)(optionsElement));
     }
     if (initHealth) {
@@ -40,7 +42,7 @@ std::string BuildProperties::toString() const {
     ss << "options: ";
     ss << "[ ";
     for (size_t optionsIndex = 0; optionsIndex < options.size(); optionsIndex++) {
-        const EntityType& optionsElement = options[optionsIndex];
+        const model::EntityType& optionsElement = options[optionsIndex];
         if (optionsIndex != 0) {
             ss << ", ";
         }
@@ -57,4 +59,6 @@ std::string BuildProperties::toString() const {
     }
     ss << " }";
     return ss.str();
+}
+
 }

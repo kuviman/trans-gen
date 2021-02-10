@@ -2,7 +2,7 @@
 #include <iostream>
 #include <stdexcept>
 
-#include "model/Model.hpp"
+#include "Example.hpp"
 
 class FileInputStream : public InputStream {
 public:
@@ -40,17 +40,19 @@ private:
 
 int main(int argc, char* argv[])
 {
-    if (argc != 3) {
-        throw std::runtime_error("Pass input and output as parameters");
-    }
     char* input_file = argv[1];
     char* output_file = argv[2];
+    int repeat = atoi(argv[3]);
 
-    FileInputStream fileInputStream(input_file);
-    Example input = Example::readFrom(fileInputStream);
-    std::cout << input.toString() << std::endl;
-    FileOutputStream fileOutputStream(output_file);
-    input.writeTo(fileOutputStream);
+    for (int i = 0; i < repeat; i++) {
+        FileInputStream fileInputStream(input_file);
+        Example input = Example::readFrom(fileInputStream);
+        if (repeat == 1) {
+            std::cout << input.toString() << std::endl;
+        }
+        FileOutputStream fileOutputStream(output_file);
+        input.writeTo(fileOutputStream);
+    }
 
     return 0;
 }

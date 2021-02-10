@@ -2,20 +2,22 @@ package main
 
 import (
 	"bufio"
-	. "trans_gen_test/model"
+	. "trans_gen_test/common"
 	"os"
 	"fmt"
 	"net"
 	"strconv"
+	. "trans_gen_test/stream"
 )
 
 func main() {
-	if len(os.Args) != 3 {
-		panic("Pass host and port as parameters")
-	}
 	host := os.Args[1]
 	portInt, err := strconv.Atoi(os.Args[2])
+	if err != nil {
+		panic(err)
+	}
 	port := uint16(portInt)
+	stdout, err := strconv.ParseBool(os.Args[3])
 	if err != nil {
 		panic(err)
 	}
@@ -24,17 +26,21 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-
 	reader := bufio.NewReader(conn)
-	input := ReadExample(reader)
-
-	fmt.Println(input)
-
 	writer := bufio.NewWriter(conn)
-	input.Write(writer)
-	err = writer.Flush()
-	if err != nil {
-		panic(err)
+
+	for ReadBool(reader) {
+		input := ReadExample(reader)
+
+		if stdout {
+			fmt.Println(input)
+		}
+
+		input.Write(writer)
+		err = writer.Flush()
+		if err != nil {
+			panic(err)
+		}
 	}
 
 	err = conn.Close()

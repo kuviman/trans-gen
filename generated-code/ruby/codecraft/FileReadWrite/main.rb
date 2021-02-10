@@ -1,6 +1,6 @@
 require 'stringio'
 require_relative 'stream'
-require_relative 'model'
+require_relative 'codegame/message_game_model'
 
 class FileStream < Stream
     def initialize(path, mode)
@@ -24,19 +24,19 @@ class FileStream < Stream
     end
 end
 
-if ARGV.length != 2
-    raise "Pass input and output as parameters"
-end
 input_file = ARGV[0]
 output_file = ARGV[1]
+repeat = ARGV[2].to_i
 
-input_stream = FileStream.new(input_file, "rb")
-input = PlayerView.read_from(input_stream)
-input_stream.close
-
-puts input
-
-output_stream = FileStream.new(output_file, "wb")
-input.write_to(output_stream)
-output_stream.flush
-output_stream.close
+for i in 1..repeat
+    input_stream = FileStream.new(input_file, "rb")
+    input = Codegame::MessageGameModel.read_from(input_stream)
+    input_stream.close
+    if repeat == 1
+        puts input
+    end
+    output_stream = FileStream.new(output_file, "wb")
+    input.write_to(output_stream)
+    output_stream.flush
+    output_stream.close
+end

@@ -42,17 +42,17 @@ class FileOutputStream : OutputStream {
 	private let file: UnsafeMutablePointer<FILE>
 }
 
-if CommandLine.arguments.count != 3 {
-	fatalError("Pass input and output as parameters")
-}
-
 let inputFile = CommandLine.arguments[1]
-let inputStream = FileInputStream(inputFile)
-let input = Example.readFrom(inputStream)
-
-print(input)
-
 let outputFile = CommandLine.arguments[2]
-let outputStream = FileOutputStream(outputFile)
-input.writeTo(outputStream)
-outputStream.flush()
+let repeatTimes = Int(CommandLine.arguments[3])!
+
+for _ in 1...repeatTimes {
+	let inputStream = FileInputStream(inputFile)
+	let input = Example.readFrom(inputStream)
+	if repeatTimes == 1 {
+		print(input)
+	}
+	let outputStream = FileOutputStream(outputFile)
+	input.writeTo(outputStream)
+	outputStream.flush()
+}

@@ -1,6 +1,8 @@
 #include "EntityType.hpp"
 #include <stdexcept>
 
+namespace model {
+
 // Read EntityType from input stream
 EntityType readEntityType(InputStream& stream) {
     switch (stream.readInt()) {
@@ -55,4 +57,6 @@ std::string entityTypeToString(EntityType value) {
     default:
         throw std::runtime_error("Impossible happened");
     }
+}
+
 }

@@ -1,5 +1,5 @@
 [package]
-name = "trans-gen-test-model"
+name = "trans-gen-test"
 version = "0.5.0-alpha.0"
 edition = "2018"
 

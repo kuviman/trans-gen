@@ -1,7 +1,9 @@
-require_relative 'entity'
-require_relative 'entity_properties'
-require_relative 'entity_type'
-require_relative 'player'
+require './model/entity'
+require './model/entity_properties'
+require './model/entity_type'
+require './model/player'
+
+module Model
 
 # Information available to the player
 class PlayerView
@@ -43,8 +45,8 @@ class PlayerView
         fog_of_war = stream.read_bool()
         entity_properties = Hash.new
         stream.read_int().times do |_|
-            entity_properties_key = EntityType.read_from(stream)
-            entity_properties_value = EntityProperties.read_from(stream)
+            entity_properties_key = Model::EntityType.read_from(stream)
+            entity_properties_value = Model::EntityProperties.read_from(stream)
             entity_properties[entity_properties_key] = entity_properties_value
         end
         max_tick_count = stream.read_int()
@@ -52,12 +54,12 @@ class PlayerView
         current_tick = stream.read_int()
         players = []
         stream.read_int().times do |_|
-            players_element = Player.read_from(stream)
+            players_element = Model::Player.read_from(stream)
             players.push(players_element)
         end
         entities = []
         stream.read_int().times do |_|
-            entities_element = Entity.read_from(stream)
+            entities_element = Model::Entity.read_from(stream)
             entities.push(entities_element)
         end
         PlayerView.new(my_id, map_size, fog_of_war, entity_properties, max_tick_count, max_pathfind_nodes, current_tick, players, entities)
@@ -150,4 +152,6 @@ class PlayerView
     def to_str
         to_s
     end
+end
+
 end

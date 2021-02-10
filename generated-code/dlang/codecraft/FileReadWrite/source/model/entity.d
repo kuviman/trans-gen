@@ -1,7 +1,10 @@
-import model;
+module model.entity;
+
 import stream;
 import std.conv;
 import std.typecons : Nullable;
+import model.entity_type;
+import vec2_int;
 
 /// Game entity
 struct Entity {
@@ -10,7 +13,7 @@ struct Entity {
     /// Entity's owner player ID, if owned by a player
     Nullable!(int) playerId;
     /// Entity's type
-    EntityType entityType;
+    model.EntityType entityType;
     /// Entity's position (corner with minimal coordinates)
     Vec2Int position;
     /// Current health
@@ -18,7 +21,7 @@ struct Entity {
     /// If entity is active, it can perform actions
     bool active;
 
-    this(int id, Nullable!(int) playerId, EntityType entityType, Vec2Int position, int health, bool active) {
+    this(int id, Nullable!(int) playerId, model.EntityType entityType, Vec2Int position, int health, bool active) {
         this.id = id;
         this.playerId = playerId;
         this.entityType = entityType;
@@ -37,7 +40,7 @@ struct Entity {
         } else {
             playerId.nullify();
         }
-        EntityType entityType;
+        model.EntityType entityType;
         entityType = readEntityType(reader);
         Vec2Int position;
         position = Vec2Int.readFrom(reader);

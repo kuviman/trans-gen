@@ -1,4 +1,6 @@
-require_relative 'entity_type'
+require './model/entity_type'
+
+module Model
 
 # Entity's build properties
 class BuildProperties
@@ -16,7 +18,7 @@ class BuildProperties
     def self.read_from(stream)
         options = []
         stream.read_int().times do |_|
-            options_element = EntityType.read_from(stream)
+            options_element = Model::EntityType.read_from(stream)
             options.push(options_element)
         end
         if stream.read_bool()
@@ -68,4 +70,6 @@ class BuildProperties
     def to_str
         to_s
     end
+end
+
 end

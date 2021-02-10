@@ -1,26 +1,28 @@
-import model;
+module model.repair_properties;
+
 import stream;
 import std.conv;
 import std.typecons : Nullable;
+import model.entity_type;
 
 /// Entity's repair properties
 struct RepairProperties {
     /// Valid target entity types
-    EntityType[] validTargets;
+    model.EntityType[] validTargets;
     /// Health restored in one tick
     int power;
 
-    this(EntityType[] validTargets, int power) {
+    this(model.EntityType[] validTargets, int power) {
         this.validTargets = validTargets;
         this.power = power;
     }
 
     /// Read RepairProperties from reader
     static RepairProperties readFrom(Stream reader) {
-        EntityType[] validTargets;
-        validTargets = new EntityType[reader.readInt()];
+        model.EntityType[] validTargets;
+        validTargets = new model.EntityType[reader.readInt()];
         for (int validTargetsIndex = 0; validTargetsIndex < validTargets.length; validTargetsIndex++) {
-            EntityType validTargetsKey;
+            model.EntityType validTargetsKey;
             validTargetsKey = readEntityType(reader);
             validTargets[validTargetsIndex] = validTargetsKey;
         }

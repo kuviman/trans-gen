@@ -1,9 +1,11 @@
 #ifndef __MODEL_ATTACK_PROPERTIES_HPP__
 #define __MODEL_ATTACK_PROPERTIES_HPP__
 
-#include "../Stream.hpp"
+#include "Stream.hpp"
 #include <sstream>
 #include <string>
+
+namespace model {
 
 // Entity's attack properties
 class AttackProperties {
@@ -29,10 +31,12 @@ public:
     bool operator ==(const AttackProperties& other) const;
 };
 
+}
+
 namespace std {
     template<>
-    struct hash<AttackProperties> {
-        size_t operator ()(const AttackProperties& value) const;
+    struct hash<model::AttackProperties> {
+        size_t operator ()(const model::AttackProperties& value) const;
     };
 }
 

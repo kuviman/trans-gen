@@ -1,15 +1,14 @@
-if CommandLine.arguments.count != 3 {
-	fatalError("Pass host and port as parameters")
-}
-
 let host = CommandLine.arguments[1]
 let port = Int(CommandLine.arguments[2])!
+let stdout = CommandLine.arguments[3] == "true"
 
 let tcpStream = TcpStream(host, port)
 
-let input = Example.readFrom(tcpStream)
-
-print(input)
-
-input.writeTo(tcpStream)
-tcpStream.flush()
+while tcpStream.readBool() {
+	let input = Example.readFrom(tcpStream)
+	if stdout {
+		print(input)
+	}
+	input.writeTo(tcpStream)
+	tcpStream.flush()
+}

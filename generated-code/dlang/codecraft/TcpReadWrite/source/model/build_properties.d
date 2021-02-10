@@ -1,26 +1,28 @@
-import model;
+module model.build_properties;
+
 import stream;
 import std.conv;
 import std.typecons : Nullable;
+import model.entity_type;
 
 /// Entity's build properties
 struct BuildProperties {
     /// Valid new entity types
-    EntityType[] options;
+    model.EntityType[] options;
     /// Initial health of new entity. If absent, it will have full health
     Nullable!(int) initHealth;
 
-    this(EntityType[] options, Nullable!(int) initHealth) {
+    this(model.EntityType[] options, Nullable!(int) initHealth) {
         this.options = options;
         this.initHealth = initHealth;
     }
 
     /// Read BuildProperties from reader
     static BuildProperties readFrom(Stream reader) {
-        EntityType[] options;
-        options = new EntityType[reader.readInt()];
+        model.EntityType[] options;
+        options = new model.EntityType[reader.readInt()];
         for (int optionsIndex = 0; optionsIndex < options.length; optionsIndex++) {
-            EntityType optionsKey;
+            model.EntityType optionsKey;
             optionsKey = readEntityType(reader);
             options[optionsIndex] = optionsKey;
         }

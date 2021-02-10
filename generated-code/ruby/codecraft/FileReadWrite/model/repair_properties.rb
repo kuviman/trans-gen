@@ -1,4 +1,6 @@
-require_relative 'entity_type'
+require './model/entity_type'
+
+module Model
 
 # Entity's repair properties
 class RepairProperties
@@ -16,7 +18,7 @@ class RepairProperties
     def self.read_from(stream)
         valid_targets = []
         stream.read_int().times do |_|
-            valid_targets_element = EntityType.read_from(stream)
+            valid_targets_element = Model::EntityType.read_from(stream)
             valid_targets.push(valid_targets_element)
         end
         power = stream.read_int()
@@ -55,4 +57,6 @@ class RepairProperties
     def to_str
         to_s
     end
+end
+
 end

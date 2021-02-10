@@ -1,13 +1,15 @@
 #ifndef __MODEL_ENTITY_HPP__
 #define __MODEL_ENTITY_HPP__
 
-#include "../Stream.hpp"
-#include "EntityType.hpp"
+#include "Stream.hpp"
 #include "Vec2Int.hpp"
+#include "model/EntityType.hpp"
 #include <optional>
 #include <sstream>
 #include <stdexcept>
 #include <string>
+
+namespace model {
 
 // Game entity
 class Entity {
@@ -17,7 +19,7 @@ public:
     // Entity's owner player ID, if owned by a player
     std::optional<int> playerId;
     // Entity's type
-    EntityType entityType;
+    model::EntityType entityType;
     // Entity's position (corner with minimal coordinates)
     Vec2Int position;
     // Current health
@@ -25,7 +27,7 @@ public:
     // If entity is active, it can perform actions
     bool active;
 
-    Entity(int id, std::optional<int> playerId, EntityType entityType, Vec2Int position, int health, bool active);
+    Entity(int id, std::optional<int> playerId, model::EntityType entityType, Vec2Int position, int health, bool active);
 
     // Read Entity from input stream
     static Entity readFrom(InputStream& stream);
@@ -36,5 +38,7 @@ public:
     // Get string representation of Entity
     std::string toString() const;
 };
+
+}
 
 #endif

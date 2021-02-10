@@ -2,10 +2,12 @@
 
 namespace TransGenTest.Model
 
+open TransGenTest
+
 /// Entity's repair properties
 type RepairProperties = {
     /// Valid target entity types
-    ValidTargets: EntityType[];
+    ValidTargets: Model.EntityType[];
     /// Health restored in one tick
     Power: int;
 } with

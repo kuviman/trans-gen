@@ -1,7 +1,7 @@
-from .entity import Entity
-from .entity_properties import EntityProperties
-from .entity_type import EntityType
-from .player import Player
+from model.entity import Entity
+from model.entity_properties import EntityProperties
+from model.entity_type import EntityType
+from model.player import Player
 
 class PlayerView:
     """Information available to the player"""

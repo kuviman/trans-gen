@@ -2,6 +2,8 @@
 
 namespace TransGenTest.Model
 
+open TransGenTest
+
 /// Entity properties
 type EntityProperties = {
     /// Size. Entity has a form of a square with side of this length
@@ -25,11 +27,11 @@ type EntityProperties = {
     /// Amount of resource added to enemy able to collect resource on dealing damage for 1 health point
     ResourcePerHealth: int;
     /// Build properties, if entity can build
-    Build: option<BuildProperties>;
+    Build: option<Model.BuildProperties>;
     /// Attack properties, if entity can attack
-    Attack: option<AttackProperties>;
+    Attack: option<Model.AttackProperties>;
     /// Repair properties, if entity can repair
-    Repair: option<RepairProperties>;
+    Repair: option<Model.RepairProperties>;
 } with
 
     /// Write EntityProperties to writer
@@ -73,12 +75,12 @@ type EntityProperties = {
         SightRange = reader.ReadInt32()
         ResourcePerHealth = reader.ReadInt32()
         Build = match reader.ReadBoolean() with
-                    | true -> Some(BuildProperties.readFrom reader;)
+                    | true -> Some(Model.BuildProperties.readFrom reader;)
                     | false -> None
         Attack = match reader.ReadBoolean() with
-                     | true -> Some(AttackProperties.readFrom reader;)
+                     | true -> Some(Model.AttackProperties.readFrom reader;)
                      | false -> None
         Repair = match reader.ReadBoolean() with
-                     | true -> Some(RepairProperties.readFrom reader;)
+                     | true -> Some(Model.RepairProperties.readFrom reader;)
                      | false -> None
     }

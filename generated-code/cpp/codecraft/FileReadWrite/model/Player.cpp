@@ -1,5 +1,7 @@
 #include "Player.hpp"
 
+namespace model {
+
 Player::Player(int id, int score, int resource) : id(id), score(score), resource(resource) { }
 
 // Read Player from input stream
@@ -37,7 +39,9 @@ bool Player::operator ==(const Player& other) const {
     return id == other.id && score == other.score && resource == other.resource;
 }
 
-size_t std::hash<Player>::operator ()(const Player& value) const {
+}
+
+size_t std::hash<model::Player>::operator ()(const model::Player& value) const {
     size_t result = 0;
     result ^= std::hash<int>{}(value.id) + 0x9e3779b9 + (result << 6) + (result >> 2);
     result ^= std::hash<int>{}(value.score) + 0x9e3779b9 + (result << 6) + (result >> 2);

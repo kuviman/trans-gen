@@ -1,7 +1,11 @@
-import model;
+module model.entity_properties;
+
 import stream;
 import std.conv;
 import std.typecons : Nullable;
+import model.attack_properties;
+import model.build_properties;
+import model.repair_properties;
 
 /// Entity properties
 struct EntityProperties {
@@ -26,13 +30,13 @@ struct EntityProperties {
     /// Amount of resource added to enemy able to collect resource on dealing damage for 1 health point
     int resourcePerHealth;
     /// Build properties, if entity can build
-    Nullable!(BuildProperties) build;
+    Nullable!(model.BuildProperties) build;
     /// Attack properties, if entity can attack
-    Nullable!(AttackProperties) attack;
+    Nullable!(model.AttackProperties) attack;
     /// Repair properties, if entity can repair
-    Nullable!(RepairProperties) repair;
+    Nullable!(model.RepairProperties) repair;
 
-    this(int size, int buildScore, int destroyScore, bool canMove, int populationProvide, int populationUse, int maxHealth, int initialCost, int sightRange, int resourcePerHealth, Nullable!(BuildProperties) build, Nullable!(AttackProperties) attack, Nullable!(RepairProperties) repair) {
+    this(int size, int buildScore, int destroyScore, bool canMove, int populationProvide, int populationUse, int maxHealth, int initialCost, int sightRange, int resourcePerHealth, Nullable!(model.BuildProperties) build, Nullable!(model.AttackProperties) attack, Nullable!(model.RepairProperties) repair) {
         this.size = size;
         this.buildScore = buildScore;
         this.destroyScore = destroyScore;
@@ -70,21 +74,21 @@ struct EntityProperties {
         sightRange = reader.readInt();
         int resourcePerHealth;
         resourcePerHealth = reader.readInt();
-        Nullable!(BuildProperties) build;
+        Nullable!(model.BuildProperties) build;
         if (reader.readBool()) {
-            build = BuildProperties.readFrom(reader);
+            build = model.BuildProperties.readFrom(reader);
         } else {
             build.nullify();
         }
-        Nullable!(AttackProperties) attack;
+        Nullable!(model.AttackProperties) attack;
         if (reader.readBool()) {
-            attack = AttackProperties.readFrom(reader);
+            attack = model.AttackProperties.readFrom(reader);
         } else {
             attack.nullify();
         }
-        Nullable!(RepairProperties) repair;
+        Nullable!(model.RepairProperties) repair;
         if (reader.readBool()) {
-            repair = RepairProperties.readFrom(reader);
+            repair = model.RepairProperties.readFrom(reader);
         } else {
             repair.nullify();
         }

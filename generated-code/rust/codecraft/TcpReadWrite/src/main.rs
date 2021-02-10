@@ -1,7 +1,6 @@
 use anyhow::Context;
 
-mod model;
-mod trans;
+use trans_gen_test::*;
 
 fn main() -> anyhow::Result<()> {
     let mut args = std::env::args();
@@ -12,17 +11,20 @@ fn main() -> anyhow::Result<()> {
         .context("Provide port as second arg")?
         .parse()
         .context("Failed to parse port")?;
+    let stdout: bool = args.next().unwrap().parse().unwrap();
 
     let stream = std::net::TcpStream::connect((host, port)).context("Failed to connect")?;
     stream.set_nodelay(true)?;
     let mut input_stream = std::io::BufReader::new(stream.try_clone()?);
     let mut output_stream = std::io::BufWriter::new(stream.try_clone()?);
 
-    let input: model::PlayerView =
-        trans::Trans::read_from(&mut input_stream).context("Failed to read input")?;
-    println!("{:?}", input);
-    trans::Trans::write_to(&input, &mut output_stream).context("Failed to write output")?;
-    std::io::Write::flush(&mut output_stream)?;
+    while trans::Trans::read_from(&mut input_stream)? {
+        let input: codegame::MessageGameModel =
+            trans::Trans::read_from(&mut input_stream).context("Failed to read input")?;
+        println!("{:?}", input);
+        trans::Trans::write_to(&input, &mut output_stream).context("Failed to write output")?;
+        std::io::Write::flush(&mut output_stream)?;
+    }
 
     Ok(())
 }

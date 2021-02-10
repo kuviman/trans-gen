@@ -1,6 +1,8 @@
 #include "EntityProperties.hpp"
 
-EntityProperties::EntityProperties(int size, int buildScore, int destroyScore, bool canMove, int populationProvide, int populationUse, int maxHealth, int initialCost, int sightRange, int resourcePerHealth, std::optional<BuildProperties> build, std::optional<AttackProperties> attack, std::optional<RepairProperties> repair) : size(size), buildScore(buildScore), destroyScore(destroyScore), canMove(canMove), populationProvide(populationProvide), populationUse(populationUse), maxHealth(maxHealth), initialCost(initialCost), sightRange(sightRange), resourcePerHealth(resourcePerHealth), build(build), attack(attack), repair(repair) { }
+namespace model {
+
+EntityProperties::EntityProperties(int size, int buildScore, int destroyScore, bool canMove, int populationProvide, int populationUse, int maxHealth, int initialCost, int sightRange, int resourcePerHealth, std::optional<model::BuildProperties> build, std::optional<model::AttackProperties> attack, std::optional<model::RepairProperties> repair) : size(size), buildScore(buildScore), destroyScore(destroyScore), canMove(canMove), populationProvide(populationProvide), populationUse(populationUse), maxHealth(maxHealth), initialCost(initialCost), sightRange(sightRange), resourcePerHealth(resourcePerHealth), build(build), attack(attack), repair(repair) { }
 
 // Read EntityProperties from input stream
 EntityProperties EntityProperties::readFrom(InputStream& stream) {
@@ -14,17 +16,17 @@ EntityProperties EntityProperties::readFrom(InputStream& stream) {
     int initialCost = stream.readInt();
     int sightRange = stream.readInt();
     int resourcePerHealth = stream.readInt();
-    std::optional<BuildProperties> build = std::optional<BuildProperties>();
+    std::optional<model::BuildProperties> build = std::optional<model::BuildProperties>();
     if (stream.readBool()) {
-        build = BuildProperties::readFrom(stream);
+        build = model::BuildProperties::readFrom(stream);
     }
-    std::optional<AttackProperties> attack = std::optional<AttackProperties>();
+    std::optional<model::AttackProperties> attack = std::optional<model::AttackProperties>();
     if (stream.readBool()) {
-        attack = AttackProperties::readFrom(stream);
+        attack = model::AttackProperties::readFrom(stream);
     }
-    std::optional<RepairProperties> repair = std::optional<RepairProperties>();
+    std::optional<model::RepairProperties> repair = std::optional<model::RepairProperties>();
     if (stream.readBool()) {
-        repair = RepairProperties::readFrom(stream);
+        repair = model::RepairProperties::readFrom(stream);
     }
     return EntityProperties(size, buildScore, destroyScore, canMove, populationProvide, populationUse, maxHealth, initialCost, sightRange, resourcePerHealth, build, attack, repair);
 }
@@ -43,21 +45,21 @@ void EntityProperties::writeTo(OutputStream& stream) const {
     stream.write(resourcePerHealth);
     if (build) {
         stream.write(true);
-        const BuildProperties& buildValue = *build;
+        const model::BuildProperties& buildValue = *build;
         buildValue.writeTo(stream);
     } else {
         stream.write(false);
     }
     if (attack) {
         stream.write(true);
-        const AttackProperties& attackValue = *attack;
+        const model::AttackProperties& attackValue = *attack;
         attackValue.writeTo(stream);
     } else {
         stream.write(false);
     }
     if (repair) {
         stream.write(true);
-        const RepairProperties& repairValue = *repair;
+        const model::RepairProperties& repairValue = *repair;
         repairValue.writeTo(stream);
     } else {
         stream.write(false);
@@ -100,7 +102,7 @@ std::string EntityProperties::toString() const {
     ss << ", ";
     ss << "build: ";
     if (build) {
-        const BuildProperties& buildValue = *build;
+        const model::BuildProperties& buildValue = *build;
         ss << buildValue.toString();
     } else {
         ss << "none";
@@ -108,7 +110,7 @@ std::string EntityProperties::toString() const {
     ss << ", ";
     ss << "attack: ";
     if (attack) {
-        const AttackProperties& attackValue = *attack;
+        const model::AttackProperties& attackValue = *attack;
         ss << attackValue.toString();
     } else {
         ss << "none";
@@ -116,11 +118,13 @@ std::string EntityProperties::toString() const {
     ss << ", ";
     ss << "repair: ";
     if (repair) {
-        const RepairProperties& repairValue = *repair;
+        const model::RepairProperties& repairValue = *repair;
         ss << repairValue.toString();
     } else {
         ss << "none";
     }
     ss << " }";
     return ss.str();
+}
+
 }

@@ -1,7 +1,9 @@
-import model;
+module model.attack_properties;
+
 import stream;
 import std.conv;
 import std.typecons : Nullable;
+
 
 /// Entity's attack properties
 struct AttackProperties {

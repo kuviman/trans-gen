@@ -1,5 +1,5 @@
-from .entity_type import EntityType
-from .vec2_int import Vec2Int
+from model.entity_type import EntityType
+from vec2_int import Vec2Int
 
 class Entity:
     """Game entity"""

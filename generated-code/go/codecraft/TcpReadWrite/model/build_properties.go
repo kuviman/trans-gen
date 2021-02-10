@@ -1,8 +1,8 @@
 package model
 
+import "fmt"
 import "io"
 import . "trans_gen_test/stream"
-import "fmt"
 
 // Entity's build properties
 type BuildProperties struct {

@@ -1,16 +1,18 @@
 #ifndef __MODEL_ENTITY_PROPERTIES_HPP__
 #define __MODEL_ENTITY_PROPERTIES_HPP__
 
-#include "../Stream.hpp"
-#include "AttackProperties.hpp"
-#include "BuildProperties.hpp"
-#include "EntityType.hpp"
-#include "RepairProperties.hpp"
+#include "Stream.hpp"
+#include "model/AttackProperties.hpp"
+#include "model/BuildProperties.hpp"
+#include "model/EntityType.hpp"
+#include "model/RepairProperties.hpp"
 #include <optional>
 #include <sstream>
 #include <stdexcept>
 #include <string>
 #include <vector>
+
+namespace model {
 
 // Entity properties
 class EntityProperties {
@@ -36,13 +38,13 @@ public:
     // Amount of resource added to enemy able to collect resource on dealing damage for 1 health point
     int resourcePerHealth;
     // Build properties, if entity can build
-    std::optional<BuildProperties> build;
+    std::optional<model::BuildProperties> build;
     // Attack properties, if entity can attack
-    std::optional<AttackProperties> attack;
+    std::optional<model::AttackProperties> attack;
     // Repair properties, if entity can repair
-    std::optional<RepairProperties> repair;
+    std::optional<model::RepairProperties> repair;
 
-    EntityProperties(int size, int buildScore, int destroyScore, bool canMove, int populationProvide, int populationUse, int maxHealth, int initialCost, int sightRange, int resourcePerHealth, std::optional<BuildProperties> build, std::optional<AttackProperties> attack, std::optional<RepairProperties> repair);
+    EntityProperties(int size, int buildScore, int destroyScore, bool canMove, int populationProvide, int populationUse, int maxHealth, int initialCost, int sightRange, int resourcePerHealth, std::optional<model::BuildProperties> build, std::optional<model::AttackProperties> attack, std::optional<model::RepairProperties> repair);
 
     // Read EntityProperties from input stream
     static EntityProperties readFrom(InputStream& stream);
@@ -53,5 +55,7 @@ public:
     // Get string representation of EntityProperties
     std::string toString() const;
 };
+
+}
 
 #endif

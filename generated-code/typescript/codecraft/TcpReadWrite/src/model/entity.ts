@@ -1,5 +1,5 @@
 import { EntityType } from "./entity-type";
-import { Vec2Int } from "./vec2-int";
+import { Vec2Int } from "../vec2-int";
 import { Stream } from "../stream";
 
 /**

@@ -1,7 +1,7 @@
-const Entity = require('./entity');
-const EntityProperties = require('./entity-properties');
-const EntityType = require('./entity-type');
-const Player = require('./player');
+const Entity = require.main.require('./model/entity');
+const EntityProperties = require.main.require('./model/entity-properties');
+const EntityType = require.main.require('./model/entity-type');
+const Player = require.main.require('./model/player');
 /**
  * Information available to the player
  */

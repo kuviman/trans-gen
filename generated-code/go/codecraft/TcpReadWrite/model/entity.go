@@ -1,8 +1,9 @@
 package model
 
-import "io"
-import . "trans_gen_test/stream"
 import "fmt"
+import "io"
+import . "trans_gen_test/common"
+import . "trans_gen_test/stream"
 
 // Game entity
 type Entity struct {

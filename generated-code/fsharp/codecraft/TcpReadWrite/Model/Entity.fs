@@ -2,6 +2,8 @@
 
 namespace TransGenTest.Model
 
+open TransGenTest
+
 /// Game entity
 type Entity = {
     /// Entity's ID. Unique for each entity
@@ -9,7 +11,7 @@ type Entity = {
     /// Entity's owner player ID, if owned by a player
     PlayerId: option<int>;
     /// Entity's type
-    EntityType: EntityType;
+    EntityType: Model.EntityType;
     /// Entity's position (corner with minimal coordinates)
     Position: Vec2Int;
     /// Current health

@@ -1,0 +1,29 @@
+import java.io.*;
+import java.net.Socket;
+
+import trans_gen_test.util.StreamUtil;
+
+public class Runner {
+    public static void main(String[] args) throws IOException {
+        String host = args[0];
+        int port = Integer.parseInt(args[1]);
+        boolean stdout = Boolean.parseBoolean(args[2]);
+
+        Socket socket = new Socket(host, port);
+        socket.setTcpNoDelay(true);
+
+        InputStream inputStream = new BufferedInputStream(socket.getInputStream());
+        OutputStream outputStream = new BufferedOutputStream(socket.getOutputStream());
+
+        while (StreamUtil.readBoolean(inputStream)) {
+            trans_gen_test.Example input = trans_gen_test.Example.readFrom(inputStream);
+            if (stdout) {
+                System.out.println(input);
+            }
+            input.writeTo(outputStream);
+            outputStream.flush();
+        }
+
+        socket.close();
+    }
+}

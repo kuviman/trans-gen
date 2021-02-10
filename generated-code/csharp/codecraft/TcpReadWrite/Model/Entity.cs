@@ -20,7 +20,7 @@ namespace TransGenTest.Model
         /// <summary>
         /// Entity's position (corner with minimal coordinates)
         /// </summary>
-        public Model.Vec2Int Position { get; set; }
+        public Vec2Int Position { get; set; }
         /// <summary>
         /// Current health
         /// </summary>
@@ -30,7 +30,7 @@ namespace TransGenTest.Model
         /// </summary>
         public bool Active { get; set; }
     
-        public Entity(int id, int? playerId, Model.EntityType entityType, Model.Vec2Int position, int health, bool active)
+        public Entity(int id, int? playerId, Model.EntityType entityType, Vec2Int position, int health, bool active)
         {
             this.Id = id;
             this.PlayerId = playerId;
@@ -53,7 +53,7 @@ namespace TransGenTest.Model
                 result.PlayerId = null;
             }
             result.EntityType = EntityTypeHelper.ReadFrom(reader);
-            result.Position = Model.Vec2Int.ReadFrom(reader);
+            result.Position = Vec2Int.ReadFrom(reader);
             result.Health = reader.ReadInt32();
             result.Active = reader.ReadBoolean();
             return result;

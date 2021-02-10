@@ -1,3 +1,5 @@
+module model.entity_type;
+
 import stream;
 
 /// Entity type

@@ -1,4 +1,4 @@
-from .entity_type import EntityType
+from model.entity_type import EntityType
 
 class BuildProperties:
     """Entity's build properties"""

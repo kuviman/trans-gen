@@ -2,6 +2,8 @@
 
 namespace TransGenTest.Model
 
+open TransGenTest
+
 /// Entity's attack properties
 type AttackProperties = {
     /// Maximum attack range

@@ -1,11 +1,7 @@
 <?php
 
-require_once 'Model.php';
+require_once 'Codegame/MessageGameModel.php';
 require_once 'Stream.php';
-
-if (count($argv) != 3) {
-    throw new Exception('Pass input and output as parameters');
-}
 
 class FileInputStream extends InputStream
 {
@@ -50,7 +46,12 @@ class FileOutputStream extends OutputStream
 
 $inputFile = $argv[1];
 $outputFile = $argv[2];
+$repeat = intval($argv[3]);
 
-$input = PlayerView::readFrom(new FileInputStream($inputFile));
-print_r($input);
-$input->writeTo(new FileOutputStream($outputFile));
+for ($i = 0; $i < $repeat; $i++) {
+    $input = \Codegame\MessageGameModel::readFrom(new FileInputStream($inputFile));
+    if ($repeat == 1) {
+        print_r($input);
+    }
+    $input->writeTo(new FileOutputStream($outputFile));
+}

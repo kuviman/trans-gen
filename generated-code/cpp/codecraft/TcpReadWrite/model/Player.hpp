@@ -1,9 +1,11 @@
 #ifndef __MODEL_PLAYER_HPP__
 #define __MODEL_PLAYER_HPP__
 
-#include "../Stream.hpp"
+#include "Stream.hpp"
 #include <sstream>
 #include <string>
+
+namespace model {
 
 // Player (strategy, client)
 class Player {
@@ -29,10 +31,12 @@ public:
     bool operator ==(const Player& other) const;
 };
 
+}
+
 namespace std {
     template<>
-    struct hash<Player> {
-        size_t operator ()(const Player& value) const;
+    struct hash<model::Player> {
+        size_t operator ()(const model::Player& value) const;
     };
 }
 

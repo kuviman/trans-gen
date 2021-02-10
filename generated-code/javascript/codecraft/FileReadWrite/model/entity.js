@@ -1,5 +1,5 @@
-const EntityType = require('./entity-type');
-const Vec2Int = require('./vec2-int');
+const EntityType = require.main.require('./model/entity-type');
+const Vec2Int = require.main.require('./vec2-int');
 /**
  * Game entity
  */

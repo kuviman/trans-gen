@@ -8,7 +8,7 @@ pub struct Entity {
     /// Entity's owner player ID, if owned by a player
     pub player_id: Option<i32>,
     /// Entity's type
-    pub entity_type: EntityType,
+    pub entity_type: model::EntityType,
     /// Entity's position (corner with minimal coordinates)
     pub position: Vec2I32,
     /// Current health
@@ -30,7 +30,7 @@ impl trans::Trans for Entity {
     fn read_from(reader: &mut dyn std::io::Read) -> std::io::Result<Self> {
         let id: i32 = trans::Trans::read_from(reader)?;
         let player_id: Option<i32> = trans::Trans::read_from(reader)?;
-        let entity_type: EntityType = trans::Trans::read_from(reader)?;
+        let entity_type: model::EntityType = trans::Trans::read_from(reader)?;
         let position: Vec2I32 = trans::Trans::read_from(reader)?;
         let health: i32 = trans::Trans::read_from(reader)?;
         let active: bool = trans::Trans::read_from(reader)?;

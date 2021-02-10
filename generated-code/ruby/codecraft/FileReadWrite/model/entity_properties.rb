@@ -1,6 +1,8 @@
-require_relative 'attack_properties'
-require_relative 'build_properties'
-require_relative 'repair_properties'
+require './model/attack_properties'
+require './model/build_properties'
+require './model/repair_properties'
+
+module Model
 
 # Entity properties
 class EntityProperties
@@ -60,17 +62,17 @@ class EntityProperties
         sight_range = stream.read_int()
         resource_per_health = stream.read_int()
         if stream.read_bool()
-            build = BuildProperties.read_from(stream)
+            build = Model::BuildProperties.read_from(stream)
         else
             build = nil
         end
         if stream.read_bool()
-            attack = AttackProperties.read_from(stream)
+            attack = Model::AttackProperties.read_from(stream)
         else
             attack = nil
         end
         if stream.read_bool()
-            repair = RepairProperties.read_from(stream)
+            repair = Model::RepairProperties.read_from(stream)
         else
             repair = nil
         end
@@ -168,4 +170,6 @@ class EntityProperties
     def to_str
         to_s
     end
+end
+
 end

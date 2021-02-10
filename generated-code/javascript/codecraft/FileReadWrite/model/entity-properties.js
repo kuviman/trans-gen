@@ -1,6 +1,6 @@
-const AttackProperties = require('./attack-properties');
-const BuildProperties = require('./build-properties');
-const RepairProperties = require('./repair-properties');
+const AttackProperties = require.main.require('./model/attack-properties');
+const BuildProperties = require.main.require('./model/build-properties');
+const RepairProperties = require.main.require('./model/repair-properties');
 /**
  * Entity properties
  */

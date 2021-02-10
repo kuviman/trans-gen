@@ -8,23 +8,26 @@ namespace TransGenTest
     {
         public static void Main(string[] args)
         {
-            if (args.Length != 2)
-            {
-                throw new Exception("Pass host and port as parameters");
-            }
             string host = args[0];
             int port = int.Parse(args[1]);
+            bool stdout = bool.Parse(args[2]);
 
             using (var tcpClient = new TcpClient(host, port))
             {
                 using (var stream = new BufferedStream(tcpClient.GetStream()))
                 {
                     var reader = new BinaryReader(stream);
-                    Model.PlayerView input = Model.PlayerView.ReadFrom(reader);
-                    Console.WriteLine(input.ToString());
                     var writer = new BinaryWriter(stream);
-                    input.WriteTo(writer);
-                    writer.Flush();
+                    while (reader.ReadBoolean())
+                    {
+                        Codegame.MessageGameModel input = Codegame.MessageGameModel.ReadFrom(reader);
+                        if (stdout)
+                        {
+                            Console.WriteLine(input.ToString());
+                        }
+                        input.WriteTo(writer);
+                        writer.Flush();
+                    }
                 }
             }
         }

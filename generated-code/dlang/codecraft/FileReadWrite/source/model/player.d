@@ -1,7 +1,9 @@
-import model;
+module model.player;
+
 import stream;
 import std.conv;
 import std.typecons : Nullable;
+
 
 /// Player (strategy, client)
 struct Player {

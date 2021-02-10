@@ -4,7 +4,7 @@ use super::*;
 #[derive(Clone, Debug)]
 pub struct RepairProperties {
     /// Valid target entity types
-    pub valid_targets: Vec<EntityType>,
+    pub valid_targets: Vec<model::EntityType>,
     /// Health restored in one tick
     pub power: i32,
 }
@@ -16,7 +16,7 @@ impl trans::Trans for RepairProperties {
         Ok(())
     }
     fn read_from(reader: &mut dyn std::io::Read) -> std::io::Result<Self> {
-        let valid_targets: Vec<EntityType> = trans::Trans::read_from(reader)?;
+        let valid_targets: Vec<model::EntityType> = trans::Trans::read_from(reader)?;
         let power: i32 = trans::Trans::read_from(reader)?;
         Ok(Self {
             valid_targets,

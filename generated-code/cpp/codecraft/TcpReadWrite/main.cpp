@@ -1,22 +1,25 @@
 #include <iostream>
 #include <stdexcept>
+#include <cstring>
 
-#include "model/Model.hpp"
+#include "codegame/MessageGameModel.hpp"
 #include "TcpStream.hpp"
 
 int main(int argc, char* argv[])
 {
-    if (argc != 3) {
-        throw std::runtime_error("Pass host and port as parameters");
-    }
     char* host = argv[1];
     int port = atoi(argv[2]);
+    bool show_stdout = strcmp(argv[3], "true") == 0;
 
     TcpStream tcpStream(host, port);
-    PlayerView input = PlayerView::readFrom(tcpStream);
-    std::cout << input.toString() << std::endl;
-    input.writeTo(tcpStream);
-    tcpStream.flush();
+    while (tcpStream.readBool()) {
+        std::shared_ptr<codegame::MessageGameModel> input = codegame::MessageGameModel::readFrom(tcpStream);
+        if (show_stdout) {
+            std::cout << input->toString() << std::endl;
+        }
+        input->writeTo(tcpStream);
+        tcpStream.flush();
+    }
 
     return 0;
 }

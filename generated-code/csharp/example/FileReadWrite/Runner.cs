@@ -7,26 +7,29 @@ namespace TransGenTest
     {
         public static void Main(string[] args)
         {
-            if (args.Length != 2)
-            {
-                throw new Exception("Pass input and output as parameters");
-            }
             string inputFile = args[0];
-            string outputFile = args[1]; 
+            string outputFile = args[1];
+            int repeat = int.Parse(args[2]);
 
-            Model.Example input;
-            using (var stream = new FileStream(inputFile, FileMode.Open))
+            for (int i = 0; i < repeat; i++)
             {
-                using (var reader = new BinaryReader(stream))
+                Example input;
+                using (var stream = new FileStream(inputFile, FileMode.Open))
                 {
-                    input = Model.Example.ReadFrom(reader);
+                    using (var reader = new BinaryReader(stream))
+                    {
+                        input = Example.ReadFrom(reader);
+                    }
                 }
-            }
-            Console.WriteLine(input.ToString());
-            using (var stream = new FileStream(outputFile, FileMode.Create))
-            {
-                using (var writer = new BinaryWriter(stream)) {
-                    input.WriteTo(writer);
+                if (repeat == 1)
+                {
+                    Console.WriteLine(input.ToString());
+                }
+                using (var stream = new FileStream(outputFile, FileMode.Create))
+                {
+                    using (var writer = new BinaryWriter(stream)) {
+                        input.WriteTo(writer);
+                    }
                 }
             }
         }

@@ -1,3 +1,5 @@
+module Model
+
 # Entity type
 module EntityType
     # Wall, can be used to prevent enemy from moving through
@@ -67,4 +69,6 @@ module EntityType
     def self.to_str(value)
         self.to_s(value)
     end
+end
+
 end

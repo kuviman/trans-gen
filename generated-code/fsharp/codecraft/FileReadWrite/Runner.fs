@@ -7,19 +7,20 @@ module Runner =
 
     [<EntryPoint>]
     let main argv =
-        if argv.Length <> 2 then
-            failwith "Pass input and output as parameters"
         let inputFile = argv.[0]
         let outputFile = argv.[1]
+        let repeat = argv.[2] |> int
 
-        use inputStream = new FileStream(inputFile, FileMode.Open)
-        use reader = new BinaryReader(inputStream)
-        let input = Model.PlayerView.readFrom(reader)
+        for i in 1..repeat do
+            use inputStream = new FileStream(inputFile, FileMode.Open)
+            use reader = new BinaryReader(inputStream)
+            let input = Codegame.MessageGameModel.readFrom(reader)
 
-        Console.WriteLine(input)
+            if repeat = 1 then
+                Console.WriteLine(input)
 
-        use outputStream = new FileStream(outputFile, FileMode.Create)
-        use writer = new BinaryWriter(outputStream)
-        input.writeTo(writer)
+            use outputStream = new FileStream(outputFile, FileMode.Create)
+            use writer = new BinaryWriter(outputStream)
+            input.writeTo(writer)
 
         0

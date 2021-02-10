@@ -1,6 +1,6 @@
-from .attack_properties import AttackProperties
-from .build_properties import BuildProperties
-from .repair_properties import RepairProperties
+from model.attack_properties import AttackProperties
+from model.build_properties import BuildProperties
+from model.repair_properties import RepairProperties
 
 class EntityProperties:
     """Entity properties"""

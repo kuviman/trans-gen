@@ -1,4 +1,4 @@
-from .entity_type import EntityType
+from model.entity_type import EntityType
 
 class RepairProperties:
     """Entity's repair properties"""

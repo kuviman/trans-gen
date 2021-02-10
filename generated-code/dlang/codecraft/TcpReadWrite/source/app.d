@@ -1,28 +1,28 @@
-import model;
 import socket_stream;
 import std.stdio;
 import std.socket;
 import std.conv;
 import std.exception;
+import codegame.message_game_model;
 
 void main(string[] args)
 {
-    if (args.length != 3)
-    {
-        throw new Error("Pass host and port as parameters");
-    }
-
     string host = args[1];
     string port = args[2];
+    bool stdout = parse!bool(args[3]);
 
     auto addr = getAddress(host, port)[0];
     auto socket = new Socket(addr.addressFamily, SocketType.STREAM);
     socket.setOption(SocketOptionLevel.TCP, SocketOption.TCP_NODELAY, true);
     socket.connect(addr);
     auto stream = new SocketStream(socket);
-    PlayerView input = PlayerView.readFrom(stream);
-    writeln(input);
-    input.writeTo(stream);
-    stream.flush();
+    while (stream.readBool()) {
+        codegame.MessageGameModel input = codegame.MessageGameModel.readFrom(stream);
+        if (stdout) {
+            writeln(input);
+        }
+        input.writeTo(stream);
+        stream.flush();
+    }
     socket.close();
 }

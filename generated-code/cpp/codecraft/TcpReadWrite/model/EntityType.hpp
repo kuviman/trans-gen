@@ -1,7 +1,9 @@
 #ifndef __MODEL_ENTITY_TYPE_HPP__
 #define __MODEL_ENTITY_TYPE_HPP__
 
-#include "../Stream.hpp"
+#include "Stream.hpp"
+
+namespace model {
 
 // Entity type
 enum class EntityType {
@@ -32,5 +34,7 @@ EntityType readEntityType(InputStream& stream);
 
 // Get string representation of EntityType
 std::string entityTypeToString(EntityType value);
+
+}
 
 #endif

@@ -1,3 +1,5 @@
+module Model
+
 # Player (strategy, client)
 class Player
     # Player's ID
@@ -45,4 +47,6 @@ class Player
     def to_str
         to_s
     end
+end
+
 end

@@ -1,5 +1,7 @@
 #include "AttackProperties.hpp"
 
+namespace model {
+
 AttackProperties::AttackProperties(int attackRange, int damage, bool collectResource) : attackRange(attackRange), damage(damage), collectResource(collectResource) { }
 
 // Read AttackProperties from input stream
@@ -37,7 +39,9 @@ bool AttackProperties::operator ==(const AttackProperties& other) const {
     return attackRange == other.attackRange && damage == other.damage && collectResource == other.collectResource;
 }
 
-size_t std::hash<AttackProperties>::operator ()(const AttackProperties& value) const {
+}
+
+size_t std::hash<model::AttackProperties>::operator ()(const model::AttackProperties& value) const {
     size_t result = 0;
     result ^= std::hash<int>{}(value.attackRange) + 0x9e3779b9 + (result << 6) + (result >> 2);
     result ^= std::hash<int>{}(value.damage) + 0x9e3779b9 + (result << 6) + (result >> 2);

@@ -2,36 +2,42 @@ package main
 
 import (
 	"bufio"
-	. "trans_gen_test/model"
+	. "trans_gen_test/codegame"
 	"os"
 	"fmt"
+	"strconv"
 )
 
 func main() {
-	if len(os.Args) != 3 {
-		panic("Pass input and output as parameters")
-	}
 	inputFilePath := os.Args[1]
 	outputFilePath := os.Args[2]
-
-	inputFile, err := os.Open(inputFilePath)
+	repeat, err := strconv.Atoi(os.Args[3])
 	if err != nil {
 		panic(err)
 	}
-	reader := bufio.NewReader(inputFile)
-	input := ReadPlayerView(reader)
 
-	fmt.Println(input)
+	for i := 0; i < repeat; i++ {
+		inputFile, err := os.Open(inputFilePath)
+		if err != nil {
+			panic(err)
+		}
+		reader := bufio.NewReader(inputFile)
+		input := ReadMessageGameModel(reader)
 
-	outputFile, err := os.Create(outputFilePath)
-	if err != nil {
-		panic(err)
-	}
-	writer := bufio.NewWriter(outputFile)
+		if repeat == 1 {
+			fmt.Println(input)
+		}
 
-	input.Write(bufio.NewWriter(writer))
-	err = writer.Flush()
-	if err != nil {
-		panic(err)
+		outputFile, err := os.Create(outputFilePath)
+		if err != nil {
+			panic(err)
+		}
+		writer := bufio.NewWriter(outputFile)
+
+		input.Write(bufio.NewWriter(writer))
+		err = writer.Flush()
+		if err != nil {
+			panic(err)
+		}
 	}
 }

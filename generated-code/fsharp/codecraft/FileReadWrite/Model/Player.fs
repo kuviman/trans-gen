@@ -2,6 +2,8 @@
 
 namespace TransGenTest.Model
 
+open TransGenTest
+
 /// Player (strategy, client)
 type Player = {
     /// Player's ID

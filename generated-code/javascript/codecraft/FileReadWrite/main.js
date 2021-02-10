@@ -1,8 +1,8 @@
 'use strict';
 
 const Stream = require('./stream');
-const model = require('./model/index');
 const fs = require('fs');
+const MessageGameModel = require('./codegame/message-game-model');
 
 class FileStream extends Stream {
     constructor(path, flags) {
@@ -24,18 +24,19 @@ class FileStream extends Stream {
 }
 
 async function run() {
-    if (process.argv.length != 4) {
-        throw new Error("Pass input and output as parameters")
-    }
-
     const inputFile = process.argv[2];
     const outputFile = process.argv[3];
+    const repeat = parseInt(process.argv[4]);
 
-    const input = await model.PlayerView.readFrom(new FileStream(inputFile, 'r'));
-    console.log(input);
-    const outputStream = new FileStream(outputFile, 'w');
-    await input.writeTo(outputStream);
-    await outputStream.flush();
+    for (let i = 0; i < repeat; i++) {
+        const input = await MessageGameModel.readFrom(new FileStream(inputFile, 'r'));
+        if (repeat == 1) {
+            console.log(input);
+        }
+        const outputStream = new FileStream(outputFile, 'w');
+        await input.writeTo(outputStream);
+        await outputStream.flush();
+    }
 }
 
 run();

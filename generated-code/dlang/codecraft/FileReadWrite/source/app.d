@@ -1,8 +1,8 @@
-import model;
 import stream;
 import std.stdio;
 import std.conv;
 import std.exception;
+import codegame.message_game_model;
 
 class FileStream : Stream
 {
@@ -32,15 +32,15 @@ private:
 
 void main(string[] args)
 {
-    if (args.length != 3)
-    {
-        throw new Error("Pass input and output as parameters");
-    }
-
     string inputFile = args[1];
     string outputFile = args[2];
+    int repeat = parse!int(args[3]);
 
-    PlayerView input = PlayerView.readFrom(new FileStream(File(inputFile, "rb")));
-    writeln(input);
-    input.writeTo(new FileStream(File(outputFile, "wb")));
+    for (int i = 0; i < repeat; i++) {
+        codegame.MessageGameModel input = codegame.MessageGameModel.readFrom(new FileStream(File(inputFile, "rb")));
+        if (repeat == 1) {
+            writeln(input);
+        }
+        input.writeTo(new FileStream(File(outputFile, "wb")));
+    }
 }

@@ -1,3 +1,5 @@
+module Model
+
 # Entity's attack properties
 class AttackProperties
     # Maximum attack range
@@ -45,4 +47,6 @@ class AttackProperties
     def to_str
         to_s
     end
+end
+
 end

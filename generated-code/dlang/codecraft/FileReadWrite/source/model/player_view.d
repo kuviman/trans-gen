@@ -1,7 +1,12 @@
-import model;
+module model.player_view;
+
 import stream;
 import std.conv;
 import std.typecons : Nullable;
+import model.entity;
+import model.entity_properties;
+import model.entity_type;
+import model.player;
 
 /// Information available to the player
 struct PlayerView {
@@ -12,7 +17,7 @@ struct PlayerView {
     /// Whether fog of war is enabled
     bool fogOfWar;
     /// Entity properties for each entity type
-    EntityProperties[EntityType] entityProperties;
+    model.EntityProperties[model.EntityType] entityProperties;
     /// Max tick count for the game
     int maxTickCount;
     /// Max pathfind nodes when performing pathfinding in the game simulator
@@ -20,11 +25,11 @@ struct PlayerView {
     /// Current tick
     int currentTick;
     /// List of players
-    Player[] players;
+    model.Player[] players;
     /// List of entities
-    Entity[] entities;
+    model.Entity[] entities;
 
-    this(int myId, int mapSize, bool fogOfWar, EntityProperties[EntityType] entityProperties, int maxTickCount, int maxPathfindNodes, int currentTick, Player[] players, Entity[] entities) {
+    this(int myId, int mapSize, bool fogOfWar, model.EntityProperties[model.EntityType] entityProperties, int maxTickCount, int maxPathfindNodes, int currentTick, model.Player[] players, model.Entity[] entities) {
         this.myId = myId;
         this.mapSize = mapSize;
         this.fogOfWar = fogOfWar;
@@ -44,14 +49,14 @@ struct PlayerView {
         mapSize = reader.readInt();
         bool fogOfWar;
         fogOfWar = reader.readBool();
-        EntityProperties[EntityType] entityProperties;
+        model.EntityProperties[model.EntityType] entityProperties;
         int entityPropertiesSize = reader.readInt();
         entityProperties.clear();
         for (int entityPropertiesIndex = 0; entityPropertiesIndex < entityPropertiesSize; entityPropertiesIndex++) {
-            EntityType entityPropertiesKey;
-            EntityProperties entityPropertiesValue;
+            model.EntityType entityPropertiesKey;
+            model.EntityProperties entityPropertiesValue;
             entityPropertiesKey = readEntityType(reader);
-            entityPropertiesValue = EntityProperties.readFrom(reader);
+            entityPropertiesValue = model.EntityProperties.readFrom(reader);
             entityProperties[entityPropertiesKey] = entityPropertiesValue;
         }
         int maxTickCount;
@@ -60,18 +65,18 @@ struct PlayerView {
         maxPathfindNodes = reader.readInt();
         int currentTick;
         currentTick = reader.readInt();
-        Player[] players;
-        players = new Player[reader.readInt()];
+        model.Player[] players;
+        players = new model.Player[reader.readInt()];
         for (int playersIndex = 0; playersIndex < players.length; playersIndex++) {
-            Player playersKey;
-            playersKey = Player.readFrom(reader);
+            model.Player playersKey;
+            playersKey = model.Player.readFrom(reader);
             players[playersIndex] = playersKey;
         }
-        Entity[] entities;
-        entities = new Entity[reader.readInt()];
+        model.Entity[] entities;
+        entities = new model.Entity[reader.readInt()];
         for (int entitiesIndex = 0; entitiesIndex < entities.length; entitiesIndex++) {
-            Entity entitiesKey;
-            entitiesKey = Entity.readFrom(reader);
+            model.Entity entitiesKey;
+            entitiesKey = model.Entity.readFrom(reader);
             entities[entitiesIndex] = entitiesKey;
         }
         return PlayerView(myId, mapSize, fogOfWar, entityProperties, maxTickCount, maxPathfindNodes, currentTick, players, entities);
