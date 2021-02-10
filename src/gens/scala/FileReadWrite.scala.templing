@@ -2,19 +2,19 @@ import java.io._
 import trans_gen_test.util.StreamUtil
 
 object Runner extends App {
-    if (args.size != 2) {
-        throw new Exception("Pass input and output as parameters")
-    }
     val inputFile = args(0)
     val outputFile = args(1)
+    val repeat = Integer.parseInt(args(2))
 
-    val inputStream: InputStream = new BufferedInputStream(new FileInputStream(inputFile))
-    val input: {{ type_name(schema) }} = {{ type_name(schema) }}.readFrom(inputStream)
-
-    println(input)
-
-    val outputStream: OutputStream = new BufferedOutputStream(new FileOutputStream(outputFile))
-    input.writeTo(outputStream)
-    outputStream.flush()
-    outputStream.close()
+    for (i <- 1 to repeat) {
+        val inputStream: InputStream = new BufferedInputStream(new FileInputStream(inputFile))
+        val input: {{ type_name(schema) }} = {{ type_name(schema) }}.readFrom(inputStream)
+        if (repeat == 1) {
+            println(input)
+        }
+        val outputStream: OutputStream = new BufferedOutputStream(new FileOutputStream(outputFile))
+        input.writeTo(outputStream)
+        outputStream.flush()
+        outputStream.close()
+    }
 }
