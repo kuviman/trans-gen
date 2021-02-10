@@ -4,6 +4,7 @@ pub struct TcpReadWrite<D> {
     pub version: Version,
     pub snapshot: D,
     pub show_stdout: bool,
+    pub repeat: usize,
 }
 
 impl<D: Trans + PartialEq + Debug> Test for TcpReadWrite<D> {
@@ -11,7 +12,7 @@ impl<D: Trans + PartialEq + Debug> Test for TcpReadWrite<D> {
         vec![Schema::of::<D>(&self.version)]
     }
     fn run_test(&self, mut run_code: Command) -> anyhow::Result<()> {
-        let start_time = std::time::Instant::now();
+        use std::io::Write as _;
         if !self.show_stdout {
             run_code.stdout(std::process::Stdio::null());
         }
@@ -22,10 +23,11 @@ impl<D: Trans + PartialEq + Debug> Test for TcpReadWrite<D> {
         let mut child = run_code
             .arg("127.0.0.1")
             .arg(port.to_string())
+            .arg(self.show_stdout.to_string())
             .spawn()
             .context("Failed to spawn code")?;
         let mut accept_try = 0;
-        let (mut tcp_stream, _) = loop {
+        let (tcp_stream, _) = loop {
             match listener.accept() {
                 Ok(result) => break result,
                 Err(ref e) if e.kind() == std::io::ErrorKind::WouldBlock => {
@@ -44,18 +46,33 @@ impl<D: Trans + PartialEq + Debug> Test for TcpReadWrite<D> {
         tcp_stream.set_nodelay(true)?;
         tcp_stream.set_read_timeout(Some(std::time::Duration::from_millis(1000)))?;
         tcp_stream.set_write_timeout(Some(std::time::Duration::from_millis(1000)))?;
-        self.snapshot
-            .write_to(&mut tcp_stream, &self.version)
-            .context("Failed to write snapshot")?;
-        let output: D =
-            Trans::read_from(&mut tcp_stream, &self.version).context("Failed to read output")?;
-        if self.snapshot != output {
-            anyhow::bail!(
-                "Input and output differ: expected {:?}, got {:?}",
-                self.snapshot,
-                output,
-            );
+        let mut input_stream = std::io::BufReader::new(tcp_stream.try_clone().unwrap());
+        let mut output_stream = std::io::BufWriter::new(tcp_stream.try_clone().unwrap());
+        let start_time = std::time::Instant::now();
+        for index in 0..self.repeat {
+            || -> anyhow::Result<()> {
+                Trans::write_to(&true, &mut output_stream, &self.version)
+                    .context("Failed to write 'true'")?;
+                self.snapshot
+                    .write_to(&mut output_stream, &self.version)
+                    .context("Failed to write snapshot")?;
+                output_stream.flush().context("Failed to flush")?;
+                let output: D = Trans::read_from(&mut input_stream, &self.version)
+                    .context("Failed to read output")?;
+                if self.snapshot != output {
+                    anyhow::bail!(
+                        "Input and output differ: expected {:?}, got {:?}",
+                        self.snapshot,
+                        output,
+                    );
+                }
+                Ok(())
+            }()
+            .context(format!("Failed at iteration {:?}", index))?;
         }
+        Trans::write_to(&false, &mut output_stream, &self.version)
+            .context("Failed to write 'false'")?;
+        output_stream.flush().context("Failed to flush")?;
         let child_status = child.wait().context("Failed to wait for child process")?;
         if !child_status.success() {
             anyhow::bail!("Child process exited with {}", child_status);

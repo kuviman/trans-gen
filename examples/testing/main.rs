@@ -6,12 +6,16 @@ use trans_gen::TestExt as _;
 struct Opt {
     #[structopt(long = "model")]
     models: Vec<String>,
-    #[structopt(long = "lang", long = "language")]
+    #[structopt(long = "language")]
     langs: Vec<String>,
     #[structopt(long = "test")]
     tests: Vec<String>,
+    #[structopt(long, default_value = "1")]
+    repeat: usize,
     #[structopt(long)]
     generate: Option<PathBuf>,
+    #[structopt(long)]
+    show_stdout: Option<bool>,
 }
 
 macro_rules! all_models {
@@ -81,8 +85,15 @@ fn main() -> anyhow::Result<()> {
                                         });
                                         let test = trans_gen::testing::$test {
                                             snapshot: snapshot.clone(),
-                                            show_stdout: $model::SHOW_STDOUT,
+                                            show_stdout: opt.show_stdout.unwrap_or(
+                                                if opt.repeat == 1 {
+                                                    $model::SHOW_STDOUT
+                                                } else {
+                                                    false
+                                                },
+                                            ),
                                             version: $model::version(),
+                                            repeat: opt.repeat,
                                         };
                                         if let Some(path) = generate {
                                             test.generate::<trans_gen::gens::$lang::Generator>(

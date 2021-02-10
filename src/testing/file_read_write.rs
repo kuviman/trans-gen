@@ -4,6 +4,7 @@ pub struct FileReadWrite<D> {
     pub version: Version,
     pub snapshot: D,
     pub show_stdout: bool,
+    pub repeat: usize,
 }
 
 impl<D: Trans + PartialEq + Debug> Test for FileReadWrite<D> {
@@ -23,13 +24,14 @@ impl<D: Trans + PartialEq + Debug> Test for FileReadWrite<D> {
         )
         .context("Failed to write input")?;
         let output_file = path.join("output.trans");
-        let start_time = std::time::Instant::now();
         if !self.show_stdout {
             run_code.stdout(std::process::Stdio::null());
         }
+        let start_time = std::time::Instant::now();
         run_code
             .arg(&input_file)
             .arg(&output_file)
+            .arg(self.repeat.to_string())
             .run()
             .context("Failed to run code")?;
         let running_duration = std::time::Instant::now().duration_since(start_time);
