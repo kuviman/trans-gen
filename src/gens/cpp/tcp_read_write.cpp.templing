@@ -1,5 +1,6 @@
 #include <iostream>
 #include <stdexcept>
+#include <cstring>
 
 #include "{{ file_name(schema) }}.hpp"
 #include "TcpStream.hpp"
