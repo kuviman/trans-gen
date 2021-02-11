@@ -6,7 +6,15 @@ assert(strlen(pack('e', 0.0)) == 8);
 
 abstract class InputStream
 {
-    abstract function read($byteBount);
+    abstract function readAtMost($byteCount);
+    function read($byteCount)
+    {
+        $result = '';
+        while (strlen($result) < $byteCount) {
+            $result .= $this->readAtMost($byteCount - strlen($result));
+        }
+        return $result;
+    }
     function readBool()
     {
         $byte = unpack('C', $this->read(1))[1];

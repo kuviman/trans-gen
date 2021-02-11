@@ -123,6 +123,10 @@ impl crate::Generator for Generator {
             "Stream.php".to_owned(),
             include_str!("Stream.php").to_owned(),
         );
+        files.insert(
+            "BufferedStream.php".to_owned(),
+            include_str!("BufferedStream.php").to_owned(),
+        );
         Self { files }
     }
     fn generate(mut self, extra_files: Vec<File>) -> GenResult {

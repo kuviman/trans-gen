@@ -2,6 +2,7 @@
 
 require_once '{{ file_name(schema) }}.php';
 require_once 'Stream.php';
+require_once 'BufferedStream.php';
 
 class FileInputStream extends InputStream
 {
@@ -14,7 +15,7 @@ class FileInputStream extends InputStream
     {
         fclose($this->stream);
     }
-    public function read($byteCount)
+    public function readAtMost($byteCount)
     {
         $data = fread($this->stream, $byteCount);
         assert(strlen($data) == $byteCount);
@@ -49,9 +50,11 @@ $outputFile = $argv[2];
 $repeat = intval($argv[3]);
 
 for ($i = 0; $i < $repeat; $i++) {
-    $input = {{ type_name(schema) }}::readFrom(new FileInputStream($inputFile));
+    $input = {{ type_name(schema) }}::readFrom(new BufferedInputStream(new FileInputStream($inputFile)));
     if ($repeat == 1) {
         print_r($input);
     }
-    $input->writeTo(new FileOutputStream($outputFile));
+    $outputStream = new BufferedOutputStream(new FileOutputStream($outputFile));
+    $input->writeTo($outputStream);
+    $outputStream->flush();
 }
