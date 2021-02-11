@@ -144,7 +144,7 @@ jobs:
       - name: Upload artifacts
         uses: actions/upload-artifact@v2
         with:
-          name: benchmarks-${{ matrix.env.short }}-{{ matrix.language.short }}
+          name: benchmarks-${{ matrix.env.short }}-${{ matrix.language.short }}
           path: results.json
 
   update-testing-branch:
