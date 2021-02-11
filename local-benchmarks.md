@@ -1,5 +1,9 @@
 # Local benchmarks
 
+May be outdated.
+
+Also see benchmarks done on GitHub Actions on [the testing branch](https://github.com/kuviman/trans-gen/tree/testing)
+
 ## Linux i7 7700HQ
 
 | Language | codecraft::FileReadWrite | codecraft::TcpReadWrite | example::FileReadWrite | example::TcpReadWrite |
