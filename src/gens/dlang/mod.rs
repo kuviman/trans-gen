@@ -284,7 +284,8 @@ impl RunnableGenerator for Generator {
             .arg("-b")
             .arg("release")
             .current_dir(path)
-            .show_output(verbose).run()
+            .show_output(verbose)
+            .run()
     }
     fn run_local(path: &Path) -> anyhow::Result<Command> {
         let project_name = serde_json::from_str::<serde_json::Value>(
@@ -311,7 +312,7 @@ impl RunnableGenerator for Generator {
 }
 
 impl<D: Trans + PartialEq + Debug> TestableGenerator<testing::FileReadWrite<D>> for Generator {
-    fn extra_files(test: &testing::FileReadWrite<D>) -> Vec<File> {
+    fn extra_files(&self, test: &testing::FileReadWrite<D>) -> Vec<File> {
         let schema = Schema::of::<D>(&test.version);
         let schema: &Schema = &schema;
         vec![File {
@@ -322,7 +323,7 @@ impl<D: Trans + PartialEq + Debug> TestableGenerator<testing::FileReadWrite<D>> 
 }
 
 impl<D: Trans + PartialEq + Debug> TestableGenerator<testing::TcpReadWrite<D>> for Generator {
-    fn extra_files(test: &testing::TcpReadWrite<D>) -> Vec<File> {
+    fn extra_files(&self, test: &testing::TcpReadWrite<D>) -> Vec<File> {
         let schema = Schema::of::<D>(&test.version);
         let schema: &Schema = &schema;
         vec![

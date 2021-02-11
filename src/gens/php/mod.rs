@@ -9,6 +9,20 @@ fn conv(name: &str) -> String {
 
 pub struct Generator {
     files: HashMap<String, String>,
+    options: Options,
+}
+
+#[derive(Debug)]
+pub struct Options {
+    pub type_declarations: bool,
+}
+
+impl Default for Options {
+    fn default() -> Self {
+        Self {
+            type_declarations: true,
+        }
+    }
 }
 
 fn imports(schema: &Schema) -> String {
@@ -52,6 +66,7 @@ fn imports(schema: &Schema) -> String {
         }
         _ => {}
     }
+    imports.insert("Stream".to_owned());
     include_templing!("src/gens/php/imports.templing")
 }
 
@@ -83,10 +98,6 @@ fn write_var(var: &str, schema: &Schema) -> String {
     include_templing!("src/gens/php/write_var.templing")
 }
 
-fn struct_impl(definition: &Struct, base: Option<(&Schema, usize)>) -> String {
-    include_templing!("src/gens/php/struct_impl.templing")
-}
-
 fn file_name(schema: &Schema) -> String {
     schema
         .namespace()
@@ -111,25 +122,56 @@ fn namespace_path(schema: &Schema) -> String {
 }
 
 fn type_name(schema: &Schema) -> String {
+    match schema {
+        Schema::Bool => "bool".to_owned(),
+        Schema::Int32 | Schema::Int64 | Schema::Enum { .. } => "int".to_owned(),
+        Schema::Float32 | Schema::Float64 => "float".to_owned(),
+        Schema::String => "string".to_owned(),
+        Schema::Struct { .. } | Schema::OneOf { .. } => class_name(schema),
+        Schema::Vec(_) | Schema::Map(_, _) => "array".to_owned(),
+        Schema::Option(inner) => format!("?{}", type_name(inner)),
+    }
+}
+
+fn class_name(schema: &Schema) -> String {
     format!("\\{}", file_name(schema).replace('/', "\\"))
+}
+
+impl Generator {
+    fn declare_var(&self, r#type: &str, name: &str) -> String {
+        if self.options.type_declarations {
+            format!("{} ${}", r#type, name)
+        } else {
+            format!("${}", name)
+        }
+    }
+    fn returns(&self, r#type: &str) -> String {
+        if self.options.type_declarations {
+            format!(": {}", r#type)
+        } else {
+            String::new()
+        }
+    }
+    fn struct_impl(&self, definition: &Struct, base: Option<(&Schema, usize)>) -> String {
+        include_templing!("src/gens/php/struct_impl.templing")
+    }
 }
 
 impl crate::Generator for Generator {
     const NAME: &'static str = "PHP";
-    type Options = ();
-    fn new(_name: &str, _version: &str, _: ()) -> Self {
-        let mut files = HashMap::new();
-        files.insert(
-            "Stream.php".to_owned(),
-            include_str!("Stream.php").to_owned(),
-        );
-        files.insert(
-            "BufferedStream.php".to_owned(),
-            include_str!("BufferedStream.php").to_owned(),
-        );
-        Self { files }
+    type Options = Options;
+    fn new(_name: &str, _version: &str, options: Options) -> Self {
+        Self {
+            files: HashMap::new(),
+            options,
+        }
     }
     fn generate(mut self, extra_files: Vec<File>) -> GenResult {
+        let stream_php = include_templing!("src/gens/php/Stream.php.templing");
+        let buffered_stream_php = include_templing!("src/gens/php/BufferedStream.php.templing");
+        self.files.insert("Stream.php".to_owned(), stream_php);
+        self.files
+            .insert("BufferedStream.php".to_owned(), buffered_stream_php);
         for file in extra_files {
             self.files.insert(file.path, file.content);
         }
@@ -190,7 +232,7 @@ impl RunnableGenerator for Generator {
 }
 
 impl<D: Trans + PartialEq + Debug> TestableGenerator<testing::FileReadWrite<D>> for Generator {
-    fn extra_files(test: &testing::FileReadWrite<D>) -> Vec<File> {
+    fn extra_files(&self, test: &testing::FileReadWrite<D>) -> Vec<File> {
         let schema = Schema::of::<D>(&test.version);
         let schema: &Schema = &schema;
         vec![File {
@@ -201,13 +243,13 @@ impl<D: Trans + PartialEq + Debug> TestableGenerator<testing::FileReadWrite<D>> 
 }
 
 impl<D: Trans + PartialEq + Debug> TestableGenerator<testing::TcpReadWrite<D>> for Generator {
-    fn extra_files(test: &testing::TcpReadWrite<D>) -> Vec<File> {
+    fn extra_files(&self, test: &testing::TcpReadWrite<D>) -> Vec<File> {
         let schema = Schema::of::<D>(&test.version);
         let schema: &Schema = &schema;
         vec![
             File {
                 path: "TcpStream.php".to_owned(),
-                content: include_str!("TcpStream.php").to_owned(),
+                content: include_templing!("src/gens/php/TcpStream.php.templing"),
             },
             File {
                 path: "Main.php".to_owned(),

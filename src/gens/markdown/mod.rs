@@ -181,13 +181,13 @@ impl RunnableGenerator for Generator {
 }
 
 impl<D: Trans + PartialEq + Debug> TestableGenerator<testing::FileReadWrite<D>> for Generator {
-    fn extra_files(_test: &testing::FileReadWrite<D>) -> Vec<File> {
+    fn extra_files(&self, _test: &testing::FileReadWrite<D>) -> Vec<File> {
         vec![]
     }
 }
 
 impl<D: Trans + PartialEq + Debug> TestableGenerator<testing::TcpReadWrite<D>> for Generator {
-    fn extra_files(_test: &testing::TcpReadWrite<D>) -> Vec<File> {
+    fn extra_files(&self, _test: &testing::TcpReadWrite<D>) -> Vec<File> {
         vec![]
     }
 }

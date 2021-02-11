@@ -7,7 +7,7 @@ require_once 'BufferedStream.php';
 class FileInputStream extends InputStream
 {
     private $stream;
-    function __construct($path)
+    function __construct({{ self.declare_var("string", "path") }})
     {
         $this->stream = fopen($path, "rb");
     }
@@ -15,7 +15,7 @@ class FileInputStream extends InputStream
     {
         fclose($this->stream);
     }
-    public function readAtMost($byteCount)
+    public function readAtMost({{ self.declare_var("int", "byteCount") }}){{ self.returns("string") }}
     {
         return fread($this->stream, $byteCount);
     }
@@ -24,7 +24,7 @@ class FileInputStream extends InputStream
 class FileOutputStream extends OutputStream
 {
     private $stream;
-    function __construct($path)
+    function __construct({{ self.declare_var("string", "path") }})
     {
         $this->stream = fopen($path, "wb");
     }
@@ -33,11 +33,11 @@ class FileOutputStream extends OutputStream
         $this->flush();
         fclose($this->stream);
     }
-    public function write($bytes)
+    public function write({{ self.declare_var("string", "bytes") }}){{ self.returns("void") }}
     {
         fwrite($this->stream, $bytes);
     }
-    public function flush()
+    public function flush(){{ self.returns("void") }}
     {
         fflush($this->stream);
     }
@@ -48,7 +48,7 @@ $outputFile = $argv[2];
 $repeat = intval($argv[3]);
 
 for ($i = 0; $i < $repeat; $i++) {
-    $input = {{ type_name(schema) }}::readFrom(new BufferedInputStream(new FileInputStream($inputFile)));
+    $input = {{ class_name(schema) }}::readFrom(new BufferedInputStream(new FileInputStream($inputFile)));
     if ($repeat == 1) {
         print_r($input);
     }
