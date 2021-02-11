@@ -57,7 +57,7 @@ impl<T: Test> TestExt for T {
             env!("CARGO_PKG_VERSION"),
             Default::default(),
             &self.schemas(),
-            G::extra_files(self),
+            &|generator| G::extra_files(generator, self),
         )
         .write_to(path)
         .context("Failed to write generated code")?;
@@ -88,5 +88,5 @@ impl<T: Test> TestExt for T {
 }
 
 pub trait TestableGenerator<T: Test + ?Sized>: RunnableGenerator {
-    fn extra_files(test: &T) -> Vec<File>;
+    fn extra_files(&self, test: &T) -> Vec<File>;
 }

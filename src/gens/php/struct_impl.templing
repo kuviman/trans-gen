@@ -11,7 +11,7 @@ class {{ definition.name.camel_case(conv) }}
     - }
     - for field in &definition.fields {
     {{ doc_comment(&field.documentation) }}
-    public {{ type_name(&field.schema) }} ${{ &field.name.mixed_case(conv) }};
+    public {{ self.declare_var(&type_name(&field.schema), &field.name.mixed_case(conv)) }};
     - }
 
     function __construct(~
@@ -19,7 +19,7 @@ class {{ definition.name.camel_case(conv) }}
         - if index != 0 {
         ~, ~
         - }
-        ~{{ type_name(&field.schema) }} ${{ field.name.mixed_case(conv) }}~
+        ~{{ self.declare_var(&type_name(&field.schema), &field.name.mixed_case(conv)) }}~
     - }
     ~)
     {
@@ -29,7 +29,7 @@ class {{ definition.name.camel_case(conv) }}
     }
 
     {{ doc_read_from(&definition.name.camel_case(conv)) }}
-    public static function readFrom(\InputStream $stream): {{ definition.name.camel_case(conv) }}
+    public static function readFrom({{ self.declare_var("\\InputStream", "stream") }}){{ self.returns(&definition.name.camel_case(conv)) }}
     {
         - for field in &definition.fields {
         {{ read_var(&field.name.mixed_case(conv), &field.schema) }}
@@ -45,7 +45,7 @@ class {{ definition.name.camel_case(conv) }}
     }
     
     {{ doc_write_to(&definition.name.camel_case(conv)) }}
-    public function writeTo(\OutputStream $stream): void
+    public function writeTo({{ self.declare_var("\\OutputStream", "stream") }}){{ self.returns("void") }}
     {
         - if base.is_some() {
         $stream->writeInt32({{ definition.name.camel_case(conv) }}::TAG);

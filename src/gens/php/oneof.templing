@@ -7,10 +7,10 @@ namespace {{ namespace_path(schema) }} {
     abstract class {{ base_name.camel_case(conv) }}
     {
         {{ doc_write_to(&base_name.camel_case(conv)) }}
-        abstract function writeTo(\OutputStream $stream): void;
+        abstract function writeTo({{ self.declare_var("\\OutputStream", "stream") }}){{ self.returns("void") }};
 
         {{ doc_read_from(&base_name.camel_case(conv)) }}
-        static function readFrom(\InputStream $stream): {{ base_name.camel_case(conv) }}
+        static function readFrom({{ self.declare_var("\\InputStream", "stream") }}){{ self.returns(&base_name.camel_case(conv)) }}
         {
             $tag = $stream->readInt32();
             - for variant in variants {
@@ -28,6 +28,6 @@ namespace {{ &type_name(schema)[1..] }} {
     - if tag != 0 {
 
     - }
-    {{ struct_impl(variant, Some((schema, tag))) }}
+    {{ self.struct_impl(variant, Some((schema, tag))) }}
     - }
 }

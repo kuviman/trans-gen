@@ -15,7 +15,7 @@ namespace {{ namespace_path(schema) }} {
         - }
 
         {{ doc_read_from(&base_name.camel_case(conv)) }}
-        public static function readFrom(\InputStream $stream): int
+        public static function readFrom({{ self.declare_var("\\InputStream", "stream") }}){{ self.returns("int") }}
         {
             $result = $stream->readInt32();
             if (0 <= $result && $result < {{ variants.len() }}) {
