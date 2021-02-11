@@ -8,16 +8,20 @@ class {{ definition.name.camel_case(conv) }}~
     - if let Some((_, tag)) = base {
     TAG = {{ tag }}
 
+    - }
     __slots__ = (~
     - for field in &definition.fields {
     ~"{{ field.name.snake_case(conv) }}",~
     - }
     ~)
 
+    - for field in &definition.fields {
+    {{ field.name.snake_case(conv) }}: {{ type_name(&field.schema) }}
     - }
+
     def __init__(self~
     - for field in &definition.fields {
-        ~, {{ field.name.snake_case(conv) }}~
+        ~, {{ field.name.snake_case(conv) }}: {{ type_name(&field.schema) }}~
     - }
     ~):
         - for field in &definition.fields {
@@ -29,7 +33,7 @@ class {{ definition.name.camel_case(conv) }}~
         - }
 
     @staticmethod
-    def read_from(stream):
+    def read_from(stream: StreamWrapper) -> "{{ definition.name.camel_case(conv) }}":
         {{ doc_read_from(&definition.name.camel_case(conv)) }}
         - for field in &definition.fields {
         {{ read_var(&field.name.snake_case(conv), &field.schema) }}
@@ -43,7 +47,7 @@ class {{ definition.name.camel_case(conv) }}~
         - }
         ~)
     
-    def write_to(self, stream):
+    def write_to(self, stream: StreamWrapper):
         {{ doc_write_to(&definition.name.camel_case(conv)) }}
         - if base.is_some() {
         stream.write_int(self.TAG)

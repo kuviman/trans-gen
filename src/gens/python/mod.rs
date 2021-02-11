@@ -18,6 +18,21 @@ pub struct Generator {
     files: HashMap<String, String>,
 }
 
+fn type_name(schema: &Schema) -> String {
+    match schema {
+        Schema::Bool => "bool".to_owned(),
+        Schema::Int32 | Schema::Int64 => "int".to_owned(),
+        Schema::Float32 | Schema::Float64 => "float".to_owned(),
+        Schema::String => "str".to_owned(),
+        Schema::OneOf { .. } | Schema::Enum { .. } | Schema::Struct { .. } => {
+            schema.name().unwrap().camel_case(conv)
+        }
+        Schema::Vec(inner) => format!("List[{}]", type_name(inner)),
+        Schema::Option(inner) => format!("Optional[{}]", type_name(inner)),
+        Schema::Map(key, value) => format!("Dict[{}, {}]", type_name(key), type_name(value)),
+    }
+}
+
 fn imports(schema: &Schema) -> String {
     let mut imports = BTreeSet::new();
     fn add_imports_struct(definition: &Struct, imports: &mut BTreeSet<String>) {
@@ -31,12 +46,15 @@ fn imports(schema: &Schema) -> String {
                     ));
                 }
                 Schema::Option(inner) => {
+                    imports.insert("from typing import Optional".to_owned());
                     add_imports(inner, imports);
                 }
                 Schema::Vec(inner) => {
+                    imports.insert("from typing import List".to_owned());
                     add_imports(inner, imports);
                 }
                 Schema::Map(key_type, value_type) => {
+                    imports.insert("from typing import Dict".to_owned());
                     add_imports(key_type, imports);
                     add_imports(value_type, imports);
                 }
@@ -63,6 +81,7 @@ fn imports(schema: &Schema) -> String {
         }
         _ => {}
     }
+    imports.insert("from stream_wrapper import StreamWrapper".to_owned());
     imports.into_iter().collect::<Vec<String>>().join("\n")
 }
 

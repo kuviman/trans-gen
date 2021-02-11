@@ -4,7 +4,7 @@ class {{ base_name.camel_case(conv) }}:
     {{ doc_comment(documentation) }}
 
     @staticmethod
-    def read_from(stream):
+    def read_from(stream: StreamWrapper) -> "{{ base_name.camel_case(conv) }}":
         {{ doc_read_from(&base_name.camel_case(conv)) }}
         tag = stream.read_int()
         - for variant in variants {
