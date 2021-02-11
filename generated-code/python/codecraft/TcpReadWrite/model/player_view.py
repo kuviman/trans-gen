@@ -2,11 +2,26 @@ from model.entity import Entity
 from model.entity_properties import EntityProperties
 from model.entity_type import EntityType
 from model.player import Player
+from stream_wrapper import StreamWrapper
+from typing import Dict
+from typing import List
 
 class PlayerView:
     """Information available to the player"""
 
-    def __init__(self, my_id, map_size, fog_of_war, entity_properties, max_tick_count, max_pathfind_nodes, current_tick, players, entities):
+    __slots__ = ("my_id","map_size","fog_of_war","entity_properties","max_tick_count","max_pathfind_nodes","current_tick","players","entities",)
+
+    my_id: int
+    map_size: int
+    fog_of_war: bool
+    entity_properties: Dict[EntityType, EntityProperties]
+    max_tick_count: int
+    max_pathfind_nodes: int
+    current_tick: int
+    players: List[Player]
+    entities: List[Entity]
+
+    def __init__(self, my_id: int, map_size: int, fog_of_war: bool, entity_properties: Dict[EntityType, EntityProperties], max_tick_count: int, max_pathfind_nodes: int, current_tick: int, players: List[Player], entities: List[Entity]):
         self.my_id = my_id
         """Your player's ID"""
         self.map_size = map_size
@@ -27,7 +42,7 @@ class PlayerView:
         """List of entities"""
 
     @staticmethod
-    def read_from(stream):
+    def read_from(stream: StreamWrapper) -> "PlayerView":
         """Read PlayerView from input stream
         """
         my_id = stream.read_int()
@@ -51,7 +66,7 @@ class PlayerView:
             entities.append(entities_element)
         return PlayerView(my_id, map_size, fog_of_war, entity_properties, max_tick_count, max_pathfind_nodes, current_tick, players, entities)
     
-    def write_to(self, stream):
+    def write_to(self, stream: StreamWrapper):
         """Write PlayerView to output stream
         """
         stream.write_int(self.my_id)

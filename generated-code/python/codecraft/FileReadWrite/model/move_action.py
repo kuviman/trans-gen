@@ -1,9 +1,16 @@
+from stream_wrapper import StreamWrapper
 from vec2_int import Vec2Int
 
 class MoveAction:
     """Move action"""
 
-    def __init__(self, target, find_closest_position, break_through):
+    __slots__ = ("target","find_closest_position","break_through",)
+
+    target: Vec2Int
+    find_closest_position: bool
+    break_through: bool
+
+    def __init__(self, target: Vec2Int, find_closest_position: bool, break_through: bool):
         self.target = target
         """Target position"""
         self.find_closest_position = find_closest_position
@@ -12,7 +19,7 @@ class MoveAction:
         """Whether to destroy other entities on the way"""
 
     @staticmethod
-    def read_from(stream):
+    def read_from(stream: StreamWrapper) -> "MoveAction":
         """Read MoveAction from input stream
         """
         target = Vec2Int.read_from(stream)
@@ -20,7 +27,7 @@ class MoveAction:
         break_through = stream.read_bool()
         return MoveAction(target, find_closest_position, break_through)
     
-    def write_to(self, stream):
+    def write_to(self, stream: StreamWrapper):
         """Write MoveAction to output stream
         """
         self.target.write_to(stream)

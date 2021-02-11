@@ -1,7 +1,15 @@
+from stream_wrapper import StreamWrapper
+
 class Structure:
     """Example structure"""
 
-    def __init__(self, text, float_number, double_number):
+    __slots__ = ("text","float_number","double_number",)
+
+    text: str
+    float_number: float
+    double_number: float
+
+    def __init__(self, text: str, float_number: float, double_number: float):
         self.text = text
         """Text"""
         self.float_number = float_number
@@ -10,7 +18,7 @@ class Structure:
         """64-bit float"""
 
     @staticmethod
-    def read_from(stream):
+    def read_from(stream: StreamWrapper) -> "Structure":
         """Read Structure from input stream
         """
         text = stream.read_string()
@@ -18,7 +26,7 @@ class Structure:
         double_number = stream.read_double()
         return Structure(text, float_number, double_number)
     
-    def write_to(self, stream):
+    def write_to(self, stream: StreamWrapper):
         """Write Structure to output stream
         """
         stream.write_string(self.text)

@@ -1,11 +1,13 @@
 from model.debug_interface.colored_vertex import ColoredVertex
 from model.debug_interface.primitive_type import PrimitiveType
+from stream_wrapper import StreamWrapper
+from typing import List
 
 class DebugData:
     """Debug data can be drawn in the app"""
 
     @staticmethod
-    def read_from(stream):
+    def read_from(stream: StreamWrapper) -> "DebugData":
         """Read DebugData from input stream
         """
         tag = stream.read_int()
@@ -22,18 +24,22 @@ class Log(DebugData):
 
     TAG = 0
 
-    def __init__(self, text):
+    __slots__ = ("text",)
+
+    text: str
+
+    def __init__(self, text: str):
         self.text = text
         """Text to show"""
 
     @staticmethod
-    def read_from(stream):
+    def read_from(stream: StreamWrapper) -> "Log":
         """Read Log from input stream
         """
         text = stream.read_string()
         return Log(text)
     
-    def write_to(self, stream):
+    def write_to(self, stream: StreamWrapper):
         """Write Log to output stream
         """
         stream.write_int(self.TAG)
@@ -51,14 +57,19 @@ class Primitives(DebugData):
 
     TAG = 1
 
-    def __init__(self, vertices, primitive_type):
+    __slots__ = ("vertices","primitive_type",)
+
+    vertices: List[ColoredVertex]
+    primitive_type: PrimitiveType
+
+    def __init__(self, vertices: List[ColoredVertex], primitive_type: PrimitiveType):
         self.vertices = vertices
         """Vertices"""
         self.primitive_type = primitive_type
         """Primitive type"""
 
     @staticmethod
-    def read_from(stream):
+    def read_from(stream: StreamWrapper) -> "Primitives":
         """Read Primitives from input stream
         """
         vertices = []
@@ -68,7 +79,7 @@ class Primitives(DebugData):
         primitive_type = PrimitiveType(stream.read_int())
         return Primitives(vertices, primitive_type)
     
-    def write_to(self, stream):
+    def write_to(self, stream: StreamWrapper):
         """Write Primitives to output stream
         """
         stream.write_int(self.TAG)
@@ -91,7 +102,14 @@ class PlacedText(DebugData):
 
     TAG = 2
 
-    def __init__(self, vertex, text, alignment, size):
+    __slots__ = ("vertex","text","alignment","size",)
+
+    vertex: ColoredVertex
+    text: str
+    alignment: float
+    size: float
+
+    def __init__(self, vertex: ColoredVertex, text: str, alignment: float, size: float):
         self.vertex = vertex
         """Vertex to determine text position and color"""
         self.text = text
@@ -102,7 +120,7 @@ class PlacedText(DebugData):
         """Font size in pixels"""
 
     @staticmethod
-    def read_from(stream):
+    def read_from(stream: StreamWrapper) -> "PlacedText":
         """Read PlacedText from input stream
         """
         vertex = ColoredVertex.read_from(stream)
@@ -111,7 +129,7 @@ class PlacedText(DebugData):
         size = stream.read_float()
         return PlacedText(vertex, text, alignment, size)
     
-    def write_to(self, stream):
+    def write_to(self, stream: StreamWrapper):
         """Write PlacedText to output stream
         """
         stream.write_int(self.TAG)

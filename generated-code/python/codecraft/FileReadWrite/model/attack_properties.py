@@ -1,7 +1,15 @@
+from stream_wrapper import StreamWrapper
+
 class AttackProperties:
     """Entity's attack properties"""
 
-    def __init__(self, attack_range, damage, collect_resource):
+    __slots__ = ("attack_range","damage","collect_resource",)
+
+    attack_range: int
+    damage: int
+    collect_resource: bool
+
+    def __init__(self, attack_range: int, damage: int, collect_resource: bool):
         self.attack_range = attack_range
         """Maximum attack range"""
         self.damage = damage
@@ -10,7 +18,7 @@ class AttackProperties:
         """If true, dealing damage will collect resource from target"""
 
     @staticmethod
-    def read_from(stream):
+    def read_from(stream: StreamWrapper) -> "AttackProperties":
         """Read AttackProperties from input stream
         """
         attack_range = stream.read_int()
@@ -18,7 +26,7 @@ class AttackProperties:
         collect_resource = stream.read_bool()
         return AttackProperties(attack_range, damage, collect_resource)
     
-    def write_to(self, stream):
+    def write_to(self, stream: StreamWrapper):
         """Write AttackProperties to output stream
         """
         stream.write_int(self.attack_range)

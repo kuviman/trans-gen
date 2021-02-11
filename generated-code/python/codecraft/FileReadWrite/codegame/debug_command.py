@@ -1,10 +1,11 @@
 from model.debug_interface.debug_data import DebugData
+from stream_wrapper import StreamWrapper
 
 class DebugCommand:
     """Debug commands that can be sent while debugging with the app"""
 
     @staticmethod
-    def read_from(stream):
+    def read_from(stream: StreamWrapper) -> "DebugCommand":
         """Read DebugCommand from input stream
         """
         tag = stream.read_int()
@@ -23,18 +24,22 @@ class Add(DebugCommand):
 
     TAG = 0
 
-    def __init__(self, debug_data):
+    __slots__ = ("debug_data",)
+
+    debug_data: DebugData
+
+    def __init__(self, debug_data: DebugData):
         self.debug_data = debug_data
         """Data to add"""
 
     @staticmethod
-    def read_from(stream):
+    def read_from(stream: StreamWrapper) -> "Add":
         """Read Add from input stream
         """
         debug_data = DebugData.read_from(stream)
         return Add(debug_data)
     
-    def write_to(self, stream):
+    def write_to(self, stream: StreamWrapper):
         """Write Add to output stream
         """
         stream.write_int(self.TAG)
@@ -52,16 +57,19 @@ class Clear(DebugCommand):
 
     TAG = 1
 
+    __slots__ = ()
+
+
     def __init__(self):
         pass
 
     @staticmethod
-    def read_from(stream):
+    def read_from(stream: StreamWrapper) -> "Clear":
         """Read Clear from input stream
         """
         return Clear()
     
-    def write_to(self, stream):
+    def write_to(self, stream: StreamWrapper):
         """Write Clear to output stream
         """
         stream.write_int(self.TAG)
@@ -77,18 +85,22 @@ class SetAutoFlush(DebugCommand):
 
     TAG = 2
 
-    def __init__(self, enable):
+    __slots__ = ("enable",)
+
+    enable: bool
+
+    def __init__(self, enable: bool):
         self.enable = enable
         """Enable/disable autoflush"""
 
     @staticmethod
-    def read_from(stream):
+    def read_from(stream: StreamWrapper) -> "SetAutoFlush":
         """Read SetAutoFlush from input stream
         """
         enable = stream.read_bool()
         return SetAutoFlush(enable)
     
-    def write_to(self, stream):
+    def write_to(self, stream: StreamWrapper):
         """Write SetAutoFlush to output stream
         """
         stream.write_int(self.TAG)
@@ -106,16 +118,19 @@ class Flush(DebugCommand):
 
     TAG = 3
 
+    __slots__ = ()
+
+
     def __init__(self):
         pass
 
     @staticmethod
-    def read_from(stream):
+    def read_from(stream: StreamWrapper) -> "Flush":
         """Read Flush from input stream
         """
         return Flush()
     
-    def write_to(self, stream):
+    def write_to(self, stream: StreamWrapper):
         """Write Flush to output stream
         """
         stream.write_int(self.TAG)

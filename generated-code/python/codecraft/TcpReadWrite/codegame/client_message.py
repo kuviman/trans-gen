@@ -1,11 +1,12 @@
 from codegame.debug_command import DebugCommand
 from model.action import Action
+from stream_wrapper import StreamWrapper
 
 class ClientMessage:
     """Message sent from client"""
 
     @staticmethod
-    def read_from(stream):
+    def read_from(stream: StreamWrapper) -> "ClientMessage":
         """Read ClientMessage from input stream
         """
         tag = stream.read_int()
@@ -24,18 +25,22 @@ class DebugMessage(ClientMessage):
 
     TAG = 0
 
-    def __init__(self, command):
+    __slots__ = ("command",)
+
+    command: DebugCommand
+
+    def __init__(self, command: DebugCommand):
         self.command = command
         """Command to perform"""
 
     @staticmethod
-    def read_from(stream):
+    def read_from(stream: StreamWrapper) -> "DebugMessage":
         """Read DebugMessage from input stream
         """
         command = DebugCommand.read_from(stream)
         return DebugMessage(command)
     
-    def write_to(self, stream):
+    def write_to(self, stream: StreamWrapper):
         """Write DebugMessage to output stream
         """
         stream.write_int(self.TAG)
@@ -53,18 +58,22 @@ class ActionMessage(ClientMessage):
 
     TAG = 1
 
-    def __init__(self, action):
+    __slots__ = ("action",)
+
+    action: Action
+
+    def __init__(self, action: Action):
         self.action = action
         """Player's action"""
 
     @staticmethod
-    def read_from(stream):
+    def read_from(stream: StreamWrapper) -> "ActionMessage":
         """Read ActionMessage from input stream
         """
         action = Action.read_from(stream)
         return ActionMessage(action)
     
-    def write_to(self, stream):
+    def write_to(self, stream: StreamWrapper):
         """Write ActionMessage to output stream
         """
         stream.write_int(self.TAG)
@@ -82,16 +91,19 @@ class DebugUpdateDone(ClientMessage):
 
     TAG = 2
 
+    __slots__ = ()
+
+
     def __init__(self):
         pass
 
     @staticmethod
-    def read_from(stream):
+    def read_from(stream: StreamWrapper) -> "DebugUpdateDone":
         """Read DebugUpdateDone from input stream
         """
         return DebugUpdateDone()
     
-    def write_to(self, stream):
+    def write_to(self, stream: StreamWrapper):
         """Write DebugUpdateDone to output stream
         """
         stream.write_int(self.TAG)
@@ -107,16 +119,19 @@ class RequestDebugState(ClientMessage):
 
     TAG = 3
 
+    __slots__ = ()
+
+
     def __init__(self):
         pass
 
     @staticmethod
-    def read_from(stream):
+    def read_from(stream: StreamWrapper) -> "RequestDebugState":
         """Read RequestDebugState from input stream
         """
         return RequestDebugState()
     
-    def write_to(self, stream):
+    def write_to(self, stream: StreamWrapper):
         """Write RequestDebugState to output stream
         """
         stream.write_int(self.TAG)

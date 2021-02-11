@@ -19,22 +19,22 @@ class StreamWrapper:
 
     # Reading primitives
 
-    def read_bool(self):
+    def read_bool(self) -> bool:
         return self.BOOL_FORMAT_STRUCT.unpack(self.stream.read(1))[0]
 
-    def read_int(self):
+    def read_int(self) -> int:
         return self.INT_FORMAT_STRUCT.unpack(self.stream.read(4))[0]
 
-    def read_long(self):
+    def read_long(self) -> int:
         return self.LONG_FORMAT_STRUCT.unpack(self.stream.read(8))[0]
 
-    def read_float(self):
+    def read_float(self) -> float:
         return self.FLOAT_FORMAT_STRUCT.unpack(self.stream.read(4))[0]
 
-    def read_double(self):
+    def read_double(self) -> float:
         return self.DOUBLE_FORMAT_STRUCT.unpack(self.stream.read(8))[0]
 
-    def read_string(self):
+    def read_string(self) -> str:
         length = self.read_int()
         data = self.stream.read(length)
         if len(data) != length:
@@ -43,22 +43,22 @@ class StreamWrapper:
 
     # Writing primitives
 
-    def write_bool(self, value):
+    def write_bool(self, value: bool):
         self.stream.write(self.BOOL_FORMAT_STRUCT.pack(value))
 
-    def write_int(self, value):
+    def write_int(self, value: int):
         self.stream.write(self.INT_FORMAT_STRUCT.pack(value))
 
-    def write_long(self, value):
+    def write_long(self, value: int):
         self.stream.write(self.LONG_FORMAT_STRUCT.pack(value))
 
-    def write_float(self, value):
+    def write_float(self, value: float):
         self.stream.write(self.FLOAT_FORMAT_STRUCT.pack(value))
 
-    def write_double(self, value):
+    def write_double(self, value: float):
         self.stream.write(self.DOUBLE_FORMAT_STRUCT.pack(value))
 
-    def write_string(self, value):
+    def write_string(self, value: str):
         data = value.encode("utf-8")
         self.write_int(len(data))
         self.stream.write(data)

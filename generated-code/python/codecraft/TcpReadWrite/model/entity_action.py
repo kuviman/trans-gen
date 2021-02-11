@@ -2,11 +2,20 @@ from model.attack_action import AttackAction
 from model.build_action import BuildAction
 from model.move_action import MoveAction
 from model.repair_action import RepairAction
+from stream_wrapper import StreamWrapper
+from typing import Optional
 
 class EntityAction:
     """Entity's action"""
 
-    def __init__(self, move_action, build_action, attack_action, repair_action):
+    __slots__ = ("move_action","build_action","attack_action","repair_action",)
+
+    move_action: Optional[MoveAction]
+    build_action: Optional[BuildAction]
+    attack_action: Optional[AttackAction]
+    repair_action: Optional[RepairAction]
+
+    def __init__(self, move_action: Optional[MoveAction], build_action: Optional[BuildAction], attack_action: Optional[AttackAction], repair_action: Optional[RepairAction]):
         self.move_action = move_action
         """Move action"""
         self.build_action = build_action
@@ -17,7 +26,7 @@ class EntityAction:
         """Repair action"""
 
     @staticmethod
-    def read_from(stream):
+    def read_from(stream: StreamWrapper) -> "EntityAction":
         """Read EntityAction from input stream
         """
         if stream.read_bool():
@@ -38,7 +47,7 @@ class EntityAction:
             repair_action = None
         return EntityAction(move_action, build_action, attack_action, repair_action)
     
-    def write_to(self, stream):
+    def write_to(self, stream: StreamWrapper):
         """Write EntityAction to output stream
         """
         if self.move_action is None:

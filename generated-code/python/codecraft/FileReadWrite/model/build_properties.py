@@ -1,16 +1,24 @@
 from model.entity_type import EntityType
+from stream_wrapper import StreamWrapper
+from typing import List
+from typing import Optional
 
 class BuildProperties:
     """Entity's build properties"""
 
-    def __init__(self, options, init_health):
+    __slots__ = ("options","init_health",)
+
+    options: List[EntityType]
+    init_health: Optional[int]
+
+    def __init__(self, options: List[EntityType], init_health: Optional[int]):
         self.options = options
         """Valid new entity types"""
         self.init_health = init_health
         """Initial health of new entity. If absent, it will have full health"""
 
     @staticmethod
-    def read_from(stream):
+    def read_from(stream: StreamWrapper) -> "BuildProperties":
         """Read BuildProperties from input stream
         """
         options = []
@@ -23,7 +31,7 @@ class BuildProperties:
             init_health = None
         return BuildProperties(options, init_health)
     
-    def write_to(self, stream):
+    def write_to(self, stream: StreamWrapper):
         """Write BuildProperties to output stream
         """
         stream.write_int(len(self.options))

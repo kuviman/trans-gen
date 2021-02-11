@@ -1,11 +1,29 @@
 from model.attack_properties import AttackProperties
 from model.build_properties import BuildProperties
 from model.repair_properties import RepairProperties
+from stream_wrapper import StreamWrapper
+from typing import Optional
 
 class EntityProperties:
     """Entity properties"""
 
-    def __init__(self, size, build_score, destroy_score, can_move, population_provide, population_use, max_health, initial_cost, sight_range, resource_per_health, build, attack, repair):
+    __slots__ = ("size","build_score","destroy_score","can_move","population_provide","population_use","max_health","initial_cost","sight_range","resource_per_health","build","attack","repair",)
+
+    size: int
+    build_score: int
+    destroy_score: int
+    can_move: bool
+    population_provide: int
+    population_use: int
+    max_health: int
+    initial_cost: int
+    sight_range: int
+    resource_per_health: int
+    build: Optional[BuildProperties]
+    attack: Optional[AttackProperties]
+    repair: Optional[RepairProperties]
+
+    def __init__(self, size: int, build_score: int, destroy_score: int, can_move: bool, population_provide: int, population_use: int, max_health: int, initial_cost: int, sight_range: int, resource_per_health: int, build: Optional[BuildProperties], attack: Optional[AttackProperties], repair: Optional[RepairProperties]):
         self.size = size
         """Size. Entity has a form of a square with side of this length"""
         self.build_score = build_score
@@ -34,7 +52,7 @@ class EntityProperties:
         """Repair properties, if entity can repair"""
 
     @staticmethod
-    def read_from(stream):
+    def read_from(stream: StreamWrapper) -> "EntityProperties":
         """Read EntityProperties from input stream
         """
         size = stream.read_int()
@@ -61,7 +79,7 @@ class EntityProperties:
             repair = None
         return EntityProperties(size, build_score, destroy_score, can_move, population_provide, population_use, max_health, initial_cost, sight_range, resource_per_health, build, attack, repair)
     
-    def write_to(self, stream):
+    def write_to(self, stream: StreamWrapper):
         """Write EntityProperties to output stream
         """
         stream.write_int(self.size)

@@ -1,8 +1,11 @@
+from stream_wrapper import StreamWrapper
+from typing import List
+
 class OneOf:
     """Oneof example"""
 
     @staticmethod
-    def read_from(stream):
+    def read_from(stream: StreamWrapper) -> "OneOf":
         """Read OneOf from input stream
         """
         tag = stream.read_int()
@@ -17,14 +20,19 @@ class OptionOne(OneOf):
 
     TAG = 0
 
-    def __init__(self, vec_int, long_int):
+    __slots__ = ("vec_int","long_int",)
+
+    vec_int: List[int]
+    long_int: int
+
+    def __init__(self, vec_int: List[int], long_int: int):
         self.vec_int = vec_int
         """List of integers"""
         self.long_int = long_int
         """Long integer"""
 
     @staticmethod
-    def read_from(stream):
+    def read_from(stream: StreamWrapper) -> "OptionOne":
         """Read OptionOne from input stream
         """
         vec_int = []
@@ -34,7 +42,7 @@ class OptionOne(OneOf):
         long_int = stream.read_long()
         return OptionOne(vec_int, long_int)
     
-    def write_to(self, stream):
+    def write_to(self, stream: StreamWrapper):
         """Write OptionOne to output stream
         """
         stream.write_int(self.TAG)
@@ -57,18 +65,22 @@ class OptionTwo(OneOf):
 
     TAG = 1
 
-    def __init__(self, value):
+    __slots__ = ("value",)
+
+    value: int
+
+    def __init__(self, value: int):
         self.value = value
         """usize"""
 
     @staticmethod
-    def read_from(stream):
+    def read_from(stream: StreamWrapper) -> "OptionTwo":
         """Read OptionTwo from input stream
         """
         value = stream.read_int()
         return OptionTwo(value)
     
-    def write_to(self, stream):
+    def write_to(self, stream: StreamWrapper):
         """Write OptionTwo to output stream
         """
         stream.write_int(self.TAG)

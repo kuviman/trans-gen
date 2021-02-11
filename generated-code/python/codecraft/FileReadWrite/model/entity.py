@@ -1,10 +1,21 @@
 from model.entity_type import EntityType
+from stream_wrapper import StreamWrapper
+from typing import Optional
 from vec2_int import Vec2Int
 
 class Entity:
     """Game entity"""
 
-    def __init__(self, id, player_id, entity_type, position, health, active):
+    __slots__ = ("id","player_id","entity_type","position","health","active",)
+
+    id: int
+    player_id: Optional[int]
+    entity_type: EntityType
+    position: Vec2Int
+    health: int
+    active: bool
+
+    def __init__(self, id: int, player_id: Optional[int], entity_type: EntityType, position: Vec2Int, health: int, active: bool):
         self.id = id
         """Entity's ID. Unique for each entity"""
         self.player_id = player_id
@@ -19,7 +30,7 @@ class Entity:
         """If entity is active, it can perform actions"""
 
     @staticmethod
-    def read_from(stream):
+    def read_from(stream: StreamWrapper) -> "Entity":
         """Read Entity from input stream
         """
         id = stream.read_int()
@@ -33,7 +44,7 @@ class Entity:
         active = stream.read_bool()
         return Entity(id, player_id, entity_type, position, health, active)
     
-    def write_to(self, stream):
+    def write_to(self, stream: StreamWrapper):
         """Write Entity to output stream
         """
         stream.write_int(self.id)

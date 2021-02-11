@@ -10,9 +10,9 @@ private func toByteArray<T>(_ value: T) -> [Byte] {
 }
 
 private func fromByteArray<T>(_ value: [Byte]) -> T {
-  	return value.withUnsafeBytes {
-    	$0.baseAddress!.load(as: T.self)
-  	}
+    return value.withUnsafeBytes {
+        $0.baseAddress!.load(as: T.self)
+    }
 }
 
 protocol InputStream {

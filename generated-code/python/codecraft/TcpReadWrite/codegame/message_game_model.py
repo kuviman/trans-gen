@@ -1,11 +1,12 @@
 from codegame.client_message import ClientMessage
 from codegame.server_message import ServerMessage
+from stream_wrapper import StreamWrapper
 
 class MessageGameModel:
     """Client or server message"""
 
     @staticmethod
-    def read_from(stream):
+    def read_from(stream: StreamWrapper) -> "MessageGameModel":
         """Read MessageGameModel from input stream
         """
         tag = stream.read_int()
@@ -20,18 +21,22 @@ class Client(MessageGameModel):
 
     TAG = 0
 
-    def __init__(self, message):
+    __slots__ = ("message",)
+
+    message: ClientMessage
+
+    def __init__(self, message: ClientMessage):
         self.message = message
         """Message"""
 
     @staticmethod
-    def read_from(stream):
+    def read_from(stream: StreamWrapper) -> "Client":
         """Read Client from input stream
         """
         message = ClientMessage.read_from(stream)
         return Client(message)
     
-    def write_to(self, stream):
+    def write_to(self, stream: StreamWrapper):
         """Write Client to output stream
         """
         stream.write_int(self.TAG)
@@ -49,18 +54,22 @@ class Server(MessageGameModel):
 
     TAG = 1
 
-    def __init__(self, message):
+    __slots__ = ("message",)
+
+    message: ServerMessage
+
+    def __init__(self, message: ServerMessage):
         self.message = message
         """Message"""
 
     @staticmethod
-    def read_from(stream):
+    def read_from(stream: StreamWrapper) -> "Server":
         """Read Server from input stream
         """
         message = ServerMessage.read_from(stream)
         return Server(message)
     
-    def write_to(self, stream):
+    def write_to(self, stream: StreamWrapper):
         """Write Server to output stream
         """
         stream.write_int(self.TAG)

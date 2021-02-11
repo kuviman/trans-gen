@@ -1,11 +1,24 @@
 from enumeration import Enumeration
 from one_of import OneOf
+from stream_wrapper import StreamWrapper
 from structure import Structure
+from typing import Dict
+from typing import Optional
 
 class Example:
     """Example"""
 
-    def __init__(self, one_of, hash_map, optional_int, optional_bool, optional_one_of, optional_struct, optional_enum):
+    __slots__ = ("one_of","hash_map","optional_int","optional_bool","optional_one_of","optional_struct","optional_enum",)
+
+    one_of: OneOf
+    hash_map: Dict[Enumeration, int]
+    optional_int: Optional[int]
+    optional_bool: Optional[bool]
+    optional_one_of: Optional[OneOf]
+    optional_struct: Optional[Structure]
+    optional_enum: Optional[Enumeration]
+
+    def __init__(self, one_of: OneOf, hash_map: Dict[Enumeration, int], optional_int: Optional[int], optional_bool: Optional[bool], optional_one_of: Optional[OneOf], optional_struct: Optional[Structure], optional_enum: Optional[Enumeration]):
         self.one_of = one_of
         """OneOf"""
         self.hash_map = hash_map
@@ -22,7 +35,7 @@ class Example:
         """Optional enum"""
 
     @staticmethod
-    def read_from(stream):
+    def read_from(stream: StreamWrapper) -> "Example":
         """Read Example from input stream
         """
         one_of = OneOf.read_from(stream)
@@ -53,7 +66,7 @@ class Example:
             optional_enum = None
         return Example(one_of, hash_map, optional_int, optional_bool, optional_one_of, optional_struct, optional_enum)
     
-    def write_to(self, stream):
+    def write_to(self, stream: StreamWrapper):
         """Write Example to output stream
         """
         self.one_of.write_to(stream)

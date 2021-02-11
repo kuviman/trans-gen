@@ -1,10 +1,18 @@
 from color import Color
+from stream_wrapper import StreamWrapper
+from typing import Optional
 from vec2_float import Vec2Float
 
 class ColoredVertex:
     """Vertex for debug rendering"""
 
-    def __init__(self, world_pos, screen_offset, color):
+    __slots__ = ("world_pos","screen_offset","color",)
+
+    world_pos: Optional[Vec2Float]
+    screen_offset: Vec2Float
+    color: Color
+
+    def __init__(self, world_pos: Optional[Vec2Float], screen_offset: Vec2Float, color: Color):
         self.world_pos = world_pos
         """Position in world coordinates (if none, screen position (0, 0) is used)"""
         self.screen_offset = screen_offset
@@ -13,7 +21,7 @@ class ColoredVertex:
         """Color to use"""
 
     @staticmethod
-    def read_from(stream):
+    def read_from(stream: StreamWrapper) -> "ColoredVertex":
         """Read ColoredVertex from input stream
         """
         if stream.read_bool():
@@ -24,7 +32,7 @@ class ColoredVertex:
         color = Color.read_from(stream)
         return ColoredVertex(world_pos, screen_offset, color)
     
-    def write_to(self, stream):
+    def write_to(self, stream: StreamWrapper):
         """Write ColoredVertex to output stream
         """
         if self.world_pos is None:

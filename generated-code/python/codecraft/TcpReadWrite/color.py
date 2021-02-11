@@ -1,7 +1,16 @@
+from stream_wrapper import StreamWrapper
+
 class Color:
     """RGBA Color"""
 
-    def __init__(self, r, g, b, a):
+    __slots__ = ("r","g","b","a",)
+
+    r: float
+    g: float
+    b: float
+    a: float
+
+    def __init__(self, r: float, g: float, b: float, a: float):
         self.r = r
         """Red component"""
         self.g = g
@@ -12,7 +21,7 @@ class Color:
         """Alpha (opacity) component"""
 
     @staticmethod
-    def read_from(stream):
+    def read_from(stream: StreamWrapper) -> "Color":
         """Read Color from input stream
         """
         r = stream.read_float()
@@ -21,7 +30,7 @@ class Color:
         a = stream.read_float()
         return Color(r, g, b, a)
     
-    def write_to(self, stream):
+    def write_to(self, stream: StreamWrapper):
         """Write Color to output stream
         """
         stream.write_float(self.r)

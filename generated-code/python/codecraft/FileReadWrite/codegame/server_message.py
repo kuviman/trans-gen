@@ -1,10 +1,11 @@
 from model.player_view import PlayerView
+from stream_wrapper import StreamWrapper
 
 class ServerMessage:
     """Message sent from server"""
 
     @staticmethod
-    def read_from(stream):
+    def read_from(stream: StreamWrapper) -> "ServerMessage":
         """Read ServerMessage from input stream
         """
         tag = stream.read_int()
@@ -21,21 +22,26 @@ class GetAction(ServerMessage):
 
     TAG = 0
 
-    def __init__(self, player_view, debug_available):
+    __slots__ = ("player_view","debug_available",)
+
+    player_view: PlayerView
+    debug_available: bool
+
+    def __init__(self, player_view: PlayerView, debug_available: bool):
         self.player_view = player_view
         """Player's view"""
         self.debug_available = debug_available
         """Whether app is running with debug interface available"""
 
     @staticmethod
-    def read_from(stream):
+    def read_from(stream: StreamWrapper) -> "GetAction":
         """Read GetAction from input stream
         """
         player_view = PlayerView.read_from(stream)
         debug_available = stream.read_bool()
         return GetAction(player_view, debug_available)
     
-    def write_to(self, stream):
+    def write_to(self, stream: StreamWrapper):
         """Write GetAction to output stream
         """
         stream.write_int(self.TAG)
@@ -56,16 +62,19 @@ class Finish(ServerMessage):
 
     TAG = 1
 
+    __slots__ = ()
+
+
     def __init__(self):
         pass
 
     @staticmethod
-    def read_from(stream):
+    def read_from(stream: StreamWrapper) -> "Finish":
         """Read Finish from input stream
         """
         return Finish()
     
-    def write_to(self, stream):
+    def write_to(self, stream: StreamWrapper):
         """Write Finish to output stream
         """
         stream.write_int(self.TAG)
@@ -81,18 +90,22 @@ class DebugUpdate(ServerMessage):
 
     TAG = 2
 
-    def __init__(self, player_view):
+    __slots__ = ("player_view",)
+
+    player_view: PlayerView
+
+    def __init__(self, player_view: PlayerView):
         self.player_view = player_view
         """Player's view"""
 
     @staticmethod
-    def read_from(stream):
+    def read_from(stream: StreamWrapper) -> "DebugUpdate":
         """Read DebugUpdate from input stream
         """
         player_view = PlayerView.read_from(stream)
         return DebugUpdate(player_view)
     
-    def write_to(self, stream):
+    def write_to(self, stream: StreamWrapper):
         """Write DebugUpdate to output stream
         """
         stream.write_int(self.TAG)
