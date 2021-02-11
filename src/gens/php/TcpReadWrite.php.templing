@@ -9,7 +9,7 @@ $stdout = $argv[3] == "true";
 
 $tcpStream = new TcpStream($host, $port);
 while ($tcpStream->inputStream->readBool()) {
-    $input = {{ type_name(schema) }}::readFrom($tcpStream->inputStream);
+    $input = {{ class_name(schema) }}::readFrom($tcpStream->inputStream);
     if ($stdout) {
         print_r($input);
     }

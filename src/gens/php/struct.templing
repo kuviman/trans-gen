@@ -3,5 +3,5 @@
 namespace {{ namespace_path(schema) }} {
     {{ imports(schema) }}
 
-    {{ struct_impl(definition, None) }}
+    {{ self.struct_impl(definition, None) }}
 }

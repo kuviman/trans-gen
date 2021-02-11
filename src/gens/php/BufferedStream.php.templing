@@ -6,16 +6,16 @@ define('BUFFER_SIZE', 102_400);
 
 class BufferedInputStream extends InputStream
 {
-    private $inner;
-    private $buffer;
-    private $bufferPos;
-    function __construct($inner)
+    private {{ self.declare_var("InputStream", "inner") }};
+    private {{ self.declare_var("string", "buffer") }};
+    private {{ self.declare_var("int", "bufferPos") }};
+    function __construct({{ self.declare_var("InputStream", "inner") }})
     {
         $this->inner = $inner;
         $this->buffer = '';
         $this->bufferPos = 0;
     }
-    function readAtMost($byteCount)
+    function readAtMost({{ self.declare_var("int", "byteCount") }}){{ self.returns("string") }}
     {
         if ($this->bufferPos == strlen($this->buffer)) {
             $this->buffer = $this->inner->readAtMost(BUFFER_SIZE);
@@ -29,18 +29,18 @@ class BufferedInputStream extends InputStream
 
 class BufferedOutputStream extends OutputStream
 {
-    private $inner;
-    private $buffer;
-    function __construct($inner)
+    private {{ self.declare_var("OutputStream", "inner") }};
+    private {{ self.declare_var("string", "buffer") }};
+    function __construct({{ self.declare_var("OutputStream", "inner") }})
     {
         $this->inner = $inner;
         $this->buffer = '';
     }
-    function write($bytes)
+    function write({{ self.declare_var("string", "bytes") }}){{ self.returns("void") }}
     {
         $this->buffer .= $bytes;
     }
-    function flush()
+    function flush(){{ self.returns("void") }}
     {
         $this->inner->write($this->buffer);
         $this->inner->flush();

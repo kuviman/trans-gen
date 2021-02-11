@@ -95,7 +95,7 @@ pub fn generate<T: Generator>(
     version: &str,
     options: T::Options,
     schemas: &[std::sync::Arc<Schema>],
-    extra_files: Vec<File>,
+    extra_files: &dyn Fn(&T) -> Vec<File>,
 ) -> GenResult {
     fn add<T: Generator>(generator: &mut T, added: &mut HashMap<Name, Schema>, schema: &Schema) {
         let schema_name = schema.full_name();
@@ -148,5 +148,6 @@ pub fn generate<T: Generator>(
     for schema in schemas {
         add(&mut generator, &mut added, schema);
     }
+    let extra_files = extra_files(&generator);
     generator.generate(extra_files)
 }

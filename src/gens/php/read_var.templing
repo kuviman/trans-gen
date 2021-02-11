@@ -18,7 +18,7 @@ ${{ var }} = $stream->readDouble();
 ${{ var }} = $stream->readString();
 - }
 - Schema::Struct{ .. } | Schema::OneOf { .. } | Schema::Enum { .. } => {
-${{ var }} = {{ type_name(schema) }}::readFrom($stream);
+${{ var }} = {{ class_name(schema) }}::readFrom($stream);
 - }
 - Schema::Option(inner) => {
 if ($stream->readBool()) {
