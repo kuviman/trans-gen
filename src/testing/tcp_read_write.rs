@@ -77,7 +77,13 @@ impl<D: Trans + PartialEq + Debug> Test for TcpReadWrite<D> {
             anyhow::bail!("Child process exited with {}", child_status);
         }
         let run_duration = std::time::Instant::now().duration_since(start_time);
-        println!("Run duration: {}", format_duration(run_duration));
+        println!(
+            "Run duration: {} ({} avg)",
+            format_duration(run_duration),
+            format_duration(std::time::Duration::from_secs_f64(
+                run_duration.as_secs_f64() / self.repeat as f64
+            )),
+        );
         println!("Test finished successfully");
         Ok(TestRunResult { run_duration })
     }
