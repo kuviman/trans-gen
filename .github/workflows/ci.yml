@@ -49,30 +49,47 @@ jobs:
           path: target/release/examples/testing${{ fromJson('["", ".exe"]')[matrix.env.name == 'Windows'] }}
 
   test:
-    name: ${{ matrix.language }} ${{ matrix.env.name }}
+    name: ${{ matrix.language.name }} ${{ matrix.env.name }}
     needs: build-test
-    continue-on-error: ${{ matrix.language == 'Haskell' }}
+    continue-on-error: ${{ matrix.language.name == 'Haskell' }}
     strategy:
       fail-fast: false
       matrix:
         language:
-          - C++
-          - C#
-          - D
-          - F#
-          - Go
-          - Java
-          - JavaScript
-          - Kotlin
-          # - Markdown
-          - Python
-          - Ruby
-          - Rust
-          - Scala
-          - TypeScript
-          - Swift
-          - PHP
-          - Haskell
+          - name: C++
+            short: cpp
+          - name: C#
+            short: csharp
+          - name: D
+            short: dlang
+          - name: F#
+            short: fsharp
+          - name: Go
+            short: go
+          - name: Java
+            short: java
+          - name: JavaScript
+            short: javascript
+          - name: Kotlin
+            short: kotlin
+          # - name: Markdown
+          #   short: markdown
+          - name: Python
+            short: python
+          - name: Ruby
+            short: ruby
+          - name: Rust
+            short: rust
+          - name: Scala
+            short: scala
+          - name: TypeScript
+            short: typescript
+          - name: Swift
+            short: swift
+          - name: PHP
+            short: php
+          - name: Haskell
+            short: haskell
         env:
           - name: Linux
             short: linux
@@ -103,24 +120,30 @@ jobs:
       - name: Prepare testing binary
         run: chmod +x testing
 
-      - if: matrix.language == 'D'
+      - if: matrix.language.name == 'D'
         name: Setup D
         uses: dlang-community/setup-dlang@v1
 
-      - if: matrix.language == 'Java'
+      - if: matrix.language.name == 'Java'
         name: Setup Java
         uses: actions/setup-java@v1
         with:
           java-version: "15"
 
-      - if: matrix.language == 'PHP'
+      - if: matrix.language.name == 'PHP'
         name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
           extensions: sockets
 
       - name: Run tests
-        run: ${{ matrix.env.executable }} --language=${{ matrix.language }} --verbose
+        run: ${{ matrix.env.executable }} --language=${{ matrix.language.name }} --verbose --repeat=100 --save-results=results.json
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: benchmarks-${{ matrix.env.short }}-{{ matrix.language.short }}
+          path: results.json
 
   update-testing-branch:
     name: Update testing branch
@@ -135,8 +158,6 @@ jobs:
 
       - name: Download artifacts
         uses: actions/download-artifact@v2
-        with:
-          name: testing-linux
 
       - name: Update testing branch
         run: |
@@ -144,8 +165,13 @@ jobs:
           git config --global user.email '<>'
           git fetch origin testing
           git worktree add testing-branch testing
+          mv testing-linux/testing ./
           chmod +x testing
           ./testing --generate=testing-branch/generated-code
+          for OS in windows linux macos; do
+            BENCHMARKS=(benchmarks-$OS-*/results.json)
+            ./testing ${BENCHMARKS[@]/#/--load-results=} --save-results testing-branch/benchmarks-$OS.md
+          done
           pushd testing-branch
           git add .
           git diff --cached --exit-code || git commit -m "Update generated code (run ${{ github.run_id }})"
