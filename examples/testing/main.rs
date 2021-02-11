@@ -23,6 +23,8 @@ struct Opt {
     verbose: bool,
     #[structopt(long)]
     save_results: Option<PathBuf>,
+    #[structopt(long)]
+    load_results: Vec<PathBuf>,
 }
 
 macro_rules! all_models {
@@ -47,10 +49,9 @@ fn main() -> anyhow::Result<()> {
         }
         std::fs::create_dir_all(path).context("Failed to create target directory")?;
     }
-    let mut results: BTreeMap<
-        String,
-        BTreeMap<String, BTreeMap<String, trans_gen::testing::TestResult>>,
-    > = BTreeMap::new();
+    type Results =
+        BTreeMap<String, BTreeMap<String, BTreeMap<String, trans_gen::testing::TestResult>>>;
+    let mut results: Results = Results::new();
     macro_rules! test_lang {
         ($lang:ident) => {
             if !(opt.exclude_langs.contains(&stringify!($lang).to_owned())
@@ -136,7 +137,15 @@ fn main() -> anyhow::Result<()> {
             }
         };
     }
-    trans_gen::all_gens!(test_lang);
+    if opt.load_results.is_empty() {
+        trans_gen::all_gens!(test_lang);
+    } else {
+        for path in &opt.load_results {
+            results.extend::<Results>(
+                serde_json::from_reader(std::fs::File::open(path).unwrap()).unwrap(),
+            );
+        }
+    }
     if let Some(path) = opt.save_results {
         if let Some(ext) = path.extension() {
             if ext == "json" {
