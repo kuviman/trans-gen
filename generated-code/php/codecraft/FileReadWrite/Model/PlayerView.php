@@ -5,6 +5,7 @@ namespace Model {
     require_once 'Model/EntityProperties.php';
     require_once 'Model/EntityType.php';
     require_once 'Model/Player.php';
+    require_once 'Stream.php';
 
     /**
      * Information available to the player
@@ -14,41 +15,41 @@ namespace Model {
         /**
          * Your player's ID
          */
-        public $myId;
+        public int $myId;
         /**
          * Size of the map
          */
-        public $mapSize;
+        public int $mapSize;
         /**
          * Whether fog of war is enabled
          */
-        public $fogOfWar;
+        public bool $fogOfWar;
         /**
          * Entity properties for each entity type
          */
-        public $entityProperties;
+        public array $entityProperties;
         /**
          * Max tick count for the game
          */
-        public $maxTickCount;
+        public int $maxTickCount;
         /**
          * Max pathfind nodes when performing pathfinding in the game simulator
          */
-        public $maxPathfindNodes;
+        public int $maxPathfindNodes;
         /**
          * Current tick
          */
-        public $currentTick;
+        public int $currentTick;
         /**
          * List of players
          */
-        public $players;
+        public array $players;
         /**
          * List of entities
          */
-        public $entities;
+        public array $entities;
     
-        function __construct($myId, $mapSize, $fogOfWar, $entityProperties, $maxTickCount, $maxPathfindNodes, $currentTick, $players, $entities)
+        function __construct(int $myId, int $mapSize, bool $fogOfWar, array $entityProperties, int $maxTickCount, int $maxPathfindNodes, int $currentTick, array $players, array $entities)
         {
             $this->myId = $myId;
             $this->mapSize = $mapSize;
@@ -64,7 +65,7 @@ namespace Model {
         /**
          * Read PlayerView from input stream
          */
-        public static function readFrom($stream)
+        public static function readFrom(\InputStream $stream): PlayerView
         {
             $myId = $stream->readInt32();
             $mapSize = $stream->readInt32();
@@ -97,7 +98,7 @@ namespace Model {
         /**
          * Write PlayerView to output stream
          */
-        public function writeTo($stream)
+        public function writeTo(\OutputStream $stream): void
         {
             $stream->writeInt32($this->myId);
             $stream->writeInt32($this->mapSize);

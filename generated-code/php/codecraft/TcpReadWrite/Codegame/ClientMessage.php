@@ -1,9 +1,9 @@
 <?php
 
 namespace Codegame {
-    
     require_once 'Codegame/DebugCommand.php';
     require_once 'Model/Action.php';
+    require_once 'Stream.php';
 
     /**
      * Message sent from client
@@ -13,12 +13,12 @@ namespace Codegame {
         /**
          * Write ClientMessage to output stream
          */
-        abstract function writeTo($stream);
+        abstract function writeTo(\OutputStream $stream): void;
 
         /**
          * Read ClientMessage from input stream
          */
-        static function readFrom($stream)
+        static function readFrom(\InputStream $stream): ClientMessage
         {
             $tag = $stream->readInt32();
             if ($tag == \Codegame\ClientMessage\DebugMessage::TAG) {
@@ -49,9 +49,9 @@ namespace Codegame\ClientMessage {
         /**
          * Command to perform
          */
-        public $command;
+        public \Codegame\DebugCommand $command;
     
-        function __construct($command)
+        function __construct(\Codegame\DebugCommand $command)
         {
             $this->command = $command;
         }
@@ -59,7 +59,7 @@ namespace Codegame\ClientMessage {
         /**
          * Read DebugMessage from input stream
          */
-        public static function readFrom($stream)
+        public static function readFrom(\InputStream $stream): DebugMessage
         {
             $command = \Codegame\DebugCommand::readFrom($stream);
             return new DebugMessage($command);
@@ -68,7 +68,7 @@ namespace Codegame\ClientMessage {
         /**
          * Write DebugMessage to output stream
          */
-        public function writeTo($stream)
+        public function writeTo(\OutputStream $stream): void
         {
             $stream->writeInt32(DebugMessage::TAG);
             $this->command->writeTo($stream);
@@ -85,9 +85,9 @@ namespace Codegame\ClientMessage {
         /**
          * Player's action
          */
-        public $action;
+        public \Model\Action $action;
     
-        function __construct($action)
+        function __construct(\Model\Action $action)
         {
             $this->action = $action;
         }
@@ -95,7 +95,7 @@ namespace Codegame\ClientMessage {
         /**
          * Read ActionMessage from input stream
          */
-        public static function readFrom($stream)
+        public static function readFrom(\InputStream $stream): ActionMessage
         {
             $action = \Model\Action::readFrom($stream);
             return new ActionMessage($action);
@@ -104,7 +104,7 @@ namespace Codegame\ClientMessage {
         /**
          * Write ActionMessage to output stream
          */
-        public function writeTo($stream)
+        public function writeTo(\OutputStream $stream): void
         {
             $stream->writeInt32(ActionMessage::TAG);
             $this->action->writeTo($stream);
@@ -126,7 +126,7 @@ namespace Codegame\ClientMessage {
         /**
          * Read DebugUpdateDone from input stream
          */
-        public static function readFrom($stream)
+        public static function readFrom(\InputStream $stream): DebugUpdateDone
         {
             return new DebugUpdateDone();
         }
@@ -134,7 +134,7 @@ namespace Codegame\ClientMessage {
         /**
          * Write DebugUpdateDone to output stream
          */
-        public function writeTo($stream)
+        public function writeTo(\OutputStream $stream): void
         {
             $stream->writeInt32(DebugUpdateDone::TAG);
         }
@@ -155,7 +155,7 @@ namespace Codegame\ClientMessage {
         /**
          * Read RequestDebugState from input stream
          */
-        public static function readFrom($stream)
+        public static function readFrom(\InputStream $stream): RequestDebugState
         {
             return new RequestDebugState();
         }
@@ -163,7 +163,7 @@ namespace Codegame\ClientMessage {
         /**
          * Write RequestDebugState to output stream
          */
-        public function writeTo($stream)
+        public function writeTo(\OutputStream $stream): void
         {
             $stream->writeInt32(RequestDebugState::TAG);
         }

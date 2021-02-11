@@ -1,6 +1,8 @@
 <?php
 
 namespace  {
+    require_once 'Stream.php';
+
     /**
      * Example enumeration
      */
@@ -19,7 +21,7 @@ namespace  {
         /**
          * Read Enumeration from input stream
          */
-        public static function readFrom($stream)
+        public static function readFrom(\InputStream $stream): int
         {
             $result = $stream->readInt32();
             if (0 <= $result && $result < 2) {

@@ -2,6 +2,7 @@
 
 namespace Model {
     require_once 'Model/EntityType.php';
+    require_once 'Stream.php';
 
     /**
      * Auto attack options
@@ -11,13 +12,13 @@ namespace Model {
         /**
          * Maximum distance to pathfind
          */
-        public $pathfindRange;
+        public int $pathfindRange;
         /**
          * List of target entity types to try to attack. If empty, all types but resource are considered
          */
-        public $validTargets;
+        public array $validTargets;
     
-        function __construct($pathfindRange, $validTargets)
+        function __construct(int $pathfindRange, array $validTargets)
         {
             $this->pathfindRange = $pathfindRange;
             $this->validTargets = $validTargets;
@@ -26,7 +27,7 @@ namespace Model {
         /**
          * Read AutoAttack from input stream
          */
-        public static function readFrom($stream)
+        public static function readFrom(\InputStream $stream): AutoAttack
         {
             $pathfindRange = $stream->readInt32();
             $validTargets = [];
@@ -41,7 +42,7 @@ namespace Model {
         /**
          * Write AutoAttack to output stream
          */
-        public function writeTo($stream)
+        public function writeTo(\OutputStream $stream): void
         {
             $stream->writeInt32($this->pathfindRange);
             $stream->writeInt32(count($this->validTargets));

@@ -3,6 +3,7 @@
 namespace  {
     require_once 'Enumeration.php';
     require_once 'OneOf.php';
+    require_once 'Stream.php';
     require_once 'Structure.php';
 
     /**
@@ -13,33 +14,33 @@ namespace  {
         /**
          * OneOf
          */
-        public $oneOf;
+        public \OneOf $oneOf;
         /**
          * Dictionary
          */
-        public $hashMap;
+        public array $hashMap;
         /**
          * Optional int
          */
-        public $optionalInt;
+        public ?int $optionalInt;
         /**
          * Optional boolean
          */
-        public $optionalBool;
+        public ?bool $optionalBool;
         /**
          * Optional OneOf
          */
-        public $optionalOneOf;
+        public ?\OneOf $optionalOneOf;
         /**
          * Optional struct
          */
-        public $optionalStruct;
+        public ?\Structure $optionalStruct;
         /**
          * Optional enum
          */
-        public $optionalEnum;
+        public ?int $optionalEnum;
     
-        function __construct($oneOf, $hashMap, $optionalInt, $optionalBool, $optionalOneOf, $optionalStruct, $optionalEnum)
+        function __construct(\OneOf $oneOf, array $hashMap, ?int $optionalInt, ?bool $optionalBool, ?\OneOf $optionalOneOf, ?\Structure $optionalStruct, ?int $optionalEnum)
         {
             $this->oneOf = $oneOf;
             $this->hashMap = $hashMap;
@@ -53,7 +54,7 @@ namespace  {
         /**
          * Read Example from input stream
          */
-        public static function readFrom($stream)
+        public static function readFrom(\InputStream $stream): Example
         {
             $oneOf = \OneOf::readFrom($stream);
             $hashMap = [];
@@ -94,7 +95,7 @@ namespace  {
         /**
          * Write Example to output stream
          */
-        public function writeTo($stream)
+        public function writeTo(\OutputStream $stream): void
         {
             $this->oneOf->writeTo($stream);
             $stream->writeInt32(count($this->hashMap));

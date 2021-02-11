@@ -2,6 +2,7 @@
 
 namespace Model {
     require_once 'Model/EntityType.php';
+    require_once 'Stream.php';
 
     /**
      * Entity's build properties
@@ -11,13 +12,13 @@ namespace Model {
         /**
          * Valid new entity types
          */
-        public $options;
+        public array $options;
         /**
          * Initial health of new entity. If absent, it will have full health
          */
-        public $initHealth;
+        public ?int $initHealth;
     
-        function __construct($options, $initHealth)
+        function __construct(array $options, ?int $initHealth)
         {
             $this->options = $options;
             $this->initHealth = $initHealth;
@@ -26,7 +27,7 @@ namespace Model {
         /**
          * Read BuildProperties from input stream
          */
-        public static function readFrom($stream)
+        public static function readFrom(\InputStream $stream): BuildProperties
         {
             $options = [];
             $optionsSize = $stream->readInt32();
@@ -45,7 +46,7 @@ namespace Model {
         /**
          * Write BuildProperties to output stream
          */
-        public function writeTo($stream)
+        public function writeTo(\OutputStream $stream): void
         {
             $stream->writeInt32(count($this->options));
             foreach ($this->options as $element) {

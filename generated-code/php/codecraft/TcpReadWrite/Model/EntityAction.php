@@ -5,6 +5,7 @@ namespace Model {
     require_once 'Model/BuildAction.php';
     require_once 'Model/MoveAction.php';
     require_once 'Model/RepairAction.php';
+    require_once 'Stream.php';
 
     /**
      * Entity's action
@@ -14,21 +15,21 @@ namespace Model {
         /**
          * Move action
          */
-        public $moveAction;
+        public ?\Model\MoveAction $moveAction;
         /**
          * Build action
          */
-        public $buildAction;
+        public ?\Model\BuildAction $buildAction;
         /**
          * Attack action
          */
-        public $attackAction;
+        public ?\Model\AttackAction $attackAction;
         /**
          * Repair action
          */
-        public $repairAction;
+        public ?\Model\RepairAction $repairAction;
     
-        function __construct($moveAction, $buildAction, $attackAction, $repairAction)
+        function __construct(?\Model\MoveAction $moveAction, ?\Model\BuildAction $buildAction, ?\Model\AttackAction $attackAction, ?\Model\RepairAction $repairAction)
         {
             $this->moveAction = $moveAction;
             $this->buildAction = $buildAction;
@@ -39,7 +40,7 @@ namespace Model {
         /**
          * Read EntityAction from input stream
          */
-        public static function readFrom($stream)
+        public static function readFrom(\InputStream $stream): EntityAction
         {
             if ($stream->readBool()) {
                 $moveAction = \Model\MoveAction::readFrom($stream);
@@ -67,7 +68,7 @@ namespace Model {
         /**
          * Write EntityAction to output stream
          */
-        public function writeTo($stream)
+        public function writeTo(\OutputStream $stream): void
         {
             if (is_null($this->moveAction)) {
                 $stream->writeBool(false);

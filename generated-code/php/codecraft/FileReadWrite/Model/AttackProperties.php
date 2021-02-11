@@ -1,7 +1,7 @@
 <?php
 
 namespace Model {
-    
+    require_once 'Stream.php';
 
     /**
      * Entity's attack properties
@@ -11,17 +11,17 @@ namespace Model {
         /**
          * Maximum attack range
          */
-        public $attackRange;
+        public int $attackRange;
         /**
          * Damage dealt in one tick
          */
-        public $damage;
+        public int $damage;
         /**
          * If true, dealing damage will collect resource from target
          */
-        public $collectResource;
+        public bool $collectResource;
     
-        function __construct($attackRange, $damage, $collectResource)
+        function __construct(int $attackRange, int $damage, bool $collectResource)
         {
             $this->attackRange = $attackRange;
             $this->damage = $damage;
@@ -31,7 +31,7 @@ namespace Model {
         /**
          * Read AttackProperties from input stream
          */
-        public static function readFrom($stream)
+        public static function readFrom(\InputStream $stream): AttackProperties
         {
             $attackRange = $stream->readInt32();
             $damage = $stream->readInt32();
@@ -42,7 +42,7 @@ namespace Model {
         /**
          * Write AttackProperties to output stream
          */
-        public function writeTo($stream)
+        public function writeTo(\OutputStream $stream): void
         {
             $stream->writeInt32($this->attackRange);
             $stream->writeInt32($this->damage);

@@ -1,7 +1,7 @@
 <?php
 
 namespace  {
-    
+    require_once 'Stream.php';
 
     /**
      * Example structure
@@ -11,17 +11,17 @@ namespace  {
         /**
          * Text
          */
-        public $text;
+        public string $text;
         /**
          * 32-bit float
          */
-        public $floatNumber;
+        public float $floatNumber;
         /**
          * 64-bit float
          */
-        public $doubleNumber;
+        public float $doubleNumber;
     
-        function __construct($text, $floatNumber, $doubleNumber)
+        function __construct(string $text, float $floatNumber, float $doubleNumber)
         {
             $this->text = $text;
             $this->floatNumber = $floatNumber;
@@ -31,7 +31,7 @@ namespace  {
         /**
          * Read Structure from input stream
          */
-        public static function readFrom($stream)
+        public static function readFrom(\InputStream $stream): Structure
         {
             $text = $stream->readString();
             $floatNumber = $stream->readFloat32();
@@ -42,7 +42,7 @@ namespace  {
         /**
          * Write Structure to output stream
          */
-        public function writeTo($stream)
+        public function writeTo(\OutputStream $stream): void
         {
             $stream->writeString($this->text);
             $stream->writeFloat32($this->floatNumber);

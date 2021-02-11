@@ -1,7 +1,7 @@
 <?php
 
 namespace  {
-    
+    require_once 'Stream.php';
 
     /**
      * RGBA Color
@@ -11,21 +11,21 @@ namespace  {
         /**
          * Red component
          */
-        public $r;
+        public float $r;
         /**
          * Green component
          */
-        public $g;
+        public float $g;
         /**
          * Blue component
          */
-        public $b;
+        public float $b;
         /**
          * Alpha (opacity) component
          */
-        public $a;
+        public float $a;
     
-        function __construct($r, $g, $b, $a)
+        function __construct(float $r, float $g, float $b, float $a)
         {
             $this->r = $r;
             $this->g = $g;
@@ -36,7 +36,7 @@ namespace  {
         /**
          * Read Color from input stream
          */
-        public static function readFrom($stream)
+        public static function readFrom(\InputStream $stream): Color
         {
             $r = $stream->readFloat32();
             $g = $stream->readFloat32();
@@ -48,7 +48,7 @@ namespace  {
         /**
          * Write Color to output stream
          */
-        public function writeTo($stream)
+        public function writeTo(\OutputStream $stream): void
         {
             $stream->writeFloat32($this->r);
             $stream->writeFloat32($this->g);

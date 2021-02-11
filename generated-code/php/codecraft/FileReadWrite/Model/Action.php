@@ -2,6 +2,7 @@
 
 namespace Model {
     require_once 'Model/EntityAction.php';
+    require_once 'Stream.php';
 
     /**
      * Player's action
@@ -11,9 +12,9 @@ namespace Model {
         /**
          * New actions for entities. If entity does not get new action, if will continue to perform previously set one
          */
-        public $entityActions;
+        public array $entityActions;
     
-        function __construct($entityActions)
+        function __construct(array $entityActions)
         {
             $this->entityActions = $entityActions;
         }
@@ -21,7 +22,7 @@ namespace Model {
         /**
          * Read Action from input stream
          */
-        public static function readFrom($stream)
+        public static function readFrom(\InputStream $stream): Action
         {
             $entityActions = [];
             $entityActionsSize = $stream->readInt32();
@@ -36,7 +37,7 @@ namespace Model {
         /**
          * Write Action to output stream
          */
-        public function writeTo($stream)
+        public function writeTo(\OutputStream $stream): void
         {
             $stream->writeInt32(count($this->entityActions));
             foreach ($this->entityActions as $key => $value) {

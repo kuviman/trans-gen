@@ -2,6 +2,7 @@
 
 namespace Model {
     require_once 'Model/EntityType.php';
+    require_once 'Stream.php';
     require_once 'Vec2Int.php';
 
     /**
@@ -12,29 +13,29 @@ namespace Model {
         /**
          * Entity's ID. Unique for each entity
          */
-        public $id;
+        public int $id;
         /**
          * Entity's owner player ID, if owned by a player
          */
-        public $playerId;
+        public ?int $playerId;
         /**
          * Entity's type
          */
-        public $entityType;
+        public int $entityType;
         /**
          * Entity's position (corner with minimal coordinates)
          */
-        public $position;
+        public \Vec2Int $position;
         /**
          * Current health
          */
-        public $health;
+        public int $health;
         /**
          * If entity is active, it can perform actions
          */
-        public $active;
+        public bool $active;
     
-        function __construct($id, $playerId, $entityType, $position, $health, $active)
+        function __construct(int $id, ?int $playerId, int $entityType, \Vec2Int $position, int $health, bool $active)
         {
             $this->id = $id;
             $this->playerId = $playerId;
@@ -47,7 +48,7 @@ namespace Model {
         /**
          * Read Entity from input stream
          */
-        public static function readFrom($stream)
+        public static function readFrom(\InputStream $stream): Entity
         {
             $id = $stream->readInt32();
             if ($stream->readBool()) {
@@ -65,7 +66,7 @@ namespace Model {
         /**
          * Write Entity to output stream
          */
-        public function writeTo($stream)
+        public function writeTo(\OutputStream $stream): void
         {
             $stream->writeInt32($this->id);
             if (is_null($this->playerId)) {

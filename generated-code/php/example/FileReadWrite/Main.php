@@ -7,7 +7,7 @@ require_once 'BufferedStream.php';
 class FileInputStream extends InputStream
 {
     private $stream;
-    function __construct($path)
+    function __construct(string $path)
     {
         $this->stream = fopen($path, "rb");
     }
@@ -15,7 +15,7 @@ class FileInputStream extends InputStream
     {
         fclose($this->stream);
     }
-    public function readAtMost($byteCount)
+    public function readAtMost(int $byteCount): string
     {
         return fread($this->stream, $byteCount);
     }
@@ -24,7 +24,7 @@ class FileInputStream extends InputStream
 class FileOutputStream extends OutputStream
 {
     private $stream;
-    function __construct($path)
+    function __construct(string $path)
     {
         $this->stream = fopen($path, "wb");
     }
@@ -33,11 +33,11 @@ class FileOutputStream extends OutputStream
         $this->flush();
         fclose($this->stream);
     }
-    public function write($bytes)
+    public function write(string $bytes): void
     {
         fwrite($this->stream, $bytes);
     }
-    public function flush()
+    public function flush(): void
     {
         fflush($this->stream);
     }

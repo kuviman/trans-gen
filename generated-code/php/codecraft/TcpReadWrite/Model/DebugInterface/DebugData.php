@@ -1,9 +1,9 @@
 <?php
 
 namespace Model\DebugInterface {
-    
     require_once 'Model/DebugInterface/ColoredVertex.php';
     require_once 'Model/DebugInterface/PrimitiveType.php';
+    require_once 'Stream.php';
 
     /**
      * Debug data can be drawn in the app
@@ -13,12 +13,12 @@ namespace Model\DebugInterface {
         /**
          * Write DebugData to output stream
          */
-        abstract function writeTo($stream);
+        abstract function writeTo(\OutputStream $stream): void;
 
         /**
          * Read DebugData from input stream
          */
-        static function readFrom($stream)
+        static function readFrom(\InputStream $stream): DebugData
         {
             $tag = $stream->readInt32();
             if ($tag == \Model\DebugInterface\DebugData\Log::TAG) {
@@ -46,9 +46,9 @@ namespace Model\DebugInterface\DebugData {
         /**
          * Text to show
          */
-        public $text;
+        public string $text;
     
-        function __construct($text)
+        function __construct(string $text)
         {
             $this->text = $text;
         }
@@ -56,7 +56,7 @@ namespace Model\DebugInterface\DebugData {
         /**
          * Read Log from input stream
          */
-        public static function readFrom($stream)
+        public static function readFrom(\InputStream $stream): Log
         {
             $text = $stream->readString();
             return new Log($text);
@@ -65,7 +65,7 @@ namespace Model\DebugInterface\DebugData {
         /**
          * Write Log to output stream
          */
-        public function writeTo($stream)
+        public function writeTo(\OutputStream $stream): void
         {
             $stream->writeInt32(Log::TAG);
             $stream->writeString($this->text);
@@ -82,13 +82,13 @@ namespace Model\DebugInterface\DebugData {
         /**
          * Vertices
          */
-        public $vertices;
+        public array $vertices;
         /**
          * Primitive type
          */
-        public $primitiveType;
+        public int $primitiveType;
     
-        function __construct($vertices, $primitiveType)
+        function __construct(array $vertices, int $primitiveType)
         {
             $this->vertices = $vertices;
             $this->primitiveType = $primitiveType;
@@ -97,7 +97,7 @@ namespace Model\DebugInterface\DebugData {
         /**
          * Read Primitives from input stream
          */
-        public static function readFrom($stream)
+        public static function readFrom(\InputStream $stream): Primitives
         {
             $vertices = [];
             $verticesSize = $stream->readInt32();
@@ -112,7 +112,7 @@ namespace Model\DebugInterface\DebugData {
         /**
          * Write Primitives to output stream
          */
-        public function writeTo($stream)
+        public function writeTo(\OutputStream $stream): void
         {
             $stream->writeInt32(Primitives::TAG);
             $stream->writeInt32(count($this->vertices));
@@ -133,21 +133,21 @@ namespace Model\DebugInterface\DebugData {
         /**
          * Vertex to determine text position and color
          */
-        public $vertex;
+        public \Model\DebugInterface\ColoredVertex $vertex;
         /**
          * Text
          */
-        public $text;
+        public string $text;
         /**
          * Text alignment (0 means left, 0.5 means center, 1 means right)
          */
-        public $alignment;
+        public float $alignment;
         /**
          * Font size in pixels
          */
-        public $size;
+        public float $size;
     
-        function __construct($vertex, $text, $alignment, $size)
+        function __construct(\Model\DebugInterface\ColoredVertex $vertex, string $text, float $alignment, float $size)
         {
             $this->vertex = $vertex;
             $this->text = $text;
@@ -158,7 +158,7 @@ namespace Model\DebugInterface\DebugData {
         /**
          * Read PlacedText from input stream
          */
-        public static function readFrom($stream)
+        public static function readFrom(\InputStream $stream): PlacedText
         {
             $vertex = \Model\DebugInterface\ColoredVertex::readFrom($stream);
             $text = $stream->readString();
@@ -170,7 +170,7 @@ namespace Model\DebugInterface\DebugData {
         /**
          * Write PlacedText to output stream
          */
-        public function writeTo($stream)
+        public function writeTo(\OutputStream $stream): void
         {
             $stream->writeInt32(PlacedText::TAG);
             $this->vertex->writeTo($stream);

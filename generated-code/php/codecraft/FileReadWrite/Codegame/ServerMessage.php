@@ -1,8 +1,8 @@
 <?php
 
 namespace Codegame {
-    
     require_once 'Model/PlayerView.php';
+    require_once 'Stream.php';
 
     /**
      * Message sent from server
@@ -12,12 +12,12 @@ namespace Codegame {
         /**
          * Write ServerMessage to output stream
          */
-        abstract function writeTo($stream);
+        abstract function writeTo(\OutputStream $stream): void;
 
         /**
          * Read ServerMessage from input stream
          */
-        static function readFrom($stream)
+        static function readFrom(\InputStream $stream): ServerMessage
         {
             $tag = $stream->readInt32();
             if ($tag == \Codegame\ServerMessage\GetAction::TAG) {
@@ -45,13 +45,13 @@ namespace Codegame\ServerMessage {
         /**
          * Player's view
          */
-        public $playerView;
+        public \Model\PlayerView $playerView;
         /**
          * Whether app is running with debug interface available
          */
-        public $debugAvailable;
+        public bool $debugAvailable;
     
-        function __construct($playerView, $debugAvailable)
+        function __construct(\Model\PlayerView $playerView, bool $debugAvailable)
         {
             $this->playerView = $playerView;
             $this->debugAvailable = $debugAvailable;
@@ -60,7 +60,7 @@ namespace Codegame\ServerMessage {
         /**
          * Read GetAction from input stream
          */
-        public static function readFrom($stream)
+        public static function readFrom(\InputStream $stream): GetAction
         {
             $playerView = \Model\PlayerView::readFrom($stream);
             $debugAvailable = $stream->readBool();
@@ -70,7 +70,7 @@ namespace Codegame\ServerMessage {
         /**
          * Write GetAction to output stream
          */
-        public function writeTo($stream)
+        public function writeTo(\OutputStream $stream): void
         {
             $stream->writeInt32(GetAction::TAG);
             $this->playerView->writeTo($stream);
@@ -93,7 +93,7 @@ namespace Codegame\ServerMessage {
         /**
          * Read Finish from input stream
          */
-        public static function readFrom($stream)
+        public static function readFrom(\InputStream $stream): Finish
         {
             return new Finish();
         }
@@ -101,7 +101,7 @@ namespace Codegame\ServerMessage {
         /**
          * Write Finish to output stream
          */
-        public function writeTo($stream)
+        public function writeTo(\OutputStream $stream): void
         {
             $stream->writeInt32(Finish::TAG);
         }
@@ -117,9 +117,9 @@ namespace Codegame\ServerMessage {
         /**
          * Player's view
          */
-        public $playerView;
+        public \Model\PlayerView $playerView;
     
-        function __construct($playerView)
+        function __construct(\Model\PlayerView $playerView)
         {
             $this->playerView = $playerView;
         }
@@ -127,7 +127,7 @@ namespace Codegame\ServerMessage {
         /**
          * Read DebugUpdate from input stream
          */
-        public static function readFrom($stream)
+        public static function readFrom(\InputStream $stream): DebugUpdate
         {
             $playerView = \Model\PlayerView::readFrom($stream);
             return new DebugUpdate($playerView);
@@ -136,7 +136,7 @@ namespace Codegame\ServerMessage {
         /**
          * Write DebugUpdate to output stream
          */
-        public function writeTo($stream)
+        public function writeTo(\OutputStream $stream): void
         {
             $stream->writeInt32(DebugUpdate::TAG);
             $this->playerView->writeTo($stream);

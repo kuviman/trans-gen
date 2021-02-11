@@ -4,6 +4,7 @@ namespace Model {
     require_once 'Model/AttackProperties.php';
     require_once 'Model/BuildProperties.php';
     require_once 'Model/RepairProperties.php';
+    require_once 'Stream.php';
 
     /**
      * Entity properties
@@ -13,57 +14,57 @@ namespace Model {
         /**
          * Size. Entity has a form of a square with side of this length
          */
-        public $size;
+        public int $size;
         /**
          * Score for building this entity
          */
-        public $buildScore;
+        public int $buildScore;
         /**
          * Score for destroying this entity
          */
-        public $destroyScore;
+        public int $destroyScore;
         /**
          * Whether this entity can move
          */
-        public $canMove;
+        public bool $canMove;
         /**
          * Number of population points this entity provides, if active
          */
-        public $populationProvide;
+        public int $populationProvide;
         /**
          * Number of population points this entity uses
          */
-        public $populationUse;
+        public int $populationUse;
         /**
          * Maximum health points
          */
-        public $maxHealth;
+        public int $maxHealth;
         /**
          * Cost to build this first entity of this type. If this is a unit (entity can move), the cost is increased by 1 for each existing unit of this type
          */
-        public $initialCost;
+        public int $initialCost;
         /**
          * If fog of war is enabled, maximum distance at which other entities are considered visible
          */
-        public $sightRange;
+        public int $sightRange;
         /**
          * Amount of resource added to enemy able to collect resource on dealing damage for 1 health point
          */
-        public $resourcePerHealth;
+        public int $resourcePerHealth;
         /**
          * Build properties, if entity can build
          */
-        public $build;
+        public ?\Model\BuildProperties $build;
         /**
          * Attack properties, if entity can attack
          */
-        public $attack;
+        public ?\Model\AttackProperties $attack;
         /**
          * Repair properties, if entity can repair
          */
-        public $repair;
+        public ?\Model\RepairProperties $repair;
     
-        function __construct($size, $buildScore, $destroyScore, $canMove, $populationProvide, $populationUse, $maxHealth, $initialCost, $sightRange, $resourcePerHealth, $build, $attack, $repair)
+        function __construct(int $size, int $buildScore, int $destroyScore, bool $canMove, int $populationProvide, int $populationUse, int $maxHealth, int $initialCost, int $sightRange, int $resourcePerHealth, ?\Model\BuildProperties $build, ?\Model\AttackProperties $attack, ?\Model\RepairProperties $repair)
         {
             $this->size = $size;
             $this->buildScore = $buildScore;
@@ -83,7 +84,7 @@ namespace Model {
         /**
          * Read EntityProperties from input stream
          */
-        public static function readFrom($stream)
+        public static function readFrom(\InputStream $stream): EntityProperties
         {
             $size = $stream->readInt32();
             $buildScore = $stream->readInt32();
@@ -116,7 +117,7 @@ namespace Model {
         /**
          * Write EntityProperties to output stream
          */
-        public function writeTo($stream)
+        public function writeTo(\OutputStream $stream): void
         {
             $stream->writeInt32($this->size);
             $stream->writeInt32($this->buildScore);

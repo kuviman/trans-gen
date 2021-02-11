@@ -2,6 +2,7 @@
 
 namespace Model {
     require_once 'Model/AutoAttack.php';
+    require_once 'Stream.php';
 
     /**
      * Attack action
@@ -11,13 +12,13 @@ namespace Model {
         /**
          * If specified, target entity's ID
          */
-        public $target;
+        public ?int $target;
         /**
          * If specified, configures auto attacking
          */
-        public $autoAttack;
+        public ?\Model\AutoAttack $autoAttack;
     
-        function __construct($target, $autoAttack)
+        function __construct(?int $target, ?\Model\AutoAttack $autoAttack)
         {
             $this->target = $target;
             $this->autoAttack = $autoAttack;
@@ -26,7 +27,7 @@ namespace Model {
         /**
          * Read AttackAction from input stream
          */
-        public static function readFrom($stream)
+        public static function readFrom(\InputStream $stream): AttackAction
         {
             if ($stream->readBool()) {
                 $target = $stream->readInt32();
@@ -44,7 +45,7 @@ namespace Model {
         /**
          * Write AttackAction to output stream
          */
-        public function writeTo($stream)
+        public function writeTo(\OutputStream $stream): void
         {
             if (is_null($this->target)) {
                 $stream->writeBool(false);

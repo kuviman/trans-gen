@@ -2,6 +2,7 @@
 
 namespace Model\DebugInterface {
     require_once 'Color.php';
+    require_once 'Stream.php';
     require_once 'Vec2Float.php';
 
     /**
@@ -12,17 +13,17 @@ namespace Model\DebugInterface {
         /**
          * Position in world coordinates (if none, screen position (0, 0) is used)
          */
-        public $worldPos;
+        public ?\Vec2Float $worldPos;
         /**
          * Additional offset in screen coordinates
          */
-        public $screenOffset;
+        public \Vec2Float $screenOffset;
         /**
          * Color to use
          */
-        public $color;
+        public \Color $color;
     
-        function __construct($worldPos, $screenOffset, $color)
+        function __construct(?\Vec2Float $worldPos, \Vec2Float $screenOffset, \Color $color)
         {
             $this->worldPos = $worldPos;
             $this->screenOffset = $screenOffset;
@@ -32,7 +33,7 @@ namespace Model\DebugInterface {
         /**
          * Read ColoredVertex from input stream
          */
-        public static function readFrom($stream)
+        public static function readFrom(\InputStream $stream): ColoredVertex
         {
             if ($stream->readBool()) {
                 $worldPos = \Vec2Float::readFrom($stream);
@@ -47,7 +48,7 @@ namespace Model\DebugInterface {
         /**
          * Write ColoredVertex to output stream
          */
-        public function writeTo($stream)
+        public function writeTo(\OutputStream $stream): void
         {
             if (is_null($this->worldPos)) {
                 $stream->writeBool(false);

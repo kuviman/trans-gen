@@ -6,16 +6,16 @@ define('BUFFER_SIZE', 102_400);
 
 class BufferedInputStream extends InputStream
 {
-    private $inner;
-    private $buffer;
-    private $bufferPos;
-    function __construct($inner)
+    private InputStream $inner;
+    private string $buffer;
+    private int $bufferPos;
+    function __construct(InputStream $inner)
     {
         $this->inner = $inner;
         $this->buffer = '';
         $this->bufferPos = 0;
     }
-    function readAtMost($byteCount)
+    function readAtMost(int $byteCount): string
     {
         if ($this->bufferPos == strlen($this->buffer)) {
             $this->buffer = $this->inner->readAtMost(BUFFER_SIZE);
@@ -29,18 +29,18 @@ class BufferedInputStream extends InputStream
 
 class BufferedOutputStream extends OutputStream
 {
-    private $inner;
-    private $buffer;
-    function __construct($inner)
+    private OutputStream $inner;
+    private string $buffer;
+    function __construct(OutputStream $inner)
     {
         $this->inner = $inner;
         $this->buffer = '';
     }
-    function write($bytes)
+    function write(string $bytes): void
     {
         $this->buffer .= $bytes;
     }
-    function flush()
+    function flush(): void
     {
         $this->inner->write($this->buffer);
         $this->inner->flush();

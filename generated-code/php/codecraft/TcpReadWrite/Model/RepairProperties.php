@@ -2,6 +2,7 @@
 
 namespace Model {
     require_once 'Model/EntityType.php';
+    require_once 'Stream.php';
 
     /**
      * Entity's repair properties
@@ -11,13 +12,13 @@ namespace Model {
         /**
          * Valid target entity types
          */
-        public $validTargets;
+        public array $validTargets;
         /**
          * Health restored in one tick
          */
-        public $power;
+        public int $power;
     
-        function __construct($validTargets, $power)
+        function __construct(array $validTargets, int $power)
         {
             $this->validTargets = $validTargets;
             $this->power = $power;
@@ -26,7 +27,7 @@ namespace Model {
         /**
          * Read RepairProperties from input stream
          */
-        public static function readFrom($stream)
+        public static function readFrom(\InputStream $stream): RepairProperties
         {
             $validTargets = [];
             $validTargetsSize = $stream->readInt32();
@@ -41,7 +42,7 @@ namespace Model {
         /**
          * Write RepairProperties to output stream
          */
-        public function writeTo($stream)
+        public function writeTo(\OutputStream $stream): void
         {
             $stream->writeInt32(count($this->validTargets));
             foreach ($this->validTargets as $element) {

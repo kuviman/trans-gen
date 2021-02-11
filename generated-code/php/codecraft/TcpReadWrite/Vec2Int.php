@@ -1,7 +1,7 @@
 <?php
 
 namespace  {
-    
+    require_once 'Stream.php';
 
     /**
      * 2 dimensional vector.
@@ -11,13 +11,13 @@ namespace  {
         /**
          * `x` coordinate of the vector
          */
-        public $x;
+        public int $x;
         /**
          * `y` coordinate of the vector
          */
-        public $y;
+        public int $y;
     
-        function __construct($x, $y)
+        function __construct(int $x, int $y)
         {
             $this->x = $x;
             $this->y = $y;
@@ -26,7 +26,7 @@ namespace  {
         /**
          * Read Vec2Int from input stream
          */
-        public static function readFrom($stream)
+        public static function readFrom(\InputStream $stream): Vec2Int
         {
             $x = $stream->readInt32();
             $y = $stream->readInt32();
@@ -36,7 +36,7 @@ namespace  {
         /**
          * Write Vec2Int to output stream
          */
-        public function writeTo($stream)
+        public function writeTo(\OutputStream $stream): void
         {
             $stream->writeInt32($this->x);
             $stream->writeInt32($this->y);

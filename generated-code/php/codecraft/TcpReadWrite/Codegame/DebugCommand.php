@@ -1,8 +1,8 @@
 <?php
 
 namespace Codegame {
-    
     require_once 'Model/DebugInterface/DebugData.php';
+    require_once 'Stream.php';
 
     /**
      * Debug commands that can be sent while debugging with the app
@@ -12,12 +12,12 @@ namespace Codegame {
         /**
          * Write DebugCommand to output stream
          */
-        abstract function writeTo($stream);
+        abstract function writeTo(\OutputStream $stream): void;
 
         /**
          * Read DebugCommand from input stream
          */
-        static function readFrom($stream)
+        static function readFrom(\InputStream $stream): DebugCommand
         {
             $tag = $stream->readInt32();
             if ($tag == \Codegame\DebugCommand\Add::TAG) {
@@ -48,9 +48,9 @@ namespace Codegame\DebugCommand {
         /**
          * Data to add
          */
-        public $debugData;
+        public \Model\DebugInterface\DebugData $debugData;
     
-        function __construct($debugData)
+        function __construct(\Model\DebugInterface\DebugData $debugData)
         {
             $this->debugData = $debugData;
         }
@@ -58,7 +58,7 @@ namespace Codegame\DebugCommand {
         /**
          * Read Add from input stream
          */
-        public static function readFrom($stream)
+        public static function readFrom(\InputStream $stream): Add
         {
             $debugData = \Model\DebugInterface\DebugData::readFrom($stream);
             return new Add($debugData);
@@ -67,7 +67,7 @@ namespace Codegame\DebugCommand {
         /**
          * Write Add to output stream
          */
-        public function writeTo($stream)
+        public function writeTo(\OutputStream $stream): void
         {
             $stream->writeInt32(Add::TAG);
             $this->debugData->writeTo($stream);
@@ -89,7 +89,7 @@ namespace Codegame\DebugCommand {
         /**
          * Read Clear from input stream
          */
-        public static function readFrom($stream)
+        public static function readFrom(\InputStream $stream): Clear
         {
             return new Clear();
         }
@@ -97,7 +97,7 @@ namespace Codegame\DebugCommand {
         /**
          * Write Clear to output stream
          */
-        public function writeTo($stream)
+        public function writeTo(\OutputStream $stream): void
         {
             $stream->writeInt32(Clear::TAG);
         }
@@ -113,9 +113,9 @@ namespace Codegame\DebugCommand {
         /**
          * Enable/disable autoflush
          */
-        public $enable;
+        public bool $enable;
     
-        function __construct($enable)
+        function __construct(bool $enable)
         {
             $this->enable = $enable;
         }
@@ -123,7 +123,7 @@ namespace Codegame\DebugCommand {
         /**
          * Read SetAutoFlush from input stream
          */
-        public static function readFrom($stream)
+        public static function readFrom(\InputStream $stream): SetAutoFlush
         {
             $enable = $stream->readBool();
             return new SetAutoFlush($enable);
@@ -132,7 +132,7 @@ namespace Codegame\DebugCommand {
         /**
          * Write SetAutoFlush to output stream
          */
-        public function writeTo($stream)
+        public function writeTo(\OutputStream $stream): void
         {
             $stream->writeInt32(SetAutoFlush::TAG);
             $stream->writeBool($this->enable);
@@ -154,7 +154,7 @@ namespace Codegame\DebugCommand {
         /**
          * Read Flush from input stream
          */
-        public static function readFrom($stream)
+        public static function readFrom(\InputStream $stream): Flush
         {
             return new Flush();
         }
@@ -162,7 +162,7 @@ namespace Codegame\DebugCommand {
         /**
          * Write Flush to output stream
          */
-        public function writeTo($stream)
+        public function writeTo(\OutputStream $stream): void
         {
             $stream->writeInt32(Flush::TAG);
         }

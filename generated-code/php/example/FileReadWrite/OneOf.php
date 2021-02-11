@@ -1,8 +1,7 @@
 <?php
 
 namespace  {
-    
-    
+    require_once 'Stream.php';
 
     /**
      * Oneof example
@@ -12,12 +11,12 @@ namespace  {
         /**
          * Write OneOf to output stream
          */
-        abstract function writeTo($stream);
+        abstract function writeTo(\OutputStream $stream): void;
 
         /**
          * Read OneOf from input stream
          */
-        static function readFrom($stream)
+        static function readFrom(\InputStream $stream): OneOf
         {
             $tag = $stream->readInt32();
             if ($tag == \OneOf\OptionOne::TAG) {
@@ -42,13 +41,13 @@ namespace OneOf {
         /**
          * List of integers
          */
-        public $vecInt;
+        public array $vecInt;
         /**
          * Long integer
          */
-        public $longInt;
+        public int $longInt;
     
-        function __construct($vecInt, $longInt)
+        function __construct(array $vecInt, int $longInt)
         {
             $this->vecInt = $vecInt;
             $this->longInt = $longInt;
@@ -57,7 +56,7 @@ namespace OneOf {
         /**
          * Read OptionOne from input stream
          */
-        public static function readFrom($stream)
+        public static function readFrom(\InputStream $stream): OptionOne
         {
             $vecInt = [];
             $vecIntSize = $stream->readInt32();
@@ -72,7 +71,7 @@ namespace OneOf {
         /**
          * Write OptionOne to output stream
          */
-        public function writeTo($stream)
+        public function writeTo(\OutputStream $stream): void
         {
             $stream->writeInt32(OptionOne::TAG);
             $stream->writeInt32(count($this->vecInt));
@@ -93,9 +92,9 @@ namespace OneOf {
         /**
          * usize
          */
-        public $value;
+        public int $value;
     
-        function __construct($value)
+        function __construct(int $value)
         {
             $this->value = $value;
         }
@@ -103,7 +102,7 @@ namespace OneOf {
         /**
          * Read OptionTwo from input stream
          */
-        public static function readFrom($stream)
+        public static function readFrom(\InputStream $stream): OptionTwo
         {
             $value = $stream->readInt32();
             return new OptionTwo($value);
@@ -112,7 +111,7 @@ namespace OneOf {
         /**
          * Write OptionTwo to output stream
          */
-        public function writeTo($stream)
+        public function writeTo(\OutputStream $stream): void
         {
             $stream->writeInt32(OptionTwo::TAG);
             $stream->writeInt32($this->value);

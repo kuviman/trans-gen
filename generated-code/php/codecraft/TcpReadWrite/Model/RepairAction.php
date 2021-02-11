@@ -1,7 +1,7 @@
 <?php
 
 namespace Model {
-    
+    require_once 'Stream.php';
 
     /**
      * Repair action
@@ -11,9 +11,9 @@ namespace Model {
         /**
          * Target entity's ID
          */
-        public $target;
+        public int $target;
     
-        function __construct($target)
+        function __construct(int $target)
         {
             $this->target = $target;
         }
@@ -21,7 +21,7 @@ namespace Model {
         /**
          * Read RepairAction from input stream
          */
-        public static function readFrom($stream)
+        public static function readFrom(\InputStream $stream): RepairAction
         {
             $target = $stream->readInt32();
             return new RepairAction($target);
@@ -30,7 +30,7 @@ namespace Model {
         /**
          * Write RepairAction to output stream
          */
-        public function writeTo($stream)
+        public function writeTo(\OutputStream $stream): void
         {
             $stream->writeInt32($this->target);
         }

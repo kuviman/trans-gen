@@ -1,6 +1,8 @@
 <?php
 
 namespace Model {
+    require_once 'Stream.php';
+
     /**
      * Entity type
      */
@@ -59,7 +61,7 @@ namespace Model {
         /**
          * Read EntityType from input stream
          */
-        public static function readFrom($stream)
+        public static function readFrom(\InputStream $stream): int
         {
             $result = $stream->readInt32();
             if (0 <= $result && $result < 10) {
