@@ -104,7 +104,9 @@ jobs:
             runs-on: windows-latest
             executable: .\testing.exe
         exclude:
-          - language: Swift
+          - language:
+              name: Swift
+              short: swift
             env:
               name: Windows
               short: windows
