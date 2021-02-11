@@ -47,7 +47,11 @@ pub trait Test {
 
 pub trait TestExt: Test {
     fn generate<G: TestableGenerator<Self>>(&self, path: &Path) -> anyhow::Result<()>;
-    fn test<G: TestableGenerator<Self>>(&self, verbose: bool) -> anyhow::Result<TestResult>;
+    fn test<G: TestableGenerator<Self>>(
+        &self,
+        path: Option<&Path>,
+        verbose: bool,
+    ) -> anyhow::Result<TestResult>;
 }
 
 impl<T: Test> TestExt for T {
@@ -63,13 +67,26 @@ impl<T: Test> TestExt for T {
         .context("Failed to write generated code")?;
         Ok(())
     }
-    fn test<G: TestableGenerator<Self>>(&self, verbose: bool) -> anyhow::Result<TestResult> {
+    fn test<G: TestableGenerator<Self>>(
+        &self,
+        path: Option<&Path>,
+        verbose: bool,
+    ) -> anyhow::Result<TestResult> {
         if !G::is_runnable() {
             return Ok(TestResult::fake());
         }
         let tempdir = tempfile::tempdir().context("Failed to create temp dir")?;
-        let path = tempdir.as_ref();
-        self.generate::<G>(path)?;
+        let path = match path {
+            Some(path) => path,
+            None => {
+                let path = tempdir.as_ref();
+                self.generate::<G>(path)?;
+                path
+            }
+        };
+        let path = std::fs::canonicalize(path).context("Failed to canonicalize path")?;
+        let path = path.to_str().unwrap();
+        let path: &Path = path.strip_prefix("\\\\?\\").unwrap_or(path).as_ref();
         let build_start_time = std::time::Instant::now();
         G::build_local(path, verbose).context("Failed to build locally")?;
         let build_duration = std::time::Instant::now().duration_since(build_start_time);

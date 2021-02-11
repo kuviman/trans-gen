@@ -25,6 +25,8 @@ struct Opt {
     save_results: Option<PathBuf>,
     #[structopt(long)]
     load_results: Vec<PathBuf>,
+    #[structopt(long)]
+    code_path: Option<PathBuf>,
 }
 
 macro_rules! all_models {
@@ -116,6 +118,7 @@ fn main() -> anyhow::Result<()> {
                                         } else {
                                             println!("Testing {}::{}::{}", <trans_gen::gens::$lang::Generator as trans_gen::Generator>::NAME, stringify!($model), stringify!($test));
                                             let result = test.test::<trans_gen::gens::$lang::Generator>(
+                                                opt.code_path.as_ref().map(|path| path.as_ref()),
                                                 opt.verbose,
                                             ).context("Test failed")?;
                                             let average_result = result.into_average(opt.repeat);
