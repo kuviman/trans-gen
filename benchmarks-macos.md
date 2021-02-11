@@ -1,17 +1,17 @@
 | Language | codecraft::FileReadWrite | codecraft::TcpReadWrite | example::FileReadWrite | example::TcpReadWrite |
 | - | --- | --- | --- | --- |
-| C# | 62 ms | 9 ms | 63 ms | 324 us |
-| C++ | 41 ms | 8 ms | 1 ms | 127 us |
-| D | 2 ms | 36 ms | 3 ms | 227 us |
-| F# | 1 ms | 9 ms | 1 ms | 564 us |
-| Go | 1 ms | 8 ms | 660 us | 142 us |
-| Java | 2 ms | 10 ms | 1 ms | 347 us |
-| JavaScript | 72 ms | 92 ms | 1 ms | 1 ms |
-| Kotlin | 2 ms | 9 ms | 1 ms | 319 us |
-| PHP | 24 ms | 36 ms | 1 ms | 309 us |
-| Python | 9 ms | 15 ms | 1 ms | 241 us |
-| Ruby | 24 ms | 16 ms | 1 ms | 214 us |
-| Rust | 1 ms | 8 ms | 1 ms | 113 us |
-| Scala | 5 ms | 10 ms | 4 ms | 866 us |
-| Swift | 2 ms | 37 ms | 1 ms | 304 us |
-| TypeScript | 213 ms | 237 ms | 2 ms | 2 ms |
+| C# | 1 ms | 10 ms | 946 us | 338 us |
+| C++ | 1 ms | 9 ms | 19 ms | 129 us |
+| D | 2 ms | 40 ms | 1 ms | 234 us |
+| F# | 1 ms | 9 ms | 1 ms | 559 us |
+| Go | 1 ms | 9 ms | 668 us | 154 us |
+| Java | 2 ms | 9 ms | 1 ms | 331 us |
+| JavaScript | 73 ms | 81 ms | 1 ms | 1 ms |
+| Kotlin | 2 ms | 9 ms | 1 ms | 303 us |
+| PHP | 4 ms | 11 ms | 500 us | 202 us |
+| Python | 9 ms | 15 ms | 2 ms | 250 us |
+| Ruby | 85 ms | 17 ms | 5 ms | 211 us |
+| Rust | 1 ms | 8 ms | 1 ms | 120 us |
+| Scala | 6 ms | 10 ms | 4 ms | 916 us |
+| Swift | 3 ms | 38 ms | 1 ms | 296 us |
+| TypeScript | 212 ms | 234 ms | 2 ms | 2 ms |

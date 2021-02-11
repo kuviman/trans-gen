@@ -1,6 +1,7 @@
 <?php
 
 require_once 'Stream.php';
+require_once 'BufferedStream.php';
 
 class TcpStream
 {
@@ -16,8 +17,8 @@ class TcpStream
         if (!socket_connect($this->socket, $host, $port)) {
             throw new Exception("Failed to connect");
         }
-        $this->inputStream = new TcpInputStream($this->socket);
-        $this->outputStream = new TcpOutputStream($this->socket);
+        $this->inputStream = new BufferedInputStream(new TcpInputStream($this->socket));
+        $this->outputStream = new BufferedOutputStream(new TcpOutputStream($this->socket));
     }
     function __destruct()
     {
@@ -32,7 +33,7 @@ class TcpInputStream extends InputStream
     {
         $this->socket = $socket;
     }
-    public function read($byteCount)
+    public function readAtMost($byteCount)
     {
         return socket_read($this->socket, $byteCount);
     }
