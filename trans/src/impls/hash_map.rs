@@ -6,7 +6,7 @@ impl<K: Trans + Eq + std::hash::Hash, V: Trans> Trans for HashMap<K, V> {
     }
     fn read_from(reader: &mut dyn std::io::Read, version: &Version) -> std::io::Result<Self> {
         let len = usize::read_from(reader, version)?;
-        let mut result = Self::with_capacity(len);
+        let mut result = Self::new();
         for _ in 0..len {
             result.insert(
                 K::read_from(reader, version)?,
@@ -42,4 +42,33 @@ fn test_serde() {
         map.insert("world".to_owned(), 2);
         map
     });
+}
+
+#[test]
+fn test_oom() {
+    #[derive(Debug)]
+    struct BigData([u8; 100500]);
+    impl Trans for BigData {
+        fn create_schema(_version: &Version) -> Schema {
+            unimplemented!()
+        }
+        fn read_from(_reader: &mut dyn std::io::Read, _version: &Version) -> std::io::Result<Self> {
+            Err(std::io::Error::from(std::io::ErrorKind::Interrupted))
+        }
+        fn write_to(
+            &self,
+            _writer: &mut dyn std::io::Write,
+            _version: &Version,
+        ) -> std::io::Result<()> {
+            unimplemented!()
+        }
+    }
+    <HashMap<i32, BigData> as Trans>::read_from(
+        &mut serialize(&crate::version(), &(i32::MAX, 0i32))
+            .unwrap()
+            .as_slice(),
+        &crate::version(),
+    )
+    .ensure_err_kind(std::io::ErrorKind::Interrupted)
+    .unwrap();
 }
