@@ -8,6 +8,12 @@ class {{ definition.name.camel_case(conv) }}~
     - if let Some((_, tag)) = base {
     TAG = {{ tag }}
 
+    __slots__ = (~
+    - for field in &definition.fields {
+    ~"{{ field.name.snake_case(conv) }}",~
+    - }
+    ~)
+
     - }
     def __init__(self~
     - for field in &definition.fields {
