@@ -15,7 +15,7 @@ class FileInputStream extends InputStream
     {
         fclose($this->stream);
     }
-    public function readAtMost($byteCount)
+    public function readAtMost(int $byteCount): string
     {
         $data = fread($this->stream, $byteCount);
         assert(strlen($data) == $byteCount);
@@ -35,11 +35,11 @@ class FileOutputStream extends OutputStream
         $this->flush();
         fclose($this->stream);
     }
-    public function write($bytes)
+    public function write(string $bytes): void
     {
         fwrite($this->stream, $bytes);
     }
-    public function flush()
+    public function flush(): void
     {
         fflush($this->stream);
     }
@@ -50,7 +50,7 @@ $outputFile = $argv[2];
 $repeat = intval($argv[3]);
 
 for ($i = 0; $i < $repeat; $i++) {
-    $input = {{ type_name(schema) }}::readFrom(new BufferedInputStream(new FileInputStream($inputFile)));
+    $input = {{ class_name(schema) }}::readFrom(new BufferedInputStream(new FileInputStream($inputFile)));
     if ($repeat == 1) {
         print_r($input);
     }

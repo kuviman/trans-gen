@@ -6,9 +6,9 @@ require_once 'BufferedStream.php';
 class TcpStream
 {
     private $socket;
-    public $inputStream;
-    public $outputStream;
-    function __construct($host, $port)
+    public InputStream $inputStream;
+    public OutputStream $outputStream;
+    function __construct(string $host, int $port)
     {
         $this->socket = socket_create(AF_INET, SOCK_STREAM, SOL_TCP);
         if (!socket_set_option($this->socket, SOL_TCP, TCP_NODELAY, 1)) {
@@ -33,7 +33,7 @@ class TcpInputStream extends InputStream
     {
         $this->socket = $socket;
     }
-    public function readAtMost($byteCount)
+    public function readAtMost(int $byteCount): string
     {
         return socket_read($this->socket, $byteCount);
     }
@@ -46,11 +46,11 @@ class TcpOutputStream extends OutputStream
     {
         $this->socket = $socket;
     }
-    public function write($bytes)
+    public function write(string $bytes): void
     {
         socket_write($this->socket, $bytes);
     }
-    public function flush()
+    public function flush(): void
     {
     }
 }

@@ -1,6 +1,8 @@
 <?php
 
 namespace {{ namespace_path(schema) }} {
+    {{ imports(schema) }}
+
     {{ doc_comment(documentation) }}
     abstract class {{ base_name.camel_case(conv) }}
     {
@@ -13,7 +15,7 @@ namespace {{ namespace_path(schema) }} {
         - }
 
         {{ doc_read_from(&base_name.camel_case(conv)) }}
-        public static function readFrom($stream)
+        public static function readFrom(\InputStream $stream): int
         {
             $result = $stream->readInt32();
             if (0 <= $result && $result < {{ variants.len() }}) {

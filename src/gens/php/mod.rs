@@ -52,6 +52,7 @@ fn imports(schema: &Schema) -> String {
         }
         _ => {}
     }
+    imports.insert("Stream".to_owned());
     include_templing!("src/gens/php/imports.templing")
 }
 
@@ -111,6 +112,18 @@ fn namespace_path(schema: &Schema) -> String {
 }
 
 fn type_name(schema: &Schema) -> String {
+    match schema {
+        Schema::Bool => "bool".to_owned(),
+        Schema::Int32 | Schema::Int64 | Schema::Enum { .. } => "int".to_owned(),
+        Schema::Float32 | Schema::Float64 => "float".to_owned(),
+        Schema::String => "string".to_owned(),
+        Schema::Struct { .. } | Schema::OneOf { .. } | Schema::Enum { .. } => class_name(schema),
+        Schema::Vec(_) | Schema::Map(_, _) => "array".to_owned(),
+        Schema::Option(inner) => format!("?{}", type_name(inner)),
+    }
+}
+
+fn class_name(schema: &Schema) -> String {
     format!("\\{}", file_name(schema).replace('/', "\\"))
 }
 

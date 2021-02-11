@@ -1,17 +1,16 @@
 <?php
 
 namespace {{ namespace_path(schema) }} {
-    
     {{ imports(schema) }}
 
     {{ doc_comment(documentation) }}
     abstract class {{ base_name.camel_case(conv) }}
     {
         {{ doc_write_to(&base_name.camel_case(conv)) }}
-        abstract function writeTo($stream);
+        abstract function writeTo(\OutputStream $stream): void;
 
         {{ doc_read_from(&base_name.camel_case(conv)) }}
-        static function readFrom($stream)
+        static function readFrom(\InputStream $stream): {{ base_name.camel_case(conv) }}
         {
             $tag = $stream->readInt32();
             - for variant in variants {
