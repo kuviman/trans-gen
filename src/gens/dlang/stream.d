@@ -2,9 +2,19 @@ import std.bitmanip;
 
 abstract class Stream
 {
-    abstract ubyte[] readBytes(size_t byteCount);
+    abstract ubyte[] readBytesAtMost(size_t byteCount);
     abstract void writeBytes(const ubyte[] data);
     abstract void flush();
+
+    ubyte[] readBytes(size_t byteCount)
+    {
+        ubyte[] result = [];
+        while (result.length < byteCount)
+        {
+            result ~= readBytesAtMost(byteCount - result.length);
+        }
+        return result;
+    }
 
     bool readBool()
     {

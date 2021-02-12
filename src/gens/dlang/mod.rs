@@ -208,6 +208,10 @@ impl crate::Generator for Generator {
             include_str!("stream.d").to_owned(),
         );
         files.insert(
+            "source/buffered_stream.d".to_owned(),
+            include_str!("buffered_stream.d").to_owned(),
+        );
+        files.insert(
             "dub.json".to_owned(),
             include_templing!("src/gens/dlang/dub.json.templing"),
         );
