@@ -9,17 +9,12 @@ class SocketStream : Stream
         this.socket = socket;
     }
 
-    override ubyte[] readBytes(size_t byteCount)
+    override ubyte[] readBytesAtMost(size_t byteCount)
     {
         ubyte[] data = new ubyte[byteCount];
-        size_t offset = 0;
-        while (offset < byteCount)
-        {
-            auto received = socket.receive(data[offset .. data.length]);
-            enforce(received > 0);
-            offset += received;
-        }
-        return data;
+        auto received = socket.receive(data);
+        enforce(received > 0);
+        return data[0 .. received];
     }
 
     override void writeBytes(const ubyte[] data)

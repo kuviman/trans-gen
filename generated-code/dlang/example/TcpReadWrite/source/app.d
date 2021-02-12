@@ -1,4 +1,5 @@
 import socket_stream;
+import buffered_stream;
 import std.stdio;
 import std.socket;
 import std.conv;
@@ -15,7 +16,7 @@ void main(string[] args)
     auto socket = new Socket(addr.addressFamily, SocketType.STREAM);
     socket.setOption(SocketOptionLevel.TCP, SocketOption.TCP_NODELAY, true);
     socket.connect(addr);
-    auto stream = new SocketStream(socket);
+    auto stream = new BufferedStream(new SocketStream(socket));
     while (stream.readBool()) {
         Example input = Example.readFrom(stream);
         if (stdout) {

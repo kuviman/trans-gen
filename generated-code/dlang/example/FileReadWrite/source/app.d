@@ -1,4 +1,5 @@
 import stream;
+import buffered_stream;
 import std.stdio;
 import std.conv;
 import std.exception;
@@ -11,7 +12,7 @@ class FileStream : Stream
         this.file = file;
     }
 
-    override ubyte[] readBytes(size_t byteCount)
+    override ubyte[] readBytesAtMost(size_t byteCount)
     {
         return this.file.rawRead(new ubyte[byteCount]);
     }
@@ -37,10 +38,12 @@ void main(string[] args)
     int repeat = parse!int(args[3]);
 
     for (int i = 0; i < repeat; i++) {
-        Example input = Example.readFrom(new FileStream(File(inputFile, "rb")));
+        Example input = Example.readFrom(new BufferedStream(new FileStream(File(inputFile, "rb"))));
         if (repeat == 1) {
             writeln(input);
         }
-        input.writeTo(new FileStream(File(outputFile, "wb")));
+        auto outputStream = new BufferedStream(new FileStream(File(outputFile, "wb")));
+        input.writeTo(outputStream);
+        outputStream.flush();
     }
 }
