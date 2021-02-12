@@ -9,7 +9,7 @@ class FileInputStream : InputStream {
 		file = fopen(path, "rb")
     }
 
-	func readBytes(_ byteCount: Int) -> [Byte] {
+	func readBytesAtMost(_ byteCount: Int) -> [Byte] {
 		var buffer = [Byte](repeating: 0x0, count: byteCount)
 		fread(&buffer, 1, byteCount, file)
 		return buffer
@@ -47,12 +47,12 @@ let outputFile = CommandLine.arguments[2]
 let repeatTimes = Int(CommandLine.arguments[3])!
 
 for _ in 1...repeatTimes {
-	let inputStream = FileInputStream(inputFile)
+	let inputStream = BufferedInputStream(FileInputStream(inputFile))
 	let input = MessageGameModel.readFrom(inputStream)
 	if repeatTimes == 1 {
 		print(input)
 	}
-	let outputStream = FileOutputStream(outputFile)
+	let outputStream = BufferedOutputStream(FileOutputStream(outputFile))
 	input.writeTo(outputStream)
 	outputStream.flush()
 }

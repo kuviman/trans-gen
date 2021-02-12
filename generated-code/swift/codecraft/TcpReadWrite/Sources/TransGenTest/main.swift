@@ -3,12 +3,14 @@ let port = Int(CommandLine.arguments[2])!
 let stdout = CommandLine.arguments[3] == "true"
 
 let tcpStream = TcpStream(host, port)
+let inputStream = BufferedInputStream(tcpStream)
+let outputStream = BufferedOutputStream(tcpStream)
 
-while tcpStream.readBool() {
-	let input = MessageGameModel.readFrom(tcpStream)
+while inputStream.readBool() {
+	let input = MessageGameModel.readFrom(inputStream)
 	if stdout {
 		print(input)
 	}
-	input.writeTo(tcpStream)
-	tcpStream.flush()
+	input.writeTo(outputStream)
+	outputStream.flush()
 }

@@ -16,10 +16,17 @@ private func fromByteArray<T>(_ value: [Byte]) -> T {
 }
 
 protocol InputStream {
-	func readBytes(_ byteCount: Int) -> [Byte]
+	func readBytesAtMost(_ byteCount: Int) -> [Byte]
 }
 
 extension InputStream {
+    func readBytes(_ byteCount: Int) -> [Byte] {
+        var result: [Byte] = []
+        while result.count < byteCount {
+            result.append(contentsOf: readBytesAtMost(byteCount - result.count))
+        }
+        return result
+    }
     func readBool() -> Bool {
         switch readBytes(1)[0] {
             case 0:

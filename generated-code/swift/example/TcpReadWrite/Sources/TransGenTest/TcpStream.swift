@@ -41,19 +41,13 @@ class TcpStream : InputStream, OutputStream {
         }
     }
 
-	func readBytes(_ byteCount: Int) -> [Byte] {
-        var byteCount = byteCount
+	func readBytesAtMost(_ byteCount: Int) -> [Byte] {
 		var buffer = [Byte](repeating: 0x0, count: byteCount)
-        var pos = 0
-        while byteCount > 0 {
-            let received = buffer[pos...].withUnsafeMutableBytes { recv(sock, $0.baseAddress, byteCount, 0) }
-            if received < 0 {
-                fatalError("Failed to read from socket")
-            }
-            pos += received
-            byteCount -= received
+        let received = buffer.withUnsafeMutableBytes { recv(sock, $0.baseAddress, byteCount, 0) }
+        if received < 0 {
+            fatalError("Failed to read from socket")
         }
-		return buffer
+		return Array(buffer[..<received])
     }
 
 	func writeBytes(_ data: [Byte]) {
