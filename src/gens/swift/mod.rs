@@ -87,8 +87,12 @@ impl crate::Generator for Generator {
             include_templing!("src/gens/swift/Package.swift.templing"),
         );
         files.insert(
-            format!("Sources/{}/StreamUtil.swift", package_name),
-            include_str!("StreamUtil.swift").to_owned(),
+            format!("Sources/{}/Stream.swift", package_name),
+            include_str!("Stream.swift").to_owned(),
+        );
+        files.insert(
+            format!("Sources/{}/BufferedStream.swift", package_name),
+            include_str!("BufferedStream.swift").to_owned(),
         );
         Self {
             package_name: package_name.to_owned(),
