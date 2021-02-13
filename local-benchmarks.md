@@ -28,17 +28,18 @@ Also see benchmarks done on GitHub Actions on [the testing branch](https://githu
 
 | Language | codecraft::FileReadWrite | codecraft::TcpReadWrite | example::FileReadWrite | example::TcpReadWrite |
 | - | --- | --- | --- | --- |
-| C# | 1 ms | 5 ms | 830 us | 153 us |
-| C++ | 1 ms | 5 ms | 717 us | 74 us |
-| D | 12 ms | 38 ms | 2 ms | 269 us |
-| F# | 1 ms | 5 ms | 1 ms | 334 us |
-| Go | 2 ms | 5 ms | 1 ms | 77 us |
-| Java | 1 ms | 6 ms | 1 ms | 280 us |
-| JavaScript | 37 ms | 64 ms | 1 ms | 900 us |
-| Kotlin | 2 ms | 5 ms | 1 ms | 440 us |
-| PHP | 18 ms | 49 ms | 1 ms | 331 us |
-| Python | 5 ms | 12 ms | 927 us | 188 us |
-| Ruby | 35 ms | 23 ms | 1 ms | 15 ms |
-| Rust | 909 us | 5 ms | 775 us | 75 us |
-| Scala | 3 ms | 6 ms | 2 ms | 911 us |
-| TypeScript | 90 ms | 129 ms | 1 ms | 1 ms |
+| C# | 527 us | 5 ms | 269 us | 59 us |
+| C++ | 928 us | 5 ms | 424 us | 45 us |
+| D | 1 ms | 5 ms | 386 us | 65 us |
+| F# | 582 us | 5 ms | 290 us | 77 us |
+| Go | 862 us | 5 ms | 339 us | 51 us |
+| Haskell | 6 ms | 5 ms | 1 ms | 61 us |
+| Java | 821 us | 5 ms | 355 us | 89 us |
+| JavaScript | 37 ms | 10 ms | 647 us | 204 us |
+| Kotlin | 713 us | 5 ms | 347 us | 106 us |
+| PHP | 5 ms | 8 ms | 224 us | 78 us |
+| Python | 4 ms | 12 ms | 372 us | 147 us |
+| Ruby | 36 ms | 27 ms | 959 us | 15 ms |
+| Rust | 568 us | 5 ms | 439 us | 44 us |
+| Scala | 969 us | 5 ms | 497 us | 152 us |
+| TypeScript | 37 ms | 9 ms | 645 us | 195 us |
