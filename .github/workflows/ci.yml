@@ -139,7 +139,7 @@ jobs:
           extensions: sockets
 
       - name: Run tests
-        run: ${{ matrix.env.executable }} --language=${{ matrix.language.name }} --verbose --repeat=100 --save-results=results.json
+        run: ${{ matrix.env.executable }} --language=${{ matrix.language.name }} --verbose --repeat=1000 --save-results=results.json
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v2
