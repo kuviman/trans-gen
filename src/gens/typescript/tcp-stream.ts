@@ -3,7 +3,10 @@ import { Socket } from "net";
 
 export class TcpStream extends Stream {
     private socket: Socket;
-    private data: Buffer;
+    private readBuffers: Buffer[];
+    private writeBuffers: Buffer[];
+    private readBufferPos: number;
+    private readBufferSize: number;
     private needAmount: number | null;
     private resolve: any;
     constructor(host: string, port: number) {
@@ -19,7 +22,10 @@ export class TcpStream extends Stream {
         new Promise(function (resolve) {
             _this.socket.connect(port, host, () => resolve(undefined));
         });
-        this.data = Buffer.alloc(0);
+        this.readBuffers = [];
+        this.writeBuffers = [];
+        this.readBufferPos = 0;
+        this.readBufferSize = 0;
         this.needAmount = null;
         this.resolve = null;
         this.socket.on('data', function (data) { _this.dataHandler(data) });
@@ -28,17 +34,32 @@ export class TcpStream extends Stream {
         this.socket.destroy();
     }
     dataHandler(data: Buffer) {
-        this.data = Buffer.concat([this.data, data]);
+        this.readBuffers.push(data);
+        this.readBufferSize += data.length;
         this.update();
     }
     update() {
-        if (this.needAmount === null || this.needAmount > this.data.length) {
+        if (this.needAmount === null || this.needAmount > this.readBufferSize) {
             return;
         }
-        const data = this.data.slice(0, this.needAmount);
-        this.data = this.data.slice(this.needAmount);
+        let chunks = [];
+        let needAmount = this.needAmount;
+        while (needAmount > 0) {
+            let currentBuffer = this.readBuffers[0];
+            let currentBufferSize = currentBuffer.length - this.readBufferPos;
+            let chunkLength = Math.min(needAmount, currentBufferSize);
+            chunks.push(currentBuffer.slice(this.readBufferPos, this.readBufferPos + chunkLength));
+            needAmount -= chunkLength;
+            if (chunkLength == currentBufferSize) {
+                this.readBuffers.shift();
+                this.readBufferPos = 0;
+            } else {
+                this.readBufferPos += chunkLength;
+            }
+            this.readBufferSize -= chunkLength;
+        }
         this.needAmount = null;
-        this.resolve(data);
+        this.resolve(Buffer.concat(chunks));
         this.update();
     }
     async read(byteCount: number): Promise<Buffer> {
@@ -50,15 +71,18 @@ export class TcpStream extends Stream {
         });
     }
     async write(data: Buffer): Promise<void> {
+        this.writeBuffers.push(data);
+    }
+    async flush() {
         const _this = this;
         return await new Promise<void>(function (resolve, reject) {
-            _this.socket.write(data, 'utf8', function (error) {
+            _this.socket.write(Buffer.concat(_this.writeBuffers), 'utf8', function (error) {
                 if (error) {
                     return reject(error);
                 }
                 resolve(undefined);
+                _this.writeBuffers = [];
             });
         });
     }
-    async flush() { }
 }
