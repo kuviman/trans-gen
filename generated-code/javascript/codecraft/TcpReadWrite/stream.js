@@ -23,32 +23,36 @@ class Stream {
         const buffer = await this.read(INT_SIZE);
         if (this.isLittleEndianMachine) {
             return buffer.readInt32LE();
+        } else {
+            return buffer.readInt32BE();
         }
-        return buffer.readInt32BE();
     }
 
     async readLong() {
         const buffer = await this.read(LONG_SIZE);
         if (this.isLittleEndianMachine) {
             return buffer.readBigInt64LE();
+        } else {
+            return buffer.readBigInt64BE();
         }
-        return buffer.readBigInt64BE();
     }
 
     async readFloat() {
         const buffer = await this.read(FLOAT_SIZE);
         if (this.isLittleEndianMachine) {
             return buffer.readFloatLE();
+        } else {
+            return buffer.readFloatBE();
         }
-        return buffer.readFloatBE();
     }
 
     async readDouble() {
         const buffer = await this.read(DOUBLE_SIZE);
         if (this.isLittleEndianMachine) {
             return buffer.readDoubleLE();
+        } else {
+            return buffer.readDoubleBE();
         }
-        return buffer.readDoubleBE();
     }
 
     async readString() {
