@@ -1,0 +1,25 @@
+- let struct_name = match base {
+-   Some((base_name, _)) => format!("{}{}", base_name.camel_case(conv), definition.name.camel_case(conv)),
+-   None => definition.name.camel_case(conv),
+- }; let struct_name = Name::new(struct_name);
+type
+    {{ doc_comment(&definition.documentation) }}
+    T{{ struct_name.camel_case(conv) }} = class{{# if let Some((base_name, _)) = base { }} (T{{ base_name.camel_case(conv) }}){{# } }}
+        - for field in &definition.fields {
+        {{ doc_comment(&field.documentation) }}
+        {{ field.name.mixed_case(conv) }}: {{ type_name(&field.schema) }};
+        - }
+        constructor Create(~
+        - for (index, field) in definition.fields.iter().enumerate() {
+        - if index != 0 {
+            ~; ~
+        - }
+        ~{{ field.name.mixed_case(conv) }}: {{ type_name(&field.schema) }}~
+        - }
+        ~);
+        {{ doc_read_from(&struct_name.camel_case(conv)) }}
+        class function ReadFrom(stream: TStream): T{{ struct_name.camel_case(conv) }}; static;
+        {{ doc_write_to(&struct_name.camel_case(conv)) }}
+        procedure WriteTo(stream: TStream);{{# if base.is_some() { }} override;{{# } }}
+        function ToString: ansistring; override;
+    end;

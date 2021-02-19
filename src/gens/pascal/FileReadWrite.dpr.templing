@@ -1,0 +1,19 @@
+uses SysUtils, BufferedStream, FileStream, {{ schema.name().unwrap().camel_case(conv) }} in '{{ file_name(schema) }}.pas';
+
+var
+    inputStream: TBufferedStream;
+    outputStream: TBufferedStream;
+    input: {{ type_name(schema) }};
+    i, repeatNumber: Integer;
+begin
+    repeatNumber := StrToInt(paramStr(3));
+    for i := 1 to repeatNumber do begin
+        inputStream := TBufferedStream.Create(TFileStream.Create(paramStr(1), TFileMode.Read));
+        input := {{ type_name(schema) }}.ReadFrom(inputStream);
+        if repeatNumber = 1 then
+            writeln(input.ToString);
+        outputStream := TBufferedStream.Create(TFileStream.Create(paramStr(2), TFileMode.Write));
+        input.WriteTo(outputStream);
+        outputStream.Flush();
+    end;
+end.

@@ -1,0 +1,13 @@
+unit {{ definition.name.camel_case(conv) }};
+
+interface
+
+{{ imports(schema) }}
+
+{{ struct_def(definition, None) }}
+
+implementation
+
+{{ struct_impl(definition, None) }}
+
+end.

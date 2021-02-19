@@ -1,0 +1,52 @@
+- match schema {
+- Schema::Bool => {
+stream.WriteBoolean({{ var }});
+- }
+- Schema::Int32 => {
+stream.WriteInt32({{ var }});
+- }
+- Schema::Int64 => {
+stream.WriteInt64({{ var }});
+- }
+- Schema::Float32 => {
+stream.WriteSingle({{ var }});
+- }
+- Schema::Float64 => {
+stream.WriteDouble({{ var }});
+- }
+- Schema::String => {
+stream.WriteString({{ var }});
+- }
+- Schema::Struct { .. } | Schema::OneOf { .. } => {
+{{ var }}.WriteTo(stream);
+- }
+- Schema::Option(inner) => {
+if {{ var }}.HasValue then begin
+    stream.WriteBoolean(true);
+    - let value_var = format!("{}Value", var); let value_var = &value_var;
+    {{ value_var }} := {{ var }}.Value;
+    {{ write_var(value_var, inner) }}
+end else
+    stream.WriteBoolean(false);
+- }
+- Schema::Vec(inner) => {
+stream.WriteInt32(Length({{ var }}));
+- let element_var = format!("{}Element", var); let element_var = &element_var;
+for {{ element_var }} in {{ var }} do begin
+    {{ write_var(element_var, inner) }}
+end;
+- }
+- Schema::Map(key_type, value_type) => {
+stream.WriteInt32({{ var }}.Count);
+- let key_var = format!("{}Key", var); let key_var = &key_var;
+for {{ key_var }} in {{ var }}.Keys do begin
+    - let value_var = format!("{}Value", var); let value_var = &value_var;
+    {{ value_var }} := {{ var }}.Items[{{ key_var }}];
+    {{ write_var(key_var, key_type) }}
+    {{ write_var(value_var, value_type) }}
+end;
+- }
+- Schema::Enum { .. } => {
+stream.WriteInt32(ord({{ var }}));
+- }
+- }

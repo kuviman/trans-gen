@@ -19,6 +19,7 @@ macro_rules! all_runnable_gens {
         $macro!(swift);
         $macro!(php);
         $macro!(haskell);
+        $macro!(pascal);
     };
 }
 

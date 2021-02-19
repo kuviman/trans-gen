@@ -1,0 +1,55 @@
+- match schema {
+- Schema::Bool => {
+{{ var }} := stream.ReadBoolean;
+- }
+- Schema::Int32 => {
+{{ var }} := stream.ReadInt32;
+- }
+- Schema::Int64 => {
+{{ var }} := stream.ReadInt64;
+- }
+- Schema::Float32 => {
+{{ var }} := stream.ReadSingle;
+- }
+- Schema::Float64 => {
+{{ var }} := stream.ReadDouble;
+- }
+- Schema::String => {
+{{ var }} := stream.ReadString;
+- }
+- Schema::Struct { .. } | Schema::OneOf { .. } => {
+{{ var }} := {{ type_name(schema) }}.ReadFrom(stream);
+- }
+- Schema::Option(inner) => {
+if stream.ReadBoolean then begin
+    - let value_var = format!("{}Value", var);
+    {{ read_var(&value_var, inner) }}
+    {{ var }} := {{ value_var }};
+end else
+    {{ var }} := nil;
+- }
+- Schema::Vec(inner) => {
+{{ var }} := {{ type_name(schema) }}.Create;
+SetLength({{ var }}, stream.ReadInt32);
+- let index_var = format!("{}Index", var); let index_var = &index_var;
+for {{ index_var }} := 0 to Length({{ var }}) - 1 do begin
+    {{ read_var(&format!("{}Element", var), inner) }}
+    {{ var }}[{{ index_var }}] := {{ var }}Element;
+end;
+- }
+- Schema::Map(key_type, value_type) => {
+{{ var }} := {{ type_name(schema) }}.Create;
+{{ var }}Size := stream.ReadInt32;
+- let index_var = format!("{}Index", var); let index_var = &index_var;
+for {{ index_var }} := 1 to {{ var }}Size do begin
+    - let key_var = format!("{}Key", var);
+    - let value_var = format!("{}Value", var);
+    {{ read_var(&key_var, key_type) }}
+    {{ read_var(&value_var, value_type) }}
+    {{ var }}.Add({{ key_var }}, {{ value_var }});
+end;
+- }
+- Schema::Enum { .. } => {
+{{ var }} := {{ type_name(schema) }}(stream.ReadInt32);
+- }
+- }

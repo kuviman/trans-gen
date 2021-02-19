@@ -1,0 +1,38 @@
+unit {{ base_name.camel_case(conv) }};
+
+interface
+
+{{ imports(schema) }}
+
+type
+    {{ doc_comment(documentation) }}
+    T{{ base_name.camel_case(conv) }} = class
+        {{ doc_write_to(&base_name.camel_case(conv)) }}
+        procedure WriteTo(stream: TStream); virtual; abstract;
+        {{ doc_read_from(&base_name.camel_case(conv)) }}
+        class function ReadFrom(stream: TStream): T{{ base_name.camel_case(conv) }}; static;
+    end;
+- for (tag, variant) in variants.iter().enumerate() {
+
+{{ struct_def(variant, Some((base_name, tag))) }}
+- }
+
+implementation
+
+class function T{{ base_name.camel_case(conv) }}.ReadFrom(stream: TStream): T{{ base_name.camel_case(conv) }};
+var tag: Int32;
+begin
+    tag := stream.ReadInt32;
+    case tag of
+        - for (tag, variant) in variants.iter().enumerate() {
+        {{ tag }}: result := T{{ base_name.camel_case(conv) }}{{ variant.name.camel_case(conv) }}.ReadFrom(stream);
+        - }
+        else raise Exception.Create('Unexpected tag value');
+    end;
+end;
+- for (tag, variant) in variants.iter().enumerate() {
+
+{{ struct_impl(variant, Some((base_name, tag))) }}
+- }
+
+end.

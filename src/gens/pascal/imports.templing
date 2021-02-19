@@ -1,0 +1,11 @@
+- if !imports.is_empty() {
+uses
+    - for (index, import) in imports.iter().enumerate() {
+    {{ import }}~
+    - if index + 1 < imports.len() {
+        ~,
+    - } else {
+        ~;
+    - }
+    - }
+- }

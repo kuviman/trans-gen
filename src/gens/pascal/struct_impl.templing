@@ -1,0 +1,64 @@
+- let struct_name = match base {
+-   Some((base_name, _)) => format!("{}{}", base_name.camel_case(conv), definition.name.camel_case(conv)),
+-   None => definition.name.camel_case(conv),
+- }; let struct_name = Name::new(struct_name);
+constructor T{{ struct_name.camel_case(conv) }}.Create(~
+- for (index, field) in definition.fields.iter().enumerate() {
+- if index != 0 {
+    ~; ~
+- }
+~{{ field.name.mixed_case(conv) }}: {{ type_name(&field.schema) }}~
+- }
+~);
+begin
+    - for field in &definition.fields {
+    self.{{ field.name.mixed_case(conv) }} := {{ field.name.mixed_case(conv) }};
+    - }
+end;
+
+class function T{{ struct_name.camel_case(conv) }}.ReadFrom(stream: TStream): T{{ struct_name.camel_case(conv) }};
+- for (var_name, var_type) in &vars.read {
+var {{ var_name }}: {{ var_type }};
+- }
+begin
+    - for field in &definition.fields {
+    {{ read_var(&field.name.mixed_case(conv), &field.schema) }}
+    - }
+    result := T{{ struct_name.camel_case(conv) }}.Create(~
+    - for (index, field) in definition.fields.iter().enumerate() {
+    - if index != 0 {
+        ~, ~
+    - }
+    ~{{ field.name.mixed_case(conv) }}~
+    - }
+    ~);
+end;
+
+procedure T{{ struct_name.camel_case(conv) }}.WriteTo(stream: TStream);
+- for (var_name, var_type) in &vars.write {
+var {{ var_name }}: {{ var_type }};
+- }
+begin
+    - if let Some((_, tag)) = base {
+    stream.WriteInt32({{ tag }});
+    - }
+    - for field in &definition.fields {
+    {{ write_var(&field.name.mixed_case(conv), &field.schema) }}
+    - }
+end;
+
+function T{{ struct_name.camel_case(conv) }}.ToString: ansistring;
+- for (var_name, var_type) in &vars.to_string {
+var {{ var_name }}: {{ var_type }};
+- }
+begin
+    result := '{{ definition.name.camel_case(conv) }} {';
+    - for (index, field) in definition.fields.iter().enumerate() {
+    - if index != 0 {
+    result += ', ';  
+    - }
+    result += '{{ field.name.mixed_case(conv) }}=';
+    {{ var_to_string(&field.name.mixed_case(conv), &field.schema) }}
+    - };
+    result += '}';
+end;

@@ -1,0 +1,67 @@
+- match schema {
+- Schema::Bool => {
+result += BoolToStr({{ var }});
+- }
+- Schema::Int32 => {
+result += IntToStr({{ var }});
+- }
+- Schema::Int64 => {
+result += IntToStr({{ var }});
+- }
+- Schema::Float32 => {
+result += FloatToStr({{ var }});
+- }
+- Schema::Float64 => {
+result += FloatToStr({{ var }});
+- }
+- Schema::String => {
+result += '''';
+result += {{ var }};
+result += '''';
+- }
+- Schema::Struct { .. } | Schema::OneOf { .. } => {
+result += {{ var }}.ToString;
+- }
+- Schema::Option(inner) => {
+if {{ var }}.HasValue then begin
+    - let value_var = format!("{}Value", var); let value_var = &value_var;
+    {{ value_var }} := {{ var }}.Value;
+    {{ var_to_string(value_var, inner) }}
+end else
+    result += 'nil';
+- }
+- Schema::Vec(inner) => {
+result += '[';
+- let index_var = format!("{}Index", var); let index_var = &index_var;
+for {{ index_var }} := 0 to Length({{ var }}) - 1 do begin
+    if {{ index_var }} <> 0 then
+        result += ', ';
+    - let element_var = format!("{}Element", var); let element_var = &element_var;
+    {{ element_var }} := {{ var }}[{{ index_var }}];
+    {{ var_to_string(element_var, inner) }};
+end;
+result += ']';
+- }
+- Schema::Map(key_type, value_type) => {
+result += '[';
+- let first_var = format!("{}First", var); let first_var = &first_var;
+{{ first_var }} := true;
+- let key_var = format!("{}Key", var); let key_var = &key_var;
+for {{ key_var }} in {{ var }}.Keys do begin
+    if not {{ first_var }} then
+        result += ', ';
+    {{ first_var }} := false;
+    - let value_var = format!("{}Value", var); let value_var = &value_var;
+    {{ value_var }} := {{ var }}.Items[{{ key_var }}];
+    {{ var_to_string(key_var, key_type) }};
+    result += ': ';
+    {{ var_to_string(value_var, value_type) }};
+end;
+result += ']';
+- }
+- Schema::Enum { .. } => {
+- let name_var = format!("{}Name", var); let name_var = &name_var;
+WriteStr({{ name_var }}, {{ var }});
+result += {{ name_var }};
+- }
+- }
