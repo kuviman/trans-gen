@@ -35,10 +35,20 @@ Var
   addr: TInetSockAddr;
 Begin
   addr.sin_family := AF_INET;
-  If Not GetHostByName(host, hostEntry) Then
-    If Not ResolveHostByName(host, hostEntry) Then
-      raise Exception.Create('Failed to resolve host');
-  addr.sin_addr := hostEntry.Addr;
+  addr.sin_addr.s_addr := htonl(StrToHostAddr(host).s_addr);
+  If addr.sin_addr.s_addr = 0 Then
+    Begin
+      If GetHostByName(host, hostEntry) Then
+        Begin
+          addr.sin_addr.s_addr := htonl(addr.sin_addr.s_addr);
+        End
+      Else
+        Begin
+          If Not ResolveHostByName(host, hostEntry) Then
+            raise Exception.Create('Failed to resolve host');
+        End;
+      addr.sin_addr := hostEntry.Addr;
+    End;
   sock := fpsocket(AF_INET, SOCK_STREAM, 0);
   If sock = -1 Then
     raise Exception.Create('Unable to create socket.');
