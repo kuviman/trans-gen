@@ -89,6 +89,8 @@ jobs:
             short: php
           - name: Haskell
             short: haskell
+          - name: Pascal
+            short: pascal
         env:
           - name: Linux
             short: linux
@@ -136,6 +138,10 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           extensions: sockets
+
+      - if: matrix.language.name == 'Pascal'
+        name: Setup Pascal
+        uses: gcarreno/setup-lazarus@v2.2.8
 
       - name: Run tests
         run: ${{ matrix.env.executable }} --language=${{ matrix.language.name }} --verbose --repeat=1000 --save-results=results.json
