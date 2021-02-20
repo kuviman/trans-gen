@@ -8,22 +8,23 @@ Also see benchmarks done on GitHub Actions on [the testing branch](https://githu
 
 | Language | codecraft::FileReadWrite | codecraft::TcpReadWrite | example::FileReadWrite | example::TcpReadWrite |
 | - | --- | --- | --- | --- |
-| C# | 274 us | 53 ms | 69 us | 49 us |
-| C++ | 194 us | 3 ms | 12 us | 91 us |
-| D | 988 us | 4 ms | 68 us | 92 us |
-| F# | 301 us | 53 ms | 86 us | 66 us |
-| Go | 540 us | 3 ms | 158 us | 64 us |
-| Haskell | 544 us | 4 ms | 61 us | 191 us |
-| Java | 839 us | 3 ms | 348 us | 67 us |
-| JavaScript | 24 ms | 9 ms | 344 us | 195 us |
-| Kotlin | 839 us | 3 ms | 339 us | 120 us |
-| PHP | 3 ms | 5 ms | 44 us | 119 us |
-| Python | 3 ms | 7 ms | 86 us | 115 us |
-| Ruby | 8 ms | 7 ms | 113 us | 95 us |
-| Rust | 104 us | 3 ms | 9 us | 87 us |
-| Scala | 1 ms | 3 ms | 502 us | 165 us |
-| Swift | 1 ms | 4 ms | 28 us | 129 us |
-| TypeScript | 23 ms | 8 ms | 327 us | 197 us |
+| C# | 267 us | 52 ms | 77 us | 48 us |
+| C++ | 190 us | 3 ms | 14 us | 69 us |
+| D | 932 us | 3 ms | 72 us | 109 us |
+| F# | 292 us | 53 ms | 84 us | 85 us |
+| Go | 488 us | 3 ms | 123 us | 120 us |
+| Haskell | 472 us | 3 ms | 71 us | 352 us |
+| Java | 757 us | 3 ms | 300 us | 192 us |
+| JavaScript | 20 ms | 9 ms | 307 us | 198 us |
+| Kotlin | 621 us | 3 ms | 282 us | 94 us |
+| PHP | 2 ms | 5 ms | 40 us | 107 us |
+| Pascal | 970 us | 4 ms | 110 us | 84 us |
+| Python | 3 ms | 7 ms | 77 us | 132 us |
+| Ruby | 8 ms | 7 ms | 115 us | 91 us |
+| Rust | 111 us | 3 ms | 9 us | 95 us |
+| Scala | 811 us | 3 ms | 395 us | 153 us |
+| Swift | 991 us | 4 ms | 30 us | 106 us |
+| TypeScript | 20 ms | 8 ms | 305 us | 208 us |
 
 ## Windows Ryzen 3600
 
