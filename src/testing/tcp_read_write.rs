@@ -16,7 +16,7 @@ impl<D: Trans + PartialEq + Debug> Test for TcpReadWrite<D> {
             format!("{:?}", self.snapshot).len() < 1000 && verbose && self.repeat == 1;
         let port: u16 = 31001;
         let listener =
-            std::net::TcpListener::bind(("127.0.0.1", port)).context("Failed to bind tcp port")?;
+            std::net::TcpListener::bind(("localhost", port)).context("Failed to bind tcp port")?;
         listener.set_nonblocking(true)?;
         let mut child = run_code
             .arg("localhost")
