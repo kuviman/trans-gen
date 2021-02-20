@@ -19,7 +19,7 @@ impl<D: Trans + PartialEq + Debug> Test for TcpReadWrite<D> {
             std::net::TcpListener::bind(("127.0.0.1", port)).context("Failed to bind tcp port")?;
         listener.set_nonblocking(true)?;
         let mut child = run_code
-            .arg("127.0.0.1")
+            .arg("localhost")
             .arg(port.to_string())
             .arg(show_stdout.to_string())
             .show_stdout(show_stdout)
