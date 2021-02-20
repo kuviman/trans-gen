@@ -142,6 +142,8 @@ jobs:
       - if: matrix.language.name == 'Pascal'
         name: Setup Pascal
         uses: gcarreno/setup-lazarus@v2.2.8
+        with:
+          lazarus-version: "stable"
 
       - name: Run tests
         run: ${{ matrix.env.executable }} --language=${{ matrix.language.name }} --verbose --repeat=1000 --save-results=results.json
