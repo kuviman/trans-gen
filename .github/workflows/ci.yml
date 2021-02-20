@@ -113,6 +113,14 @@ jobs:
               short: windows
               runs-on: windows-latest
               executable: .\testing.exe
+          - language:
+              name: Pascal
+              short: pascal
+            env:
+              name: MacOS
+              short: macos
+              runs-on: macos-latest
+              executable: ./testing
     runs-on: ${{ matrix.env.runs-on }}
     steps:
       - name: Download artifacts
