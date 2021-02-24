@@ -1,5 +1,7 @@
 unit {{ definition.name.camel_case(conv) }};
 
+{$mode delphi}{$H+}
+
 interface
 
 {{ imports(schema) }}

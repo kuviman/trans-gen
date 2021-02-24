@@ -1,6 +1,8 @@
 
 Unit BufferedStream;
 
+{$mode delphi}{$H+}
+
 Interface
 
 Uses Stream, SysUtils;

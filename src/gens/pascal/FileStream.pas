@@ -1,6 +1,8 @@
 
 Unit FileStream;
 
+{$mode delphi}{$H+}
+
 Interface
 
 Uses Stream;

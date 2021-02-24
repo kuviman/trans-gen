@@ -6,6 +6,7 @@ fn conv(name: &str) -> String {
 }
 
 pub struct Generator {
+    project_name: Name,
     files: HashMap<String, String>,
 }
 
@@ -264,7 +265,7 @@ impl Generator {
 impl crate::Generator for Generator {
     const NAME: &'static str = "Pascal";
     type Options = ();
-    fn new(_name: &str, _version: &str, _: ()) -> Self {
+    fn new(name: &str, _version: &str, _: ()) -> Self {
         let mut files = HashMap::new();
         files.insert(
             "Stream.pas".to_owned(),
@@ -278,12 +279,25 @@ impl crate::Generator for Generator {
             "Nullable.pas".to_owned(),
             include_str!("Nullable.pas").to_owned(),
         );
-        Self { files }
+        Self {
+            project_name: Name::new(name.to_owned()),
+            files,
+        }
     }
     fn generate(mut self, extra_files: Vec<File>) -> GenResult {
         for file in extra_files {
             self.files.insert(file.path, file.content);
         }
+        let sources: Vec<_> = self
+            .files
+            .keys()
+            .filter(|path| path.ends_with(".pas") || path.ends_with(".dpr"))
+            .collect();
+        let project_name = self.project_name.camel_case(conv);
+        let project_name = &project_name;
+        let lpi = include_templing!("src/gens/pascal/Project.lpi.templing");
+        self.files
+            .insert(self.project_name.camel_case(conv) + ".lpi", lpi);
         self.files.into()
     }
     fn add_only(&mut self, schema: &Schema) {
@@ -304,15 +318,20 @@ impl RunnableGenerator for Generator {
             .to_str()
             .unwrap()
             .to_owned();
-        command("fpc")
-            .arg("-Mdelphi")
-            .arg("-O3")
-            .arg(format!(
-                "-o{}{}",
-                main,
-                if cfg!(windows) { ".exe" } else { "" }
-            ))
-            .arg(format!("{}.dpr", main))
+        // command("fpc")
+        //     .arg("-Mdelphi")
+        //     .arg("-O3")
+        //     .arg(format!(
+        //         "-o{}{}",
+        //         main,
+        //         if cfg!(windows) { ".exe" } else { "" }
+        //     ))
+        //     .arg(format!("{}.dpr", main))
+        //     .current_dir(path)
+        //     .show_output(verbose)
+        //     .run()
+        command("lazbuild")
+            .arg(format!("{}.lpi", main))
             .current_dir(path)
             .show_output(verbose)
             .run()

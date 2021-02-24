@@ -1,6 +1,8 @@
 
 Unit TcpStream;
 
+{$mode delphi}{$H+}
+
 Interface
 
 {$IFDEF WINDOWS}

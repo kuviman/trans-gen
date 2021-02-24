@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CONFIG>
+  <ProjectOptions>
+    <Version Value="11" />
+    <PathDelim Value="\" />
+    <General>
+      <Flags>
+        <MainUnitHasCreateFormStatements Value="False" />
+        <MainUnitHasTitleStatement Value="False" />
+        <MainUnitHasScaledStatement Value="False" />
+      </Flags>
+      <SessionStorage Value="InProjectDir" />
+      <MainUnit Value="0" />
+      <Title Value="{{ project_name }}" />
+      <UseAppBundle Value="False" />
+      <ResourceType Value="res" />
+    </General>
+    <BuildModes Count="1">
+      <Item1 Name="Default" Default="True" />
+    </BuildModes>
+    <PublishOptions>
+      <Version Value="2" />
+      <UseFileFilters Value="True" />
+    </PublishOptions>
+    <RunParams>
+      <FormatVersion Value="2" />
+      <Modes Count="0" />
+    </RunParams>
+    <Units Count="{{ sources.len() }}">
+      - for (index, source_file) in sources.iter().filter(|path| path.ends_with(".dpr")).enumerate() {
+      <Unit{{ index }}>
+        <Filename Value="{{ source_file }}" />
+        <IsPartOfProject Value="True" />
+      </Unit{{ index }}>
+      - }
+    </Units>
+  </ProjectOptions>
+  <CompilerOptions>
+    <Version Value="11" />
+    <PathDelim Value="\" />
+    <Target>
+      <Filename Value="{{ project_name }}" />
+    </Target>
+    <SearchPaths>
+      <IncludeFiles Value="$(ProjOutDir)" />
+      <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)" />
+    </SearchPaths>
+    <CodeGeneration>
+      <Optimizations>
+        <OptimizationLevel Value="3"/>
+      </Optimizations>
+    </CodeGeneration>
+  </CompilerOptions>
+  <Debugging>
+    <Exceptions Count="3">
+      <Item1>
+        <Name Value="EAbort" />
+      </Item1>
+      <Item2>
+        <Name Value="ECodetoolError" />
+      </Item2>
+      <Item3>
+        <Name Value="EFOpenError" />
+      </Item3>
+    </Exceptions>
+  </Debugging>
+</CONFIG>

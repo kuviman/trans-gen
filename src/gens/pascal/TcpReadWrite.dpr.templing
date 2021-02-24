@@ -1,5 +1,7 @@
 uses SysUtils, BufferedStream, TcpStream, {{ schema.name().unwrap().camel_case(conv) }} in '{{ file_name(schema) }}.pas';
 
+{$mode delphi}{$H+}
+
 var
     stream: TBufferedStream;
     input: {{ type_name(schema) }};
