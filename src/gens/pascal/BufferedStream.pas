@@ -19,6 +19,9 @@ Type
     Public 
       Constructor Create(inner: TStream);
 
+      Destructor Destroy;
+      override;
+
       Function ReadBytesAtMost(byteCount: Integer): TByteArray;
       override;
 
@@ -39,6 +42,13 @@ Begin
   writeBuffer := TByteArray.Create;
   SetLength(writeBuffer, 102400);
   writeBufferPos := 0;
+End;
+
+Destructor TBufferedStream.Destroy;
+Begin
+  Flush;
+  inner.Free;
+  inherited;
 End;
 
 Function TBufferedStream.ReadBytesAtMost(byteCount: Integer): TByteArray;
