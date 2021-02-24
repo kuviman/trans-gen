@@ -3,7 +3,15 @@ Unit TcpStream;
 
 Interface
 
+{$IFDEF WINDOWS}
+
+Uses Stream, Sockets, WinSock, SysUtils;
+
+{$ELSE}
+
 Uses Stream, Sockets, NetDB, SysUtils;
+
+{$ENDIF}
 
 Type 
   TByteArray = Array Of Byte;
@@ -31,10 +39,25 @@ Implementation
 constructor TTcpStream.Create(host: String; port: Word);
 
 Var 
+  {$IFDEF WINDOWS}
+  wsaData: TWSAData;
+  hostEnt: PHostEnt;
+  i: Integer;
+  {$ELSE}
   hostEntry: THostEntry;
+  {$ENDIF}
   addr: TInetSockAddr;
 Begin
   addr.sin_family := AF_INET;
+  {$IFDEF WINDOWS}
+  If WSAStartup($0101, wsaData) <> 0 Then
+    raise Exception.Create('Failed to initialize sockets');
+  hostEnt := GetHostByName(PChar(host));
+  If Not Assigned(hostEnt) Then
+    raise Exception.Create('Failed to get host by name');
+  For i := 0 To 3 Do
+    addr.sin_addr.s_bytes[i + 1] := Byte(hostEnt^.h_addr_list[0][i]);
+  {$ELSE}
   addr.sin_addr.s_addr := htonl(StrToHostAddr(host).s_addr);
   If addr.sin_addr.s_addr = 0 Then
     Begin
@@ -49,6 +72,7 @@ Begin
         End;
       addr.sin_addr := hostEntry.Addr;
     End;
+  {$ENDIF}
   sock := fpsocket(AF_INET, SOCK_STREAM, 0);
   If sock = -1 Then
     raise Exception.Create('Unable to create socket.');
