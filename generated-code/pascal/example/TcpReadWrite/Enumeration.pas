@@ -1,5 +1,7 @@
 unit Enumeration;
 
+{$mode delphi}{$H+}
+
 interface
 
 uses

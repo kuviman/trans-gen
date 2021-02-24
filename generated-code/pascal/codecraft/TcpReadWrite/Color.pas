@@ -1,5 +1,7 @@
 unit Color;
 
+{$mode delphi}{$H+}
+
 interface
 
 uses

@@ -1,5 +1,7 @@
 unit MessageGameModel;
 
+{$mode delphi}{$H+}
+
 interface
 
 uses

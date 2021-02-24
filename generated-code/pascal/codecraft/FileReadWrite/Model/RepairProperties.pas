@@ -1,5 +1,7 @@
 unit RepairProperties;
 
+{$mode delphi}{$H+}
+
 interface
 
 uses

@@ -1,5 +1,7 @@
 unit Action;
 
+{$mode delphi}{$H+}
+
 interface
 
 uses

@@ -1,5 +1,7 @@
 unit EntityProperties;
 
+{$mode delphi}{$H+}
+
 interface
 
 uses

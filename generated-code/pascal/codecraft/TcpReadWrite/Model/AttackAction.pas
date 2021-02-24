@@ -1,5 +1,7 @@
 unit AttackAction;
 
+{$mode delphi}{$H+}
+
 interface
 
 uses

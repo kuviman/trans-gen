@@ -1,5 +1,7 @@
 unit DebugCommand;
 
+{$mode delphi}{$H+}
+
 interface
 
 uses

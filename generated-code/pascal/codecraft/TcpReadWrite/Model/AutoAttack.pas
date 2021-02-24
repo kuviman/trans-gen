@@ -1,5 +1,7 @@
 unit AutoAttack;
 
+{$mode delphi}{$H+}
+
 interface
 
 uses

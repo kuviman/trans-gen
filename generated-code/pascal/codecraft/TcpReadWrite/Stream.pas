@@ -1,6 +1,8 @@
 
 Unit Stream;
 
+{$mode delphi}{$H+}
+
 Interface
 
 Type 

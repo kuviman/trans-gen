@@ -1,5 +1,7 @@
 uses SysUtils, BufferedStream, TcpStream, Example in 'Example.pas';
 
+{$mode delphi}{$H+}
+
 var
     stream: TBufferedStream;
     input: TExample;

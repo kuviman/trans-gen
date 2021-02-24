@@ -1,5 +1,7 @@
 unit PlayerView;
 
+{$mode delphi}{$H+}
+
 interface
 
 uses

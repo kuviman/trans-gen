@@ -1,5 +1,7 @@
 unit BuildProperties;
 
+{$mode delphi}{$H+}
+
 interface
 
 uses

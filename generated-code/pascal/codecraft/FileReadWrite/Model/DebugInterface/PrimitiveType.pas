@@ -1,5 +1,7 @@
 unit PrimitiveType;
 
+{$mode delphi}{$H+}
+
 interface
 
 uses

@@ -1,5 +1,7 @@
 unit AttackProperties;
 
+{$mode delphi}{$H+}
+
 interface
 
 uses

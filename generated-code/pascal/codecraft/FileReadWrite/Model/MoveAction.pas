@@ -1,5 +1,7 @@
 unit MoveAction;
 
+{$mode delphi}{$H+}
+
 interface
 
 uses

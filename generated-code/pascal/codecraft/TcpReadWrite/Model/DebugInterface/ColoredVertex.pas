@@ -1,5 +1,7 @@
 unit ColoredVertex;
 
+{$mode delphi}{$H+}
+
 interface
 
 uses

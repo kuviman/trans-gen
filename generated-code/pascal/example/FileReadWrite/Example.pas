@@ -1,5 +1,7 @@
 unit Example;
 
+{$mode delphi}{$H+}
+
 interface
 
 uses

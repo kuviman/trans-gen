@@ -1,5 +1,7 @@
 unit Player;
 
+{$mode delphi}{$H+}
+
 interface
 
 uses

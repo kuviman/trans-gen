@@ -1,5 +1,7 @@
 unit RepairAction;
 
+{$mode delphi}{$H+}
+
 interface
 
 uses

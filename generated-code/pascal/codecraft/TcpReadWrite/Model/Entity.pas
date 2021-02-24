@@ -1,5 +1,7 @@
 unit Entity;
 
+{$mode delphi}{$H+}
+
 interface
 
 uses

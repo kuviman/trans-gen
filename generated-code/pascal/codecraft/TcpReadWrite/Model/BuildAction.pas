@@ -1,5 +1,7 @@
 unit BuildAction;
 
+{$mode delphi}{$H+}
+
 interface
 
 uses

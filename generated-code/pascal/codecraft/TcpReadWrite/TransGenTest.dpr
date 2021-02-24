@@ -1,5 +1,7 @@
 uses SysUtils, BufferedStream, TcpStream, MessageGameModel in 'Codegame/MessageGameModel.pas';
 
+{$mode delphi}{$H+}
+
 var
     stream: TBufferedStream;
     input: TMessageGameModel;

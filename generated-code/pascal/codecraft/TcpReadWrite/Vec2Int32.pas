@@ -1,5 +1,7 @@
 unit Vec2Int32;
 
+{$mode delphi}{$H+}
+
 interface
 
 uses

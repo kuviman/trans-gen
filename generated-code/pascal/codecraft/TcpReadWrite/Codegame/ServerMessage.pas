@@ -1,5 +1,7 @@
 unit ServerMessage;
 
+{$mode delphi}{$H+}
+
 interface
 
 uses

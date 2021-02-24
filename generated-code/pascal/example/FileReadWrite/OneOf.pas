@@ -1,5 +1,7 @@
 unit OneOf;
 
+{$mode delphi}{$H+}
+
 interface
 
 uses

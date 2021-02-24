@@ -1,5 +1,7 @@
 unit EntityAction;
 
+{$mode delphi}{$H+}
+
 interface
 
 uses
