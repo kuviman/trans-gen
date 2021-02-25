@@ -23,7 +23,7 @@ Trans supports following data types:
 - `Map<K, V>` — a map (dictionary) with keys of type `K` and values of type `V`. Serialized as number of key-value pairs (as an `Int32`), followed by key-value pairs (key first, value second).
 - `Struct` — a structure containing multiple fields. Each field may be of its own type. Serialized as all the fields one after another without any extra data, so field order is important.
 - `Enum` — an enumeration, a type whose value is restricted to a set of variants. Serialized as index of the variant (as an `Int32`), starting with `0`.
-- `OneOf` — an algebraic (sum) data type, a type that can be one of the given set of other types. Each variant type is actually, like a `Struct`, just a set of fields. Serialized as index of the type variant (as an `Int32`), starting with `0`, followed by the actual value.
+- `OneOf` — an algebraic (sum) data type, a type that can be one of the given set of other types. Each variant type is actually, like a `Struct`, just a set of fields. Serialized as index of the type variant (as an `Int32`), starting with `0`, followed by the fields.
 
 ### Client vs Server
 
@@ -68,7 +68,7 @@ Supported languages (follow link for language implementation details):
 
 ## Example of generated code & benchmarks
 
-The `testing` example contains tests. You can see generated code for the example in the [`testing` branch of this repository](https://github.com/kuviman/trans-gen/tree/testing).
+The `testing` example contains tests. You can see generated code for the it in the [`testing` branch of this repository](https://github.com/kuviman/trans-gen/tree/testing).
 
 You can also see benchmarks for all the languages, platforms, tests and models that are run on GitHub Actions there. Alternatively, see [local benchmarks](local-benchmarks.md) (may be outdated).
 
