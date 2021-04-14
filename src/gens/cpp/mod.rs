@@ -319,7 +319,7 @@ impl RunnableGenerator for Generator {
                 }
             }
             anyhow::bail!("Failed to determine executable");
-        };
+        }
         let executable = executable(path)?;
         let mut command = command(
             exe_dir
