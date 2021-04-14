@@ -5,6 +5,13 @@ use quote::quote;
 
 use proc_macro2::TokenStream;
 
+mod diff;
+
+#[proc_macro_derive(Diff, attributes(diff))]
+pub fn derive_diff(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
+    diff::derive(input.into()).into()
+}
+
 fn field_schema_name(field: &syn::Field) -> syn::Ident {
     let mut name = field.ident.clone().unwrap();
     for attr in &field.attrs {
@@ -89,7 +96,7 @@ fn default_field_value(field: &syn::Field) -> Option<syn::Expr> {
                                 );
                             }
                         }
-                        _ => panic!("Unexpected meta"),
+                        _ => {}
                     }
                 }
             }
@@ -238,6 +245,7 @@ pub fn derive_trans(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
     let result: TokenStream = {
         let ast: syn::DeriveInput = syn::parse_str(&input.to_string()).unwrap();
         let input_type = &ast.ident;
+        let mut type_for_impl: syn::Path = input_type.clone().into();
         let generic_params: Vec<_> = ast
             .generics
             .type_params()
@@ -267,6 +275,8 @@ pub fn derive_trans(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
                                     base_name = lit.clone();
                                 } else if meta_path.is_ident("namespace") {
                                     namespace = Some(syn::parse_str(&lit.value()).unwrap());
+                                } else if meta_path.is_ident("for") {
+                                    type_for_impl = lit.parse().unwrap();
                                 }
                             }
                             syn::NestedMeta::Meta(syn::Meta::Path(ref meta_path)) => {
@@ -354,7 +364,7 @@ pub fn derive_trans(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
                         .map(|field| field_write(field, input_type, &ty_generics, None));
                     let documentation = get_documentation(&ast.attrs);
                     let expanded = quote! {
-                        impl #impl_generics trans::Trans for #input_type #ty_generics #where_clause {
+                        impl #impl_generics trans::Trans for #type_for_impl #ty_generics #where_clause {
                             fn create_schema(version: &trans::Version) -> trans::Schema {
                                 let name = #final_name;
                                 trans::Schema::Struct {
@@ -401,7 +411,7 @@ pub fn derive_trans(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
                         .extend(extra_where_clauses.predicates);
                     let (impl_generics, ty_generics, where_clause) = generics.split_for_impl();
                     let expanded = quote! {
-                        impl #impl_generics trans::Trans for #input_type #ty_generics #where_clause {
+                        impl #impl_generics trans::Trans for #type_for_impl #ty_generics #where_clause {
                             fn create_schema(version: &trans::Version) -> trans::Schema {
                                 <#inner_ty as trans::Trans>::create_schema(version)
                             }
@@ -502,7 +512,7 @@ pub fn derive_trans(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
                     });
                     let documentation = get_documentation(&ast.attrs);
                     let expanded = quote! {
-                        impl #impl_generics trans::Trans for #input_type #ty_generics #where_clause {
+                        impl #impl_generics trans::Trans for #type_for_impl #ty_generics #where_clause {
                             fn create_schema(version: &trans::Version) -> trans::Schema {
                                 let base_name = #final_name;
                                 trans::Schema::Enum {
@@ -556,7 +566,7 @@ pub fn derive_trans(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
                     });
                     let documentation = get_documentation(&ast.attrs);
                     let expanded = quote! {
-                        impl #impl_generics trans::Trans for #input_type #ty_generics #where_clause {
+                        impl #impl_generics trans::Trans for #type_for_impl #ty_generics #where_clause {
                             fn create_schema(version: &trans::Version) -> trans::Schema {
                                 let base_name = #final_name;
                                 trans::Schema::OneOf {

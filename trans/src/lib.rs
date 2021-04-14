@@ -12,11 +12,14 @@ pub mod prelude {
     pub use trans_derive::*;
 }
 
+mod batbox_impls;
+mod diff;
 pub mod error_format;
 mod impls;
 mod schema;
 pub mod test_utils;
 
+pub use diff::*;
 pub use schema::*;
 pub use test_utils::*;
 
