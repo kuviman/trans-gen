@@ -47,6 +47,7 @@ impl Documentation {
             .iter()
             .find(|doc| doc.language == language)
             .map(|doc| doc.text.as_str())
+            .or(Some("TODO - Document")) // TODO: fix
     }
 }
 

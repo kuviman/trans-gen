@@ -1,6 +1,6 @@
 use super::*;
 
-fn conv(name: &str) -> String {
+pub fn conv(name: &str) -> String {
     name.replace("Int32", "Int")
         .replace("Int64", "Long")
         .replace("Float32", "Float")
@@ -18,7 +18,7 @@ pub struct Generator {
     files: HashMap<String, String>,
 }
 
-fn type_name(schema: &Schema) -> String {
+pub fn type_name(schema: &Schema) -> String {
     match schema {
         Schema::Bool => "bool".to_owned(),
         Schema::Int32 | Schema::Int64 => "int".to_owned(),
@@ -121,7 +121,7 @@ fn struct_impl(definition: &Struct, base: Option<(&Name, usize)>) -> String {
     include_templing!("src/gens/python/struct_impl.templing")
 }
 
-fn file_name(schema: &Schema) -> String {
+pub fn file_name(schema: &Schema) -> String {
     schema
         .namespace()
         .unwrap()
