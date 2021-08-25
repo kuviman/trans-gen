@@ -3,9 +3,9 @@ use std::collections::HashMap;
 use trans::Trans;
 
 /// RGBA Color
-#[trans_doc = "ru:Цвет в формате RGBA"]
 #[repr(C)]
 #[derive(Debug, Copy, Clone, PartialEq, Serialize, Deserialize, Trans)]
+#[trans_doc = "ru:Цвет в формате RGBA"]
 #[trans(no_generics_in_name)]
 pub struct Color<T> {
     /// Red component
@@ -23,9 +23,9 @@ pub struct Color<T> {
 }
 
 /// 2 dimensional vector.
+#[derive(Debug, Copy, Clone, Hash, Eq, PartialEq, Serialize, Deserialize, Trans)]
 #[trans_doc = "ru:Двумерный вектор"]
 #[repr(C)]
-#[derive(Debug, Copy, Clone, Hash, Eq, PartialEq, Serialize, Deserialize, Trans)]
 pub struct Vec2<T> {
     /// `x` coordinate of the vector
     #[trans_doc = "ru:Координата `x` вектора"]
@@ -39,9 +39,9 @@ pub struct Vec2<T> {
 pub struct Id(usize);
 
 /// Game entity
+#[derive(PartialEq, Debug, Serialize, Deserialize, Trans, Clone)]
 #[trans_doc = "ru:Игровая сущность"]
 #[trans(namespace = "model")]
-#[derive(PartialEq, Debug, Serialize, Deserialize, Trans, Clone)]
 pub struct Entity {
     /// Entity's ID. Unique for each entity
     #[trans_doc = "ru:ID сущности. Уникально для каждой сущности"]
@@ -80,9 +80,9 @@ pub struct MoveAction {
 }
 
 /// Build action
+#[derive(PartialEq, Debug, Serialize, Deserialize, Trans, Clone)]
 #[trans_doc = "ru:Действие постройки"]
 #[trans(namespace = "model")]
-#[derive(PartialEq, Debug, Serialize, Deserialize, Trans, Clone)]
 pub struct BuildAction {
     /// Type of an entity to build
     #[trans_doc = "ru:Тип сущности для постройки"]
@@ -93,9 +93,9 @@ pub struct BuildAction {
 }
 
 /// Repair action
+#[derive(PartialEq, Debug, Serialize, Deserialize, Trans, Clone)]
 #[trans_doc = "ru:Действие починки"]
 #[trans(namespace = "model")]
-#[derive(PartialEq, Debug, Serialize, Deserialize, Trans, Clone)]
 pub struct RepairAction {
     /// Target entity's ID
     #[trans_doc = "ru:ID цели"]
@@ -103,9 +103,9 @@ pub struct RepairAction {
 }
 
 /// Auto attack options
+#[derive(PartialEq, Debug, Serialize, Deserialize, Trans, Clone)]
 #[trans_doc = "ru:Настройки автоматической атаки"]
 #[trans(namespace = "model")]
-#[derive(PartialEq, Debug, Serialize, Deserialize, Trans, Clone)]
 pub struct AutoAttack {
     /// Maximum distance to pathfind
     #[trans_doc = "ru:Максимальное расстояние для поиска пути"]
@@ -116,9 +116,9 @@ pub struct AutoAttack {
 }
 
 /// Attack action
+#[derive(PartialEq, Debug, Serialize, Deserialize, Trans, Clone)]
 #[trans_doc = "ru:Действие атаки"]
 #[trans(namespace = "model")]
-#[derive(PartialEq, Debug, Serialize, Deserialize, Trans, Clone)]
 pub struct AttackAction {
     /// If specified, target entity's ID
     #[trans_doc = "ru:ID цели, если применимо"]
@@ -129,9 +129,9 @@ pub struct AttackAction {
 }
 
 /// Entity's action
+#[derive(PartialEq, Debug, Serialize, Deserialize, Trans, Clone)]
 #[trans_doc = "ru:Действие сущности"]
 #[trans(namespace = "model")]
-#[derive(PartialEq, Debug, Serialize, Deserialize, Trans, Clone)]
 pub struct EntityAction {
     /// Move action
     #[trans_doc = "ru:Действие перемещения"]
@@ -148,9 +148,9 @@ pub struct EntityAction {
 }
 
 /// Entity's attack properties
+#[derive(PartialEq, Debug, Serialize, Deserialize, Trans, Clone)]
 #[trans_doc = "ru:Свойства атаки сущности"]
 #[trans(namespace = "model")]
-#[derive(PartialEq, Debug, Serialize, Deserialize, Trans, Clone)]
 pub struct AttackProperties {
     /// Maximum attack range
     #[trans_doc = "ru:Максимальное расстояние атаки"]
@@ -166,9 +166,9 @@ pub struct AttackProperties {
 }
 
 /// Entity's build properties
+#[derive(PartialEq, Debug, Serialize, Deserialize, Trans, Clone)]
 #[trans_doc = "ru:Свойства строительства сущности"]
 #[trans(namespace = "model")]
-#[derive(PartialEq, Debug, Serialize, Deserialize, Trans, Clone)]
 pub struct BuildProperties {
     /// Valid new entity types
     #[trans_doc = "ru:Возможные типы новой сущности"]
@@ -179,9 +179,9 @@ pub struct BuildProperties {
 }
 
 /// Entity's repair properties
+#[derive(PartialEq, Debug, Serialize, Deserialize, Trans, Clone)]
 #[trans_doc = "ru:Свойства ремонта сущности"]
 #[trans(namespace = "model")]
-#[derive(PartialEq, Debug, Serialize, Deserialize, Trans, Clone)]
 pub struct RepairProperties {
     /// Valid target entity types
     #[trans_doc = "ru:Типы сущностей, которые возможно ремонтировать"]
@@ -192,9 +192,9 @@ pub struct RepairProperties {
 }
 
 /// Entity properties
+#[derive(PartialEq, Debug, Serialize, Deserialize, Trans, Clone)]
 #[trans_doc = "ru:Свойства сущности"]
 #[trans(namespace = "model")]
-#[derive(PartialEq, Debug, Serialize, Deserialize, Trans, Clone)]
 pub struct EntityProperties {
     /// Size. Entity has a form of a square with side of this length
     #[trans_doc = "ru:Размер. Сущности имеют форму квадрата со стороной заданной длины"]
@@ -238,9 +238,9 @@ pub struct EntityProperties {
 }
 
 /// Entity type
+#[derive(PartialEq, Debug, Serialize, Deserialize, Trans, Eq, Hash, Copy, Clone)]
 #[trans_doc = "ru:Тип сущности"]
 #[trans(namespace = "model")]
-#[derive(PartialEq, Debug, Serialize, Deserialize, Trans, Eq, Hash, Copy, Clone)]
 pub enum EntityType {
     /// Wall, can be used to prevent enemy from moving through
     #[trans_doc = "ru:Стена, может использоваться для блокировки пути противнику"]
@@ -275,9 +275,9 @@ pub enum EntityType {
 }
 
 /// Player (strategy, client)
+#[derive(PartialEq, Debug, Serialize, Deserialize, Trans, Clone)]
 #[trans_doc = "ru:Игрок (стратегия, клиент)"]
 #[trans(namespace = "model")]
-#[derive(PartialEq, Debug, Serialize, Deserialize, Trans, Clone)]
 pub struct Player {
     /// Player's ID
     #[trans_doc = "ru:ID игрока"]
@@ -325,9 +325,9 @@ pub struct PlayerView {
 }
 
 /// Message sent from client
+#[derive(PartialEq, Debug, Serialize, Deserialize, Trans, Clone)]
 #[trans_doc = "ru:Сообщение отправляемое клиентом"]
 #[trans(namespace = "codegame")]
-#[derive(PartialEq, Debug, Serialize, Deserialize, Trans, Clone)]
 #[trans(no_generics_in_name)]
 pub enum ClientMessage<G: Game> {
     /// Ask app to perform new debug command
@@ -354,9 +354,9 @@ pub enum ClientMessage<G: Game> {
 }
 
 /// Message sent from server
+#[derive(PartialEq, Debug, Serialize, Deserialize, Trans, Clone)]
 #[trans_doc = "ru:Сообщение отправляемое сервером"]
 #[trans(namespace = "codegame")]
-#[derive(PartialEq, Debug, Serialize, Deserialize, Trans, Clone)]
 #[trans(no_generics_in_name)]
 pub enum ServerMessage<G: Game> {
     /// Get action for next tick
@@ -382,9 +382,9 @@ pub enum ServerMessage<G: Game> {
 }
 
 /// Debug commands that can be sent while debugging with the app
+#[derive(PartialEq, Debug, Serialize, Deserialize, Trans, Clone)]
 #[trans_doc = "ru:Команды, которые могут быть отправлены приложению для помощи в отладке"]
 #[trans(namespace = "codegame")]
-#[derive(PartialEq, Debug, Serialize, Deserialize, Trans, Clone)]
 #[trans(no_generics_in_name)]
 pub enum DebugCommand<G: Game> {
     /// Add debug data to current tick
@@ -479,9 +479,9 @@ pub enum DebugData {
 }
 
 /// Debug state to be received from the app
+#[derive(PartialEq, Debug, Serialize, Deserialize, Trans, Clone)]
 #[trans_doc = "ru:Состояние для отладки, получаемое из приложения"]
 #[trans(namespace = "model::debug_interface")]
-#[derive(PartialEq, Debug, Serialize, Deserialize, Trans, Clone)]
 pub struct DebugState {
     /// Size of the drawing canvas
     #[trans_doc = "ru:Размер окна для отрисовки"]
@@ -504,9 +504,9 @@ pub struct DebugState {
 }
 
 /// Camera used for rendering
+#[derive(PartialEq, Debug, Serialize, Deserialize, Trans, Clone)]
 #[trans_doc = "ru:Камера используемая для отрисовки"]
 #[trans(namespace = "model::debug_interface")]
-#[derive(PartialEq, Debug, Serialize, Deserialize, Trans, Clone)]
 pub struct Camera {
     /// Center point at which camera is looking
     #[trans_doc = "ru:Точка на которую смотрит камера"]
@@ -526,9 +526,9 @@ pub struct Camera {
 }
 
 /// Client or server message
+#[derive(PartialEq, Debug, Serialize, Deserialize, Trans, Clone)]
 #[trans_doc = "ru:Сообщение клиента или сервера"]
 #[trans(namespace = "codegame")]
-#[derive(PartialEq, Debug, Serialize, Deserialize, Trans, Clone)]
 pub enum Message<G: Game> {
     /// Client message
     #[trans_doc = "ru:Сообщение клиента"]
@@ -549,9 +549,9 @@ pub enum Message<G: Game> {
 }
 
 /// Player's action
+#[derive(PartialEq, Debug, Serialize, Deserialize, Trans, Clone)]
 #[trans_doc = "ru:Действие игрока"]
 #[trans(namespace = "model")]
-#[derive(PartialEq, Debug, Serialize, Deserialize, Trans, Clone)]
 pub struct Action {
     /// New actions for entities. If entity does not get new action, if will continue to perform previously set one
     #[trans_doc = "ru:Новые действия для сущностей. Если сущность не получила новое действие, она будет продолжать выполнять предыдущее"]
@@ -559,8 +559,8 @@ pub struct Action {
 }
 
 /// Game model
-#[trans_doc = "ru:Игровая модель"]
 #[derive(PartialEq, Debug, Serialize, Deserialize, Trans, Clone)]
+#[trans_doc = "ru:Игровая модель"]
 pub struct GameModel {}
 
 pub trait Game:
