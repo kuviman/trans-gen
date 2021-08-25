@@ -11,7 +11,7 @@ pub struct Generator {
     files: HashMap<String, String>,
 }
 
-fn type_name(schema: &Schema) -> String {
+pub fn type_name(schema: &Schema) -> String {
     match schema {
         Schema::Bool => "boolean".to_owned(),
         Schema::Int32 => "number".to_owned(),
@@ -109,7 +109,7 @@ fn struct_impl(definition: &Struct, base: Option<(&Name, usize)>) -> String {
     include_templing!("src/gens/typescript/struct_impl.templing")
 }
 
-fn file_name(schema: &Schema) -> String {
+pub fn file_name(schema: &Schema) -> String {
     let mut result = String::new();
     for part in schema
         .namespace()
@@ -274,6 +274,10 @@ impl<D: Trans + PartialEq + Debug> TestableGenerator<testing::FileReadWrite<D>> 
     }
 }
 
+pub fn tcp_stream_source() -> &'static str {
+    include_str!("tcp-stream.ts")
+}
+
 impl<D: Trans + PartialEq + Debug> TestableGenerator<testing::TcpReadWrite<D>> for Generator {
     fn extra_files(&self, test: &testing::TcpReadWrite<D>) -> Vec<File> {
         let schema = Schema::of::<D>(&test.version);
@@ -281,7 +285,7 @@ impl<D: Trans + PartialEq + Debug> TestableGenerator<testing::TcpReadWrite<D>> f
         vec![
             File {
                 path: "src/tcp-stream.ts".to_owned(),
-                content: include_str!("tcp-stream.ts").to_owned(),
+                content: tcp_stream_source().to_owned(),
             },
             File {
                 path: "src/main.ts".to_owned(),

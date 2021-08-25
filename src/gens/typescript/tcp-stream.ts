@@ -9,6 +9,7 @@ export class TcpStream extends Stream {
     private readBufferSize: number;
     private needAmount: number | null;
     private resolve: any;
+    private connection: Promise<undefined>;
     constructor(host: string, port: number) {
         super();
         const _this = this;
@@ -19,7 +20,7 @@ export class TcpStream extends Stream {
                 console.error('Socket error: ' + error.message);
                 process.exit(1);
             });
-        new Promise(function (resolve) {
+        this.connection = new Promise(function (resolve) {
             _this.socket.connect(port, host, () => resolve(undefined));
         });
         this.readBuffers = [];
@@ -75,6 +76,7 @@ export class TcpStream extends Stream {
     }
     async flush() {
         const _this = this;
+        await this.connection;
         return await new Promise<void>(function (resolve, reject) {
             _this.socket.write(Buffer.concat(_this.writeBuffers), 'utf8', function (error) {
                 if (error) {
