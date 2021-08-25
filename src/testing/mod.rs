@@ -41,6 +41,7 @@ impl TestResult {
 }
 
 pub trait Test {
+    fn name(&self) -> String;
     fn schemas(&self) -> Vec<Arc<Schema>>;
     fn run_test(&self, run_code: Command, verbose: bool) -> anyhow::Result<TestRunResult>;
 }
@@ -57,7 +58,7 @@ pub trait TestExt: Test {
 impl<T: Test> TestExt for T {
     fn generate<G: TestableGenerator<Self>>(&self, path: &Path) -> anyhow::Result<()> {
         generate::<G>(
-            "trans-gen-test",
+            &self.name(),
             env!("CARGO_PKG_VERSION"),
             Default::default(),
             &self.schemas(),
