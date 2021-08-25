@@ -23,6 +23,7 @@ type {{ struct_name }} = {
         - for field in &definition.fields {
         {{ write_var(&format!("this.{}", field.name.camel_case(conv)), &field.schema) }}
         - }
+        ()
 
     {{ doc_read_from(&definition.name.camel_case(conv)) }}
     - if definition.fields.is_empty() {
