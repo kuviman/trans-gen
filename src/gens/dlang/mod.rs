@@ -63,7 +63,7 @@ fn imports(schema: &Schema) -> String {
     include_templing!("src/gens/dlang/imports.templing")
 }
 
-fn type_name(schema: &Schema) -> String {
+pub fn type_name(schema: &Schema) -> String {
     match schema {
         Schema::Bool => "bool".to_owned(),
         Schema::Int32 => "int".to_owned(),
@@ -164,7 +164,7 @@ fn file_name(schema: &Schema) -> String {
     }
 }
 
-fn module_path(schema: &Schema) -> String {
+pub fn module_path(schema: &Schema) -> String {
     file_name(schema).replace('/', ".")
 }
 
@@ -326,6 +326,10 @@ impl<D: Trans + PartialEq + Debug> TestableGenerator<testing::FileReadWrite<D>> 
     }
 }
 
+pub fn socket_stream_source() -> &'static str {
+    include_str!("socket_stream.d")
+}
+
 impl<D: Trans + PartialEq + Debug> TestableGenerator<testing::TcpReadWrite<D>> for Generator {
     fn extra_files(&self, test: &testing::TcpReadWrite<D>) -> Vec<File> {
         let schema = Schema::of::<D>(&test.version);
@@ -333,7 +337,7 @@ impl<D: Trans + PartialEq + Debug> TestableGenerator<testing::TcpReadWrite<D>> f
         vec![
             File {
                 path: "source/socket_stream.d".to_owned(),
-                content: include_str!("socket_stream.d").to_owned(),
+                content: socket_stream_source().to_owned(),
             },
             File {
                 path: "source/app.d".to_owned(),

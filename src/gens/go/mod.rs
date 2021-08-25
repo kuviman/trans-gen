@@ -9,7 +9,13 @@ pub struct Generator {
     files: HashMap<String, String>,
 }
 
-fn type_name(schema: &Schema) -> String {
+impl Generator {
+    pub fn mod_name(&self) -> &str {
+        &self.mod_name
+    }
+}
+
+pub fn type_name(schema: &Schema) -> String {
     match schema {
         Schema::Bool => "bool".to_owned(),
         Schema::Int32 => "int32".to_owned(),
@@ -110,7 +116,7 @@ fn struct_impl(definition: &Struct, base: Option<(&Name, usize)>) -> String {
     include_templing!("src/gens/go/struct_impl.templing")
 }
 
-fn namespace_path(namespace: &Namespace) -> Option<String> {
+pub fn namespace_path(namespace: &Namespace) -> Option<String> {
     if namespace.parts.is_empty() {
         None
     } else {
@@ -125,7 +131,7 @@ fn namespace_path(namespace: &Namespace) -> Option<String> {
     }
 }
 
-fn namespace_path_for(schema: &Schema) -> String {
+pub fn namespace_path_for(schema: &Schema) -> String {
     match schema {
         Schema::Struct { namespace, .. }
         | Schema::OneOf { namespace, .. }

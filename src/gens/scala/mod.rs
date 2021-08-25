@@ -13,6 +13,12 @@ pub struct Generator {
     files: HashMap<String, String>,
 }
 
+impl Generator {
+    pub fn main_package(&self) -> &str {
+        &self.main_package
+    }
+}
+
 fn namespace_path(namespace: &Namespace) -> Option<String> {
     if namespace.parts.is_empty() {
         None
@@ -76,7 +82,7 @@ fn doc_to_string(name: &str) -> String {
 }
 
 impl Generator {
-    fn type_name(&self, schema: &Schema) -> String {
+    pub fn type_name(&self, schema: &Schema) -> String {
         match schema {
             Schema::Bool => "Boolean".to_owned(),
             Schema::Int32 => "Int".to_owned(),

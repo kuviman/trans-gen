@@ -1,6 +1,6 @@
 use super::*;
 
-fn conv(name: &str) -> String {
+pub fn conv(name: &str) -> String {
     name.replace("Int32", "Int")
         .replace("Int64", "Long")
         .replace("Float32", "Float")
@@ -87,7 +87,7 @@ fn struct_impl(definition: &Struct, base: Option<(&Name, usize)>) -> String {
     include_templing!("src/gens/javascript/struct_impl.templing")
 }
 
-fn file_name(schema: &Schema) -> String {
+pub fn file_name(schema: &Schema) -> String {
     let mut result = String::new();
     for part in schema
         .namespace()
@@ -202,6 +202,10 @@ impl<D: Trans + PartialEq + Debug> TestableGenerator<testing::FileReadWrite<D>> 
     }
 }
 
+pub fn tcp_stream_source() -> &'static str {
+    include_str!("tcp-stream.js")
+}
+
 impl<D: Trans + PartialEq + Debug> TestableGenerator<testing::TcpReadWrite<D>> for Generator {
     fn extra_files(&self, test: &testing::TcpReadWrite<D>) -> Vec<File> {
         let schema = Schema::of::<D>(&test.version);
@@ -209,7 +213,7 @@ impl<D: Trans + PartialEq + Debug> TestableGenerator<testing::TcpReadWrite<D>> f
         vec![
             File {
                 path: "tcp-stream.js".to_owned(),
-                content: include_str!("tcp-stream.js").to_owned(),
+                content: tcp_stream_source().to_owned(),
             },
             File {
                 path: "main.js".to_owned(),

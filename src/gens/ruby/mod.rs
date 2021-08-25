@@ -96,7 +96,7 @@ fn struct_impl(definition: &Struct, base: Option<(&Name, usize)>) -> String {
     include_templing!("src/gens/ruby/struct_impl.templing")
 }
 
-fn file_name(schema: &Schema) -> String {
+pub fn file_name(schema: &Schema) -> String {
     schema
         .namespace()
         .unwrap()
@@ -108,7 +108,7 @@ fn file_name(schema: &Schema) -> String {
         .join("/")
 }
 
-fn type_name(schema: &Schema) -> String {
+pub fn type_name(schema: &Schema) -> String {
     schema
         .namespace()
         .unwrap()
@@ -263,6 +263,10 @@ impl<D: Trans + PartialEq + Debug> TestableGenerator<testing::FileReadWrite<D>> 
     }
 }
 
+pub fn tcp_stream_source() -> &'static str {
+    include_str!("tcp_stream.rb")
+}
+
 impl<D: Trans + PartialEq + Debug> TestableGenerator<testing::TcpReadWrite<D>> for Generator {
     fn extra_files(&self, test: &testing::TcpReadWrite<D>) -> Vec<File> {
         let schema = Schema::of::<D>(&test.version);
@@ -270,7 +274,7 @@ impl<D: Trans + PartialEq + Debug> TestableGenerator<testing::TcpReadWrite<D>> f
         vec![
             File {
                 path: "tcp_stream.rb".to_owned(),
-                content: include_str!("tcp_stream.rb").to_owned(),
+                content: tcp_stream_source().to_owned(),
             },
             File {
                 path: "main.rb".to_owned(),

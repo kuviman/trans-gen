@@ -39,7 +39,7 @@ fn namespace_path(namespace: &Namespace) -> Option<String> {
     }
 }
 
-fn name_path(schema: &Schema) -> String {
+pub fn name_path(schema: &Schema) -> String {
     match schema {
         Schema::Enum {
             namespace,
@@ -63,12 +63,12 @@ fn name_path(schema: &Schema) -> String {
     }
 }
 
-fn file_name(schema: &Schema) -> String {
+pub fn file_name(schema: &Schema) -> String {
     name_path(schema).replace("::", "/")
 }
 
 impl Generator {
-    fn type_name(&self, schema: &Schema) -> String {
+    pub fn type_name(&self, schema: &Schema) -> String {
         match schema {
             Schema::Bool => "bool".to_owned(),
             Schema::Int32 => "int".to_owned(),
@@ -357,6 +357,14 @@ impl<D: Trans + PartialEq + Debug> TestableGenerator<testing::FileReadWrite<D>> 
     }
 }
 
+pub fn tcp_stream_hpp_source() -> &'static str {
+    include_str!("TcpStream.hpp")
+}
+
+pub fn tcp_stream_cpp_source() -> &'static str {
+    include_str!("TcpStream.cpp")
+}
+
 impl<D: Trans + PartialEq + Debug> TestableGenerator<testing::TcpReadWrite<D>> for Generator {
     fn extra_files(&self, test: &testing::TcpReadWrite<D>) -> Vec<File> {
         let schema = Schema::of::<D>(&test.version);
@@ -374,11 +382,11 @@ impl<D: Trans + PartialEq + Debug> TestableGenerator<testing::TcpReadWrite<D>> f
         vec![
             File {
                 path: "TcpStream.hpp".to_owned(),
-                content: include_str!("TcpStream.hpp").to_owned(),
+                content: tcp_stream_hpp_source().to_owned(),
             },
             File {
                 path: "TcpStream.cpp".to_owned(),
-                content: include_str!("TcpStream.cpp").to_owned(),
+                content: tcp_stream_cpp_source().to_owned(),
             },
             File {
                 path: "main.cpp".to_owned(),

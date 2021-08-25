@@ -7,7 +7,7 @@ fn conv(name: &str) -> String {
         .replace("Float64", "F64")
 }
 
-fn type_name(schema: &Schema) -> String {
+pub fn type_name(schema: &Schema) -> String {
     match schema {
         Schema::Bool => "bool".to_owned(),
         Schema::Int32 => "i32".to_owned(),
@@ -70,6 +70,12 @@ pub struct Generator {
 }
 
 impl Generator {
+    pub fn crate_name(&self) -> &str {
+        &self.crate_name
+    }
+    pub fn crate_code_name(&self) -> String {
+        Name::new(self.crate_name.clone()).snake_case(conv)
+    }
     fn insert_package(&mut self, schema: &Schema) {
         let namespace = schema.namespace().unwrap();
         let mut parent: Option<String> = None;

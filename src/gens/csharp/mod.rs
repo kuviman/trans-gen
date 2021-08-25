@@ -13,6 +13,12 @@ pub struct Generator {
     files: HashMap<String, String>,
 }
 
+impl Generator {
+    pub fn main_namespace(&self) -> &str {
+        &self.main_namespace
+    }
+}
+
 fn new_var(var: &str, suffix: &str) -> String {
     let var = match var.find('.') {
         Some(index) => &var[index + 1..],
@@ -64,7 +70,7 @@ fn nullable(schema: &Schema) -> bool {
     }
 }
 
-fn type_name(schema: &Schema) -> String {
+pub fn type_name(schema: &Schema) -> String {
     format!(
         "{}{}",
         type_name_prearray(schema),

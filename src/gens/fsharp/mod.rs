@@ -13,7 +13,13 @@ pub struct Generator {
     files: Vec<File>,
 }
 
-fn type_name(schema: &Schema) -> String {
+impl Generator {
+    pub fn main_namespace(&self) -> &str {
+        &self.main_namespace
+    }
+}
+
+pub fn type_name(schema: &Schema) -> String {
     format!("{}{}", type_name_prearray(schema), type_post_array(schema))
 }
 

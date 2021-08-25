@@ -13,6 +13,12 @@ pub struct Generator {
     files: HashMap<String, String>,
 }
 
+impl Generator {
+    pub fn main_package(&self) -> &str {
+        &self.main_package
+    }
+}
+
 fn getter_prefix(schema: &Schema) -> &'static str {
     match schema {
         Schema::Bool => "is",
@@ -91,7 +97,7 @@ fn file_name(schema: &Schema) -> String {
 }
 
 impl Generator {
-    fn type_name(&self, schema: &Schema) -> String {
+    pub fn type_name(&self, schema: &Schema) -> String {
         format!(
             "{}{}",
             self.type_name_prearray(schema),
