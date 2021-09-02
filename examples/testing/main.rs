@@ -5,27 +5,27 @@ use templing::*;
 use trans_gen::util::*;
 use trans_gen::TestExt as _;
 
-#[derive(structopt::StructOpt)]
+#[derive(clap::Clap)]
 struct Opt {
-    #[structopt(long = "model")]
+    #[clap(long = "model")]
     models: Vec<String>,
-    #[structopt(long = "language")]
+    #[clap(long = "language")]
     langs: Vec<String>,
-    #[structopt(long = "exclude-language")]
+    #[clap(long = "exclude-language")]
     exclude_langs: Vec<String>,
-    #[structopt(long = "test")]
+    #[clap(long = "test")]
     tests: Vec<String>,
-    #[structopt(long, default_value = "1")]
+    #[clap(long, default_value = "1")]
     repeat: usize,
-    #[structopt(long)]
+    #[clap(long)]
     generate: Option<PathBuf>,
-    #[structopt(long)]
+    #[clap(long)]
     verbose: bool,
-    #[structopt(long)]
+    #[clap(long)]
     save_results: Option<PathBuf>,
-    #[structopt(long)]
+    #[clap(long)]
     load_results: Vec<PathBuf>,
-    #[structopt(long)]
+    #[clap(long)]
     code_path: Option<PathBuf>,
 }
 
@@ -44,7 +44,7 @@ macro_rules! declare_mod {
 all_models!(declare_mod);
 
 fn main() -> anyhow::Result<()> {
-    let opt: Opt = structopt::StructOpt::from_args();
+    let opt: Opt = clap::Clap::parse();
     if let Some(path) = &opt.generate {
         if path.is_dir() {
             std::fs::remove_dir_all(path).context("Failed to clear target directory")?;
