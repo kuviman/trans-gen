@@ -64,9 +64,9 @@ pub struct Entity {
 }
 
 /// Move action
+#[derive(PartialEq, Debug, Serialize, Deserialize, Trans, Clone)]
 #[trans_doc = "ru:Действие перемещения"]
 #[trans(namespace = "model")]
-#[derive(PartialEq, Debug, Serialize, Deserialize, Trans, Clone)]
 pub struct MoveAction {
     /// Target position
     #[trans_doc = "ru:Целевая позиция"]

@@ -3,8 +3,8 @@ use std::collections::HashMap;
 use trans::Trans;
 
 /// Example enumeration
-#[trans_doc = "ru:Пример enum"]
 #[derive(PartialEq, Debug, Serialize, Deserialize, Trans, Eq, Hash, Copy, Clone)]
+#[trans_doc = "ru:Пример enum"]
 pub enum Enumeration {
     /// First option
     #[trans_doc = "ru:Первый вариант"]
@@ -18,8 +18,8 @@ pub enum Enumeration {
 pub struct NewTypeInt32(i32);
 
 /// Oneof example
-#[trans_doc = "ru:Пример one of"]
 #[derive(PartialEq, Debug, Serialize, Deserialize, Trans, Clone)]
+#[trans_doc = "ru:Пример one of"]
 pub enum OneOf {
     /// First option
     #[trans_doc = "ru:Первый вариант"]
@@ -41,8 +41,8 @@ pub enum OneOf {
 }
 
 /// Example structure
-#[trans_doc = "ru:Пример структуры"]
 #[derive(PartialEq, Debug, Serialize, Deserialize, Trans, Clone)]
+#[trans_doc = "ru:Пример структуры"]
 pub struct Structure {
     /// Text
     #[trans_doc = "ru:Текст"]
@@ -56,8 +56,8 @@ pub struct Structure {
 }
 
 /// Example
-#[trans_doc = "ru:Пример"]
 #[derive(PartialEq, Debug, Serialize, Deserialize, Trans, Clone)]
+#[trans_doc = "ru:Пример"]
 pub struct Example {
     /// OneOf
     #[trans_doc = "ru:OneOf"]
