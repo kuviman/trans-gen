@@ -4,79 +4,113 @@ type: docker
 name: CI
 
 steps:
-  - name: Rust tests and build testing binary
+  - name: prepare
     image: rust
     commands:
       - cargo test --release -p trans-derive -p trans -p trans-gen
       - cargo build --release --example testing
       - cp target/release/examples/testing ./
 
-  - name: Test C++
+  - name: C++
+    depends_on:
+      - prepare
     image: gcc
     commands:
       - apt-get update && apt-get install -y cmake
       - ./testing --language=C++ --verbose --repeat=1000 --save-results=results-cpp.json
-  - name: Test C#
+  - name: C#
+    depends_on:
+      - prepare
     image: mcr.microsoft.com/dotnet/sdk
     commands:
       - ./testing --language=C# --verbose --repeat=1000 --save-results=results-csharp.json
-  - name: Test F#
+  - name: F#
+    depends_on:
+      - prepare
     image: mcr.microsoft.com/dotnet/sdk
     commands:
       - ./testing --language=F# --verbose --repeat=1000 --save-results=results-fsharp.json
-  - name: Test D
+  - name: D
+    depends_on:
+      - prepare
     image: dlanguage/dmd
     commands:
       - ./testing --language=D --verbose --repeat=1000 --save-results=results-dlang.json
-  - name: Test Go
+  - name: Go
+    depends_on:
+      - prepare
     image: golang
     commands:
       - ./testing --language=Go --verbose --repeat=1000 --save-results=results-go.json
-  - name: Test Java
+  - name: Java
+    depends_on:
+      - prepare
     image: maven
     commands:
       - ./testing --language=Java --verbose --repeat=1000 --save-results=results-java.json
-  - name: Test Kotlin
+  - name: Kotlin
+    depends_on:
+      - prepare
     image: maven
     commands:
       - ./testing --language=Kotlin --verbose --repeat=1000 --save-results=results-kotlin.json
-  - name: Test Scala
+  - name: Scala
+    depends_on:
+      - prepare
     image: maven
     commands:
       - ./testing --language=Scala --verbose --repeat=1000 --save-results=results-scala.json
-  - name: Test JavaScript
+  - name: JavaScript
+    depends_on:
+      - prepare
     image: node
     commands:
       - ./testing --language=JavaScript --verbose --repeat=1000 --save-results=results-javascript.json
-  - name: Test TypeScript
+  - name: TypeScript
+    depends_on:
+      - prepare
     image: node
     commands:
       - ./testing --language=TypeScript --verbose --repeat=1000 --save-results=results-typescript.json
-  - name: Test Python
+  - name: Python
+    depends_on:
+      - prepare
     image: python
     commands:
       - ./testing --language=Python --verbose --repeat=1000 --save-results=results-python.json
-  - name: Test Ruby
+  - name: Ruby
+    depends_on:
+      - prepare
     image: ruby
     commands:
       - ./testing --language=Ruby --verbose --repeat=1000 --save-results=results-ruby.json
-  - name: Test Rust
+  - name: Rust
+    depends_on:
+      - prepare
     image: rust
     commands:
       - ./testing --language=Rust --verbose --repeat=1000 --save-results=results-rust.json
-  - name: Test PHP
+  - name: PHP
+    depends_on:
+      - prepare
     image: php
     commands:
       - ./testing --language=PHP --verbose --repeat=1000 --save-results=results-php.json
-  - name: Test Haskell
+  - name: Haskell
+    depends_on:
+      - prepare
     image: fpco/stack-build-small
     commands:
       - ./testing --language=Haskell --verbose --repeat=1000 --save-results=results-haskell.json
-  - name: Test Swift
+  - name: Swift
+    depends_on:
+      - prepare
     image: swift
     commands:
       - ./testing --language=Swift --verbose --repeat=1000 --save-results=results-swift.json
-  - name: Test Pascal
+  - name: Pascal
+    depends_on:
+      - prepare
     image: gabrielrcouto/docker-lazarus
     commands:
       - ./testing --language=Pascal --verbose --repeat=1000 --save-results=results-pascal.json
