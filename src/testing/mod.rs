@@ -47,20 +47,29 @@ pub trait Test {
 }
 
 pub trait TestExt: Test {
-    fn generate<G: TestableGenerator<Self>>(&self, path: &Path) -> anyhow::Result<()>;
+    fn generate<G: TestableGenerator<Self>>(
+        &self,
+        path: &Path,
+        options: G::Options,
+    ) -> anyhow::Result<()>;
     fn test<G: TestableGenerator<Self>>(
         &self,
         path: Option<&Path>,
+        options: G::Options,
         verbose: bool,
     ) -> anyhow::Result<TestResult>;
 }
 
 impl<T: Test> TestExt for T {
-    fn generate<G: TestableGenerator<Self>>(&self, path: &Path) -> anyhow::Result<()> {
+    fn generate<G: TestableGenerator<Self>>(
+        &self,
+        path: &Path,
+        options: G::Options,
+    ) -> anyhow::Result<()> {
         generate::<G>(
             &self.name(),
             env!("CARGO_PKG_VERSION"),
-            Default::default(),
+            options,
             &self.schemas(),
             &|generator| G::extra_files(generator, self),
         )
@@ -71,6 +80,7 @@ impl<T: Test> TestExt for T {
     fn test<G: TestableGenerator<Self>>(
         &self,
         path: Option<&Path>,
+        options: G::Options,
         verbose: bool,
     ) -> anyhow::Result<TestResult> {
         if !G::is_runnable() {
@@ -81,7 +91,7 @@ impl<T: Test> TestExt for T {
             Some(path) => path,
             None => {
                 let path = tempdir.as_ref();
-                self.generate::<G>(path)?;
+                self.generate::<G>(path, options)?;
                 path
             }
         };

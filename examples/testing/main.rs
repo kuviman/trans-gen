@@ -110,6 +110,7 @@ fn main() -> anyhow::Result<()> {
                                         if let Some(path) = generate {
                                             test.generate::<trans_gen::gens::$lang::Generator>(
                                                 &path,
+                                                Default::default(),
                                             )
                                             .context(format!(
                                                 "Failed to generate {}",
@@ -119,6 +120,7 @@ fn main() -> anyhow::Result<()> {
                                             println!("Testing {}::{}::{}", <trans_gen::gens::$lang::Generator as trans_gen::Generator>::NAME, stringify!($model), stringify!($test));
                                             let result = test.test::<trans_gen::gens::$lang::Generator>(
                                                 opt.code_path.as_ref().map(|path| path.as_ref()),
+                                                Default::default(),
                                                 opt.verbose,
                                             ).context("Test failed")?;
                                             let average_result = result.into_average(opt.repeat);
