@@ -95,6 +95,7 @@ steps:
       - prepare
     image: php
     commands:
+      - docker-php-ext-install sockets
       - ./testing --language=PHP --verbose --repeat=1000 --save-results=results-php.json
   - name: Haskell
     depends_on:
