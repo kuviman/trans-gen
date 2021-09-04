@@ -1,4 +1,4 @@
-namespace TransGenTest
+namespace {{ self.main_namespace() }}
 
 open System
 open System.IO

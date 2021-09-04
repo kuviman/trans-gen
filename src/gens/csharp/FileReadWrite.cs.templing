@@ -1,7 +1,7 @@
 using System;
 using System.IO;
 
-namespace TransGenTest
+namespace {{ self.main_namespace() }}
 {
     public class Runner
     {

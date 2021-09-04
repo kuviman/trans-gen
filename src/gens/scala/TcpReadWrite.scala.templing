@@ -1,6 +1,6 @@
 import java.io._
 import java.net.Socket
-import trans_gen_test.util.StreamUtil
+import {{ self.main_package() }}.util.StreamUtil
 
 object Runner extends App {
     val host = args(0)

@@ -372,7 +372,7 @@ impl<D: Trans + PartialEq + Debug> TestableGenerator<testing::FileReadWrite<D>> 
                 content: include_str!("FileStream.pas").to_owned(),
             },
             File {
-                path: "TransGenTest.dpr".to_owned(),
+                path: format!("{}.dpr", self.project_name.camel_case(conv)),
                 content: include_templing!("src/gens/pascal/FileReadWrite.dpr.templing"),
             },
         ]
@@ -389,7 +389,7 @@ impl<D: Trans + PartialEq + Debug> TestableGenerator<testing::TcpReadWrite<D>> f
                 content: include_str!("TcpStream.pas").to_owned(),
             },
             File {
-                path: "TransGenTest.dpr".to_owned(),
+                path: format!("{}.dpr", self.project_name.camel_case(conv)),
                 content: include_templing!("src/gens/pascal/TcpReadWrite.dpr.templing"),
             },
         ]

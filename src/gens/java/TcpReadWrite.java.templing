@@ -1,7 +1,7 @@
 import java.io.*;
 import java.net.Socket;
 
-import trans_gen_test.util.StreamUtil;
+import {{ self.main_package() }}.util.StreamUtil;
 
 public class Runner {
     public static void main(String[] args) throws IOException {

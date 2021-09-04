@@ -1,6 +1,6 @@
 use anyhow::Context;
 
-use trans_gen_test::*;
+use {{ self.crate_code_name() }}::*;
 
 fn main() -> anyhow::Result<()> {
     let mut args = std::env::args();

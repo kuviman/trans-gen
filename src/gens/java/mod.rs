@@ -286,7 +286,7 @@ impl<D: Trans + PartialEq + Debug> TestableGenerator<testing::FileReadWrite<D>> 
     fn extra_files(&self, test: &testing::FileReadWrite<D>) -> Vec<File> {
         let schema = Schema::of::<D>(&test.version);
         let schema: &Schema = &schema;
-        fn type_name(schema: &Schema) -> String {
+        let type_name = |schema: &Schema| -> String {
             match schema {
                 Schema::Struct {
                     namespace,
@@ -303,15 +303,16 @@ impl<D: Trans + PartialEq + Debug> TestableGenerator<testing::FileReadWrite<D>> 
                     base_name: name,
                     ..
                 } => format!(
-                    "trans_gen_test{}.{}",
+                    "{}{}.{}",
+                    self.main_package(),
                     namespace_path_suffix(namespace),
                     name.camel_case(conv),
                 ),
                 _ => unreachable!(),
             }
-        }
+        };
         vec![File {
-            path: "src/main/java/trans_gen_test/Runner.java".to_owned(),
+            path: format!("src/main/java/{}/Runner.java", self.main_package()),
             content: include_templing!("src/gens/java/FileReadWrite.java.templing"),
         }]
     }
@@ -321,7 +322,7 @@ impl<D: Trans + PartialEq + Debug> TestableGenerator<testing::TcpReadWrite<D>> f
     fn extra_files(&self, test: &testing::TcpReadWrite<D>) -> Vec<File> {
         let schema = Schema::of::<D>(&test.version);
         let schema: &Schema = &schema;
-        fn type_name(schema: &Schema) -> String {
+        let type_name = |schema: &Schema| -> String {
             match schema {
                 Schema::Struct {
                     namespace,
@@ -338,15 +339,16 @@ impl<D: Trans + PartialEq + Debug> TestableGenerator<testing::TcpReadWrite<D>> f
                     base_name: name,
                     ..
                 } => format!(
-                    "trans_gen_test{}.{}",
+                    "{}{}.{}",
+                    self.main_package(),
                     namespace_path_suffix(namespace),
                     name.camel_case(conv),
                 ),
                 _ => unreachable!(),
             }
-        }
+        };
         vec![File {
-            path: "src/main/java/trans_gen_test/Runner.java".to_owned(),
+            path: format!("src/main/java/{}/Runner.java", self.main_package()),
             content: include_templing!("src/gens/java/TcpReadWrite.java.templing"),
         }]
     }
