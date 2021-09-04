@@ -1,0 +1,78 @@
+---
+kind: pipeline
+type: docker
+name: CI
+
+steps:
+  - name: Rust tests and build testing binary
+    image: rust
+    commands:
+      - cargo test --release -p trans-derive -p trans -p trans-gen
+      - cargo build --release --example testing
+      - cp target/release/examples/testing ./
+
+  - name: Test C++
+    image: gcc
+    commands:
+      - apt-get update && apt-get install -y cmake
+      - ./testing --language=C++ --verbose --repeat=1000 --save-results=results-cpp.json
+  - name: Test C#
+    image: mcr.microsoft.com/dotnet/sdk
+    commands:
+      - ./testing --language=C# --verbose --repeat=1000 --save-results=results-csharp.json
+  - name: Test D
+    image: dlanguage/dmd
+    commands:
+      - ./testing --language=D --verbose --repeat=1000 --save-results=results-dlang.json
+  - name: Test Go
+    image: golang
+    commands:
+      - ./testing --language=Go --verbose --repeat=1000 --save-results=results-go.json
+  - name: Test Java
+    image: maven
+    commands:
+      - ./testing --language=Java --verbose --repeat=1000 --save-results=results-java.json
+  - name: Test Kotlin
+    image: maven
+    commands:
+      - ./testing --language=Kotlin --verbose --repeat=1000 --save-results=results-kotlin.json
+  - name: Test Scala
+    image: maven
+    commands:
+      - ./testing --language=Scala --verbose --repeat=1000 --save-results=results-scala.json
+  - name: Test JavaScript
+    image: node
+    commands:
+      - ./testing --language=JavaScript --verbose --repeat=1000 --save-results=results-javascript.json
+  - name: Test TypeScript
+    image: node
+    commands:
+      - ./testing --language=TypeScript --verbose --repeat=1000 --save-results=results-typescript.json
+  - name: Test Python
+    image: python
+    commands:
+      - ./testing --language=Python --verbose --repeat=1000 --save-results=results-python.json
+  - name: Test Ruby
+    image: ruby
+    commands:
+      - ./testing --language=Ruby --verbose --repeat=1000 --save-results=results-ruby.json
+  - name: Test Rust
+    image: rust
+    commands:
+      - ./testing --language=Rust --verbose --repeat=1000 --save-results=results-rust.json
+  - name: Test PHP
+    image: php
+    commands:
+      - ./testing --language=PHP --verbose --repeat=1000 --save-results=results-php.json
+  - name: Test Haskell
+    image: fpco/stack-build-small
+    commands:
+      - ./testing --language=Haskell --verbose --repeat=1000 --save-results=results-haskell.json
+  - name: Test Swift
+    image: swift
+    commands:
+      - ./testing --language=Swift --verbose --repeat=1000 --save-results=results-swift.json
+  - name: Test Pascal
+    image: gabrielrcouto/docker-lazarus
+    commands:
+      - ./testing --language=Pascal --verbose --repeat=1000 --save-results=results-pascal.json
