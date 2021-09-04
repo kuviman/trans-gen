@@ -70,6 +70,9 @@ pub struct Generator {
 }
 
 impl Generator {
+    pub fn options(&self) -> &Options {
+        &self.options
+    }
     fn push(&mut self, namespace: &Namespace, content: String) {
         self.namespaces
             .entry(namespace.clone())
