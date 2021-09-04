@@ -20,6 +20,10 @@ steps:
     image: mcr.microsoft.com/dotnet/sdk
     commands:
       - ./testing --language=C# --verbose --repeat=1000 --save-results=results-csharp.json
+  - name: Test F#
+    image: mcr.microsoft.com/dotnet/sdk
+    commands:
+      - ./testing --language=F# --verbose --repeat=1000 --save-results=results-fsharp.json
   - name: Test D
     image: dlanguage/dmd
     commands:
