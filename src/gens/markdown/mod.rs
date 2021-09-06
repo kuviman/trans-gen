@@ -40,6 +40,7 @@ fn type_name_relative(from: &Schema, schema: &Schema) -> String {
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct Options {
     pub language: String,
+    #[serde(default)]
     pub require_docs: bool,
 }
 
