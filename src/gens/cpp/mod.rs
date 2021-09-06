@@ -7,7 +7,7 @@ fn conv(name: &str) -> String {
         .replace("Float64", "Double")
 }
 
-#[derive(Debug)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct Options {
     pub cxx_standard: i32,
 }
