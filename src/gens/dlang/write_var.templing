@@ -10,7 +10,9 @@ if ({{ var }}.isNull()) {
     writer.write(false);
 } else {
     writer.write(true);
-    {{ write_var(&format!("{}.get", var), inner) }}
+    - let value_var = format!("{}Value", var); let value_var = &value_var;
+    auto {{ value_var }} = {{ var }}.get;
+    {{ write_var(value_var, inner) }}
 }
 - }
 - Schema::Vec(inner) => {
