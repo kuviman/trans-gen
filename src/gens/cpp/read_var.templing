@@ -28,10 +28,11 @@
 {{ var_decl }} = std::shared_ptr<{{ self.type_name(inner) }}>();
 - }
 if (stream.readBool()) {
-    - if self.options.cxx_standard >= 17 {
-    {{ self.read_var(var, inner, false) }}
-    - } else {
     - let value_var = format!("{}Value", var); let value_var = &value_var;
+    - if self.options.cxx_standard >= 17 {
+    {{ self.read_var(value_var, inner, true) }}
+    {{ var }}.emplace({{ value_var }});
+    - } else {
     {{ self.read_var(value_var, inner, true) }}
     {{ var }}.reset(new {{ self.type_name(inner) }}({{ value_var }}));
     - }
