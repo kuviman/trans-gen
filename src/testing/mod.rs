@@ -42,6 +42,7 @@ impl TestResult {
 
 pub trait Test {
     fn name(&self) -> String;
+    fn version(&self) -> Version;
     fn schemas(&self) -> Vec<Arc<Schema>>;
     fn run_test(&self, run_code: Command, verbose: bool) -> anyhow::Result<TestRunResult>;
 }
@@ -68,7 +69,7 @@ impl<T: Test> TestExt for T {
     ) -> anyhow::Result<()> {
         generate::<G>(
             &self.name(),
-            env!("CARGO_PKG_VERSION"),
+            &self.version().to_string(),
             options,
             &self.schemas(),
             &|generator| G::extra_files(generator, self),

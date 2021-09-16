@@ -10,6 +10,9 @@ impl<D: Trans + PartialEq + Debug> Test for TcpReadWrite<D> {
     fn name(&self) -> String {
         "tcp-read-write".to_owned()
     }
+    fn version(&self) -> Version {
+        env!("CARGO_PKG_VERSION").parse().unwrap()
+    }
     fn schemas(&self) -> Vec<Arc<Schema>> {
         vec![Schema::of::<D>(&self.version)]
     }
