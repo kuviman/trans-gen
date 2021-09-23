@@ -35,7 +35,7 @@
                     </descriptorRefs>
                     <archive>
                         <manifest>
-                            <mainClass>Runner</mainClass>
+                            <mainClass>{{ &main_package }}.Runner</mainClass>
                         </manifest>
                     </archive>
                 </configuration>

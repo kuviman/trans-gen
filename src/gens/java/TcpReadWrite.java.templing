@@ -1,3 +1,5 @@
+package {{ self.main_package() }};
+
 import java.io.*;
 import java.net.Socket;
 
