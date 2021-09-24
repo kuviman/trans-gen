@@ -1,50 +1,50 @@
 package main
 
 import (
-	"bufio"
-	. "{{ self.mod_name() }}/{{ namespace_path_for(schema) }}"
-	"os"
-	"fmt"
-	"net"
-	"strconv"
-	. "{{ self.mod_name() }}/stream"
+    "bufio"
+    . "{{ self.mod_name() }}/{{ namespace_path_for(schema) }}"
+    "os"
+    "fmt"
+    "net"
+    "strconv"
+    . "{{ self.mod_name() }}/stream"
 )
 
 func main() {
-	host := os.Args[1]
-	portInt, err := strconv.Atoi(os.Args[2])
-	if err != nil {
-		panic(err)
-	}
-	port := uint16(portInt)
-	stdout, err := strconv.ParseBool(os.Args[3])
-	if err != nil {
-		panic(err)
-	}
+    host := os.Args[1]
+    portInt, err := strconv.Atoi(os.Args[2])
+    if err != nil {
+        panic(err)
+    }
+    port := uint16(portInt)
+    stdout, err := strconv.ParseBool(os.Args[3])
+    if err != nil {
+        panic(err)
+    }
 
-	conn, err := net.Dial("tcp", host+":"+strconv.Itoa(int(port)))
-	if err != nil {
-		panic(err)
-	}
-	reader := bufio.NewReader(conn)
-	writer := bufio.NewWriter(conn)
+    conn, err := net.Dial("tcp", host+":"+strconv.Itoa(int(port)))
+    if err != nil {
+        panic(err)
+    }
+    reader := bufio.NewReader(conn)
+    writer := bufio.NewWriter(conn)
 
-	for ReadBool(reader) {
-		input := Read{{ type_name(schema) }}(reader)
+    for ReadBool(reader) {
+        input := Read{{ type_name(schema) }}(reader)
 
-		if stdout {
-			fmt.Println(input)
-		}
+        if stdout {
+            fmt.Println(input)
+        }
 
-		input.Write(writer)
-		err = writer.Flush()
-		if err != nil {
-			panic(err)
-		}
-	}
+        input.Write(writer)
+        err = writer.Flush()
+        if err != nil {
+            panic(err)
+        }
+    }
 
-	err = conn.Close()
-	if err != nil {
-		panic(err)
-	}
+    err = conn.Close()
+    if err != nil {
+        panic(err)
+    }
 }

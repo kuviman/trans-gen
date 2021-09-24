@@ -16,7 +16,7 @@ private func fromByteArray<T>(_ value: [Byte]) -> T {
 }
 
 protocol InputStream {
-	func readBytesAtMost(_ byteCount: Int) -> [Byte]
+    func readBytesAtMost(_ byteCount: Int) -> [Byte]
 }
 
 extension InputStream {
@@ -37,18 +37,18 @@ extension InputStream {
                 fatalError("Bool should be 0 or 1")
         }
     }
-	func readInt32() -> Int32 {
-		return Int32(littleEndian: fromByteArray(readBytes(MemoryLayout<Int32>.size)))
-	}
-	func readInt64() -> Int64 {
-		return Int64(littleEndian: fromByteArray(readBytes(MemoryLayout<Int64>.size)))
-	}
-	func readFloat() -> Float {
-		return fromByteArray(toByteArray(readInt32())) as Float
-	}
-	func readDouble() -> Double {
-		return fromByteArray(toByteArray(readInt64())) as Double
-	}
+    func readInt32() -> Int32 {
+        return Int32(littleEndian: fromByteArray(readBytes(MemoryLayout<Int32>.size)))
+    }
+    func readInt64() -> Int64 {
+        return Int64(littleEndian: fromByteArray(readBytes(MemoryLayout<Int64>.size)))
+    }
+    func readFloat() -> Float {
+        return fromByteArray(toByteArray(readInt32())) as Float
+    }
+    func readDouble() -> Double {
+        return fromByteArray(toByteArray(readInt64())) as Double
+    }
     func readString() -> String {
         let size = Int(readInt32())
         return String(bytes: readBytes(size).map{ UInt8(bitPattern: $0) }, encoding: String.Encoding.utf8)!
@@ -56,8 +56,8 @@ extension InputStream {
 }
 
 protocol OutputStream {
-	func writeBytes(_ data: [Byte])
-	func flush()
+    func writeBytes(_ data: [Byte])
+    func flush()
 }
 
 extension OutputStream {

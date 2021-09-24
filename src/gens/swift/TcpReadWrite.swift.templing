@@ -7,10 +7,10 @@ let inputStream = BufferedInputStream(tcpStream)
 let outputStream = BufferedOutputStream(tcpStream)
 
 while inputStream.readBool() {
-	let input = {{ type_name(schema) }}.readFrom(inputStream)
-	if stdout {
-		print(input)
-	}
-	input.writeTo(outputStream)
-	outputStream.flush()
+    let input = {{ type_name(schema) }}.readFrom(inputStream)
+    if stdout {
+        print(input)
+    }
+    input.writeTo(outputStream)
+    outputStream.flush()
 }

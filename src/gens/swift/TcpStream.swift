@@ -1,7 +1,7 @@
 #if os(Linux)
-	import Glibc
+    import Glibc
 #else
-	import Darwin
+    import Darwin
 #endif
 
 class TcpStream : InputStream, OutputStream {
@@ -41,16 +41,16 @@ class TcpStream : InputStream, OutputStream {
         }
     }
 
-	func readBytesAtMost(_ byteCount: Int) -> [Byte] {
-		var buffer = [Byte](repeating: 0x0, count: byteCount)
+    func readBytesAtMost(_ byteCount: Int) -> [Byte] {
+        var buffer = [Byte](repeating: 0x0, count: byteCount)
         let received = buffer.withUnsafeMutableBytes { recv(sock, $0.baseAddress, byteCount, 0) }
         if received < 0 {
             fatalError("Failed to read from socket")
         }
-		return Array(buffer[..<received])
+        return Array(buffer[..<received])
     }
 
-	func writeBytes(_ data: [Byte]) {
+    func writeBytes(_ data: [Byte]) {
         if send(sock, data, data.count, 0) < 0 {
             fatalError("Failed to write to socket")
         }

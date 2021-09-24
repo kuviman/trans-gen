@@ -7,7 +7,7 @@ class BufferedInputStream : InputStream {
         bufferPos = 0
     }
 
-	func readBytesAtMost(_ byteCount: Int) -> [Byte] {
+    func readBytesAtMost(_ byteCount: Int) -> [Byte] {
         if bufferPos == buffer.count {
             buffer = inner.readBytesAtMost(BUFFER_SIZE);
             bufferPos = 0;
@@ -28,7 +28,7 @@ class BufferedOutputStream : OutputStream {
         buffer = []
     }
 
-	func writeBytes(_ data: [Byte]) {
+    func writeBytes(_ data: [Byte]) {
         self.buffer.append(contentsOf: data)
     }
 

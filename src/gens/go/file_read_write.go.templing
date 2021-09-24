@@ -1,43 +1,43 @@
 package main
 
 import (
-	"bufio"
-	. "{{ self.mod_name() }}/{{ namespace_path_for(schema) }}"
-	"os"
-	"fmt"
-	"strconv"
+    "bufio"
+    . "{{ self.mod_name() }}/{{ namespace_path_for(schema) }}"
+    "os"
+    "fmt"
+    "strconv"
 )
 
 func main() {
-	inputFilePath := os.Args[1]
-	outputFilePath := os.Args[2]
-	repeat, err := strconv.Atoi(os.Args[3])
-	if err != nil {
-		panic(err)
-	}
+    inputFilePath := os.Args[1]
+    outputFilePath := os.Args[2]
+    repeat, err := strconv.Atoi(os.Args[3])
+    if err != nil {
+        panic(err)
+    }
 
-	for i := 0; i < repeat; i++ {
-		inputFile, err := os.Open(inputFilePath)
-		if err != nil {
-			panic(err)
-		}
-		reader := bufio.NewReader(inputFile)
-		input := Read{{ type_name(schema) }}(reader)
+    for i := 0; i < repeat; i++ {
+        inputFile, err := os.Open(inputFilePath)
+        if err != nil {
+            panic(err)
+        }
+        reader := bufio.NewReader(inputFile)
+        input := Read{{ type_name(schema) }}(reader)
 
-		if repeat == 1 {
-			fmt.Println(input)
-		}
+        if repeat == 1 {
+            fmt.Println(input)
+        }
 
-		outputFile, err := os.Create(outputFilePath)
-		if err != nil {
-			panic(err)
-		}
-		writer := bufio.NewWriter(outputFile)
+        outputFile, err := os.Create(outputFilePath)
+        if err != nil {
+            panic(err)
+        }
+        writer := bufio.NewWriter(outputFile)
 
-		input.Write(bufio.NewWriter(writer))
-		err = writer.Flush()
-		if err != nil {
-			panic(err)
-		}
-	}
+        input.Write(bufio.NewWriter(writer))
+        err = writer.Flush()
+        if err != nil {
+            panic(err)
+        }
+    }
 }
