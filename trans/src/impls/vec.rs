@@ -12,6 +12,24 @@ impl<T: Trans> Trans for Vec<T> {
         }
         Ok(result)
     }
+    fn read_from_limited(
+        reader: &mut dyn std::io::Read,
+        limit: usize,
+        version: &Version,
+    ) -> std::io::Result<Self> {
+        let len = usize::read_from(reader, version)?;
+        if len > limit {
+            return Err(std::io::Error::new(
+                std::io::ErrorKind::Other,
+                format!("Length limit of {} exceeded, got {}", limit, len),
+            ));
+        }
+        let mut result = Vec::new();
+        for _ in 0..len {
+            result.push(T::read_from(reader, version)?);
+        }
+        Ok(result)
+    }
     fn write_to(&self, writer: &mut dyn std::io::Write, version: &Version) -> std::io::Result<()> {
         self.len().write_to(writer, version)?;
         for item in self {

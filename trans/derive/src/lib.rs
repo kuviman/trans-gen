@@ -42,6 +42,36 @@ fn field_schema_name(field: &syn::Field) -> syn::Ident {
     name
 }
 
+fn field_limit(field: &syn::Field) -> Option<usize> {
+    let mut limit = None;
+    for attr in &field.attrs {
+        if let Ok(syn::Meta::List(syn::MetaList {
+            path: ref meta_path,
+            ref nested,
+            ..
+        })) = attr.parse_meta()
+        {
+            if meta_path.is_ident("trans") {
+                for inner in nested {
+                    match *inner {
+                        syn::NestedMeta::Meta(syn::Meta::NameValue(syn::MetaNameValue {
+                            path: ref meta_path,
+                            lit: syn::Lit::Str(ref lit),
+                            ..
+                        })) => {
+                            if meta_path.is_ident("limit") {
+                                limit = Some(lit.value().parse().expect("Failed to parse limit"));
+                            }
+                        }
+                        _ => panic!("Unexpected meta"),
+                    }
+                }
+            }
+        }
+    }
+    limit
+}
+
 fn version_req(attrs: &[syn::Attribute]) -> Option<syn::LitStr> {
     let mut version_req = None;
     for attr in attrs {
@@ -220,8 +250,16 @@ fn field_read(
             trans::error_format::read_field::<#input_type #ty_generics>(stringify!(#field_name))
         },
     };
+    let field_read = match field_limit(field) {
+        Some(limit) => quote! {
+            trans::Trans::read_from_limited(reader, #limit, version)
+        },
+        None => quote! {
+            trans::Trans::read_from(reader, version)
+        },
+    };
     let mut field_read = quote! {
-        trans::add_error_context(trans::Trans::read_from(reader, version), #error_context)?
+        trans::add_error_context(#field_read, #error_context)?
     };
     if let Some(version_req) = version_req(&field.attrs) {
         let field_default = default_field_value(field)

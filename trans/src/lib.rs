@@ -46,6 +46,13 @@ pub trait Trans: Sized + 'static {
     fn create_schema(version: &Version) -> Schema;
     fn write_to(&self, writer: &mut dyn std::io::Write, version: &Version) -> std::io::Result<()>;
     fn read_from(reader: &mut dyn std::io::Read, version: &Version) -> std::io::Result<Self>;
+    fn read_from_limited(
+        _reader: &mut dyn std::io::Read,
+        _limit: usize,
+        _version: &Version,
+    ) -> std::io::Result<Self> {
+        panic!("This type does not support limits when reading")
+    }
 }
 
 pub fn deserialize_only_from<T: Trans>(
