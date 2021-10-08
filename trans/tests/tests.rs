@@ -207,3 +207,9 @@ fn test_namespace() {
         matches!(Schema::of::<TestFooBar>(&version()).as_ref(), Schema::Enum { namespace, .. } if namespace.parts == vec![Name::new("foo".to_owned()), Name::new("bar".to_owned())] )
     );
 }
+
+#[test]
+fn test_newtype() {
+    #[derive(Trans)]
+    struct Foo(pub i32);
+}

@@ -281,7 +281,8 @@ fn field_read(
 pub fn derive_trans(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
     let input: TokenStream = input.into();
     let result: TokenStream = {
-        let ast: syn::DeriveInput = syn::parse_str(&input.to_string()).unwrap();
+        let ast: syn::DeriveInput =
+            syn::parse_str(&input.to_string()).expect("Failed to parse derive input");
         let input_type = &ast.ident;
         let mut type_for_impl: syn::Path = input_type.clone().into();
         let generic_params: Vec<_> = ast
@@ -436,7 +437,7 @@ pub fn derive_trans(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
                     if fields.iter().len() != 1 {
                         panic!("Tuple structs other than newtype not supported");
                     }
-                    let inner_ty = fields.iter().next().unwrap();
+                    let inner_ty = &fields.iter().next().unwrap().ty;
                     let mut generics = ast.generics.clone();
                     let extra_where_clauses = quote! {
                         where #inner_ty: trans::Trans + 'static
