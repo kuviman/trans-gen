@@ -5,7 +5,7 @@ use templing::*;
 use trans_gen::util::*;
 use trans_gen::TestExt as _;
 
-#[derive(clap::Clap)]
+#[derive(clap::Parser)]
 struct Opt {
     #[clap(long = "model")]
     models: Vec<String>,
@@ -44,7 +44,7 @@ macro_rules! declare_mod {
 all_models!(declare_mod);
 
 fn main() -> anyhow::Result<()> {
-    let opt: Opt = clap::Clap::parse();
+    let opt: Opt = clap::Parser::parse();
     if let Some(path) = &opt.generate {
         if path.is_dir() {
             std::fs::remove_dir_all(path).context("Failed to clear target directory")?;
