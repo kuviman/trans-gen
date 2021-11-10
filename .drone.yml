@@ -21,13 +21,13 @@ steps:
   - name: C#
     depends_on:
       - prepare
-    image: mcr.microsoft.com/dotnet/sdk
+    image: mcr.microsoft.com/dotnet/sdk:5.0
     commands:
       - ./testing --language=C# --verbose --repeat=1000 --save-results=results-csharp.json
   - name: F#
     depends_on:
       - prepare
-    image: mcr.microsoft.com/dotnet/sdk
+    image: mcr.microsoft.com/dotnet/sdk:5.0
     commands:
       - ./testing --language=F# --verbose --repeat=1000 --save-results=results-fsharp.json
   - name: D
