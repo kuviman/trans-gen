@@ -119,7 +119,8 @@ impl crate::Generator for Generator {
                     )
                 })
                 .collect::<Vec<String>>()
-                .join("\n\n"),
+                .join("\n\n")
+                + "\n",
         }];
         for file in extra_files {
             files.push(file);
