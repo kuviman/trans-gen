@@ -2,12 +2,23 @@
 
 {{ self.options.get_doc(documentation, &format!("{:?} not documented in {:?}", name, language)) }}
 
+- if fields.is_empty() {
+- match language.as_str() {
+- "ru" => {
+Нет полей
+- }
+- "en" | _ => {
+No fields
+- }
+- }
+- } else {
 - match language.as_str() {
 - "ru" => {
 Поля:
 - }
 - "en" | _ => {
 Fields:
+- }
 - }
 - }
 
