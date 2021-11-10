@@ -16,5 +16,5 @@ anyhow = "1"
 thiserror = "1"
 tynm = "0.1"
 semver = "0.11"
-batbox = "0.8.0"
+batbox = { git = "https://github.com/kuviman/geng" }
 serde = "1"
