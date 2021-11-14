@@ -333,7 +333,7 @@ pub fn derive_trans(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
             let mut name = #base_name.to_owned();
             if #generics_in_name {
                 #(
-                    name += &trans::Schema::of::<#generic_params>(version).full_name().raw();
+                    name += &trans::Schema::of::<#generic_params>(version).full_name().camel_case(|s| s.to_owned());
                 )*
             }
             name

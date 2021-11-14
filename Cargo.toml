@@ -3,11 +3,13 @@ name = "trans-gen"
 version = "0.5.0-alpha.1"
 edition = "2021"
 
-[dev-dependencies]
-clap = "3.0.0-beta"
+[[bin]]
+name = "testing"
+path = "testing/main.rs"
 
 [dependencies]
 trans = { path = "trans", version = "0.5.0-alpha" }
+clap = "3.0.0-beta"
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 toml = "0.5"

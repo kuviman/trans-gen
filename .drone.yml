@@ -8,8 +8,8 @@ steps:
     image: rust
     commands:
       - cargo test --release -p trans-derive -p trans -p trans-gen
-      - cargo build --release --example testing
-      - cp target/release/examples/testing ./
+      - cargo build --release --bin testing
+      - cp target/release/testing ./
 
   - name: C++
     depends_on:
