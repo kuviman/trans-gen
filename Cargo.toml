@@ -4,8 +4,8 @@ version = "0.5.0-alpha.1"
 edition = "2021"
 
 [[bin]]
-name = "testing"
-path = "testing/main.rs"
+name = "test-runner"
+path = "test-runner/main.rs"
 
 [dependencies]
 trans = { path = "trans", version = "0.5.0-alpha" }

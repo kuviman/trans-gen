@@ -8,8 +8,7 @@ steps:
     image: rust
     commands:
       - cargo test --release -p trans-derive -p trans -p trans-gen
-      - cargo build --release --bin testing
-      - cp target/release/testing ./
+      - cargo build --release --bin test-runner
 
   - name: C++
     depends_on:
@@ -17,101 +16,101 @@ steps:
     image: gcc
     commands:
       - apt-get update && apt-get install -y cmake
-      - ./testing --language=C++ --verbose --repeat=1000 --save-results=results-cpp.json
+      - ./target/release/test-runner --language=C++ --verbose --repeat=1000 --save-results=results-cpp.json
   - name: C#
     depends_on:
       - prepare
     image: mcr.microsoft.com/dotnet/sdk:5.0
     commands:
-      - ./testing --language=C# --verbose --repeat=1000 --save-results=results-csharp.json
+      - ./target/release/test-runner --language=C# --verbose --repeat=1000 --save-results=results-csharp.json
   - name: F#
     depends_on:
       - prepare
     image: mcr.microsoft.com/dotnet/sdk:5.0
     commands:
-      - ./testing --language=F# --verbose --repeat=1000 --save-results=results-fsharp.json
+      - ./target/release/test-runner --language=F# --verbose --repeat=1000 --save-results=results-fsharp.json
   - name: D
     depends_on:
       - prepare
     image: dlanguage/dmd
     commands:
-      - ./testing --language=D --verbose --repeat=1000 --save-results=results-dlang.json
+      - ./target/release/test-runner --language=D --verbose --repeat=1000 --save-results=results-dlang.json
   - name: Go
     depends_on:
       - prepare
     image: golang
     commands:
-      - ./testing --language=Go --verbose --repeat=1000 --save-results=results-go.json
+      - ./target/release/test-runner --language=Go --verbose --repeat=1000 --save-results=results-go.json
   - name: Java
     depends_on:
       - prepare
     image: maven
     commands:
-      - ./testing --language=Java --verbose --repeat=1000 --save-results=results-java.json
+      - ./target/release/test-runner --language=Java --verbose --repeat=1000 --save-results=results-java.json
   - name: Kotlin
     depends_on:
       - prepare
     image: maven
     commands:
-      - ./testing --language=Kotlin --verbose --repeat=1000 --save-results=results-kotlin.json
+      - ./target/release/test-runner --language=Kotlin --verbose --repeat=1000 --save-results=results-kotlin.json
   - name: Scala
     depends_on:
       - prepare
     image: maven
     commands:
-      - ./testing --language=Scala --verbose --repeat=1000 --save-results=results-scala.json
+      - ./target/release/test-runner --language=Scala --verbose --repeat=1000 --save-results=results-scala.json
   - name: JavaScript
     depends_on:
       - prepare
     image: node
     commands:
-      - ./testing --language=JavaScript --verbose --repeat=1000 --save-results=results-javascript.json
+      - ./target/release/test-runner --language=JavaScript --verbose --repeat=1000 --save-results=results-javascript.json
   - name: TypeScript
     depends_on:
       - prepare
     image: node
     commands:
-      - ./testing --language=TypeScript --verbose --repeat=1000 --save-results=results-typescript.json
+      - ./target/release/test-runner --language=TypeScript --verbose --repeat=1000 --save-results=results-typescript.json
   - name: Python
     depends_on:
       - prepare
     image: python
     commands:
-      - ./testing --language=Python --verbose --repeat=1000 --save-results=results-python.json
+      - ./target/release/test-runner --language=Python --verbose --repeat=1000 --save-results=results-python.json
   - name: Ruby
     depends_on:
       - prepare
     image: ruby
     commands:
-      - ./testing --language=Ruby --verbose --repeat=1000 --save-results=results-ruby.json
+      - ./target/release/test-runner --language=Ruby --verbose --repeat=1000 --save-results=results-ruby.json
   - name: Rust
     depends_on:
       - prepare
     image: rust
     commands:
-      - ./testing --language=Rust --verbose --repeat=1000 --save-results=results-rust.json
+      - ./target/release/test-runner --language=Rust --verbose --repeat=1000 --save-results=results-rust.json
   - name: PHP
     depends_on:
       - prepare
     image: php
     commands:
       - docker-php-ext-install sockets
-      - ./testing --language=PHP --verbose --repeat=1000 --save-results=results-php.json
+      - ./target/release/test-runner --language=PHP --verbose --repeat=1000 --save-results=results-php.json
   - name: Haskell
     depends_on:
       - prepare
     image: fpco/stack-build-small
     commands:
-      - ./testing --language=Haskell --verbose --repeat=1000 --save-results=results-haskell.json
+      - ./target/release/test-runner --language=Haskell --verbose --repeat=1000 --save-results=results-haskell.json
   - name: Swift
     depends_on:
       - prepare
     image: swift
     commands:
-      - ./testing --language=Swift --verbose --repeat=1000 --save-results=results-swift.json
+      - ./target/release/test-runner --language=Swift --verbose --repeat=1000 --save-results=results-swift.json
   - name: Pascal
     depends_on:
       - prepare
     image: gabrielrcouto/docker-lazarus
     commands:
-      - ./testing --language=Pascal --verbose --repeat=1000 --save-results=results-pascal.json
+      - ./target/release/test-runner --language=Pascal --verbose --repeat=1000 --save-results=results-pascal.json
