@@ -13,8 +13,8 @@ impl Name {
     pub fn new(name: String) -> Self {
         Self(name.to_camel_case())
     }
-    pub fn raw(&self) -> String {
-        self.0.clone()
+    pub fn as_str(&self) -> &str {
+        &self.0
     }
     pub fn snake_case(&self, conv: impl FnOnce(&str) -> String) -> String {
         conv(&self.0).to_snake_case()
