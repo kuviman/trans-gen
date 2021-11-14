@@ -157,7 +157,7 @@ fn main() -> anyhow::Result<()> {
                 serde_json::to_writer_pretty(std::fs::File::create(path).unwrap(), &results)
                     .unwrap();
             } else if ext == "md" {
-                std::fs::write(path, include_templing!("testing/results.md.templing"))
+                std::fs::write(path, include_templing!("test-runner/results.md.templing"))
                     .context("Failed to write results")?;
             } else {
                 anyhow::bail!("Unexpected results extension {:?}", ext);
