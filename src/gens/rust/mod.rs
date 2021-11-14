@@ -105,9 +105,7 @@ impl crate::Generator for Generator {
     fn new(name: &str, version: &str, _: ()) -> Self {
         Self {
             packages: HashMap::new(),
-            crate_name: Name::new(name.to_owned())
-                .snake_case(conv)
-                .replace('_', "-"),
+            crate_name: Name::new(name.to_owned()).kebab_case(conv),
             crate_version: version.to_owned(),
             files: HashMap::new(),
         }

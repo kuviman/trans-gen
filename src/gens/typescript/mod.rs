@@ -121,7 +121,7 @@ pub fn file_name(schema: &Schema) -> String {
         if !result.is_empty() {
             result.push('/');
         }
-        result.push_str(&part.snake_case(conv).replace('_', "-"));
+        result.push_str(&part.kebab_case(conv));
     }
     result
 }
@@ -175,9 +175,7 @@ impl crate::Generator for Generator {
     const NAME: &'static str = "TypeScript";
     type Options = ();
     fn new(name: &str, version: &str, _: ()) -> Self {
-        let project_name = Name::new(name.to_owned())
-            .snake_case(conv)
-            .replace('_', "-");
+        let project_name = Name::new(name.to_owned()).kebab_case(conv);
         let project_version = version;
         let mut files = HashMap::new();
         files.insert(

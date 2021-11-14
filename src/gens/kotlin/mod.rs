@@ -134,9 +134,7 @@ impl crate::Generator for Generator {
     const NAME: &'static str = "Kotlin";
     type Options = ();
     fn new(name: &str, _version: &str, _: ()) -> Self {
-        let project_name = Name::new(name.to_owned())
-            .snake_case(conv)
-            .replace('_', "-");
+        let project_name = Name::new(name.to_owned()).kebab_case(conv);
         let project_name = &project_name;
         let main_package = Name::new(name.to_owned()).snake_case(conv);
         let mut files = HashMap::new();

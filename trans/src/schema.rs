@@ -19,6 +19,9 @@ impl Name {
     pub fn snake_case(&self, conv: impl FnOnce(&str) -> String) -> String {
         conv(&self.0).to_snake_case()
     }
+    pub fn kebab_case(&self, conv: impl FnOnce(&str) -> String) -> String {
+        conv(&self.0).to_kebab_case()
+    }
     pub fn camel_case(&self, conv: impl FnOnce(&str) -> String) -> String {
         conv(&self.0).to_camel_case()
     }

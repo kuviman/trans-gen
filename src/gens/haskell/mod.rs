@@ -152,9 +152,7 @@ impl crate::Generator for Generator {
             Some(index) => &version[..index],
             None => version,
         };
-        let package_name = Name::new(name.to_owned())
-            .snake_case(conv)
-            .replace('_', "-");
+        let package_name = Name::new(name.to_owned()).kebab_case(conv);
         let package_name = &package_name;
         let mut files = HashMap::new();
         files.insert(
