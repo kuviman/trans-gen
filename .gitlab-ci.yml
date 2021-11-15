@@ -17,7 +17,6 @@ build:
 
 "C++":
   stage: test
-  needs: [build]
   image: gcc
   before_script:
     - apt-get update && apt-get install -y cmake
@@ -30,7 +29,6 @@ build:
     expire_in: 1 day
 "C#":
   stage: test
-  needs: [build]
   image: mcr.microsoft.com/dotnet/sdk:5.0
   script:
     - mkdir -p benchmarks/docker/csharp
@@ -41,7 +39,6 @@ build:
     expire_in: 1 day
 "F#":
   stage: test
-  needs: [build]
   image: mcr.microsoft.com/dotnet/sdk:5.0
   script:
     - mkdir -p benchmarks/docker/fsharp
@@ -52,7 +49,6 @@ build:
     expire_in: 1 day
 "D":
   stage: test
-  needs: [build]
   image: dlanguage/dmd
   script:
     - mkdir -p benchmarks/docker/dlang
@@ -63,7 +59,6 @@ build:
     expire_in: 1 day
 "Go":
   stage: test
-  needs: [build]
   image: golang
   script:
     - mkdir -p benchmarks/docker/go
@@ -74,7 +69,6 @@ build:
     expire_in: 1 day
 "Java":
   stage: test
-  needs: [build]
   image: maven
   script:
     - mkdir -p benchmarks/docker/java
@@ -85,7 +79,6 @@ build:
     expire_in: 1 day
 "Kotlin":
   stage: test
-  needs: [build]
   image: maven
   script:
     - mkdir -p benchmarks/docker/kotlin
@@ -96,7 +89,6 @@ build:
     expire_in: 1 day
 "Scala":
   stage: test
-  needs: [build]
   image: maven
   script:
     - mkdir -p benchmarks/docker/scala
@@ -107,7 +99,6 @@ build:
     expire_in: 1 day
 "JavaScript":
   stage: test
-  needs: [build]
   image: node
   script:
     - mkdir -p benchmarks/docker/javascript
@@ -118,7 +109,6 @@ build:
     expire_in: 1 day
 "TypeScript":
   stage: test
-  needs: [build]
   image: node
   script:
     - mkdir -p benchmarks/docker/typescript
@@ -129,7 +119,6 @@ build:
     expire_in: 1 day
 "Python":
   stage: test
-  needs: [build]
   image: python
   script:
     - mkdir -p benchmarks/docker/python
@@ -140,7 +129,6 @@ build:
     expire_in: 1 day
 "Ruby":
   stage: test
-  needs: [build]
   image: ruby
   script:
     - mkdir -p benchmarks/docker/ruby
@@ -151,7 +139,6 @@ build:
     expire_in: 1 day
 "Rust":
   stage: test
-  needs: [build]
   image: rust
   script:
     - mkdir -p benchmarks/docker/rust
@@ -162,7 +149,6 @@ build:
     expire_in: 1 day
 "PHP":
   stage: test
-  needs: [build]
   image: php
   before_script:
     - docker-php-ext-install sockets
@@ -175,7 +161,6 @@ build:
     expire_in: 1 day
 "Haskell":
   stage: test
-  needs: [build]
   image: fpco/stack-build-small
   script:
     - mkdir -p benchmarks/docker/haskell
@@ -186,7 +171,6 @@ build:
     expire_in: 1 day
 "Swift":
   stage: test
-  needs: [build]
   image: swift
   script:
     - mkdir -p benchmarks/docker/swift
@@ -197,7 +181,6 @@ build:
     expire_in: 1 day
 "Pascal":
   stage: test
-  needs: [build]
   image: kuviman/docker-lazarus
   script:
     - mkdir -p benchmarks/docker/pascal
@@ -212,8 +195,6 @@ build:
     - if: $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH
   stage: deploy
   image: rust
-  needs:
-    - build
   before_script:
     - git config --global user.name 'CI'
     - git config --global user.email '<>'
