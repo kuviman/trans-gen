@@ -5,7 +5,7 @@ impl Trans for usize {
         Schema::Int32
     }
     fn read_from(reader: &mut dyn std::io::Read, version: &Version) -> std::io::Result<Self> {
-        Ok(try_from(i32::read_from(reader, version)?)?)
+        try_from(i32::read_from(reader, version)?)
     }
     fn write_to(&self, writer: &mut dyn std::io::Write, version: &Version) -> std::io::Result<()> {
         try_from::<usize, i32>(*self)?.write_to(writer, version)

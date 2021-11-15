@@ -104,7 +104,8 @@ impl crate::Generator for Generator {
                         if namespace.parts.is_empty() {
                             match options.language.as_str() {
                                 "ru" => "Общее",
-                                "en" | _ => "Common",
+                                "en" => "Common",
+                                _ => unimplemented!(),
                             }
                             .to_owned()
                         } else {

@@ -159,7 +159,7 @@ impl crate::Generator for Generator {
         files.insert("stream.js".to_owned(), include_str!("stream.js").to_owned());
         files.insert(
             "package.json".to_owned(),
-            include_templing!("src/gens/javascript/package.json.templing").to_owned(),
+            include_templing!("src/gens/javascript/package.json.templing"),
         );
         Self { files }
     }

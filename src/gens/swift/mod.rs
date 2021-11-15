@@ -168,7 +168,7 @@ impl RunnableGenerator for Generator {
                         if line.starts_with("name:") {
                             let start = line
                                 .find('"')
-                                .ok_or(anyhow!("Faled to parse Package.swift"))?
+                                .ok_or_else(|| anyhow!("Faled to parse Package.swift"))?
                                 + 1;
                             let end = line.rfind('"').unwrap();
                             return Ok(line[start..end].to_owned());

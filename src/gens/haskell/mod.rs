@@ -129,7 +129,7 @@ fn type_name(schema: &Schema) -> String {
         }
         | Schema::Enum {
             base_name: name, ..
-        } => format!("{}", name.camel_case(conv)),
+        } => name.camel_case(conv),
         Schema::Option(inner) => format!("Maybe {}", type_name(inner)),
         Schema::Vec(inner) => format!("[{}]", type_name(inner)),
         Schema::Map(key, value) => format!("Map {} {}", type_name(key), type_name(value)),

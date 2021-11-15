@@ -184,10 +184,10 @@ impl Schema {
         {
             MAP.lock()
                 .unwrap()
-                .get_mut(&version)
+                .get_mut(version)
                 .unwrap()
                 .insert(schema.clone());
         }
-        MAP.lock().unwrap()[&version].get(&schema).unwrap().clone()
+        MAP.lock().unwrap()[version].get(&schema).unwrap().clone()
     }
 }

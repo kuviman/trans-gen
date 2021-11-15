@@ -136,7 +136,7 @@ pub fn namespace_path_for(schema: &Schema) -> String {
         Schema::Struct { namespace, .. }
         | Schema::OneOf { namespace, .. }
         | Schema::Enum { namespace, .. } => {
-            namespace_path(namespace).unwrap_or("common".to_owned())
+            namespace_path(namespace).unwrap_or_else(|| "common".to_owned())
         }
         _ => unreachable!(),
     }
@@ -149,7 +149,7 @@ fn package_name(schema: &Schema) -> String {
         .parts
         .last()
         .map(|name| name.snake_case(conv))
-        .unwrap_or("common".to_owned())
+        .unwrap_or_else(|| "common".to_owned())
 }
 
 fn file_name(schema: &Schema) -> String {
@@ -170,7 +170,7 @@ fn file_name(schema: &Schema) -> String {
             ..
         } => format!(
             "{}/{}",
-            namespace_path(namespace).unwrap_or("common".to_owned()),
+            namespace_path(namespace).unwrap_or_else(|| "common".to_owned()),
             name.snake_case(conv),
         ),
         _ => unreachable!(),
@@ -189,7 +189,7 @@ impl Generator {
                         imports.insert(format!(
                             ". \"{}/{}\"",
                             mod_name,
-                            namespace_path(namespace).unwrap_or("common".to_owned()),
+                            namespace_path(namespace).unwrap_or_else(|| "common".to_owned()),
                         ));
                     }
                     Schema::Option(inner) => {
@@ -234,7 +234,7 @@ impl Generator {
                 imports.remove(&format!(
                     ". \"{}/{}\"",
                     &self.mod_name,
-                    namespace_path(namespace).unwrap_or("common".to_owned()),
+                    namespace_path(namespace).unwrap_or_else(|| "common".to_owned()),
                 ));
             }
             _ => unreachable!(),
@@ -324,9 +324,9 @@ fn project_name(path: &Path) -> anyhow::Result<String> {
         .context("Failed to read go.mod")?
         .lines()
         .next()
-        .ok_or(anyhow!("go.mod is empty"))?
+        .ok_or_else(|| anyhow!("go.mod is empty"))?
         .strip_prefix("module ")
-        .ok_or(anyhow!("Expected to see module name in go.mod"))?
+        .ok_or_else(|| anyhow!("Expected to see module name in go.mod"))?
         .trim()
         .to_owned())
 }

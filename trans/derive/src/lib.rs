@@ -113,20 +113,18 @@ fn default_field_value(field: &syn::Field) -> Option<syn::Expr> {
         {
             if meta_path.is_ident("trans") {
                 for inner in nested {
-                    match *inner {
-                        syn::NestedMeta::Meta(syn::Meta::NameValue(syn::MetaNameValue {
-                            path: ref meta_path,
-                            lit: syn::Lit::Str(ref lit),
-                            ..
-                        })) => {
-                            if meta_path.is_ident("default") {
-                                default = Some(
-                                    syn::parse_str(&lit.value())
-                                        .expect("Failed to parse default_value"),
-                                );
-                            }
+                    if let syn::NestedMeta::Meta(syn::Meta::NameValue(syn::MetaNameValue {
+                        path: ref meta_path,
+                        lit: syn::Lit::Str(ref lit),
+                        ..
+                    })) = *inner
+                    {
+                        if meta_path.is_ident("default") {
+                            default = Some(
+                                syn::parse_str(&lit.value())
+                                    .expect("Failed to parse default_value"),
+                            );
                         }
-                        _ => {}
                     }
                 }
             }
@@ -402,7 +400,7 @@ pub fn derive_trans(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
                         .iter()
                         .map(|field| field_write(field, input_type, &ty_generics, None));
                     let documentation = get_documentation(&ast.attrs);
-                    let expanded = quote! {
+                    quote! {
                         impl #impl_generics trans::Trans for #type_for_impl #ty_generics #where_clause {
                             fn create_schema(version: &trans::Version) -> trans::Schema {
                                 let name = #final_name;
@@ -430,8 +428,7 @@ pub fn derive_trans(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
                                 })
                             }
                         }
-                    };
-                    expanded.into()
+                    }
                 }
                 syn::Fields::Unnamed(_) => {
                     if fields.iter().len() != 1 {
@@ -449,7 +446,7 @@ pub fn derive_trans(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
                         .predicates
                         .extend(extra_where_clauses.predicates);
                     let (impl_generics, ty_generics, where_clause) = generics.split_for_impl();
-                    let expanded = quote! {
+                    quote! {
                         impl #impl_generics trans::Trans for #type_for_impl #ty_generics #where_clause {
                             fn create_schema(version: &trans::Version) -> trans::Schema {
                                 <#inner_ty as trans::Trans>::create_schema(version)
@@ -462,8 +459,7 @@ pub fn derive_trans(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
                                 Ok(Self(trans::Trans::read_from(reader, version)?))
                             }
                         }
-                    };
-                    expanded.into()
+                    }
                 }
                 syn::Fields::Unit => panic!("Unit structs not supported"),
             },
@@ -529,13 +525,10 @@ pub fn derive_trans(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
                         }
                     }
                 };
-                if variants.iter().all(|variant| {
-                    if let syn::Fields::Unit = variant.fields {
-                        true
-                    } else {
-                        false
-                    }
-                }) {
+                if variants
+                    .iter()
+                    .all(|variant| matches!(variant.fields, syn::Fields::Unit))
+                {
                     let variants = variants.iter().map(|variant| {
                         let name = &variant.ident;
                         let documentation = get_documentation(&variant.attrs);
@@ -550,7 +543,7 @@ pub fn derive_trans(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
                         )
                     });
                     let documentation = get_documentation(&ast.attrs);
-                    let expanded = quote! {
+                    quote! {
                         impl #impl_generics trans::Trans for #type_for_impl #ty_generics #where_clause {
                             fn create_schema(version: &trans::Version) -> trans::Schema {
                                 let base_name = #final_name;
@@ -567,8 +560,7 @@ pub fn derive_trans(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
                             }
                             #read_write_impl
                         }
-                    };
-                    expanded.into()
+                    }
                 } else {
                     let variants = variants.iter().map(|variant| {
                         let documentation = get_documentation(&variant.attrs);
@@ -604,7 +596,7 @@ pub fn derive_trans(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
                         )
                     });
                     let documentation = get_documentation(&ast.attrs);
-                    let expanded = quote! {
+                    quote! {
                         impl #impl_generics trans::Trans for #type_for_impl #ty_generics #where_clause {
                             fn create_schema(version: &trans::Version) -> trans::Schema {
                                 let base_name = #final_name;
@@ -621,8 +613,7 @@ pub fn derive_trans(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
                             }
                             #read_write_impl
                         }
-                    };
-                    expanded.into()
+                    }
                 }
             }
             syn::Data::Union(_) => panic!("Unions not supported"),

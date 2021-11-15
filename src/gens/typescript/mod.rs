@@ -188,7 +188,7 @@ impl crate::Generator for Generator {
         );
         files.insert(
             "package.json".to_owned(),
-            include_templing!("src/gens/typescript/package.json.templing").to_owned(),
+            include_templing!("src/gens/typescript/package.json.templing"),
         );
         Self { files }
     }
@@ -205,7 +205,7 @@ impl crate::Generator for Generator {
                         let end = line.rfind('"').unwrap();
                         let start = line[..end].rfind('"').unwrap();
                         let path = &line[start + 1..end];
-                        if let Some(path) = path.strip_prefix("@") {
+                        if let Some(path) = path.strip_prefix('@') {
                             let path = format!("src/{}", path);
                             let source_path = source_path.split('/').collect::<Vec<&str>>();
                             let path = path.split('/').collect::<Vec<&str>>();
@@ -218,7 +218,7 @@ impl crate::Generator for Generator {
                             let mut path = source_path
                                 .iter()
                                 .map(|_| "..")
-                                .chain(path.iter().map(|&s| s))
+                                .chain(path.iter().copied())
                                 .collect::<Vec<&str>>()
                                 .join("/");
                             if !path.starts_with("..") {

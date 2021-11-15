@@ -85,14 +85,14 @@ impl Generator {
                 None => part.snake_case(conv),
             };
             self.packages
-                .entry(parent.unwrap_or("lib.rs".to_owned()))
+                .entry(parent.unwrap_or_else(|| "lib.rs".to_owned()))
                 .or_default()
                 .inner_packages
                 .insert(part.snake_case(conv));
             parent = Some(package);
         }
         self.packages
-            .entry(parent.unwrap_or("lib.rs".to_owned()))
+            .entry(parent.unwrap_or_else(|| "lib.rs".to_owned()))
             .or_default()
             .types
             .insert(schema.name().unwrap().clone());
@@ -221,11 +221,11 @@ impl RunnableGenerator for Generator {
             .context("Failed to parse Cargo.toml")?;
             Ok(toml
                 .get("package")
-                .ok_or(anyhow!("Failed to find package in Cargo.toml"))?
+                .ok_or_else(|| anyhow!("Failed to find package in Cargo.toml"))?
                 .get("name")
-                .ok_or(anyhow!("Failed to find package name in Cargo.toml"))?
+                .ok_or_else(|| anyhow!("Failed to find package name in Cargo.toml"))?
                 .as_str()
-                .ok_or(anyhow!("Package name is not string"))?
+                .ok_or_else(|| anyhow!("Package name is not string"))?
                 .to_owned())
         }
         let mut command = command(

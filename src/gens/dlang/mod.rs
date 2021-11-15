@@ -297,9 +297,9 @@ impl RunnableGenerator for Generator {
         )
         .context("Failed to parse dub.json")?
         .get("name")
-        .ok_or(anyhow!("No name in dub.json"))?
+        .ok_or_else(|| anyhow!("No name in dub.json"))?
         .as_str()
-        .ok_or(anyhow!("Name is not string in dub.json"))?
+        .ok_or_else(|| anyhow!("Name is not string in dub.json"))?
         .to_owned();
         let mut command = command(
             path.join(format!(

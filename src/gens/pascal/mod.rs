@@ -311,7 +311,7 @@ impl RunnableGenerator for Generator {
             .read_dir()?
             .filter_map(Result::ok)
             .find(|entry| entry.path().extension() == Some(std::ffi::OsStr::new("dpr")))
-            .ok_or(anyhow!("Failed to find .dpr"))?
+            .ok_or_else(|| anyhow!("Failed to find .dpr"))?
             .path()
             .file_stem()
             .unwrap()
@@ -341,7 +341,7 @@ impl RunnableGenerator for Generator {
             .read_dir()?
             .filter_map(Result::ok)
             .find(|entry| entry.path().extension() == Some(std::ffi::OsStr::new("dpr")))
-            .ok_or(anyhow!("Failed to find .dpr"))?
+            .ok_or_else(|| anyhow!("Failed to find .dpr"))?
             .path()
             .file_stem()
             .unwrap()
