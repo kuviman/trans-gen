@@ -7,13 +7,13 @@ use trans_gen::TestExt as _;
 
 #[derive(clap::Parser)]
 struct Opt {
-    #[clap(long = "model")]
+    #[clap(long = "model", multiple_occurrences = true)]
     models: Vec<String>,
-    #[clap(long = "language")]
+    #[clap(long = "language", multiple_occurrences = true)]
     langs: Vec<String>,
-    #[clap(long = "exclude-language")]
+    #[clap(long = "exclude-language", multiple_occurrences = true)]
     exclude_langs: Vec<String>,
-    #[clap(long = "test")]
+    #[clap(long = "test", multiple_occurrences = true)]
     tests: Vec<String>,
     #[clap(long, default_value = "1")]
     repeat: usize,
@@ -23,7 +23,7 @@ struct Opt {
     verbose: bool,
     #[clap(long)]
     save_results: Option<PathBuf>,
-    #[clap(long)]
+    #[clap(long, multiple_occurrences = true)]
     load_results: Vec<PathBuf>,
     #[clap(long)]
     code_path: Option<PathBuf>,
