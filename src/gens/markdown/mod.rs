@@ -94,7 +94,7 @@ impl crate::Generator for Generator {
     fn generate(self, extra_files: Vec<File>) -> GenResult {
         let options = self.options;
         let mut files = vec![File {
-            path: "doc.md".to_owned(),
+            path: "api.md".to_owned(),
             content: self
                 .namespaces
                 .into_iter()
