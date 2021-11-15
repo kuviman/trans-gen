@@ -111,6 +111,6 @@ steps:
   - name: Pascal
     depends_on:
       - prepare
-    image: gabrielrcouto/docker-lazarus
+    image: kuviman/docker-lazarus
     commands:
       - ./target/release/test-runner --language=Pascal --verbose --repeat=1000 --save-results=results-pascal.json
