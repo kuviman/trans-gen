@@ -225,7 +225,7 @@ build:
     - |
       for OS in docker; do
         BENCHMARKS=(benchmarks/$OS/*/results.json)
-        ./testing ${BENCHMARKS[@]/#/--load-results=} --save-results testing/benchmarks-$OS.md
+        ./bin/test-runner ${BENCHMARKS[@]/#/--load-results=} --save-results testing/benchmarks-$OS.md
       done
     - pushd testing
     - git add .
