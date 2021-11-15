@@ -220,7 +220,7 @@ build:
   script:
     - git fetch origin testing
     - git worktree add -b testing testing origin/testing
-    - rm -rf testing/*
+    - rm -rf testing/generated-code
     - ./bin/test-runner --generate=testing/generated-code
     - |
       for OS in docker; do
