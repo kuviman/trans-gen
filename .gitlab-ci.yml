@@ -1,0 +1,238 @@
+stages:
+  - build
+  - test
+  - deploy
+
+build:
+  stage: build
+  image: rust
+  script:
+    - cargo test --release -p trans-derive -p trans -p trans-gen
+    - cargo build --release --bin test-runner
+    - mkdir bin && cp target/release/test-runner bin/
+  artifacts:
+    paths:
+      - bin
+    expire_in: 1 day
+
+"C++":
+  stage: test
+  needs: [build]
+  image: gcc
+  before_script:
+    - apt-get update && apt-get install -y cmake
+  script:
+    - ./bin/test-runner --language=C++ --verbose --repeat=1000 --save-results=benchmarks/docker/cpp/results.json
+  artifacts:
+    paths:
+      - benchmarks
+    expire_in: 1 day
+"C#":
+  stage: test
+  needs: [build]
+  image: mcr.microsoft.com/dotnet/sdk:5.0
+  script:
+    - ./bin/test-runner --language=C# --verbose --repeat=1000 --save-results=benchmarks/docker/csharp/results.json
+  artifacts:
+    paths:
+      - benchmarks
+    expire_in: 1 day
+"F#":
+  stage: test
+  needs: [build]
+  image: mcr.microsoft.com/dotnet/sdk:5.0
+  script:
+    - ./bin/test-runner --language=F# --verbose --repeat=1000 --save-results=benchmarks/docker/fsharp/results.json
+  artifacts:
+    paths:
+      - benchmarks
+    expire_in: 1 day
+"D":
+  stage: test
+  needs: [build]
+  image: dlanguage/dmd
+  script:
+    - ./bin/test-runner --language=D --verbose --repeat=1000 --save-results=benchmarks/docker/dlang/results.json
+  artifacts:
+    paths:
+      - benchmarks
+    expire_in: 1 day
+"Go":
+  stage: test
+  needs: [build]
+  image: golang
+  script:
+    - ./bin/test-runner --language=Go --verbose --repeat=1000 --save-results=benchmarks/docker/go/results.json
+  artifacts:
+    paths:
+      - benchmarks
+    expire_in: 1 day
+"Java":
+  stage: test
+  needs: [build]
+  image: maven
+  script:
+    - ./bin/test-runner --language=Java --verbose --repeat=1000 --save-results=benchmarks/docker/java/results.json
+  artifacts:
+    paths:
+      - benchmarks
+    expire_in: 1 day
+"Kotlin":
+  stage: test
+  needs: [build]
+  image: maven
+  script:
+    - ./bin/test-runner --language=Kotlin --verbose --repeat=1000 --save-results=benchmarks/docker/kotlin/results.json
+  artifacts:
+    paths:
+      - benchmarks
+    expire_in: 1 day
+"Scala":
+  stage: test
+  needs: [build]
+  image: maven
+  script:
+    - ./bin/test-runner --language=Scala --verbose --repeat=1000 --save-results=benchmarks/docker/scala/results.json
+  artifacts:
+    paths:
+      - benchmarks
+    expire_in: 1 day
+"JavaScript":
+  stage: test
+  needs: [build]
+  image: node
+  script:
+    - ./bin/test-runner --language=JavaScript --verbose --repeat=1000 --save-results=benchmarks/docker/javascript/results.json
+  artifacts:
+    paths:
+      - benchmarks
+    expire_in: 1 day
+"TypeScript":
+  stage: test
+  needs: [build]
+  image: node
+  script:
+    - ./bin/test-runner --language=TypeScript --verbose --repeat=1000 --save-results=benchmarks/docker/typescript/results.json
+  artifacts:
+    paths:
+      - benchmarks
+    expire_in: 1 day
+"Python":
+  stage: test
+  needs: [build]
+  image: python
+  script:
+    - ./bin/test-runner --language=Python --verbose --repeat=1000 --save-results=benchmarks/docker/python/results.json
+  artifacts:
+    paths:
+      - benchmarks
+    expire_in: 1 day
+"Ruby":
+  stage: test
+  needs: [build]
+  image: ruby
+  script:
+    - ./bin/test-runner --language=Ruby --verbose --repeat=1000 --save-results=benchmarks/docker/ruby/results.json
+  artifacts:
+    paths:
+      - benchmarks
+    expire_in: 1 day
+"Rust":
+  stage: test
+  needs: [build]
+  image: rust
+  script:
+    - ./bin/test-runner --language=Rust --verbose --repeat=1000 --save-results=benchmarks/docker/rust/results.json
+  artifacts:
+    paths:
+      - benchmarks
+    expire_in: 1 day
+"PHP":
+  stage: test
+  needs: [build]
+  image: php
+  before_script:
+    - docker-php-ext-install sockets
+  script:
+    - ./bin/test-runner --language=PHP --verbose --repeat=1000 --save-results=benchmarks/docker/php/results.json
+  artifacts:
+    paths:
+      - benchmarks
+    expire_in: 1 day
+"Haskell":
+  stage: test
+  needs: [build]
+  image: fpco/stack-build-small
+  script:
+    - ./bin/test-runner --language=Haskell --verbose --repeat=1000 --save-results=benchmarks/docker/haskell/results.json
+  artifacts:
+    paths:
+      - benchmarks
+    expire_in: 1 day
+"Swift":
+  stage: test
+  needs: [build]
+  image: swift
+  script:
+    - ./bin/test-runner --language=Swift --verbose --repeat=1000 --save-results=benchmarks/docker/swift/results.json
+  artifacts:
+    paths:
+      - benchmarks
+    expire_in: 1 day
+"Pascal":
+  stage: test
+  needs: [build]
+  image: kuviman/docker-lazarus
+  script:
+    - ./bin/test-runner --language=Pascal --verbose --repeat=1000 --save-results=benchmarks/docker/pascal/results.json
+  artifacts:
+    paths:
+      - benchmarks
+    expire_in: 1 day
+
+"Push testing branch":
+  rules:
+    - if: $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH
+  stage: deploy
+  image: alpine
+  needs:
+    - build
+  before_script:
+    - git config --global user.name 'CI'
+    - git config --global user.email '<>'
+  script:
+    - |
+      git config --global user.name 'CI'
+      git config --global user.email '<>'
+      git fetch origin testing
+      git worktree add testing-branch testing
+      mv testing-linux/testing ./
+      chmod +x testing
+      ./testing --generate=testing-branch/generated-code
+      for OS in windows linux macos; do
+        BENCHMARKS=(benchmarks-$OS-*/results.json)
+        ./testing ${BENCHMARKS[@]/#/--load-results=} --save-results benchmarks/docker/branch/testing/benchmarks-$OS.md
+      done
+      pushd testing-branch
+      git add .
+      git diff --cached --exit-code || git commit -m "Update generated code (run ${{ github.run_id }})"
+      popd
+      rm -rf branch
+      git worktree prune
+      git push origin testing
+
+    - git fetch origin testing
+    - git worktree add -b testing testing origin/testing
+    - rm -rf testing/*
+    - ./bin/test-runner --generate=testing/generated-code
+    - |
+      for OS in docker; do
+        BENCHMARKS=(benchmarks/$OS/*/results.json)
+        ./testing ${BENCHMARKS[@]/#/--load-results=} --save-results testing/benchmarks-$OS.md
+      done
+    - pushd testing
+    - git add .
+    - git diff --cached --exit-code || git commit -m "Update (job $CI_JOB_ID for $CI_COMMIT_SHORT_SHA)"
+    - git push "https://ci:${CI_PUSH_TOKEN}@${CI_REPOSITORY_URL#*@}" generated
+    - popd
+    - mkdir -p .artifacts/clients
