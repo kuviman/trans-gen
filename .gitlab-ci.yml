@@ -230,6 +230,6 @@ build:
     - pushd testing
     - git add .
     - git diff --cached --exit-code || git commit -m "Update (job $CI_JOB_ID for $CI_COMMIT_SHORT_SHA)"
-    - git push "https://ci:${CI_PUSH_TOKEN}@${CI_REPOSITORY_URL#*@}" generated
+    - git push "https://ci:${CI_PUSH_TOKEN}@${CI_REPOSITORY_URL#*@}" testing
     - popd
     - mkdir -p .artifacts/clients
