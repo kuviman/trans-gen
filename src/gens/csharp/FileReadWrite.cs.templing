@@ -13,12 +13,12 @@ namespace {{ self.main_namespace() }}
 
             for (int i = 0; i < repeat; i++)
             {
-                {{ type_name(schema) }} input;
+                {{ self.type_name(schema) }} input;
                 using (var stream = new FileStream(inputFile, FileMode.Open))
                 {
                     using (var reader = new BinaryReader(stream))
                     {
-                        input = {{ type_name(schema) }}.ReadFrom(reader);
+                        input = {{ self.type_name(schema) }}.ReadFrom(reader);
                     }
                 }
                 if (repeat == 1)

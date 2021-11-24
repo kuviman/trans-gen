@@ -6,46 +6,46 @@ stringResult += {{ var }}.ToString();
 stringResult += "\"" + {{ var }} + "\"";
 - }
 - Schema::Option(inner) => {
-if ({{ is_null(var, inner) }})
+if ({{ self.is_null(var, inner) }})
 {
     stringResult += "null";
 } else
 {
-    {{ var_to_string(&option_unwrap(var, inner), inner) }}
+    {{ self.var_to_string(&self.option_unwrap(var, inner), inner) }}
 }
 - }
 - Schema::Vec(inner) => {
 stringResult += "[ ";
-- let element_var = new_var(var, "Element"); let element_var = &element_var;
-- let index_var = new_var(var, "Index"); let index_var = &index_var;
+- let element_var = self.new_var(var, "Element"); let element_var = &element_var;
+- let index_var = self.new_var(var, "Index"); let index_var = &index_var;
 int {{ index_var }} = 0;
 foreach (var {{ element_var }} in {{ var }})
 {
     if ({{ index_var }} != 0) {
         stringResult += ", ";
     }
-    {{ var_to_string(element_var, inner) }}
+    {{ self.var_to_string(element_var, inner) }}
     {{ index_var }}++;
 }
 stringResult += " ]";
 - }
 - Schema::Map(key_type, value_type) => {
 stringResult += "{ ";
-- let entry_var = new_var(var, "Entry"); let entry_var = &entry_var;
-- let index_var = new_var(var, "Index"); let index_var = &index_var;
+- let entry_var = self.new_var(var, "Entry"); let entry_var = &entry_var;
+- let index_var = self.new_var(var, "Index"); let index_var = &index_var;
 int {{ index_var }} = 0;
 foreach (var {{ entry_var }} in {{ var }})
 {
     if ({{ index_var }} != 0) {
         stringResult += ", ";
     }
-    - let key_var = new_var(var, "Key"); let key_var = &key_var;
-    - let value_var = new_var(var, "Value"); let value_var = &value_var;
+    - let key_var = self.new_var(var, "Key"); let key_var = &key_var;
+    - let value_var = self.new_var(var, "Value"); let value_var = &value_var;
     var {{ key_var }} = {{ entry_var }}.Key;
-    {{ var_to_string(key_var, key_type) }}
+    {{ self.var_to_string(key_var, key_type) }}
     stringResult += ": ";
     var {{ value_var }} = {{ entry_var }}.Value;
-    {{ var_to_string(value_var, value_type) }}
+    {{ self.var_to_string(value_var, value_type) }}
     {{ index_var }}++;
 }
 stringResult += " }";

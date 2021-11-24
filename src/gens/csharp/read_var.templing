@@ -18,38 +18,38 @@
 {{ var }} = System.Text.Encoding.UTF8.GetString(reader.ReadBytes(reader.ReadInt32()));
 - }
 - Schema::Struct { .. } | Schema::OneOf { .. } => {
-{{ var }} = {{ type_name(schema) }}.ReadFrom(reader);
+{{ var }} = {{ self.type_name(schema) }}.ReadFrom(reader);
 - }
 - Schema::Option(inner) => {
 if (reader.ReadBoolean())
 {
-    {{ read_var(var, inner) }}
+    {{ self.read_var(var, inner) }}
 } else
 {
     {{ var }} = null;
 }
 - }
 - Schema::Vec(inner) => {
-{{ var }} = new {{ type_name_prearray(inner) }}[reader.ReadInt32()]{{ type_name_postarray(inner) }};
-- let index_var = new_var(var, "Index"); let index_var = &index_var;
+{{ var }} = new {{ self.type_name_prearray(inner) }}[reader.ReadInt32()]{{ self.type_name_postarray(inner) }};
+- let index_var = self.new_var(var, "Index"); let index_var = &index_var;
 for (int {{ index_var }} = 0; {{ index_var }} < {{ var }}.Length; {{ index_var }}++)
 {
-    {{ read_var(&format!("{}[{}]", var, index_var), inner) }}
+    {{ self.read_var(&format!("{}[{}]", var, index_var), inner) }}
 }
 - }
 - Schema::Map(key_type, value_type) => {
-- let size_var = new_var(var, "Size"); let size_var = &size_var;
+- let size_var = self.new_var(var, "Size"); let size_var = &size_var;
 int {{ size_var }} = reader.ReadInt32();
-{{ var }} = new System.Collections.Generic.Dictionary<{{ type_name(key_type) }}, {{ type_name(value_type) }}>({{ size_var }});
-- let index_var = new_var(var, "Index"); let index_var = &index_var;
+{{ var }} = new System.Collections.Generic.Dictionary<{{ self.type_name(key_type) }}, {{ self.type_name(value_type) }}>({{ size_var }});
+- let index_var = self.new_var(var, "Index"); let index_var = &index_var;
 for (int {{ index_var }} = 0; {{ index_var }} < {{ size_var }}; {{ index_var }}++)
 {
-    - let key_var = new_var(var, "Key"); let key_var = &key_var;
-    - let value_var = new_var(var, "Value"); let value_var = &value_var;
-    {{ type_name(key_type) }} {{ key_var }};
-    {{ type_name(value_type) }} {{ value_var }};
-    {{ read_var(key_var, key_type) }}
-    {{ read_var(value_var, value_type) }}
+    - let key_var = self.new_var(var, "Key"); let key_var = &key_var;
+    - let value_var = self.new_var(var, "Value"); let value_var = &value_var;
+    {{ self.type_name(key_type) }} {{ key_var }};
+    {{ self.type_name(value_type) }} {{ value_var }};
+    {{ self.read_var(key_var, key_type) }}
+    {{ self.read_var(value_var, value_type) }}
     {{ var }}.Add({{ key_var }}, {{ value_var }});
 }
 - }

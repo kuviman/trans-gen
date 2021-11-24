@@ -20,7 +20,7 @@ namespace {{ self.main_namespace() }}
                     var writer = new BinaryWriter(stream);
                     while (reader.ReadBoolean())
                     {
-                        {{ type_name(schema) }} input = {{ type_name(schema) }}.ReadFrom(reader);
+                        {{ self.type_name(schema) }} input = {{ self.type_name(schema) }}.ReadFrom(reader);
                         if (stdout)
                         {
                             Console.WriteLine(input.ToString());

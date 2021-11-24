@@ -1,4 +1,4 @@
-{{ doc_comment(&definition.documentation) }}
+{{ self.doc_comment(&definition.documentation) }}
 - if let Some((base_name, _)) = base {
 public class {{ definition.name.camel_case(conv) }} : {{ base_name.camel_case(conv) }}
 - } else {
@@ -10,8 +10,8 @@ public struct {{ definition.name.camel_case(conv) }}
 
     - }
     - for field in &definition.fields {
-    {{ doc_comment(&field.documentation) }}
-    public {{ type_name(&field.schema) }} {{ field.name.camel_case(conv) }} { get; set; }
+    {{ self.doc_comment(&field.documentation) }}
+    public {{ self.type_name(&field.schema) }} {{ field.name.camel_case(conv) }} { get; set; }
     - }
     - if base.is_some() {
 
@@ -24,7 +24,7 @@ public struct {{ definition.name.camel_case(conv) }}
             - if index != 0 {
                 ~, ~
             - }
-            ~{{ type_name(&field.schema) }} {{ field.name.mixed_case(conv) }}~
+            ~{{ self.type_name(&field.schema) }} {{ field.name.mixed_case(conv) }}~
         - }
     ~)
     {
@@ -34,7 +34,7 @@ public struct {{ definition.name.camel_case(conv) }}
     }
     - }
 
-    {{ doc_read_from(&definition.name.camel_case(conv)) }}
+    {{ self.doc_read_from(&definition.name.camel_case(conv)) }}
     public static~
     - if base.is_some() {
         ~ new~
@@ -43,12 +43,12 @@ public struct {{ definition.name.camel_case(conv) }}
     {
         var result = new {{ definition.name.camel_case(conv) }}();
         - for field in &definition.fields {
-        {{ read_var(&format!("result.{}", field.name.camel_case(conv)), &field.schema) }}
+        {{ self.read_var(&format!("result.{}", field.name.camel_case(conv)), &field.schema) }}
         - }
         return result;
     }
 
-    {{ doc_write_to(&definition.name.camel_case(conv)) }}
+    {{ self.doc_write_to(&definition.name.camel_case(conv)) }}
     public~
     - if base.is_some() {
         ~ override~
@@ -59,11 +59,11 @@ public struct {{ definition.name.camel_case(conv) }}
         writer.Write(TAG);
         - }
         - for field in &definition.fields {
-        {{ write_var(&field.name.camel_case(conv), &field.schema) }}
+        {{ self.write_var(&field.name.camel_case(conv), &field.schema) }}
         - }
     }
 
-    {{ doc_to_string(&definition.name.camel_case(conv)) }}
+    {{ self.doc_to_string(&definition.name.camel_case(conv)) }}
     public override string ToString() {
         string stringResult = "{{ definition.name.camel_case(conv) }} { ";
         - for (index, field) in definition.fields.iter().enumerate() {
@@ -71,7 +71,7 @@ public struct {{ definition.name.camel_case(conv) }}
         stringResult += ", ";
         - }
         stringResult += "{{ field.name.camel_case(conv) }}: ";
-        {{ var_to_string(&field.name.camel_case(conv), &field.schema) }}
+        {{ self.var_to_string(&field.name.camel_case(conv), &field.schema) }}
         - }
         stringResult += " }";
         return stringResult;

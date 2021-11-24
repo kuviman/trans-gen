@@ -1,4 +1,4 @@
-namespace {{ &self.main_namespace }}{{ namespace_path_suffix(namespace) }}
+namespace {{ &self.main_namespace }}{{ self.namespace_path_suffix(namespace) }}
 {
-    {{ struct_impl(definition, None) }}
+    {{ self.struct_impl(definition, None) }}
 }

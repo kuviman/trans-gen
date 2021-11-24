@@ -1,12 +1,12 @@
-namespace {{ &self.main_namespace }}{{ namespace_path_suffix(namespace) }}
+namespace {{ &self.main_namespace }}{{ self.namespace_path_suffix(namespace) }}
 {
-    {{ doc_comment(documentation) }}
+    {{ self.doc_comment(documentation) }}
     public abstract class {{ base_name.camel_case(conv) }}
     {
-        {{ doc_write_to(&base_name.camel_case(conv)) }}
+        {{ self.doc_write_to(&base_name.camel_case(conv)) }}
         public abstract void WriteTo(System.IO.BinaryWriter writer);
 
-        {{ doc_read_from(&base_name.camel_case(conv)) }}
+        {{ self.doc_read_from(&base_name.camel_case(conv)) }}
         public static {{ base_name.camel_case(conv) }} ReadFrom(System.IO.BinaryReader reader)
         {
             switch (reader.ReadInt32())
@@ -21,7 +21,7 @@ namespace {{ &self.main_namespace }}{{ namespace_path_suffix(namespace) }}
         }
         - for (tag, variant) in variants.iter().enumerate() {
 
-        {{ struct_impl(variant, Some((base_name, tag))) }}
+        {{ self.struct_impl(variant, Some((base_name, tag))) }}
         - }
     }
 }

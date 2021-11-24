@@ -3,7 +3,7 @@
 writer.Write({{ var }});
 - }
 - Schema::String => {
-- let data_var = new_var(var, "Data"); let data_var = &data_var;
+- let data_var = self.new_var(var, "Data"); let data_var = &data_var;
 var {{ data_var }} = System.Text.Encoding.UTF8.GetBytes({{ var }});
 writer.Write({{ data_var }}.Length);
 writer.Write({{ data_var }});
@@ -12,34 +12,34 @@ writer.Write({{ data_var }});
 {{ var }}.WriteTo(writer);
 - }
 - Schema::Option(inner) => {
-if ({{ is_null(var, inner) }})
+if ({{ self.is_null(var, inner) }})
 {
     writer.Write(false);
 } else
 {
     writer.Write(true);
-    {{ write_var(&option_unwrap(var, inner), inner) }}
+    {{ self.write_var(&self.option_unwrap(var, inner), inner) }}
 }
 - }
 - Schema::Vec(inner) => {
 writer.Write({{ var }}.Length);
-- let element_var = new_var(var, "Element"); let element_var = &element_var;
+- let element_var = self.new_var(var, "Element"); let element_var = &element_var;
 foreach (var {{ element_var }} in {{ var }})
 {
-    {{ write_var(element_var, inner) }}
+    {{ self.write_var(element_var, inner) }}
 }
 - }
 - Schema::Map(key_type, value_type) => {
 writer.Write({{ var }}.Count);
-- let entry_var = new_var(var, "Entry"); let entry_var = &entry_var;
+- let entry_var = self.new_var(var, "Entry"); let entry_var = &entry_var;
 foreach (var {{ entry_var }} in {{ var }})
 {
-    - let key_var = new_var(var, "Key"); let key_var = &key_var;
-    - let value_var = new_var(var, "Value"); let value_var = &value_var;
+    - let key_var = self.new_var(var, "Key"); let key_var = &key_var;
+    - let value_var = self.new_var(var, "Value"); let value_var = &value_var;
     var {{ key_var }} = {{ entry_var }}.Key;
     var {{ value_var }} = {{ entry_var }}.Value;
-    {{ write_var(key_var, key_type) }}
-    {{ write_var(value_var, value_type) }}
+    {{ self.write_var(key_var, key_type) }}
+    {{ self.write_var(value_var, value_type) }}
 }
 - }
 - Schema::Enum { .. } => {
