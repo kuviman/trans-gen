@@ -11,6 +11,31 @@ pub struct Generator {
     files: HashMap<String, String>,
 }
 
+pub fn default_value(schema: &Schema) -> String {
+    match schema {
+        Schema::Bool => "false".to_owned(),
+        Schema::Int32 | Schema::Int64 => "0".to_owned(),
+        Schema::Float32 | Schema::Float64 => "0.0".to_owned(),
+        Schema::Map(..) => "new Map()".to_owned(),
+        Schema::Vec(..) => "[]".to_owned(),
+        Schema::Option(..) => "null".to_owned(),
+        Schema::String => unimplemented!("No default string"),
+        Schema::Struct { definition, .. } => {
+            let mut result = format!("new {}(", type_name(schema));
+            for (index, field) in definition.fields.iter().enumerate() {
+                if index != 0 {
+                    result.push_str(", ");
+                }
+                result.push_str(&default_value(&field.schema));
+            }
+            result.push(')');
+            result
+        }
+        Schema::Enum { .. } => unimplemented!("Can't determine default enum variant"),
+        Schema::OneOf { .. } => unimplemented!("Can't determine default OneOf variant"),
+    }
+}
+
 pub fn type_name(schema: &Schema) -> String {
     match schema {
         Schema::Bool => "boolean".to_owned(),
