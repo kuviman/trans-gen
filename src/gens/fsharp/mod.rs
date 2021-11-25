@@ -19,6 +19,10 @@ impl Generator {
     }
 }
 
+pub fn one_of_methods(schema: &Schema, call: &str) -> String {
+    include_templing!("src/gens/fsharp/one_of_methods.templing")
+}
+
 pub fn default_value(schema: &Schema) -> String {
     match schema {
         Schema::Bool => "false".to_owned(),
