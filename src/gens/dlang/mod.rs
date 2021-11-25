@@ -19,7 +19,7 @@ pub struct Generator {
     files: HashMap<String, String>,
 }
 
-fn imports(schema: &Schema) -> String {
+pub fn imports(schema: &Schema) -> String {
     let mut imports = BTreeSet::new();
     fn add_imports_struct(definition: &Struct, imports: &mut BTreeSet<String>) {
         fn add_imports(schema: &Schema, imports: &mut BTreeSet<String>) {
@@ -93,6 +93,10 @@ pub fn type_name(schema: &Schema) -> String {
         Schema::Vec(inner) => format!("{}[]", type_name(inner)),
         Schema::Map(key, value) => format!("{}[{}]", type_name(value), type_name(key),),
     }
+}
+
+pub fn one_of_methods(schema: &Schema, call: &str) -> String {
+    include_templing!("src/gens/dlang/one_of_methods.templing")
 }
 
 pub fn default_value(schema: &Schema) -> String {
