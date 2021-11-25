@@ -33,7 +33,7 @@ pub fn type_name(schema: &Schema) -> String {
     }
 }
 
-fn imports(schema: &Schema) -> String {
+pub fn imports(schema: &Schema) -> String {
     let mut imports = BTreeSet::new();
     fn add_imports_struct(definition: &Struct, imports: &mut BTreeSet<String>) {
         fn add_imports(schema: &Schema, imports: &mut BTreeSet<String>) {
