@@ -86,7 +86,7 @@ impl Generator {
             Schema::Float64 => "double".to_owned(),
             Schema::String => "string".to_owned(),
             Schema::Struct { .. } | Schema::OneOf { .. } | Schema::Enum { .. } => {
-                self.name_path(schema)
+                self.full_name_path(schema)
             }
             Schema::Option(inner) => {
                 if self.nullable(inner) {
@@ -205,7 +205,7 @@ impl Generator {
         }
     }
 
-    fn name_path(&self, schema: &Schema) -> String {
+    fn short_name_path(&self, schema: &Schema) -> String {
         match schema {
             Schema::Enum {
                 namespace,
@@ -231,6 +231,10 @@ impl Generator {
             }
             _ => unreachable!(),
         }
+    }
+
+    fn full_name_path(&self, schema: &Schema) -> String {
+        format!("{}.{}", self.main_namespace, self.short_name_path(schema))
     }
 }
 
@@ -264,7 +268,7 @@ impl crate::Generator for Generator {
                 variants,
             } => {
                 self.files.insert(
-                    format!("{}.cs", self.name_path(schema).replace('.', "/")),
+                    format!("{}.cs", self.short_name_path(schema).replace('.', "/")),
                     include_templing!("src/gens/csharp/enum.templing"),
                 );
             }
@@ -273,7 +277,7 @@ impl crate::Generator for Generator {
                 definition,
             } => {
                 self.files.insert(
-                    format!("{}.cs", self.name_path(schema).replace('.', "/")),
+                    format!("{}.cs", self.short_name_path(schema).replace('.', "/")),
                     include_templing!("src/gens/csharp/struct.templing"),
                 );
             }
@@ -284,7 +288,7 @@ impl crate::Generator for Generator {
                 variants,
             } => {
                 self.files.insert(
-                    format!("{}.cs", self.name_path(schema).replace('.', "/")),
+                    format!("{}.cs", self.short_name_path(schema).replace('.', "/")),
                     include_templing!("src/gens/csharp/oneof.templing"),
                 );
             }
