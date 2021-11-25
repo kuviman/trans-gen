@@ -1,6 +1,6 @@
 use super::*;
 
-fn conv(name: &str) -> String {
+pub fn conv(name: &str) -> String {
     name.to_owned()
 }
 

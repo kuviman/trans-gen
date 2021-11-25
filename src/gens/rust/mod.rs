@@ -1,6 +1,6 @@
 use super::*;
 
-fn conv(name: &str) -> String {
+pub fn conv(name: &str) -> String {
     name.replace("Int32", "I32")
         .replace("Int64", "I64")
         .replace("Float32", "F32")
