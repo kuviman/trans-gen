@@ -19,7 +19,10 @@ impl Generator {
     }
 }
 
-pub fn one_of_methods(schema: &Schema, call: &str) -> String {
+pub fn one_of_methods(prefix: &str, schema: &Schema, call: &str) -> String {
+    let method_name = |name: &Name| -> Name {
+        Name::new(Name::new(prefix.to_owned()).as_str().to_owned() + name.as_str())
+    };
     include_templing!("src/gens/fsharp/one_of_methods.templing")
 }
 

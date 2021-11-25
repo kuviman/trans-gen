@@ -3,7 +3,7 @@
 -   _ => unreachable!(),
 - };
 - for variant in variants {
-public void {{ variant.name.camel_case(conv) }}(~
+public void {{ method_name(&variant.name).camel_case(conv) }}(~
     - for (index, field) in variant.fields.iter().enumerate() {
         - if index != 0 {
             ~, ~

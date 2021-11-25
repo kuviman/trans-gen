@@ -68,10 +68,16 @@ pub fn file_name(schema: &Schema) -> String {
 }
 
 impl Generator {
-    pub fn one_of_methods_def(&self, schema: &Schema) -> String {
+    pub fn one_of_methods_def(&self, prefix: &str, schema: &Schema) -> String {
+        let method_name = |name: &Name| -> Name {
+            Name::new(Name::new(prefix.to_owned()).as_str().to_owned() + name.as_str())
+        };
         include_templing!("src/gens/cpp/one_of_methods_def.templing")
     }
-    pub fn one_of_methods_impl(&self, schema: &Schema, call: &str) -> String {
+    pub fn one_of_methods_impl(&self, prefix: &str, schema: &Schema, call: &str) -> String {
+        let method_name = |name: &Name| -> Name {
+            Name::new(Name::new(prefix.to_owned()).as_str().to_owned() + name.as_str())
+        };
         include_templing!("src/gens/cpp/one_of_methods_impl.templing")
     }
     pub fn type_name(&self, schema: &Schema) -> String {

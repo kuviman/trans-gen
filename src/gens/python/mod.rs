@@ -121,7 +121,10 @@ fn struct_impl(definition: &Struct, base: Option<(&Name, usize)>) -> String {
     include_templing!("src/gens/python/struct_impl.templing")
 }
 
-pub fn one_of_methods(schema: &Schema, call: &str) -> String {
+pub fn one_of_methods(prefix: &str, schema: &Schema, call: &str) -> String {
+    let method_name = |name: &Name| -> Name {
+        Name::new(Name::new(prefix.to_owned()).as_str().to_owned() + name.as_str())
+    };
     include_templing!("src/gens/python/one_of_methods.templing")
 }
 

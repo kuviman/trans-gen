@@ -3,7 +3,7 @@
 -   _ => unreachable!(),
 - };
 - for variant in variants {
-void {{ variant.name.mixed_case(conv) }}(~
+void {{ method_name(&variant.name).mixed_case(conv) }}(~
     - for (index, field) in variant.fields.iter().enumerate() {
         - if index != 0 {
             ~, ~
