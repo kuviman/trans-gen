@@ -104,6 +104,31 @@ pub fn file_name(schema: &Schema) -> String {
     result
 }
 
+pub fn default_value(schema: &Schema) -> String {
+    match schema {
+        Schema::Bool => "false".to_owned(),
+        Schema::Int32 | Schema::Int64 => "0".to_owned(),
+        Schema::Float32 | Schema::Float64 => "0.0".to_owned(),
+        Schema::Map(..) => "new Map()".to_owned(),
+        Schema::Vec(..) => "[]".to_owned(),
+        Schema::Option(..) => "null".to_owned(),
+        Schema::String => unimplemented!("No default string"),
+        Schema::Struct { definition, .. } => {
+            let mut result = format!("new {}(", definition.name.camel_case(conv));
+            for (index, field) in definition.fields.iter().enumerate() {
+                if index != 0 {
+                    result.push_str(", ");
+                }
+                result.push_str(&default_value(&field.schema));
+            }
+            result.push(')');
+            result
+        }
+        Schema::Enum { .. } => unimplemented!("Can't determine default enum variant"),
+        Schema::OneOf { .. } => unimplemented!("Can't determine default OneOf variant"),
+    }
+}
+
 impl Generator {
     fn add_only(&mut self, schema: &Schema) -> anyhow::Result<()> {
         match schema {
