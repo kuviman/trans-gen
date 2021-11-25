@@ -121,6 +121,10 @@ fn struct_impl(definition: &Struct, base: Option<(&Name, usize)>) -> String {
     include_templing!("src/gens/python/struct_impl.templing")
 }
 
+pub fn one_of_methods(schema: &Schema, call: &str) -> String {
+    include_templing!("src/gens/python/one_of_methods.templing")
+}
+
 pub fn default_value(schema: &Schema) -> String {
     match schema {
         Schema::Bool => "False".to_owned(),

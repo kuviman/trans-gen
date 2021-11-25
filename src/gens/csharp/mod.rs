@@ -144,6 +144,10 @@ impl Generator {
         }
     }
 
+    pub fn one_of_methods(&self, schema: &Schema, call: &str) -> String {
+        include_templing!("src/gens/csharp/one_of_methods.templing")
+    }
+
     fn doc_comment(&self, documentation: &Documentation) -> String {
         let mut result = String::new();
         result.push_str("/// <summary>\n");

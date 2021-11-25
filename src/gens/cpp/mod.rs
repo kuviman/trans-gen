@@ -68,6 +68,12 @@ pub fn file_name(schema: &Schema) -> String {
 }
 
 impl Generator {
+    pub fn one_of_methods_def(&self, schema: &Schema) -> String {
+        include_templing!("src/gens/cpp/one_of_methods_def.templing")
+    }
+    pub fn one_of_methods_impl(&self, schema: &Schema, call: &str) -> String {
+        include_templing!("src/gens/cpp/one_of_methods_impl.templing")
+    }
     pub fn type_name(&self, schema: &Schema) -> String {
         match schema {
             Schema::Bool => "bool".to_owned(),
