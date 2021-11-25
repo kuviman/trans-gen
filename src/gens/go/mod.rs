@@ -15,6 +15,31 @@ impl Generator {
     }
 }
 
+pub fn default_value(schema: &Schema) -> String {
+    match schema {
+        Schema::Bool => "false".to_owned(),
+        Schema::Int32 | Schema::Int64 => "0".to_owned(),
+        Schema::Float32 | Schema::Float64 => "0.0".to_owned(),
+        Schema::Map(..) | Schema::Vec(..) => format!("make({})", type_name(schema)),
+        Schema::Option(..) => "nil".to_owned(),
+        Schema::String => unimplemented!("No default string"),
+        Schema::Struct { definition, .. } => {
+            let mut result = format!("{} {{\n", definition.name.camel_case(conv));
+            for field in &definition.fields {
+                result.push_str(&format!(
+                    "    {}: {},\n",
+                    field.name.camel_case(conv),
+                    default_value(&field.schema),
+                ));
+            }
+            result.push('}');
+            result
+        }
+        Schema::Enum { .. } => unimplemented!("Can't determine default enum variant"),
+        Schema::OneOf { .. } => unimplemented!("Can't determine default OneOf variant"),
+    }
+}
+
 pub fn type_name(schema: &Schema) -> String {
     match schema {
         Schema::Bool => "bool".to_owned(),
