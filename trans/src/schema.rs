@@ -11,7 +11,7 @@ impl std::fmt::Debug for Name {
 
 impl Name {
     pub fn new(name: String) -> Self {
-        Self(name.to_camel_case())
+        Self(name.to_title_case())
     }
     pub fn as_str(&self) -> &str {
         &self.0
