@@ -5,6 +5,8 @@ use crate as trans;
 /// 2 dimensional vector.
 #[derive(Trans)]
 #[trans(for = "batbox::Vec2")]
+#[trans(no_generics_in_name)]
+#[trans(namespace = "model")] // TODO
 pub struct Vec2<T> {
     /// `x` coordinate of the vector
     pub x: T,
@@ -15,6 +17,8 @@ pub struct Vec2<T> {
 /// 3 dimensional vector.
 #[derive(Trans)]
 #[trans(for = "batbox::Vec3")]
+#[trans(no_generics_in_name)]
+#[trans(namespace = "model")] // TODO
 pub struct Vec3<T> {
     /// `x` coordinate of the vector
     pub x: T,
@@ -27,6 +31,8 @@ pub struct Vec3<T> {
 /// 4 dimensional vector.
 #[derive(Trans)]
 #[trans(for = "batbox::Vec4")]
+#[trans(no_generics_in_name)]
+#[trans(namespace = "model")] // TODO
 pub struct Vec4<T> {
     /// `x` coordinate of the vector
     pub x: T,
@@ -42,6 +48,7 @@ pub struct Vec4<T> {
 #[derive(Trans)]
 #[trans(for = "batbox::Color")]
 #[trans(no_generics_in_name)]
+#[trans(namespace = "debugging")] // TODO
 pub struct Color<T> {
     /// Red component
     pub r: T,
