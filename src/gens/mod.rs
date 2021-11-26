@@ -6,20 +6,20 @@ macro_rules! all_runnable_gens {
         $macro!(cpp);
         $macro!(csharp);
         $macro!(dlang);
+        $macro!(fsharp);
         $macro!(go);
+        $macro!(haskell);
+        $macro!(java);
+        $macro!(javascript);
+        $macro!(kotlin);
+        $macro!(pascal);
+        $macro!(php);
         $macro!(python);
         $macro!(ruby);
         $macro!(rust);
-        $macro!(java);
-        $macro!(kotlin);
         $macro!(scala);
-        $macro!(fsharp);
-        $macro!(javascript);
-        $macro!(typescript);
         $macro!(swift);
-        $macro!(php);
-        $macro!(haskell);
-        $macro!(pascal);
+        $macro!(typescript);
     };
 }
 
