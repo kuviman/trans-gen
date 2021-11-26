@@ -1,4 +1,5 @@
 import stream;
+import std.algorithm;
 
 const BUFFER_SIZE = 102_400;
 
@@ -16,7 +17,7 @@ class BufferedStream : Stream
             readBuffer = inner.readBytesAtMost(BUFFER_SIZE);
             readBufferPos = 0;
         }
-        auto chunk = readBuffer[readBufferPos .. readBufferPos + byteCount];
+        auto chunk = readBuffer[readBufferPos .. min(readBufferPos + byteCount, $)];
         readBufferPos += chunk.length;
         return chunk;
     }
