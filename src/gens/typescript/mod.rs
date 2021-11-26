@@ -11,6 +11,13 @@ pub struct Generator {
     files: HashMap<String, String>,
 }
 
+pub fn one_of_methods(prefix: &str, schema: &Schema, call: &str) -> String {
+    let method_name = |name: &Name| -> Name {
+        Name::new(Name::new(prefix.to_owned()).as_str().to_owned() + name.as_str())
+    };
+    include_templing!("src/gens/typescript/one_of_methods.templing")
+}
+
 pub fn default_value(schema: &Schema) -> String {
     match schema {
         Schema::Bool => "false".to_owned(),
@@ -58,7 +65,56 @@ pub fn type_name(schema: &Schema) -> String {
     }
 }
 
-fn imports(schema: &Schema) -> String {
+pub fn import_with_fields(schemas: &[&Schema]) -> impl IntoIterator<Item = String> {
+    let mut imports = BTreeSet::new();
+    fn add_imports(schema: &Schema, imports: &mut BTreeSet<(Name, String)>) {
+        match schema {
+            Schema::Struct { .. } | Schema::OneOf { .. } | Schema::Enum { .. } => {
+                imports.insert((schema.name().unwrap().clone(), file_name(schema)));
+            }
+            Schema::Option(inner) => {
+                add_imports(inner, imports);
+            }
+            Schema::Vec(inner) => {
+                add_imports(inner, imports);
+            }
+            Schema::Map(key_type, value_type) => {
+                add_imports(key_type, imports);
+                add_imports(value_type, imports);
+            }
+            Schema::Bool
+            | Schema::Int32
+            | Schema::Int64
+            | Schema::Float32
+            | Schema::Float64
+            | Schema::String => {}
+        }
+    }
+    fn add_imports_struct(definition: &Struct, imports: &mut BTreeSet<(Name, String)>) {
+        for field in &definition.fields {
+            add_imports(&field.schema, imports);
+        }
+    }
+    for schema in schemas {
+        add_imports(schema, &mut imports);
+        match schema {
+            Schema::Struct { definition, .. } => {
+                add_imports_struct(definition, &mut imports);
+            }
+            Schema::OneOf { variants, .. } => {
+                for variant in variants {
+                    add_imports_struct(variant, &mut imports);
+                }
+            }
+            _ => {}
+        }
+    }
+    imports.into_iter().map(|(name, path)| {
+        templing!(r#"import { {{ name.camel_case(conv) }} } from "@{{ path }}";"#)
+    })
+}
+
+pub fn imports(schema: &Schema) -> String {
     let mut imports = BTreeSet::new();
     fn add_imports_struct(definition: &Struct, imports: &mut BTreeSet<(Name, String)>) {
         fn add_imports(schema: &Schema, imports: &mut BTreeSet<(Name, String)>) {
