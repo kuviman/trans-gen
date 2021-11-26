@@ -1,0 +1,24 @@
+- let variants = match schema {
+-   trans::Schema::OneOf { variants, .. } => variants,
+-   _ => unreachable!(),
+- };
+- for variant in variants {
+public void {{ method_name(&variant.name).mixed_case(conv) }}(~
+    - for (index, field) in variant.fields.iter().enumerate() {
+        - if index != 0 {
+            ~, ~
+        - }
+        ~{{ self.type_name(&field.schema) }} {{ field.name.mixed_case(conv) }}~
+    - }
+~) {
+    {{ call }}(new {{ self.type_name(schema) }}.{{ variant.name.camel_case(conv) }}(~
+    - for (index, field) in variant.fields.iter().enumerate() {
+        - if index != 0 {
+            ~, ~
+        - }
+        ~{{ field.name.mixed_case(conv) }}~
+    - }
+    ~));
+}
+
+- }
