@@ -7,6 +7,13 @@ pub fn conv(name: &str) -> String {
         .replace("Float64", "F64")
 }
 
+pub fn one_of_methods(prefix: &str, schema: &Schema, call: &str) -> String {
+    let method_name = |name: &Name| -> Name {
+        Name::new(Name::new(prefix.to_owned()).as_str().to_owned() + name.as_str())
+    };
+    include_templing!("src/gens/rust/one_of_methods.templing")
+}
+
 pub fn type_name(schema: &Schema) -> String {
     match schema {
         Schema::Bool => "bool".to_owned(),
