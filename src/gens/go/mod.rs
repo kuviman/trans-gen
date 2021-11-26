@@ -15,6 +15,13 @@ impl Generator {
     }
 }
 
+pub fn one_of_methods(this: &str, prefix: &str, schema: &Schema, call: &str) -> String {
+    let method_name = |name: &Name| -> Name {
+        Name::new(Name::new(prefix.to_owned()).as_str().to_owned() + name.as_str())
+    };
+    include_templing!("src/gens/go/one_of_methods.templing")
+}
+
 pub fn default_value(schema: &Schema) -> String {
     match schema {
         Schema::Bool => "false".to_owned(),
@@ -203,6 +210,55 @@ fn file_name(schema: &Schema) -> String {
 }
 
 impl Generator {
+    pub fn import_with_fields(&self, schema: &Schema) -> impl Iterator<Item = String> {
+        let mut imports: BTreeSet<String> = BTreeSet::new();
+        fn add_imports_struct(mod_name: &str, definition: &Struct, imports: &mut BTreeSet<String>) {
+            fn add_imports(mod_name: &str, schema: &Schema, imports: &mut BTreeSet<String>) {
+                match schema {
+                    Schema::Struct { namespace, .. }
+                    | Schema::OneOf { namespace, .. }
+                    | Schema::Enum { namespace, .. } => {
+                        imports.insert(format!(
+                            ". \"{}/{}\"",
+                            mod_name,
+                            namespace_path(namespace).unwrap_or_else(|| "common".to_owned()),
+                        ));
+                    }
+                    Schema::Option(inner) => {
+                        add_imports(mod_name, inner, imports);
+                    }
+                    Schema::Vec(inner) => {
+                        add_imports(mod_name, inner, imports);
+                    }
+                    Schema::Map(key_type, value_type) => {
+                        add_imports(mod_name, key_type, imports);
+                        add_imports(mod_name, value_type, imports);
+                    }
+                    Schema::Bool
+                    | Schema::Int32
+                    | Schema::Int64
+                    | Schema::Float32
+                    | Schema::Float64
+                    | Schema::String => {}
+                }
+            }
+            for field in &definition.fields {
+                add_imports(mod_name, &field.schema, imports);
+            }
+        }
+        match schema {
+            Schema::Struct { definition, .. } => {
+                add_imports_struct(&self.mod_name, definition, &mut imports);
+            }
+            Schema::OneOf { variants, .. } => {
+                for variant in variants {
+                    add_imports_struct(&self.mod_name, variant, &mut imports);
+                }
+            }
+            _ => {}
+        }
+        imports.into_iter()
+    }
     fn imports(&self, schema: &Schema) -> String {
         let mut imports: BTreeSet<String> = BTreeSet::new();
         fn add_imports_struct(mod_name: &str, definition: &Struct, imports: &mut BTreeSet<String>) {
