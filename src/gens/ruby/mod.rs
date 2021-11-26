@@ -108,6 +108,13 @@ pub fn file_name(schema: &Schema) -> String {
         .join("/")
 }
 
+pub fn one_of_methods(prefix: &str, schema: &Schema, call: &str) -> String {
+    let method_name = |name: &Name| -> Name {
+        Name::new(Name::new(prefix.to_owned()).as_str().to_owned() + name.as_str())
+    };
+    include_templing!("src/gens/ruby/one_of_methods.templing")
+}
+
 pub fn default_value(schema: &Schema) -> String {
     match schema {
         Schema::Bool => "false".to_owned(),
