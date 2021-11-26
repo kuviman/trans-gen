@@ -90,6 +90,12 @@ fn doc_to_string(name: &str) -> String {
 }
 
 impl Generator {
+    pub fn one_of_methods(&self, prefix: &str, schema: &Schema, call: &str) -> String {
+        let method_name = |name: &Name| -> Name {
+            Name::new(Name::new(prefix.to_owned()).as_str().to_owned() + name.as_str())
+        };
+        include_templing!("src/gens/kotlin/one_of_methods.templing")
+    }
     pub fn default_value(&self, schema: &Schema) -> String {
         match schema {
             Schema::Bool => "false".to_owned(),
