@@ -10,7 +10,7 @@ pub struct Generator {
     files: HashMap<String, String>,
 }
 
-fn type_name(schema: &Schema) -> String {
+pub fn type_name(schema: &Schema) -> String {
     match schema {
         Schema::Bool => "Boolean".to_owned(),
         Schema::Int32 => "Int32".to_owned(),
@@ -33,7 +33,7 @@ fn type_name(schema: &Schema) -> String {
     }
 }
 
-fn imports(schema: &Schema) -> String {
+pub fn imports(schema: &Schema) -> String {
     let mut imports = BTreeSet::new();
     fn add_imports_struct(definition: &Struct, imports: &mut BTreeSet<String>) {
         fn add_imports(schema: &Schema, imports: &mut BTreeSet<String>) {
@@ -200,7 +200,7 @@ fn struct_impl(definition: &Struct, base: Option<(&Name, usize)>) -> String {
     include_templing!("src/gens/pascal/struct_impl.templing")
 }
 
-fn file_name(schema: &Schema) -> String {
+pub fn file_name(schema: &Schema) -> String {
     let mut result = String::new();
     for part in schema
         .namespace()
@@ -215,6 +215,36 @@ fn file_name(schema: &Schema) -> String {
         result.push_str(&part.camel_case(conv));
     }
     result
+}
+
+pub fn default_value(schema: &Schema) -> String {
+    match schema {
+        Schema::Bool => "false".to_owned(),
+        Schema::Int32 | Schema::Int64 => "0".to_owned(),
+        Schema::Float32 | Schema::Float64 => "0.0".to_owned(),
+        Schema::Map(..) => format!("{}.Create", type_name(schema)),
+        Schema::Vec(..) => "nil".to_owned(),
+        Schema::Option(..) => "nil".to_owned(),
+        Schema::String => unimplemented!("No default string"),
+        Schema::Struct { definition, .. } => {
+            let mut result = type_name(schema);
+            result.push_str(".Create(");
+            for (index, field) in definition.fields.iter().enumerate() {
+                if index != 0 {
+                    result.push_str(", ");
+                }
+                result.push_str(&default_value(&field.schema));
+            }
+            result.push(')');
+            result
+        }
+        Schema::Enum { .. } => unimplemented!("Can't determine default enum variant"),
+        Schema::OneOf { .. } => unimplemented!("Can't determine default OneOf variant"),
+    }
+}
+
+pub fn tcp_stream_source() -> &'static str {
+    include_str!("TcpStream.pas")
 }
 
 impl Generator {
@@ -386,7 +416,7 @@ impl<D: Trans + PartialEq + Debug> TestableGenerator<testing::TcpReadWrite<D>> f
         vec![
             File {
                 path: "TcpStream.pas".to_owned(),
-                content: include_str!("TcpStream.pas").to_owned(),
+                content: tcp_stream_source().to_owned(),
             },
             File {
                 path: format!("{}.dpr", self.project_name.camel_case(conv)),
