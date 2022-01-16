@@ -12,7 +12,7 @@ pub struct Generator {
     options: Options,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct Options {
     pub type_declarations: bool,
 }
@@ -98,7 +98,7 @@ fn write_var(var: &str, schema: &Schema) -> String {
     include_templing!("src/gens/php/write_var.templing")
 }
 
-fn file_name(schema: &Schema) -> String {
+pub fn file_name(schema: &Schema) -> String {
     schema
         .namespace()
         .unwrap()
@@ -121,7 +121,7 @@ fn namespace_path(schema: &Schema) -> String {
         .join("\\")
 }
 
-fn type_name(schema: &Schema) -> String {
+pub fn type_name(schema: &Schema) -> String {
     match schema {
         Schema::Bool => "bool".to_owned(),
         Schema::Int32 | Schema::Int64 | Schema::Enum { .. } => "int".to_owned(),
@@ -130,6 +130,38 @@ fn type_name(schema: &Schema) -> String {
         Schema::Struct { .. } | Schema::OneOf { .. } => class_name(schema),
         Schema::Vec(_) | Schema::Map(_, _) => "array".to_owned(),
         Schema::Option(inner) => format!("?{}", type_name(inner)),
+    }
+}
+
+pub fn one_of_methods(prefix: &str, schema: &Schema, call: &str) -> String {
+    let method_name = |name: &Name| -> Name {
+        Name::new(Name::new(prefix.to_owned()).as_str().to_owned() + name.as_str())
+    };
+    include_templing!("src/gens/php/one_of_methods.templing")
+}
+
+pub fn default_value(schema: &Schema) -> String {
+    match schema {
+        Schema::Bool => "false".to_owned(),
+        Schema::Int32 | Schema::Int64 => "0".to_owned(),
+        Schema::Float32 | Schema::Float64 => "0.0".to_owned(),
+        Schema::Map(..) => "[]".to_owned(),
+        Schema::Vec(..) => "[]".to_owned(),
+        Schema::Option(..) => "NULL".to_owned(),
+        Schema::String => unimplemented!("No default string"),
+        Schema::Struct { definition, .. } => {
+            let mut result = format!("new {}(", type_name(schema));
+            for (index, field) in definition.fields.iter().enumerate() {
+                if index != 0 {
+                    result.push_str(", ");
+                }
+                result.push_str(&default_value(&field.schema));
+            }
+            result.push(')');
+            result
+        }
+        Schema::Enum { .. } => unimplemented!("Can't determine default enum variant"),
+        Schema::OneOf { .. } => unimplemented!("Can't determine default OneOf variant"),
     }
 }
 
@@ -154,6 +186,9 @@ impl Generator {
     }
     fn struct_impl(&self, definition: &Struct, base: Option<(&Schema, usize)>) -> String {
         include_templing!("src/gens/php/struct_impl.templing")
+    }
+    pub fn tcp_stream_source(&self) -> String {
+        include_templing!("src/gens/php/TcpStream.php.templing")
     }
 }
 
@@ -249,7 +284,7 @@ impl<D: Trans + PartialEq + Debug> TestableGenerator<testing::TcpReadWrite<D>> f
         vec![
             File {
                 path: "TcpStream.php".to_owned(),
-                content: include_templing!("src/gens/php/TcpStream.php.templing"),
+                content: self.tcp_stream_source(),
             },
             File {
                 path: "Main.php".to_owned(),
