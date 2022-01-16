@@ -17,7 +17,7 @@ function {{ method_name(&variant.name).mixed_case(conv) }}(~
         - if index != 0 {
             ~, ~
         - }
-        ~${{ field.name.snake_case(conv) }}~
+        ~${{ field.name.mixed_case(conv) }}~
     - }
     ~));
 }

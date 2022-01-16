@@ -12,9 +12,8 @@ pub fn derive_diff(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
     diff::derive(input.into()).into()
 }
 
-fn field_schema_name(field: &syn::Field) -> syn::Ident {
-    let mut name = field.ident.clone().unwrap();
-    for attr in &field.attrs {
+fn rename_attr(attrs: &[syn::Attribute]) -> Option<syn::Ident> {
+    for attr in attrs {
         if let Ok(syn::Meta::List(syn::MetaList {
             path: ref meta_path,
             ref nested,
@@ -30,7 +29,7 @@ fn field_schema_name(field: &syn::Field) -> syn::Ident {
                             ..
                         })) => {
                             if meta_path.is_ident("rename") {
-                                name = syn::Ident::new(&lit.value(), lit.span());
+                                return Some(syn::Ident::new(&lit.value(), lit.span()));
                             }
                         }
                         _ => panic!("Unexpected meta"),
@@ -38,6 +37,14 @@ fn field_schema_name(field: &syn::Field) -> syn::Ident {
                 }
             }
         }
+    }
+    None
+}
+
+fn field_schema_name(field: &syn::Field) -> syn::Ident {
+    let mut name = field.ident.clone().unwrap();
+    if let Some(rename) = rename_attr(&field.attrs) {
+        name = rename;
     }
     name
 }
@@ -530,7 +537,7 @@ pub fn derive_trans(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
                     .all(|variant| matches!(variant.fields, syn::Fields::Unit))
                 {
                     let variants = variants.iter().map(|variant| {
-                        let name = &variant.ident;
+                        let name = rename_attr(&variant.attrs).unwrap_or(variant.ident.clone());
                         let documentation = get_documentation(&variant.attrs);
                         add_version_req(
                             version_req(&variant.attrs),
@@ -564,7 +571,8 @@ pub fn derive_trans(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
                 } else {
                     let variants = variants.iter().map(|variant| {
                         let documentation = get_documentation(&variant.attrs);
-                        let variant_name = &variant.ident;
+                        let variant_name =
+                            rename_attr(&variant.attrs).unwrap_or(variant.ident.clone());
                         let schema_fields = variant.fields.iter().map(|field| {
                             let documentation = get_documentation(&field.attrs);
                             let schema_name = field_schema_name(field);
