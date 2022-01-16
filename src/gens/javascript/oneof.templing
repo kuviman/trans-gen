@@ -6,8 +6,8 @@ class {{ base_name.camel_case(conv) }} {
     static async readFrom(stream) {
         let tag = await stream.readInt();
         - for variant in variants {
-        if (tag == {{ variant.name.camel_case(conv) }}.TAG) {
-            return await {{ variant.name.camel_case(conv) }}.readFrom(stream);
+        if (tag == {{ base_name.camel_case(conv) }}.{{ variant.name.camel_case(conv) }}.TAG) {
+            return await {{ base_name.camel_case(conv) }}.{{ variant.name.camel_case(conv) }}.readFrom(stream);
         }
         - }
         throw new Error("Unexpected tag value");
