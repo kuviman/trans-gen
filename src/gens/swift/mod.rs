@@ -12,7 +12,13 @@ pub struct Generator {
     files: HashMap<String, String>,
 }
 
-fn type_name(schema: &Schema) -> String {
+impl Generator {
+    pub fn package_name(&self) -> &str {
+        &self.package_name
+    }
+}
+
+pub fn type_name(schema: &Schema) -> String {
     match schema {
         Schema::Bool => "Bool".to_owned(),
         Schema::Int32 => "Int32".to_owned(),
@@ -72,6 +78,40 @@ fn file_name(schema: &Schema) -> String {
         .map(|name| name.camel_case(conv))
         .collect::<Vec<String>>()
         .join("/")
+}
+
+pub fn one_of_methods(prefix: &str, schema: &Schema, call: &str) -> String {
+    let method_name = |name: &Name| -> Name {
+        Name::new(Name::new(prefix.to_owned()).as_str().to_owned() + name.as_str())
+    };
+    include_templing!("src/gens/swift/one_of_methods.templing")
+}
+
+pub fn default_value(schema: &Schema) -> String {
+    match schema {
+        Schema::Bool => "false".to_owned(),
+        Schema::Int32 | Schema::Int64 => "0".to_owned(),
+        Schema::Float32 | Schema::Float64 => "0.0".to_owned(),
+        Schema::Map(..) => "[:]".to_owned(),
+        Schema::Vec(..) => "[]".to_owned(),
+        Schema::Option(..) => "nil".to_owned(),
+        Schema::String => unimplemented!("No default string"),
+        Schema::Struct { definition, .. } => {
+            let mut result = format!("{}(", type_name(schema));
+            for (index, field) in definition.fields.iter().enumerate() {
+                if index != 0 {
+                    result.push_str(", ");
+                }
+                result.push_str(&field.name.mixed_case(conv));
+                result.push_str(": ");
+                result.push_str(&default_value(&field.schema));
+            }
+            result.push(')');
+            result
+        }
+        Schema::Enum { .. } => unimplemented!("Can't determine default enum variant"),
+        Schema::OneOf { .. } => unimplemented!("Can't determine default OneOf variant"),
+    }
 }
 
 impl crate::Generator for Generator {
@@ -201,6 +241,10 @@ impl<D: Trans + PartialEq + Debug> TestableGenerator<testing::FileReadWrite<D>> 
     }
 }
 
+pub fn tcp_stream_source() -> &'static str {
+    include_str!("TcpStream.swift")
+}
+
 impl<D: Trans + PartialEq + Debug> TestableGenerator<testing::TcpReadWrite<D>> for Generator {
     fn extra_files(&self, test: &testing::TcpReadWrite<D>) -> Vec<File> {
         let schema = Schema::of::<D>(&test.version);
@@ -208,7 +252,7 @@ impl<D: Trans + PartialEq + Debug> TestableGenerator<testing::TcpReadWrite<D>> f
         vec![
             File {
                 path: format!("Sources/{}/TcpStream.swift", self.package_name),
-                content: include_str!("TcpStream.swift").to_owned(),
+                content: tcp_stream_source().to_owned(),
             },
             File {
                 path: format!("Sources/{}/main.swift", self.package_name),

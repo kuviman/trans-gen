@@ -12,7 +12,7 @@ class BufferedInputStream : InputStream {
             buffer = inner.readBytesAtMost(BUFFER_SIZE);
             bufferPos = 0;
         }
-        let chunk = Array(buffer[bufferPos..<bufferPos + byteCount]);
+        let chunk = Array(buffer[bufferPos..<min(bufferPos + byteCount, buffer.count)]);
         bufferPos += chunk.count;
         return chunk;
     }
