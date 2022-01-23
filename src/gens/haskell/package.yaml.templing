@@ -8,6 +8,7 @@ dependencies:
   \- binary
   \- bytestring
   \- network
+  \- transformers
 
 executables:
   {{ package_name }}:

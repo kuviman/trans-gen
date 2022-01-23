@@ -28,7 +28,7 @@ fn file_path(schema: &Schema) -> String {
     module_name(schema).replace('.', "/")
 }
 
-fn module_name(schema: &Schema) -> String {
+pub fn module_name(schema: &Schema) -> String {
     match schema {
         Schema::Struct {
             namespace,
@@ -52,7 +52,7 @@ fn module_name(schema: &Schema) -> String {
     }
 }
 
-fn imports(schema: &Schema) -> String {
+pub fn imports(schema: &Schema) -> String {
     let mut imports = BTreeSet::new();
     fn add_imports_struct(definition: &Struct, imports: &mut BTreeSet<String>) {
         fn add_imports(schema: &Schema, imports: &mut BTreeSet<String>) {
@@ -70,7 +70,7 @@ fn imports(schema: &Schema) -> String {
                     imports.insert(format!(
                         "{} ({})",
                         module_name(schema),
-                        name.camel_case(conv)
+                        name.camel_case(conv),
                     ));
                 }
                 Schema::Option(inner) => {
@@ -112,7 +112,54 @@ fn imports(schema: &Schema) -> String {
     include_templing!("src/gens/haskell/imports.templing")
 }
 
-fn type_name(schema: &Schema) -> String {
+pub fn all_imports(schema: &Schema) -> String {
+    let mut imports = BTreeSet::new();
+    fn add_imports_struct(definition: &Struct, imports: &mut BTreeSet<String>) {
+        fn add_imports(schema: &Schema, imports: &mut BTreeSet<String>) {
+            match schema {
+                Schema::Struct { .. } | Schema::OneOf { .. } | Schema::Enum { .. } => {
+                    imports.insert(module_name(schema));
+                }
+                Schema::Option(inner) => {
+                    add_imports(inner, imports);
+                }
+                Schema::Vec(inner) => {
+                    add_imports(inner, imports);
+                }
+                Schema::Map(key_type, value_type) => {
+                    imports.insert("Data.Map".to_owned());
+                    add_imports(key_type, imports);
+                    add_imports(value_type, imports);
+                }
+                Schema::Int32 | Schema::Int64 => {
+                    imports.insert("Data.Int".to_owned());
+                }
+                Schema::Bool | Schema::Float32 | Schema::Float64 | Schema::String => {}
+            }
+        }
+        for field in &definition.fields {
+            add_imports(&field.schema, imports);
+        }
+    }
+    match schema {
+        Schema::Struct { definition, .. } => {
+            add_imports_struct(definition, &mut imports);
+        }
+        Schema::OneOf { variants, .. } => {
+            imports.insert("Data.Int".to_owned());
+            for variant in variants {
+                add_imports_struct(variant, &mut imports);
+            }
+        }
+        Schema::Enum { .. } => {
+            imports.insert("Data.Int".to_owned());
+        }
+        _ => {}
+    }
+    include_templing!("src/gens/haskell/imports.templing")
+}
+
+pub fn type_name(schema: &Schema) -> String {
     match schema {
         Schema::Bool => "Bool".to_owned(),
         Schema::Int32 => "Int32".to_owned(),
@@ -136,6 +183,35 @@ fn type_name(schema: &Schema) -> String {
     }
 }
 
+pub fn default_value(schema: &Schema) -> String {
+    match schema {
+        Schema::Bool => "false".to_owned(),
+        Schema::Int32 | Schema::Int64 => "0".to_owned(),
+        Schema::Float32 | Schema::Float64 => "0".to_owned(),
+        Schema::Map(..) => "empty".to_owned(),
+        Schema::Vec(..) => "[]".to_owned(),
+        Schema::Option(..) => "Nothing".to_owned(),
+        Schema::String => unimplemented!("No default string"),
+        Schema::Struct { definition, .. } => {
+            let mut result = format!("{} {{ ", definition.name.camel_case(conv));
+            for (index, field) in definition.fields.iter().enumerate() {
+                if index != 0 {
+                    result.push_str(", ");
+                }
+                result.push_str(&format!(
+                    "{} = {}",
+                    field.name.mixed_case(conv),
+                    default_value(&field.schema),
+                ));
+            }
+            result.push_str(" }");
+            result
+        }
+        Schema::Enum { .. } => unimplemented!("Can't determine default enum variant"),
+        Schema::OneOf { .. } => unimplemented!("Can't determine default OneOf variant"),
+    }
+}
+
 fn doc_comment(documentation: &Documentation) -> String {
     include_templing!("src/gens/haskell/doc_comment.templing")
 }
@@ -152,7 +228,7 @@ impl crate::Generator for Generator {
             Some(index) => &version[..index],
             None => version,
         };
-        let package_name = Name::new(name.to_owned()).kebab_case(conv);
+        let package_name = Name::new(name.to_owned()).camel_case(conv).to_lowercase();
         let package_name = &package_name;
         let mut files = HashMap::new();
         files.insert(
