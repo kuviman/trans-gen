@@ -32,7 +32,7 @@ fn rename_attr(attrs: &[syn::Attribute]) -> Option<syn::Ident> {
                                 return Some(syn::Ident::new(&lit.value(), lit.span()));
                             }
                         }
-                        _ => panic!("Unexpected meta"),
+                        _ => {}
                     }
                 }
             }
@@ -70,7 +70,7 @@ fn field_limit(field: &syn::Field) -> Option<usize> {
                                 limit = Some(lit.value().parse().expect("Failed to parse limit"));
                             }
                         }
-                        _ => panic!("Unexpected meta"),
+                        _ => {}
                     }
                 }
             }
@@ -100,13 +100,38 @@ fn version_req(attrs: &[syn::Attribute]) -> Option<syn::LitStr> {
                                 version_req = Some(lit.clone());
                             }
                         }
-                        _ => panic!("Unexpected meta"),
+                        _ => {}
                     }
                 }
             }
         }
     }
     version_req
+}
+
+fn should_skip(attrs: &[syn::Attribute]) -> bool {
+    for attr in attrs {
+        if let Ok(syn::Meta::List(syn::MetaList {
+            path: ref meta_path,
+            ref nested,
+            ..
+        })) = attr.parse_meta()
+        {
+            if meta_path.is_ident("trans") {
+                for inner in nested {
+                    match inner {
+                        syn::NestedMeta::Meta(syn::Meta::Path(meta_path)) => {
+                            if meta_path.is_ident("skip") {
+                                return true;
+                            }
+                        }
+                        _ => {}
+                    }
+                }
+            }
+        }
+    }
+    false
 }
 
 fn default_field_value(field: &syn::Field) -> Option<syn::Expr> {
@@ -229,12 +254,16 @@ fn field_write(
             trans::error_format::write_field::<#input_type #ty_generics>(stringify!(#field_name))
         },
     };
-    add_version_req(
-        version_req(&field.attrs),
-        quote! {
-            trans::add_error_context(trans::Trans::write_to(#field_name, writer, version), #error_context)?;
-        },
-    )
+    if should_skip(&field.attrs) {
+        quote! {}
+    } else {
+        add_version_req(
+            version_req(&field.attrs),
+            quote! {
+                trans::add_error_context(trans::Trans::write_to(#field_name, writer, version), #error_context)?;
+            },
+        )
+    }
 }
 
 fn field_read(
@@ -275,6 +304,12 @@ fn field_read(
             } else {
                 #field_default
             }
+        };
+    }
+    if should_skip(&field.attrs) {
+        field_read = match default_field_value(field) {
+            None => quote! { Default::default() },
+            Some(expr) => quote! { #expr },
         };
     }
     quote! {
