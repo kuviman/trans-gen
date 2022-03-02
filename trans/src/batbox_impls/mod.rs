@@ -49,7 +49,7 @@ pub struct Vec4<T> {
 #[trans(for = "batbox::Color")]
 #[trans(no_generics_in_name)]
 #[trans(namespace = "debugging")] // TODO
-pub struct Color<T> {
+pub struct Color<T: batbox::ColorComponent> {
     /// Red component
     pub r: T,
     /// Green component
