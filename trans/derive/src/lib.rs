@@ -397,24 +397,27 @@ pub fn derive_trans(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
             },
         };
         match ast.data {
-            syn::Data::Struct(syn::DataStruct { ref fields, .. }) => match fields {
-                syn::Fields::Named(_) => {
-                    let field_tys: Vec<_> = fields.iter().map(|field| &field.ty).collect();
-                    let field_tys = &field_tys;
-                    let mut generics = ast.generics.clone();
-                    let extra_where_clauses = quote! {
-                        where
-                            #(#field_tys: trans::Trans,)*
-                            #(#generic_params: trans::Trans,)*
-                    };
-                    let extra_where_clauses: syn::WhereClause =
-                        syn::parse_str(&extra_where_clauses.to_string()).unwrap();
-                    generics
-                        .make_where_clause()
-                        .predicates
-                        .extend(extra_where_clauses.predicates);
-                    let (impl_generics, ty_generics, where_clause) = generics.split_for_impl();
-                    let schema_fields = fields.iter().map(|field| {
+            syn::Data::Struct(syn::DataStruct { ref fields, .. }) => {
+                match fields {
+                    syn::Fields::Named(_) => {
+                        let non_skipped_field_tys = fields
+                            .iter()
+                            .filter(|field| !should_skip(&field.attrs))
+                            .map(|field| &field.ty);
+                        let mut generics = ast.generics.clone();
+                        let extra_where_clauses = quote! {
+                            where
+                                #(#non_skipped_field_tys: trans::Trans,)*
+                                #(#generic_params: trans::Trans,)*
+                        };
+                        let extra_where_clauses: syn::WhereClause =
+                            syn::parse_str(&extra_where_clauses.to_string()).unwrap();
+                        generics
+                            .make_where_clause()
+                            .predicates
+                            .extend(extra_where_clauses.predicates);
+                        let (impl_generics, ty_generics, where_clause) = generics.split_for_impl();
+                        let schema_fields = fields.iter().filter(|field| !should_skip(&field.attrs)).map(|field| {
                         let documentation = get_documentation(&field.attrs);
                         let schema_name = field_schema_name(field);
                         let ty = &field.ty;
@@ -429,82 +432,83 @@ pub fn derive_trans(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
                             },
                         )
                     });
-                    let field_names = fields.iter().map(|field| {
-                        field
-                            .ident
-                            .as_ref()
-                            .expect("Only named fields are supported")
-                    });
-                    let field_reads = fields
-                        .iter()
-                        .map(|field| field_read(field, input_type, &ty_generics, None));
-                    let field_writes = fields
-                        .iter()
-                        .map(|field| field_write(field, input_type, &ty_generics, None));
-                    let documentation = get_documentation(&ast.attrs);
-                    quote! {
-                        impl #impl_generics trans::Trans for #type_for_impl #ty_generics #where_clause {
-                            fn create_schema(version: &trans::Version) -> trans::Schema {
-                                let name = #final_name;
-                                trans::Schema::Struct {
-                                    namespace: #namespace,
-                                    definition: trans::Struct {
-                                        documentation: #documentation,
-                                        name: trans::Name::new(name),
-                                        fields: {
-                                            let mut fields = Vec::new();
-                                            #(#schema_fields)*
-                                            fields
+                        let field_names = fields.iter().map(|field| {
+                            field
+                                .ident
+                                .as_ref()
+                                .expect("Only named fields are supported")
+                        });
+                        let field_reads = fields
+                            .iter()
+                            .map(|field| field_read(field, input_type, &ty_generics, None));
+                        let field_writes = fields
+                            .iter()
+                            .map(|field| field_write(field, input_type, &ty_generics, None));
+                        let documentation = get_documentation(&ast.attrs);
+                        quote! {
+                            impl #impl_generics trans::Trans for #type_for_impl #ty_generics #where_clause {
+                                fn create_schema(version: &trans::Version) -> trans::Schema {
+                                    let name = #final_name;
+                                    trans::Schema::Struct {
+                                        namespace: #namespace,
+                                        definition: trans::Struct {
+                                            documentation: #documentation,
+                                            name: trans::Name::new(name),
+                                            fields: {
+                                                let mut fields = Vec::new();
+                                                #(#schema_fields)*
+                                                fields
+                                            },
                                         },
-                                    },
+                                    }
+                                }
+                                fn write_to(&self, writer: &mut dyn std::io::Write, version: &trans::Version) -> std::io::Result<()> {
+                                    let Self { #(#field_names,)* } = self;
+                                    #(#field_writes)*
+                                    Ok(())
+                                }
+                                fn read_from(reader: &mut dyn std::io::Read, version: &trans::Version) -> std::io::Result<Self> {
+                                    Ok(Self {
+                                        #(#field_reads,)*
+                                    })
                                 }
                             }
-                            fn write_to(&self, writer: &mut dyn std::io::Write, version: &trans::Version) -> std::io::Result<()> {
-                                let Self { #(#field_names,)* } = self;
-                                #(#field_writes)*
-                                Ok(())
-                            }
-                            fn read_from(reader: &mut dyn std::io::Read, version: &trans::Version) -> std::io::Result<Self> {
-                                Ok(Self {
-                                    #(#field_reads,)*
-                                })
+                        }
+                    }
+                    syn::Fields::Unnamed(_) => {
+                        if fields.iter().len() != 1 {
+                            panic!("Tuple structs other than newtype not supported");
+                        }
+                        let inner_ty = &fields.iter().next().unwrap().ty;
+                        let mut generics = ast.generics.clone();
+                        let extra_where_clauses = quote! {
+                            where #inner_ty: trans::Trans + 'static
+                        };
+                        let extra_where_clauses: syn::WhereClause =
+                            syn::parse_str(&extra_where_clauses.to_string()).unwrap();
+                        generics
+                            .make_where_clause()
+                            .predicates
+                            .extend(extra_where_clauses.predicates);
+                        let (impl_generics, ty_generics, where_clause) = generics.split_for_impl();
+                        quote! {
+                            impl #impl_generics trans::Trans for #type_for_impl #ty_generics #where_clause {
+                                fn create_schema(version: &trans::Version) -> trans::Schema {
+                                    <#inner_ty as trans::Trans>::create_schema(version)
+                                }
+                                fn write_to(&self, writer: &mut dyn std::io::Write, version: &trans::Version) -> std::io::Result<()> {
+                                    trans::Trans::write_to(&self.0, writer, version)?;
+                                    Ok(())
+                                }
+                                fn read_from(reader: &mut dyn std::io::Read, version: &trans::Version) -> std::io::Result<Self> {
+                                    Ok(Self(trans::Trans::read_from(reader, version)?))
+                                }
                             }
                         }
                     }
+                    syn::Fields::Unit => panic!("Unit structs not supported"),
                 }
-                syn::Fields::Unnamed(_) => {
-                    if fields.iter().len() != 1 {
-                        panic!("Tuple structs other than newtype not supported");
-                    }
-                    let inner_ty = &fields.iter().next().unwrap().ty;
-                    let mut generics = ast.generics.clone();
-                    let extra_where_clauses = quote! {
-                        where #inner_ty: trans::Trans + 'static
-                    };
-                    let extra_where_clauses: syn::WhereClause =
-                        syn::parse_str(&extra_where_clauses.to_string()).unwrap();
-                    generics
-                        .make_where_clause()
-                        .predicates
-                        .extend(extra_where_clauses.predicates);
-                    let (impl_generics, ty_generics, where_clause) = generics.split_for_impl();
-                    quote! {
-                        impl #impl_generics trans::Trans for #type_for_impl #ty_generics #where_clause {
-                            fn create_schema(version: &trans::Version) -> trans::Schema {
-                                <#inner_ty as trans::Trans>::create_schema(version)
-                            }
-                            fn write_to(&self, writer: &mut dyn std::io::Write, version: &trans::Version) -> std::io::Result<()> {
-                                trans::Trans::write_to(&self.0, writer, version)?;
-                                Ok(())
-                            }
-                            fn read_from(reader: &mut dyn std::io::Read, version: &trans::Version) -> std::io::Result<Self> {
-                                Ok(Self(trans::Trans::read_from(reader, version)?))
-                            }
-                        }
-                    }
-                }
-                syn::Fields::Unit => panic!("Unit structs not supported"),
-            },
+            }
             syn::Data::Enum(syn::DataEnum { ref variants, .. }) => {
                 let generics = ast.generics.clone();
                 let (impl_generics, ty_generics, where_clause) = generics.split_for_impl();
