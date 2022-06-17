@@ -40,7 +40,7 @@ pub fn imports(schema: &Schema) -> String {
             match schema {
                 Schema::Struct { .. } | Schema::OneOf { .. } | Schema::Enum { .. } => {
                     imports.insert(format!(
-                        "{} in '{}.pas'",
+                        "U{} in '{}.pas'",
                         schema.name().unwrap().camel_case(conv),
                         file_name(schema),
                     ));
@@ -207,12 +207,16 @@ pub fn file_name(schema: &Schema) -> String {
         .unwrap()
         .parts
         .iter()
-        .chain(std::iter::once(schema.name().unwrap()))
+        .map(|part| part.camel_case(conv))
+        .chain(std::iter::once(format!(
+            "U{}",
+            schema.name().unwrap().camel_case(conv)
+        )))
     {
         if !result.is_empty() {
             result.push('/');
         }
-        result.push_str(&part.camel_case(conv));
+        result.push_str(&part);
     }
     result
 }

@@ -1,4 +1,4 @@
-uses SysUtils, BufferedStream, FileStream, {{ schema.name().unwrap().camel_case(conv) }} in '{{ file_name(schema) }}.pas';
+uses SysUtils, BufferedStream, FileStream, U{{ schema.name().unwrap().camel_case(conv) }} in '{{ file_name(schema) }}.pas';
 
 {$mode delphi}{$H+}
 

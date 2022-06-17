@@ -1,4 +1,4 @@
-unit {{ definition.name.camel_case(conv) }};
+unit U{{ definition.name.camel_case(conv) }};
 
 {$mode delphi}{$H+}
 
