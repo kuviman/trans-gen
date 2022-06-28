@@ -93,36 +93,43 @@ impl crate::Generator for Generator {
     }
     fn generate(self, extra_files: Vec<File>) -> GenResult {
         let options = self.options;
-        let mut files = vec![File {
-            path: "api.md".to_owned(),
-            content: self
-                .namespaces
-                .into_iter()
-                .map(|(namespace, parts)| {
-                    format!(
-                        "## {}\n\n{}",
-                        if namespace.parts.is_empty() {
-                            match options.language.as_str() {
-                                "ru" => "Общее",
-                                "en" => "Common",
-                                _ => unimplemented!(),
-                            }
-                            .to_owned()
-                        } else {
-                            namespace
-                                .parts
-                                .iter()
-                                .map(|part| part.camel_case(conv))
-                                .collect::<Vec<String>>()
-                                .join("::")
-                        },
-                        parts.join("\n\n")
-                    )
-                })
-                .collect::<Vec<String>>()
-                .join("\n\n")
-                + "\n",
-        }];
+        let mut files = Vec::new();
+        for (namespace, parts) in self.namespaces.into_iter() {
+            files.push(File {
+                path: format!(
+                    "api/{}.md",
+                    if namespace.parts.is_empty() {
+                        "common".to_owned()
+                    } else {
+                        namespace
+                            .parts
+                            .iter()
+                            .map(|part| part.kebab_case(conv))
+                            .collect::<Vec<String>>()
+                            .join("_")
+                    }
+                ),
+                content: format!(
+                    "# {}\n\n{}",
+                    if namespace.parts.is_empty() {
+                        match options.language.as_str() {
+                            "ru" => "Общее",
+                            "en" => "Common",
+                            _ => unimplemented!(),
+                        }
+                        .to_owned()
+                    } else {
+                        namespace
+                            .parts
+                            .iter()
+                            .map(|part| part.camel_case(conv))
+                            .collect::<Vec<String>>()
+                            .join("::")
+                    },
+                    parts.join("\n\n")
+                ),
+            });
+        }
         for file in extra_files {
             files.push(file);
         }

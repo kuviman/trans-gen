@@ -1,4 +1,4 @@
-### `{{ name.camel_case(conv) }}`
+## `{{ name.camel_case(conv) }}`
 
 {{ self.options.get_doc(documentation, &format!("{:?} not documented in {:?}", name, language)) }}
 
