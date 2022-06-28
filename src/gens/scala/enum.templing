@@ -5,7 +5,7 @@ import {{ &self.main_package }}.util.StreamUtil
 {{ doc_comment(documentation, &[]) }}
 sealed abstract class {{ base_name.camel_case(conv) }} (val tag: Int) {
     {{ doc_write_to(&base_name.camel_case(conv)) }}
-    def writeTo(stream: java.io.OutputStream) {
+    def writeTo(stream: java.io.OutputStream): scala.Unit = {
         StreamUtil.writeInt(stream, tag)
     }
 }

@@ -12,7 +12,7 @@ case class {{ definition.name.camel_case(conv) }}(~
 - }
 ~ {
     {{ doc_write_to(&definition.name.camel_case(conv)) }}
-    {{# if base.is_some() { }}override {{# } }}def writeTo(stream: java.io.OutputStream) {
+    {{# if base.is_some() { }}override {{# } }}def writeTo(stream: java.io.OutputStream): scala.Unit = {
         - if base.is_some() {
         StreamUtil.writeInt(stream, {{ definition.name.camel_case(conv) }}.TAG)
         - }
