@@ -7,10 +7,13 @@ use crate as trans;
 #[trans(for = "batbox::Vec2")]
 #[trans(no_generics_in_name)]
 #[trans(namespace = "model")] // TODO
+#[trans_doc = "ru:Вектор в 2-х мерном пространстве"]
 pub struct Vec2<T> {
     /// `x` coordinate of the vector
+    #[trans_doc = "ru:Координата x"]
     pub x: T,
     /// `y` coordinate of the vector
+    #[trans_doc = "ru:Координата y"]
     pub y: T,
 }
 
@@ -19,12 +22,16 @@ pub struct Vec2<T> {
 #[trans(for = "batbox::Vec3")]
 #[trans(no_generics_in_name)]
 #[trans(namespace = "model")] // TODO
+#[trans_doc = "ru:Вектор в 3-х мерном пространстве"]
 pub struct Vec3<T> {
     /// `x` coordinate of the vector
+    #[trans_doc = "ru:Координата x"]
     pub x: T,
     /// `y` coordinate of the vector
+    #[trans_doc = "ru:Координата y"]
     pub y: T,
     /// `z` coordinate of the vector
+    #[trans_doc = "ru:Координата z"]
     pub z: T,
 }
 
@@ -33,14 +40,19 @@ pub struct Vec3<T> {
 #[trans(for = "batbox::Vec4")]
 #[trans(no_generics_in_name)]
 #[trans(namespace = "model")] // TODO
+#[trans_doc = "ru:Вектор в 4-х мерном пространстве"]
 pub struct Vec4<T> {
     /// `x` coordinate of the vector
+    #[trans_doc = "ru:Координата x"]
     pub x: T,
     /// `y` coordinate of the vector
+    #[trans_doc = "ru:Координата y"]
     pub y: T,
     /// `z` coordinate of the vector
+    #[trans_doc = "ru:Координата z"]
     pub z: T,
     /// `w` coordinate of the vector
+    #[trans_doc = "ru:Координата w"]
     pub w: T,
 }
 
@@ -49,14 +61,20 @@ pub struct Vec4<T> {
 #[trans(for = "batbox::Color")]
 #[trans(no_generics_in_name)]
 #[trans(namespace = "debugging")] // TODO
+#[trans_doc = "ru:Цвет в RGBA формате"]
 pub struct Color<T: batbox::ColorComponent> {
     /// Red component
+    #[trans_doc = "ru:Компонента красного цвета"]
     pub r: T,
     /// Green component
+    #[trans_doc = "ru:Компонента зеленого цвета"]
     pub g: T,
+    #[trans_doc = "ru:"]
     /// Blue component
+    #[trans_doc = "ru:Компонента синего цвета"]
     pub b: T,
     /// Alpha (opacity) component
+    #[trans_doc = "ru:Альфа компонента (непрозрачность)"]
     pub a: T,
 }
 
