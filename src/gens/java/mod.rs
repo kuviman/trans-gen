@@ -11,6 +11,7 @@ pub fn conv(name: &str) -> String {
 pub struct Generator {
     main_package: String,
     files: HashMap<String, String>,
+    options: Options,
 }
 
 impl Generator {
@@ -97,6 +98,9 @@ fn file_name(schema: &Schema) -> String {
 }
 
 impl Generator {
+    pub fn options(&self) -> &Options {
+        &self.options
+    }
     pub fn one_of_methods(&self, prefix: &str, schema: &Schema, call: &str) -> String {
         let method_name = |name: &Name| -> Name {
             Name::new(Name::new(prefix.to_owned()).as_str().to_owned() + name.as_str())
@@ -193,17 +197,39 @@ impl Generator {
     }
 }
 
+#[derive(Debug, Serialize, Deserialize)]
+pub enum Target {
+    Regular,
+    Graal,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct Options {
+    pub target: Target,
+}
+
+impl Default for Options {
+    fn default() -> Self {
+        Self {
+            target: Target::Regular,
+        }
+    }
+}
+
 impl crate::Generator for Generator {
     const NAME: &'static str = "Java";
-    type Options = ();
-    fn new(name: &str, _version: &str, _: ()) -> Self {
+    type Options = Options;
+    fn new(name: &str, _version: &str, options: Options) -> Self {
         let project_name = Name::new(name.to_owned()).kebab_case(conv);
         let project_name = &project_name;
         let main_package = Name::new(name.to_owned()).snake_case(conv);
         let mut files = HashMap::new();
         files.insert(
             "pom.xml".to_owned(),
-            include_templing!("src/gens/java/pom.xml.templing"),
+            match options.target {
+                Target::Regular => include_templing!("src/gens/java/pom.xml.templing"),
+                Target::Graal => include_templing!("src/gens/java/pom-graal.xml.templing"),
+            },
         );
         files.insert(
             format!("src/main/java/{}/util/StreamUtil.java", main_package),
@@ -213,6 +239,7 @@ impl crate::Generator for Generator {
         Self {
             main_package,
             files,
+            options,
         }
     }
     fn generate(mut self, extra_files: Vec<File>) -> GenResult {
