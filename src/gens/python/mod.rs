@@ -16,6 +16,7 @@ struct Package {
 pub struct Generator {
     packages: HashMap<String, Package>,
     files: HashMap<String, String>,
+    options: Options,
 }
 
 pub fn type_name(schema: &Schema) -> String {
@@ -167,6 +168,9 @@ pub fn file_name(schema: &Schema) -> String {
 }
 
 impl Generator {
+    pub fn options(&self) -> &Options {
+        &self.options
+    }
     fn insert_package(&mut self, schema: &Schema) {
         let namespace = schema.namespace().unwrap();
         let mut parent: Option<String> = None;
@@ -196,10 +200,29 @@ impl Generator {
     }
 }
 
+#[derive(Debug, Serialize, Deserialize)]
+pub enum Target {
+    Regular,
+    PyPy,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct Options {
+    pub target: Target,
+}
+
+impl Default for Options {
+    fn default() -> Self {
+        Self {
+            target: Target::Regular,
+        }
+    }
+}
+
 impl crate::Generator for Generator {
     const NAME: &'static str = "Python";
-    type Options = ();
-    fn new(_name: &str, _version: &str, _: ()) -> Self {
+    type Options = Options;
+    fn new(_name: &str, _version: &str, options: Options) -> Self {
         let mut files = HashMap::new();
         files.insert(
             "stream_wrapper.py".to_owned(),
@@ -208,6 +231,7 @@ impl crate::Generator for Generator {
         Self {
             packages: HashMap::new(),
             files,
+            options,
         }
     }
     fn generate(mut self, extra_files: Vec<File>) -> GenResult {
