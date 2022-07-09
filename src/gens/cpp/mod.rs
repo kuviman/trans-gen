@@ -8,13 +8,23 @@ pub fn conv(name: &str) -> String {
 }
 
 #[derive(Debug, Serialize, Deserialize)]
+pub enum Target {
+    Gcc,
+    Clang,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
 pub struct Options {
+    pub target: Target,
     pub cxx_standard: i32,
 }
 
 impl Default for Options {
     fn default() -> Self {
-        Self { cxx_standard: 20 }
+        Self {
+            target: Target::Gcc,
+            cxx_standard: 20,
+        }
     }
 }
 
@@ -68,6 +78,9 @@ pub fn file_name(schema: &Schema) -> String {
 }
 
 impl Generator {
+    pub fn options(&self) -> &Options {
+        &self.options
+    }
     pub fn one_of_methods_def(&self, prefix: &str, schema: &Schema) -> String {
         let method_name = |name: &Name| -> Name {
             Name::new(Name::new(prefix.to_owned()).as_str().to_owned() + name.as_str())
