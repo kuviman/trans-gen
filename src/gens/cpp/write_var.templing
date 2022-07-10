@@ -5,9 +5,6 @@ stream.write({{ var }});
 - Schema::Struct { .. } => {
 {{ var }}.writeTo(stream);
 - }
-- Schema::OneOf { .. } => {
-{{ var }}->writeTo(stream);
-- }
 - Schema::Option(inner) => {
 if ({{ var }}) {
     stream.write(true);
@@ -39,5 +36,12 @@ for (const auto& {{ entry_var }} : {{ var }}) {
 - }
 - Schema::Enum { .. } => {
 stream.write((int)({{ var }}));
+- }
+- Schema::OneOf { base_name, .. } => {
+- if self.options.cxx_standard >= 17 {
+write{{ base_name.camel_case(conv) }}({{ var }}, stream);
+- } else {
+{{ var }}->writeTo(stream);
+- }
 - }
 - }

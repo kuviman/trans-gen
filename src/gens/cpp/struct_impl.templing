@@ -1,4 +1,4 @@
-- let full_name = if let Some((base_name, _)) = base {
+- let full_name = if let Some((base_name, _)) = base.filter(|_| self.options.cxx_standard < 17) {
 -     format!(
 -         "{}::{}",
 -         base_name.camel_case(conv),
@@ -45,7 +45,7 @@
 
 {{ self.doc_write_to(&definition.name.camel_case(conv)) }}
 void {{ full_name }}::writeTo(OutputStream& stream) const {
-    - if base.is_some() {
+    - if base.is_some() && self.options.cxx_standard < 17 {
     stream.write(TAG);
     - }
     - for field in &definition.fields {

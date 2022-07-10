@@ -9,6 +9,42 @@ namespace {{ path }} {
 {{ self.struct_impl(variant, Some((base_name, tag))) }}
 - }
 
+- if self.options.cxx_standard >= 17 {
+    
+{{ self.doc_read_from(&base_name.camel_case(conv)) }}
+{{ base_name.camel_case(conv) }} read{{ base_name.camel_case(conv) }}(InputStream& stream) {
+    switch (stream.readInt()) {
+    - for (tag, variant) in variants.iter().enumerate() {
+    case {{ tag }}:
+        return {{ variant.name.camel_case(conv) }}::readFrom(stream);
+    - }
+    default:
+        throw std::runtime_error("Unexpected tag value");
+    }
+}
+
+{{ self.doc_write_to(&base_name.camel_case(conv)) }}
+void write{{ base_name.camel_case(conv) }}(const {{ base_name.camel_case(conv) }}& value, OutputStream& stream) {
+    std::visit([&](auto& arg) {
+        using T = std::decay_t<decltype(arg)>;
+        - for (tag, variant) in variants.iter().enumerate() {
+        if constexpr (std::is_same_v<T, {{ variant.name.camel_case(conv) }}>) {
+            stream.write((int) {{ tag }});
+        }
+        - }
+        arg.writeTo(stream);
+    }, value);
+}
+
+{{ self.doc_to_string(&base_name.camel_case(conv)) }}
+std::string {{ base_name.mixed_case(conv) }}ToString(const {{ base_name.camel_case(conv) }}& value) {
+    return std::visit([](auto& arg) {
+        return arg.toString();
+    }, value);
+}
+
+- } else {
+
 {{ self.doc_read_from(&base_name.camel_case(conv)) }}
 std::shared_ptr<{{ base_name.camel_case(conv) }}> {{ base_name.camel_case(conv) }}::readFrom(InputStream& stream) {
     switch (stream.readInt()) {
@@ -22,6 +58,7 @@ std::shared_ptr<{{ base_name.camel_case(conv) }}> {{ base_name.camel_case(conv) 
         throw std::runtime_error("Unexpected tag value");
     }
 }
+- }
 - if namespace_path(namespace).is_some() {
 
 }

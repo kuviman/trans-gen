@@ -101,7 +101,13 @@ impl Generator {
             Schema::Float32 => "float".to_owned(),
             Schema::Float64 => "double".to_owned(),
             Schema::String => "std::string".to_owned(),
-            Schema::OneOf { .. } => format!("std::shared_ptr<{}>", name_path(schema)),
+            Schema::OneOf { .. } => {
+                if self.options.cxx_standard >= 17 {
+                    name_path(schema)
+                } else {
+                    format!("std::shared_ptr<{}>", name_path(schema))
+                }
+            }
             Schema::Struct { .. } | Schema::Enum { .. } => name_path(schema),
             Schema::Option(inner) => {
                 if self.options.cxx_standard >= 17 {
@@ -206,6 +212,7 @@ impl Generator {
                 }
             }
             Schema::OneOf { variants, .. } => {
+                result.insert("<variant>".to_owned());
                 result.insert("<memory>".to_owned());
                 for variant in variants {
                     for field in &variant.fields {

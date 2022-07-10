@@ -8,9 +8,6 @@ ss << '"' << {{ var }} << '"';
 - Schema::Struct { .. } => {
 ss << {{ var }}.toString();
 - }
-- Schema::OneOf { .. } => {
-ss << {{ var }}->toString();
-- }
 - Schema::Option(inner) => {
 if ({{ var }}) {
     - let value_var = format!("{}Value", var); let value_var = &value_var;
@@ -55,5 +52,12 @@ ss << " }";
 - }
 - Schema::Enum { base_name, .. } => {
 ss << {{ base_name.mixed_case(conv) }}ToString({{ var }});
+- }
+- Schema::OneOf { base_name, .. } => {
+- if self.options.cxx_standard >= 17 {
+ss << {{ base_name.mixed_case(conv) }}ToString({{ var }});
+- } else {
+ss << {{ var }}->toString();
+- }
 - }
 - }

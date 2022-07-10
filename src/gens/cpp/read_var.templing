@@ -18,7 +18,7 @@
 - Schema::String => {
 {{ var_decl }} = stream.readString();
 - }
-- Schema::Struct { .. } | Schema::OneOf { .. } => {
+- Schema::Struct { .. } => {
 {{ var_decl }} = {{ name_path(schema) }}::readFrom(stream);
 - }
 - Schema::Option(inner) => {
@@ -66,5 +66,13 @@ for (size_t {{ index_var }} = 0; {{ index_var }} < {{ size_var }}; {{ index_var 
 - }
 - Schema::Enum { base_name, variants, .. } => {
 {{ var_decl }} = read{{ base_name.camel_case(conv) }}(stream);
+- }
+- Schema::OneOf { base_name, namespace, .. } => {
+- if self.options.cxx_standard >= 17 {
+- let namespace_path = namespace_path(namespace).map_or(String::new(), |path| path + "::");
+{{ var_decl }} = {{ namespace_path }}read{{ base_name.camel_case(conv) }}(stream);
+- } else {
+{{ var_decl }} = {{ name_path(schema) }}::readFrom(stream);
+- }
 - }
 - }

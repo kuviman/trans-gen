@@ -1,5 +1,5 @@
-- let variants = match schema {
--   trans::Schema::OneOf { variants, .. } => variants,
+- let (namespace, variants) = match schema {
+-   trans::Schema::OneOf { namespace, variants, .. } => (namespace, variants),
 -   _ => unreachable!(),
 - };
 - for variant in variants {
@@ -12,7 +12,12 @@ void DebugInterface::{{ method_name(&variant.name).mixed_case(conv) }}(~
     - }
 ~)
 {
+    - if self.options.cxx_standard >= 17 {
+    - let namespace_path = namespace_path(namespace).map_or(String::new(), |path| path + "::");
+    {{ call }}({{ self.type_name(schema) }}({{ namespace_path }}{{ variant.name.camel_case(conv) }}(~
+    - } else {
     {{ call }}({{ self.type_name(schema) }}(new {{ name_path(schema) }}::{{ variant.name.camel_case(conv) }}(~
+    - }
     - for (index, field) in variant.fields.iter().enumerate() {
         - if index != 0 {
             ~, ~

@@ -1,4 +1,4 @@
-- let full_name = if let Some((base_name, _)) = base {
+- let full_name = if let Some((base_name, _)) = base.filter(|_| self.options.cxx_standard < 17) {
 -     format!(
 -         "{}::{}",
 -         base_name.camel_case(conv),
@@ -10,12 +10,12 @@
 - let full_name = &full_name;
 {{ self.doc_comment(&definition.documentation) }}
 class {{ full_name }}~
-- if let Some((base_name, _)) = base {
+- if let Some((base_name, _)) = base.filter(|_| self.options.cxx_standard < 17) {
 ~ : public {{ base_name.camel_case(conv) }}~
 - }
 ~ {
 public:
-    - if let Some((base_name, tag)) = base {
+    - if let Some((base_name, tag)) = base.filter(|_| self.options.cxx_standard < 17) {
     static const int TAG = {{ tag }};
 
     - }
