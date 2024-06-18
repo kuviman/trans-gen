@@ -25,16 +25,16 @@ pub trait Diff:
     fn update(&mut self, delta: &Self::Delta);
 }
 
-impl<T: batbox::Diff> Diff for T
+impl<T: batbox::diff::Diff> Diff for T
 where
     T: Trans,
-    <T as batbox::Diff>::Delta: Trans,
+    <T as batbox::diff::Diff>::Delta: Trans,
 {
-    type Delta = <T as batbox::Diff>::Delta;
+    type Delta = <T as batbox::diff::Diff>::Delta;
     fn diff(&self, to: &Self) -> Self::Delta {
-        <T as batbox::Diff>::diff(self, to)
+        <T as batbox::diff::Diff>::diff(self, to)
     }
     fn update(&mut self, delta: &Self::Delta) {
-        <T as batbox::Diff>::update(self, delta)
+        <T as batbox::diff::Diff>::update(self, delta)
     }
 }

@@ -1,5 +1,5 @@
-Cargo.lock
-target/
+/.direnv/
+/target/
 .idea/
 *.iml
 /generated/

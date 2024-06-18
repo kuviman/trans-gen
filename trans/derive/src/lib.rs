@@ -266,6 +266,46 @@ fn field_write(
     }
 }
 
+fn original_field_name(field: &syn::Field) -> TokenStream {
+    let mut result = {
+        let ident = field
+            .ident
+            .as_ref()
+            .expect("Only named fields are supported");
+        quote! {
+            #ident
+        }
+    };
+    for attr in &field.attrs {
+        if let Ok(syn::Meta::List(syn::MetaList {
+            path: ref meta_path,
+            ref nested,
+            ..
+        })) = attr.parse_meta()
+        {
+            if meta_path.is_ident("trans") {
+                for inner in nested {
+                    if let syn::NestedMeta::Meta(syn::Meta::NameValue(syn::MetaNameValue {
+                        path: ref meta_path,
+                        lit: syn::Lit::Str(ref lit),
+                        ..
+                    })) = *inner
+                    {
+                        if meta_path.is_ident("original_field") {
+                            let ident: syn::Index = syn::parse_str(&lit.value())
+                                .expect("Failed to parse original_field");
+                            result = quote! {
+                                #ident
+                            };
+                        }
+                    }
+                }
+            }
+        }
+    }
+    result
+}
+
 fn field_read(
     field: &syn::Field,
     input_type: &syn::Ident,
@@ -312,8 +352,9 @@ fn field_read(
             Some(expr) => quote! { #expr },
         };
     }
+    let original_field_name = original_field_name(field);
     quote! {
-        #field_name: #field_read
+        #original_field_name: #field_read
     }
 }
 
@@ -432,6 +473,7 @@ pub fn derive_trans(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
                             },
                         )
                     });
+                        let original_field_names = fields.iter().map(original_field_name);
                         let field_names = fields.iter().map(|field| {
                             field
                                 .ident
@@ -463,7 +505,7 @@ pub fn derive_trans(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
                                     }
                                 }
                                 fn write_to(&self, writer: &mut dyn std::io::Write, version: &trans::Version) -> std::io::Result<()> {
-                                    let Self { #(#field_names,)* } = self;
+                                    let Self { #(#original_field_names: #field_names,)* } = self;
                                     #(#field_writes)*
                                     Ok(())
                                 }
