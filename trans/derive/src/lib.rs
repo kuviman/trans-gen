@@ -5,13 +5,6 @@ use quote::quote;
 
 use proc_macro2::TokenStream;
 
-mod diff;
-
-#[proc_macro_derive(Diff, attributes(diff))]
-pub fn derive_diff(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
-    diff::derive(input.into()).into()
-}
-
 fn rename_attr(attrs: &[syn::Attribute]) -> Option<syn::Ident> {
     for attr in attrs {
         if let Ok(syn::Meta::List(syn::MetaList {
