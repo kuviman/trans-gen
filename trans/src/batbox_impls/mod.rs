@@ -4,6 +4,18 @@ use super::*;
 
 use crate as trans;
 
+impl<T: batbox::num::Float + Trans> Trans for batbox::la::Angle<T> {
+    fn create_schema(version: &Version) -> Schema {
+        T::create_schema(version)
+    }
+    fn write_to(&self, writer: &mut dyn std::io::Write, version: &Version) -> std::io::Result<()> {
+        self.as_radians().write_to(writer, version)
+    }
+    fn read_from(reader: &mut dyn std::io::Read, version: &Version) -> std::io::Result<Self> {
+        Ok(Self::from_radians(T::read_from(reader, version)?))
+    }
+}
+
 /// 2 dimensional vector.
 #[derive(Trans)]
 #[trans(for = "batbox::la::vec2")]
