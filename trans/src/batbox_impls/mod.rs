@@ -19,7 +19,7 @@ impl<T: batbox::num::Float + Trans> Trans for batbox::la::Angle<T> {
 /// 2 dimensional vector.
 #[derive(Trans)]
 #[trans(for = "batbox::la::vec2")]
-#[trans(no_generics_in_name)]
+// #[trans(no_generics_in_name)]
 #[trans(namespace = "model")] // TODO
 #[trans_doc = "ru:Вектор в 2-х мерном пространстве"]
 pub struct Vec2<T> {
@@ -36,7 +36,7 @@ pub struct Vec2<T> {
 /// 3 dimensional vector.
 #[derive(Trans)]
 #[trans(for = "batbox::la::vec3")]
-#[trans(no_generics_in_name)]
+// #[trans(no_generics_in_name)]
 #[trans(namespace = "model")] // TODO
 #[trans_doc = "ru:Вектор в 3-х мерном пространстве"]
 pub struct Vec3<T> {
@@ -57,7 +57,7 @@ pub struct Vec3<T> {
 /// 4 dimensional vector.
 #[derive(Trans)]
 #[trans(for = "batbox::la::vec4")]
-#[trans(no_generics_in_name)]
+// #[trans(no_generics_in_name)]
 #[trans(namespace = "model")] // TODO
 #[trans_doc = "ru:Вектор в 4-х мерном пространстве"]
 pub struct Vec4<T> {
