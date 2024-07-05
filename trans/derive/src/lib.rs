@@ -562,7 +562,7 @@ pub fn derive_trans(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
                             });
                         let field_writes = variant.fields.iter().map(|field| field_write(field, input_type, &ty_generics, Some(variant_name)));
                         quote! {
-                            #input_type::#variant_name { #(#field_names,)* } => {
+                            #input_type::#variant_name { #(ref #field_names,)* } => {
                                 trans::add_error_context(
                                     trans::Trans::write_to(&#tag, writer, version),
                                     trans::error_format::write_tag::<#input_type #ty_generics>(stringify!(#variant_name)),
@@ -585,7 +585,7 @@ pub fn derive_trans(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
                     });
                     quote! {
                         fn write_to(&self, writer: &mut dyn std::io::Write, version: &trans::Version) -> std::io::Result<()> {
-                            match self {
+                            match *self {
                                 #(#variant_writes)*
                             }
                             Ok(())
