@@ -128,6 +128,14 @@ impl<T: batbox::num::Float + Trans> Trans for batbox::num::RealImpl<T> {
     }
 }
 
+#[derive(Trans)]
+#[trans(for = "batbox::collection::CollectionDelta")]
+pub struct CollectionDelta<T: batbox::collection::HasId + batbox::diff::Diff> {
+    pub new_entities: Vec<T>,
+    pub deleted_entities: Vec<T::Id>,
+    pub mutated_entities: Vec<(T::Id, T::Delta)>,
+}
+
 impl<T: Trans + batbox::collection::HasId> Trans for batbox::collection::Collection<T> {
     fn create_schema(version: &Version) -> Schema {
         Schema::Vec(Schema::of::<T>(version))
