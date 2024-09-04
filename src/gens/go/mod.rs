@@ -27,7 +27,8 @@ pub fn default_value(schema: &Schema) -> String {
         Schema::Bool => "false".to_owned(),
         Schema::Int32 | Schema::Int64 => "0".to_owned(),
         Schema::Float32 | Schema::Float64 => "0.0".to_owned(),
-        Schema::Map(..) | Schema::Vec(..) => format!("make({})", type_name(schema)),
+        Schema::Map(..) => format!("make({})", type_name(schema)),
+        Schema::Vec(..) => format!("make({}, 0)", type_name(schema)),
         Schema::Option(..) => "nil".to_owned(),
         Schema::String => unimplemented!("No default string"),
         Schema::Struct { definition, .. } => {
