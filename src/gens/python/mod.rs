@@ -34,6 +34,55 @@ pub fn type_name(schema: &Schema) -> String {
     }
 }
 
+pub fn all_imports(schema: &Schema) -> String {
+    let mut imports = BTreeSet::new();
+    fn add_imports_struct(definition: &Struct, imports: &mut BTreeSet<String>) {
+        fn add_imports(schema: &Schema, imports: &mut BTreeSet<String>) {
+            match schema {
+                Schema::Struct { .. } | Schema::OneOf { .. } | Schema::Enum { .. } => {
+                    imports.insert(format!(
+                        "from {} import {}",
+                        file_name(schema).replace('/', "."),
+                        schema.name().unwrap().camel_case(conv),
+                    ));
+                }
+                Schema::Option(inner) => {
+                    imports.insert("from typing import Optional".to_owned());
+                    add_imports(inner, imports);
+                }
+                Schema::Vec(inner) => {
+                    imports.insert("from typing import List".to_owned());
+                    add_imports(inner, imports);
+                }
+                Schema::Map(key_type, value_type) => {
+                    imports.insert("from typing import Dict".to_owned());
+                    add_imports(key_type, imports);
+                    add_imports(value_type, imports);
+                }
+                Schema::Int32 | Schema::Int64 => {}
+                Schema::Bool | Schema::Float32 | Schema::Float64 | Schema::String => {}
+            }
+        }
+        for field in &definition.fields {
+            add_imports(&field.schema, imports);
+        }
+    }
+    match schema {
+        Schema::Struct { definition, .. } => {
+            add_imports_struct(definition, &mut imports);
+        }
+        Schema::OneOf { variants, .. } => {
+            for variant in variants {
+                add_imports_struct(variant, &mut imports);
+            }
+        }
+        Schema::Enum { .. } => {}
+        _ => {}
+    }
+    imports.insert("from stream_wrapper import StreamWrapper".to_owned());
+    imports.into_iter().collect::<Vec<String>>().join("\n")
+}
+
 pub fn imports(schema: &Schema) -> String {
     let mut imports = BTreeSet::new();
     fn add_imports_struct(definition: &Struct, imports: &mut BTreeSet<String>) {
