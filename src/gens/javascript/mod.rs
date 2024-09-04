@@ -11,6 +11,47 @@ pub struct Generator {
     files: HashMap<String, String>,
 }
 
+pub fn all_imports(schema: &Schema) -> String {
+    let mut imports = BTreeSet::new();
+    fn add_imports_struct(definition: &Struct, imports: &mut BTreeSet<(Name, String)>) {
+        fn add_imports(schema: &Schema, imports: &mut BTreeSet<(Name, String)>) {
+            match schema {
+                Schema::Struct { .. } | Schema::OneOf { .. } | Schema::Enum { .. } => {
+                    imports.insert((schema.name().unwrap().clone(), file_name(schema)));
+                }
+                Schema::Option(inner) => {
+                    add_imports(inner, imports);
+                }
+                Schema::Vec(inner) => {
+                    add_imports(inner, imports);
+                }
+                Schema::Map(key_type, value_type) => {
+                    add_imports(key_type, imports);
+                    add_imports(value_type, imports);
+                }
+                Schema::Int32 | Schema::Int64 => {}
+                Schema::Bool | Schema::Float32 | Schema::Float64 | Schema::String => {}
+            }
+        }
+        for field in &definition.fields {
+            add_imports(&field.schema, imports);
+        }
+    }
+    match schema {
+        Schema::Struct { definition, .. } => {
+            add_imports_struct(definition, &mut imports);
+        }
+        Schema::OneOf { variants, .. } => {
+            for variant in variants {
+                add_imports_struct(variant, &mut imports);
+            }
+        }
+        Schema::Enum { .. } => {}
+        _ => {}
+    }
+    include_templing!("src/gens/javascript/imports.templing")
+}
+
 fn imports(schema: &Schema) -> String {
     let mut imports = BTreeSet::new();
     fn add_imports_struct(definition: &Struct, imports: &mut BTreeSet<(Name, String)>) {
