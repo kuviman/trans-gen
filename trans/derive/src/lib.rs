@@ -483,7 +483,7 @@ pub fn derive_trans(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
                             version_req(&field.attrs),
                             if is_flattenned(&field.attrs) {
                                 quote! {
-                                    fields.extend(trans::Schema::of::<#ty>(version).fields());
+                                    fields.extend(trans::Schema::of::<#ty>(version).fields().cloned());
                                 }
                             } else {
                                 quote! {
