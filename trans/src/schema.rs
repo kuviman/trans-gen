@@ -115,6 +115,15 @@ pub enum Schema {
 }
 
 impl Schema {
+    pub fn fields(&self) -> impl Iterator<Item = &Field> {
+        match self {
+            Schema::Struct {
+                namespace: _,
+                definition,
+            } => definition.fields.iter(),
+            _ => panic!("can only get fields for structs"),
+        }
+    }
     pub fn full_name(&self) -> Name {
         match self {
             Schema::Bool => Name("Bool".to_owned()),
